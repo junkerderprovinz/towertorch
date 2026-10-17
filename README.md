@@ -56,17 +56,18 @@ If it has earned a place on your server or computer, toss a coin to your knight:
 ## Table of Contents
 
 1. [What is this?](#1-what-is-this)
-2. [Features](#2-features)
-3. [Installation](#3-installation)
-4. [The Docker tab](#4-the-docker-tab)
-5. [The settings page](#5-the-settings-page)
-6. [How it works](#6-how-it-works)
-7. [Safety notes](#7-safety-notes)
-8. [Uninstall](#8-uninstall)
-9. [Development](#9-development)
-10. [License](#10-license)
-11. [How AI is used here](#11-how-ai-is-used-here)
-12. [Support this project](#12-support-this-project)
+2. [Screenshots](#2-screenshots)
+3. [Features](#3-features)
+4. [Installation](#4-installation)
+5. [The Docker tab](#5-the-docker-tab)
+6. [The settings page](#6-the-settings-page)
+7. [How it works](#7-how-it-works)
+8. [Safety notes](#8-safety-notes)
+9. [Uninstall](#9-uninstall)
+10. [Development](#10-development)
+11. [License](#11-license)
+12. [How AI is used here](#12-how-ai-is-used-here)
+13. [Support this project](#13-support-this-project)
 
 <br>
 
@@ -93,7 +94,46 @@ Docker, Plugins, VMs, Settings) on or off independently, each with its own style
 
 <br>
 
-## 2. Features
+## 2. Screenshots
+
+Every picture uses a different accent colour. The server and its apps, shares and addresses are made up.
+
+<p align="center">
+  <img src=".github/assets/screenshots/cannonadecommand-1.jpg" alt="The Docker tab with CannonadeCommand in blue, as a list in front and as cards behind" width="100%">
+  <br><em>The Docker tab, as a list and as cards.</em>
+</p>
+
+<br>
+
+<p align="center">
+  <img src=".github/assets/screenshots/cannonadecommand-2.jpg" alt="The Main page in orange, the disks as a table in front and as tiles behind" width="100%">
+  <br><em>The Main page with every disk as a table row or as a tile.</em>
+</p>
+
+<br>
+
+<p align="center">
+  <img src=".github/assets/screenshots/cannonadecommand-3.jpg" alt="The Shares page in green, the user shares as a list in front and as tiles behind" width="100%">
+  <br><em>User shares and their free space, as a list and as tiles.</em>
+</p>
+
+<br>
+
+<p align="center">
+  <img src=".github/assets/screenshots/cannonadecommand-4.jpg" alt="The Plugins page in violet, the installed plugins as a list in front and as tiles behind" width="100%">
+  <br><em>Installed plugins, each with the same logo tile and badges.</em>
+</p>
+
+<br>
+
+<p align="center">
+  <img src=".github/assets/screenshots/cannonadecommand-5.jpg" alt="The VMs page in pink, the virtual machines as a list in front and as tiles behind" width="100%">
+  <br><em>Virtual machines as a list and as tiles.</em>
+</p>
+
+<br>
+
+## 3. Features
 
 **Orchestration**
 - Start plan with dependencies ("start the app after its database"), computed
@@ -204,7 +244,7 @@ Docker, Plugins, VMs, Settings) on or off independently, each with its own style
 
 <br>
 
-## 3. Installation
+## 4. Installation
 
 Unraid → **Plugins → Install Plugin** → paste:
 
@@ -218,7 +258,7 @@ restarted automatically.
 
 <br>
 
-## 4. The Docker tab
+## 5. The Docker tab
 
 - Every row gets its badges, the actions column, and the resource lines
   (CPU / RAM / BW) with a gear each. The gear is filled in your accent colour
@@ -235,7 +275,7 @@ restarted automatically.
 
 <br>
 
-## 5. The settings page
+## 6. The settings page
 
 **Settings → Utilities → CannonadeCommand** holds the appearance settings (accent
 colour with an embedded picker, rainbow palette, shape, motion, density, column
@@ -247,7 +287,7 @@ every browser and origin sees the same configuration, and only what changed is s
 
 <br>
 
-## 6. How it works
+## 7. How it works
 
 | Piece | What it does |
 | --- | --- |
@@ -261,7 +301,7 @@ netfilter state from the container's netns, and the monitor's last apply attempt
 
 <br>
 
-## 7. Safety notes
+## 8. Safety notes
 
 - **No tc ingress qdisc, ever.** Download limiting is pure netfilter policing on
   the container's INPUT chain; the `sch_ingress` module (which can freeze some
@@ -278,7 +318,7 @@ netfilter state from the container's netns, and the monitor's last apply attempt
 
 <br>
 
-## 8. Uninstall
+## 9. Uninstall
 
 **Plugins → Remove**. The daemon is stopped by PID and all program files are
 removed. The start plan and config on the flash are kept, so a reinstall picks up
@@ -287,7 +327,7 @@ a truly clean slate.
 
 <br>
 
-## 9. Development
+## 10. Development
 
 ```bash
 go build ./...          # engine
@@ -302,7 +342,7 @@ measurement through the rule.
 
 <br>
 
-## 10. License
+## 11. License
 
 **Copyright (C) 2026 Junker der Provinz.**
 
@@ -312,7 +352,7 @@ CannonadeCommand is free software under the **GNU Affero General Public License 
 
 <br>
 
-## 11. How AI is used here
+## 12. How AI is used here
 
 One knight builds this, and AI is one of the tools I work with, the same way I work with an editor or a compiler. It helps me write code and documentation and it checks my work, and that saves me a good many evenings. It does not make the decisions, though. I read and understand everything before it ships, and if something here breaks, that is on me and not on the tool.
 
@@ -320,7 +360,7 @@ You do not have to take my word for it. The code is open and every release note 
 
 <br>
 
-## 12. Support this project
+## 13. Support this project
 
 Questions, bugs, ideas or feature requests? Please [open a GitHub issue](https://github.com/junkerderprovinz/cannonadecommand/issues).
 
