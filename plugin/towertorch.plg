@@ -17,7 +17,7 @@
         version="&version;"
         pluginURL="&pluginURL;"
         min="6.10.0"
-        support="https://forums.unraid.net/">
+        support="https://forums.unraid.net/topic/200952-support-junkerderprovinz-towertorch/">
 
 <!-- FanCtrlPlus convention: the name is the lowercase slug so Unraid resolves the
      logo (plugins/<slug>/images/<slug>.png) AND the Plugins-tab description
