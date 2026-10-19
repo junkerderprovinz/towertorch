@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <!--
-  Unraid Community Applications support thread for towertorch.
+  Unraid Community Applications support thread for TowerTorch.
   Structure mirrors the sister-app threads (e.g. featherdrop):
   title -> subtitle -> banner -> button row -> What is this? -> Highlights ->
   Requirements / Install -> Posting a bug report -> Credits -> disclaimer.
   Open standalone in a browser, or paste into the Unraid forum editor's source.
-  Title: [Support] junkerderprovinz - towertorch
+  Title: [Support] junkerderprovinz - TowerTorch
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>[Support] junkerderprovinz - towertorch</title>
+<title>[Support] junkerderprovinz - TowerTorch</title>
 <style>
   body { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem;
          font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -30,8 +30,8 @@
 </head>
 <body>
 
-<h1>TowerTorch: Unraid's Docker, Plugins and VM tabs, lit up</h1>
-<p class="subtitle">Dependency-aware start orchestration, live resource limits with proof, and clean themeable badges, injected into the native pages.</p>
+<h1>TowerTorch: a start order you can trust, and Unraid's pages lit up</h1>
+<p class="subtitle">Your server's UI on fire. Your disks stay cool.</p>
 
 <p align="center">
   <a href="https://github.com/junkerderprovinz/towertorch">
@@ -48,62 +48,58 @@
 </p>
 
 <h2>What is this?</h2>
-<p>An Unraid <strong>plugin</strong> that gives the native <strong>Docker, Plugins and VM
-tabs</strong> both muscle and a makeover, without replacing a single page. On the Docker
-tab it swaps start-order guesswork for a real <strong>start plan</strong>: containers
-declare what they depend on, and the engine starts them in dependency order, releasing the
-next stage only when a container is actually <strong>ready</strong>, not merely "running".
-It adds per-container <strong>CPU, RAM and bandwidth limits</strong> (with built-in proof),
-a compact <strong>actions column</strong>, and clean, themeable badges that show live state
-at a glance. The Plugins and VM tabs pick up the matching styling. A small <strong>Go
-daemon</strong> on a local unix socket does the work; nothing leaves your server.</p>
+<p>An Unraid <strong>plugin</strong> that does two things. It starts your containers in the
+right order: a <strong>start plan</strong> says which container waits for which, and the next
+one only starts once the one before is actually <strong>ready</strong>, not merely "running".
+And it gives Unraid's own pages a new coat without replacing any of them: Docker, Main,
+Shares, Plugins and VMs can show <strong>tiles</strong> as well as lists, disks and the array
+get small animated pictures, and the settings pages and forms turn into cards with switches.
+A small <strong>Go daemon</strong> on a local unix socket does the work; nothing leaves your
+server.</p>
 
 <h2>Highlights</h2>
 <ul>
-  <li><strong>Start plan</strong>: dependency-ordered, readiness-gated start stages, so an app waits for its database to be genuinely ready, not merely "running"</li>
-  <li><strong>Readiness probes</strong>: running (with grace) / TCP port / HTTP / log-line match / exec-in-container, with per-node <strong>failure policies</strong> (abort dependents, continue, or degrade)</li>
-  <li><strong>Watchdog &amp; schedules</strong>: auto-restart on crash or unhealthy (rate-capped per hour) and start/stop/restart at fixed times, per weekday</li>
-  <li><strong>Idle auto-stop</strong> (ContainerNursery-inspired): stop a container after it stays idle on both CPU and network; busy or host-network containers are skipped</li>
-  <li><strong>Live resource limits</strong>: CPU limit, CPU pinning (topology-aware, P/E-core detection on Intel hybrid CPUs) and RAM limit via <code>docker update</code>, no restart</li>
-  <li><strong>Bandwidth limits</strong>: per-container upload (tbf shaper) and download (pure netfilter policing, <em>never</em> a tc ingress qdisc), applied inside the container's own network namespace</li>
-  <li><strong>Built-in proof</strong>: the editors read the LIVE rule back from the container and show either the applied state or the exact failure; a silent no-op is impossible</li>
-  <li><strong>Actions column &amp; clean badges</strong>: state, network, IP (click to copy), ports, volumes and update status, with both a list view and a card (grid) view</li>
-  <li><strong>Theming</strong>: one accent colour for everything or rainbow mode, a configurable badge shape, and a master theming-off switch that keeps only the orchestration</li>
-  <li><strong>Bereiche (Areas)</strong>: Docker, Plugins and VM tabs, plus (opt-in) the main menu bar and the Settings-page icons, each turned on or off independently</li>
-  <li><strong>Local-only</strong>: a small Go daemon on a local unix socket; nothing leaves the server. Installed as an Unraid plugin (<code>.plg</code>)</li>
+  <li><strong>Start plan</strong>: dependency-ordered, readiness-gated start stages, so an app waits until its database is really ready. The plan window draws each container's chain lighting up in start order.</li>
+  <li><strong>Readiness probes</strong>: running (with grace), TCP port, HTTP, log-line match or a command inside the container, with per-node <strong>failure policies</strong> (abort dependents, continue, or degrade)</li>
+  <li><strong>Watchdog and schedules</strong>: auto-restart on crash or unhealthy (rate-capped per hour) and start, stop or restart at fixed times, per weekday</li>
+  <li><strong>Idle auto-stop</strong> (inspired by ContainerNursery): stop a container after it stays idle on both CPU and network; busy and host-network containers are skipped</li>
+  <li><strong>Live resource limits</strong>: CPU limit, CPU pinning (topology-aware, with P/E-core detection on Intel hybrid CPUs) and RAM limit via <code>docker update</code>, no restart</li>
+  <li><strong>Bandwidth limits</strong>: per-container upload and download caps applied inside the container's own network namespace; the editor reads the live rule back, so a silent no-op cannot happen</li>
+  <li><strong>Tiles everywhere</strong>: Docker, Main, Shares, Plugins and VMs as lists or tiles; disk tiles only mention SMART, errors and rates when there is something to say</li>
+  <li><strong>Small pictures</strong>: the array's fill level as a vessel, platters that turn while a disk works, data flowing through SSDs, the mover and a parity check drawn while they run, all following your motion setting</li>
+  <li><strong>Theming</strong>: one accent colour or a rainbow, light and dark, shapes and motion levels, and a master switch that turns all theming off and keeps only the orchestration</li>
+  <li><strong>Local only</strong>: a small Go daemon on a local unix socket, installed as an Unraid plugin (<code>.plg</code>)</li>
 </ul>
 
 <h2>Requirements / Install</h2>
-<p>TowerTorch is an Unraid <strong>plugin</strong>, installed by URL. In Unraid go to
-<strong>Plugins → Install Plugin</strong> and paste:</p>
+<p>Install TowerTorch from <strong>Apps</strong> (Community Applications), or by URL under
+<strong>Plugins → Install Plugin</strong>:</p>
 <p><code>https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin/towertorch.plg</code></p>
-<p>The plugin installs the UI pages and starts the engine (a single Go daemon on a local
-unix socket). The <em>Install on Unraid</em> button above is for once it lands in Community
-Applications.</p>
+<p>Coming from CannonadeCommand? Install TowerTorch once the same way. It takes over your
+settings, start plans and limits and removes the old plugin.</p>
 <ul>
-  <li>Unraid 6.10+</li>
-  <li>Docker (and, optionally, the VM manager for the VM tab)</li>
+  <li>Unraid 6.10 or newer</li>
+  <li>Docker, and optionally the VM manager for the VMs page</li>
   <li>No reverse proxy needed: the UI is served by Unraid and the engine listens on a local unix socket</li>
 </ul>
 
 <h2>Posting a bug report</h2>
-<p>Please post:</p>
+<p>The easiest way: open <strong>Settings → Utilities → TowerTorch → Info</strong> and press
+<strong>Bug report</strong>. TowerTorch saves a file with the versions, your settings and start
+plan and the end of the engine log, with passwords and other secrets taken out. Attach it to your post or to a GitHub issue,
+together with:</p>
 <ul>
-  <li>Unraid version (Settings → System Information)</li>
-  <li>Plugin version</li>
-  <li>The running <strong>UI + engine versions</strong> (the table-header gear on the Docker tab shows both)</li>
-  <li>The specific tab and action you were on (e.g. Docker → bandwidth gear → save)</li>
-  <li>Browser + OS you're using</li>
-  <li>The daemon log (Settings → Utilities → TowerTorch diagnostics card, or <code>/var/log</code> for the plugin)</li>
+  <li>The page and the action you were on (for example Docker → bandwidth gear → save)</li>
+  <li>Browser and operating system</li>
+  <li>A screenshot, if it is about how something looks</li>
 </ul>
-<p>GitHub issues with the same info are also welcome:
+<p>GitHub issues are just as welcome:
 <a href="https://github.com/junkerderprovinz/towertorch/issues">github.com/junkerderprovinz/towertorch/issues</a></p>
 
 <h2>Credits</h2>
-<p>Built in <a href="https://go.dev">Go</a> for Unraid's native Docker, Plugins and VM
-tabs. The idle auto-stop is inspired by
-<a href="https://github.com/Njademann/ContainerNursery">ContainerNursery</a>. MIT licensed.
-If TowerTorch tightens up your Unraid, you can
+<p>Built in <a href="https://go.dev">Go</a> for Unraid. The idle auto-stop is inspired by
+<a href="https://github.com/Njademann/ContainerNursery">ContainerNursery</a>.
+If TowerTorch lights up your Unraid, you can
 <a href="https://buymeacoffee.com/junkerderprovinz">buy me a coffee</a>.</p>
 
 <hr>
