@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <!--
   Unraid Community Applications support thread for TowerTorch.
-  Structure mirrors the sister-app threads (e.g. featherdrop):
-  title -> subtitle -> banner -> button row -> What is this? -> Highlights ->
-  Requirements / Install -> Posting a bug report -> Credits -> disclaimer.
-  Open standalone in a browser, or paste into the Unraid forum editor's source.
+  Structure: name and claim -> banner -> buttons -> What is this? -> screenshots ->
+  Highlights & Features -> Requirements -> Bugs, Problems, Wishes -> Credits
+  -> disclaimer.
+  The forum drops <style> and class attributes, so sizes are attributes and the
+  buttons and screenshots sit in one-row tables to stay side by side.
+  Paste into the Unraid forum editor's source view.
   Title: [Support] junkerderprovinz - TowerTorch
 -->
 <html lang="en">
@@ -12,101 +14,90 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>[Support] junkerderprovinz - TowerTorch</title>
-<style>
-  body { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem;
-         font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-         line-height: 1.6; color: #1c1c1c; }
-  h1 { text-align: center; font-size: 1.7rem; margin-bottom: .2rem; }
-  .subtitle { text-align: center; color: #666; font-style: italic; margin-top: 0; }
-  h2 { margin-top: 1.9rem; font-size: 1.25rem; }
-  code { background: #f1f1f1; padding: .1em .35em; border-radius: 4px; font-size: .9em; }
-  a { color: #1d99f3; }
-  ul { padding-left: 1.2rem; }
-  li { margin: .25rem 0; }
-  img { border: 0; vertical-align: middle; }
-  hr { border: 0; border-top: 1px solid #ddd; margin: 2rem 0; }
-  .footnote { color: #777; font-size: .9em; font-style: italic; text-align: center; margin-top: 2rem; }
-</style>
 </head>
 <body>
 
-<h1>TowerTorch: a fully revamped, modern UI for your Unraid server</h1>
-<p class="subtitle">Your server's UI on fire. Your disks stay cool.</p>
+<h1 style="text-align:center">TowerTorch</h1>
+<p style="text-align:center"><em>Your server's UI on fire. Your disks stay cool.</em></p>
 
-<p align="center">
+<p style="text-align:center">
   <a href="https://github.com/junkerderprovinz/towertorch">
     <img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/towertorch-banner-logo.png" alt="TowerTorch" width="100%">
   </a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/junkerderprovinz/towertorch/releases/latest"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/support-buttons/install-on-unraid.svg" alt="Install on Unraid" width="240"></a>
-  &nbsp;
-  <a href="https://github.com/junkerderprovinz/towertorch"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/support-buttons/view-on-github.svg" alt="View on GitHub" width="240"></a>
-  &nbsp;
-  <a href="https://buymeacoffee.com/junkerderprovinz"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/support-buttons/buy-me-a-coffee.svg" alt="Buy me a coffee" width="240"></a>
-</p>
+<table>
+  <tbody>
+    <tr>
+      <td><p><a href="https://ca.unraid.net/apps?q=towertorch"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/support-buttons/install-on-unraid.svg" alt="Install on Unraid" width="240"></a></p></td>
+      <td><p><a href="https://github.com/junkerderprovinz/towertorch"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/support-buttons/view-on-github.svg" alt="View on GitHub" width="240"></a></p></td>
+      <td><p><a href="https://buymeacoffee.com/junkerderprovinz"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/support-buttons/buy-me-a-coffee.svg" alt="Buy me a coffee" width="240"></a></p></td>
+    </tr>
+  </tbody>
+</table>
 
 <h2>What is this?</h2>
-<p>An Unraid <strong>plugin</strong> that gives your whole server a <strong>fully revamped,
-modern interface</strong>, without replacing a single page. Dashboard, Main, Shares, Docker,
-Plugins, VMs and Settings get one clean, consistent look: <strong>tiles</strong> or lists,
-cards with switches instead of checkboxes, small animated pictures for the disks, the array and
-the mover, one accent colour or a rainbow, light and dark. Everything stays where Unraid put it,
-so nothing you know moves.</p>
-<p>Underneath, it looks after your containers: a <strong>start plan</strong> starts each one
-only once the container it depends on is actually <strong>ready</strong>, not merely "running",
-with per-container limits, a watchdog and schedules on top. A small <strong>Go daemon</strong>
-on a local unix socket does the work; nothing leaves your server.</p>
+<p>TowerTorch gives your whole Unraid server a fully revamped, modern interface, without replacing
+a single page. Dashboard, Main, Shares, Docker, Plugins, VMs and Settings get one clean,
+consistent look: tiles or lists, cards with switches instead of checkboxes, small animated
+pictures for the disks, the array and the mover, one accent colour or a rainbow, light and dark.
+Everything stays where Unraid put it, so nothing you know moves.</p>
+<p>Underneath, it looks after your containers: a start plan starts each one only once the
+container it depends on is actually ready, not just running, with per-container limits, a
+watchdog and schedules on top. A small Go daemon on a local unix socket does the work, and
+nothing leaves your server.</p>
 
-<h2>Highlights</h2>
+<table>
+  <tbody>
+    <tr>
+      <td><p><a href="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/screenshots/towertorch-1.jpg"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/screenshots/towertorch-1.jpg" alt="The Docker tab in blue, as cards in front and as a list behind" width="440"></a></p></td>
+      <td><p><a href="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/screenshots/towertorch-2.jpg"><img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/screenshots/towertorch-2.jpg" alt="The Main page in orange, the disks as tiles in front and as a table behind" width="440"></a></p></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Highlights &amp; Features</h2>
 <ul>
-  <li><strong>Start plan</strong>: dependency-ordered, readiness-gated start stages, so an app waits until its database is really ready. The plan window draws each container's chain lighting up in start order.</li>
-  <li><strong>Readiness probes</strong>: running (with grace), TCP port, HTTP, log-line match or a command inside the container, with per-node <strong>failure policies</strong> (abort dependents, continue, or degrade)</li>
-  <li><strong>Watchdog and schedules</strong>: auto-restart on crash or unhealthy (rate-capped per hour) and start, stop or restart at fixed times, per weekday</li>
-  <li><strong>Idle auto-stop</strong> (inspired by ContainerNursery): stop a container after it stays idle on both CPU and network; busy and host-network containers are skipped</li>
-  <li><strong>Live resource limits</strong>: CPU limit, CPU pinning (topology-aware, with P/E-core detection on Intel hybrid CPUs) and RAM limit via <code>docker update</code>, no restart</li>
-  <li><strong>Bandwidth limits</strong>: per-container upload and download caps applied inside the container's own network namespace; the editor reads the live rule back, so a silent no-op cannot happen</li>
-  <li><strong>Tiles everywhere</strong>: Docker, Main, Shares, Plugins and VMs as lists or tiles; disk tiles only mention SMART, errors and rates when there is something to say</li>
-  <li><strong>Small pictures</strong>: the array's fill level as a vessel, platters that turn while a disk works, data flowing through SSDs, the mover and a parity check drawn while they run, all following your motion setting</li>
-  <li><strong>Theming</strong>: one accent colour or a rainbow, light and dark, shapes and motion levels, and a master switch that turns all theming off and keeps only the orchestration</li>
-  <li><strong>Local only</strong>: a small Go daemon on a local unix socket, installed as an Unraid plugin (<code>.plg</code>)</li>
+  <li>Docker, Main, Shares, Plugins and VMs as lists or tiles; disk tiles only mention SMART, errors and rates when there is something to say</li>
+  <li>Small pictures: the array's fill level as a vessel, platters that turn while a disk works, data flowing through SSDs, the mover and a parity check drawn while they run, all following your motion setting</li>
+  <li>One accent colour or a rainbow, light and dark, shapes and motion levels, and a master switch that turns all theming off and keeps only the orchestration</li>
+  <li>A start plan with dependency-ordered stages, so an app waits until its database is really ready; the plan window draws each chain lighting up in start order</li>
+  <li>Readiness probes (running with grace, TCP port, HTTP, a log line or a command inside the container), each with its own failure policy</li>
+  <li>A watchdog that restarts a crashed or unhealthy container, capped per hour, and schedules to start, stop or restart at fixed times per weekday</li>
+  <li>Idle stop, inspired by ContainerNursery: a container that stays idle on CPU and network gets stopped; busy and host-network containers are skipped</li>
+  <li>Live CPU, RAM and pinning limits through <code>docker update</code> without a restart, with P/E-core detection on Intel hybrid CPUs</li>
+  <li>Upload and download caps per container, applied inside its own network namespace and read back live in the editor</li>
 </ul>
 
-<h2>Requirements / Install</h2>
-<p>Install TowerTorch from <strong>Apps</strong> (Community Applications), or by URL under
-<strong>Plugins → Install Plugin</strong>:</p>
-<p><code>https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin/towertorch.plg</code></p>
-<p>Coming from CannonadeCommand? Install TowerTorch once the same way. It takes over your
-settings, start plans and limits and removes the old plugin.</p>
+<h2>Requirements</h2>
 <ul>
-  <li>Unraid 6.10 or newer</li>
-  <li>Docker, and optionally the VM manager for the VMs page</li>
-  <li>No reverse proxy needed: the UI is served by Unraid and the engine listens on a local unix socket</li>
+  <li>Unraid 6.10+</li>
+  <li>Docker, and the VM manager if you want the VMs page</li>
+  <li>Install from Apps, or under Plugins, Install Plugin with <code>https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin/towertorch.plg</code></li>
+  <li>Coming from CannonadeCommand? Install TowerTorch the same way. It takes over your settings, start plans and limits and removes the old plugin.</li>
 </ul>
 
-<h2>Posting a bug report</h2>
-<p>The easiest way: open <strong>Settings → Utilities → TowerTorch → Info</strong> and press
-<strong>Bug report</strong>. TowerTorch saves a file with the versions, your settings and start
-plan and the end of the engine log, with passwords and other secrets taken out. Attach it to your post or to a GitHub issue,
-together with:</p>
+<h2>Bugs, Problems, Wishes</h2>
+<p>Something not working, a question or an idea? The best place for it is an issue on GitHub:
+<a href="https://github.com/junkerderprovinz/towertorch/issues">github.com/junkerderprovinz/towertorch/issues</a>.
+Everything stays in one place there, and nothing gets lost in a long thread.</p>
+<p>For a bug, open Settings → Utilities → TowerTorch → Info and press Bug report. TowerTorch saves
+a file with the versions, your settings and start plan and the end of the engine log, with
+passwords and other secrets taken out. Attach it, whether you post there or here, together with:</p>
 <ul>
   <li>The page and the action you were on (for example Docker → bandwidth gear → save)</li>
   <li>Browser and operating system</li>
   <li>A screenshot, if it is about how something looks</li>
 </ul>
-<p>GitHub issues are just as welcome:
-<a href="https://github.com/junkerderprovinz/towertorch/issues">github.com/junkerderprovinz/towertorch/issues</a></p>
 
 <h2>Credits</h2>
-<p>Built in <a href="https://go.dev">Go</a> for Unraid. The idle auto-stop is inspired by
-<a href="https://github.com/Njademann/ContainerNursery">ContainerNursery</a>.
-If TowerTorch lights up your Unraid, you can
-<a href="https://buymeacoffee.com/junkerderprovinz">buy me a coffee</a>.</p>
+<p>Built in <a href="https://go.dev">Go</a> for Unraid. The idle stop is inspired by
+<a href="https://github.com/ItsEcholot/ContainerNursery">ContainerNursery</a>. If TowerTorch lights
+up your Unraid, you can <a href="https://buymeacoffee.com/junkerderprovinz">buy me a coffee</a>.</p>
 
 <hr>
 
-<p class="footnote">Self-hosted, AGPL-3.0: you run it, you own your server and the responsibility.</p>
+<p style="text-align:center"><em>Self-hosted, AGPL-3.0 licensed: you run it, you own your server and the responsibility.</em></p>
 
 </body>
 </html>
