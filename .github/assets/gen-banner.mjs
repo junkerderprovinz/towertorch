@@ -1,13 +1,13 @@
 /**
  * Generates the TowerTorch README banners (1600x500):
- *   towertorch-banner.svg / .png       light: dunkel logo on white
- *   towertorch-banner-dark.svg / .png  dark:  hell logo on #0d1117 (GitHub dark)
- *   towertorch-banner-logo.svg / .png  text-free, dunkel on white (support thread)
+ *   towertorch-banner.svg / .png       light: logo on white
+ *   towertorch-banner-dark.svg / .png  dark:  logo on #0d1117 (GitHub dark)
+ *   towertorch-banner-logo.svg / .png  text-free, logo on white (support thread)
  *
- * The README serves the light and dark banner as a <picture> pair. Each theme
- * embeds its own logo master unchanged rather than recolouring one, and the
- * wordmark (Bree Serif) and the claim (Lato) become SVG paths, so the file
- * carries no font and renders the same in resvg and in a browser.
+ * The README serves the light and dark banner as a <picture> pair. The logo reads on
+ * both grounds, so both embed the same master unchanged. The wordmark (Bree Serif)
+ * and the claim (Lato) become SVG paths, so the file carries no font and renders the
+ * same in resvg and in a browser.
  *
  * Needs opentype.js and @resvg/resvg-js installed globally. Bree Serif and Lato,
  * both OFL, are fetched at runtime into the OS temp dir and stay out of the repo.
@@ -29,20 +29,19 @@ const { Resvg } = require(`${groot}/@resvg/resvg-js`);
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 
-const NAME_A = "Cannonade";
-const NAME_B = "Command";
-const CLAIM1 = "Firepower and finish for your whole";
-const CLAIM2 = "Unraid dashboard. Fire when ready.";
+const NAME = "TowerTorch";
+const CLAIM = ["Your server's UI on fire.", "Your disks stay cool."];
+const LOGO = "towertorch.svg";
 const W = 1600, H = 500;
-const logoBox = 400;                 // square, as in the sibling repos
-const logoX = 165, logoY = (H - logoBox) / 2;
-const textX = logoX + logoBox + 70;  // left edge of the text block
-const maxTextW = W - textX - 80;     // what is left between textX and the right margin
+const logoInk = 400;                 // the logo's larger ink side
+const logoX = 165;                   // left edge of the logo's ink
+const gap = 70;                      // logo ink to name
+const rightMargin = 120;
+const NAME_SIZE = 132, CLAIM_SIZE = 44;
 
-// Each theme embeds the logo variant that reads on its background.
 const THEMES = [
-  { suffix: "", bg: "#ffffff", name: "#1f2328", claim: "#5a5d5e", logo: "towertorch-dunkel.svg" },
-  { suffix: "-dark", bg: "#0d1117", name: "#e6edf3", claim: "#9aa4ad", logo: "towertorch-hell.svg" },
+  { suffix: "", bg: "#ffffff", name: "#1f2328", claim: "#5a5d5e" },
+  { suffix: "-dark", bg: "#0d1117", name: "#e6edf3", claim: "#9aa4ad" },
 ];
 
 async function font(file, url) {
@@ -52,93 +51,91 @@ async function font(file, url) {
     if (!r.ok) throw new Error(`${file} fetch ${r.status}`);
     writeFileSync(p, Buffer.from(await r.arrayBuffer()));
   }
-  return opentype.parse(readFileSync(p).buffer.slice(readFileSync(p).byteOffset, readFileSync(p).byteOffset + readFileSync(p).byteLength));
+  const b = readFileSync(p);
+  return opentype.parse(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
 }
 
-const bree = await font("cc-BreeSerif-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/breeserif/BreeSerif-Regular.ttf");
-const lato = await font("cc-Lato-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/lato/Lato-Regular.ttf");
+const bree = await font("tt-BreeSerif-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/breeserif/BreeSerif-Regular.ttf");
+const lato = await font("tt-Lato-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/lato/Lato-Regular.ttf");
 
-// The sizes are fitted to the available width rather than hard-coded. opentype.js
-// emits NaN points for some size and glyph combinations (Lato "y" at 42px, for
-// one), and whether it does depends on the pen position, so the loop generates the
-// real paths and steps down until one comes out free of NaN.
-function cleanPaths(fnt, runs, size) {
+// The logo master as it is, with the ink box measured from a render rather than taken
+// from the viewBox, since a master may carry empty margin.
+const src = readFileSync(join(__dir, LOGO), "utf8");
+const inner = src.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+const [vbX, vbY, vbW, vbH] = src.match(/viewBox="([^"]+)"/)[1].trim().split(/[\s,]+/).map(Number);
+const probe = new Resvg(src, { fitTo: { mode: "width", value: Math.round(vbW) }, background: "rgba(0,0,0,0)" }).render();
+const alpha = probe.pixels;
+let x0 = probe.width, y0 = probe.height, x1 = -1, y1 = -1;
+for (let y = 0; y < probe.height; y++) {
+  for (let x = 0; x < probe.width; x++) {
+    if (alpha[(y * probe.width + x) * 4 + 3] > 8) {
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x);
+      y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+  }
+}
+const px = vbW / probe.width;        // viewBox units per probe pixel
+const ink = { x: vbX + x0 * px, y: vbY + y0 * px, w: (x1 - x0 + 1) * px, h: (y1 - y0 + 1) * px };
+const scale = logoInk / Math.max(ink.w, ink.h);
+const logoAt = (left) => `translate(${(left - ink.x * scale).toFixed(2)},${(H / 2 - (ink.y + ink.h / 2) * scale).toFixed(2)}) scale(${scale.toFixed(6)})`;
+
+// Text is drawn at the origin and placed with a transform: opentype.js emits NaN points
+// for some glyphs at large pen coordinates, and resvg drops a path from the first NaN on.
+// The size still steps down until every glyph comes out clean.
+function fit(fnt, lines, size, maxW) {
+  size = Math.min(size, Math.floor(100 * maxW / Math.max(...lines.map((l) => fnt.getAdvanceWidth(l, 100)))));
   for (; size > 10; size--) {
-    const paths = runs.map(([t, x, y]) => fnt.getPath(t, x, y, size));
-    if (paths.every((pp) => !pp.toPathData(2).includes("NaN"))) return { size, paths };
+    const ds = lines.map((l) => fnt.getPaths(l, 0, 0, size).map((p) => p.toPathData(2)).filter(Boolean));
+    if (ds.every((d) => d.every((s) => !s.includes("NaN")))) return { size, ds };
   }
   throw new Error("no NaN-free size found");
 }
-const nameFit = cleanPaths(bree, [[NAME_A + NAME_B, textX, 0]],
-  Math.min(132, Math.floor(100 * maxTextW / bree.getAdvanceWidth(NAME_A + NAME_B, 100))));
-const claimFit = cleanPaths(lato, [[CLAIM1, textX + 4, 0], [CLAIM2, textX + 4, 0]],
-  Math.min(44, Math.floor(100 * maxTextW / Math.max(lato.getAdvanceWidth(CLAIM1, 100), lato.getAdvanceWidth(CLAIM2, 100)))));
-const nameSize = nameFit.size, claimSize = claimFit.size;
+const textX = logoX + ink.w * scale + gap;
+const maxTextW = W - textX - rightMargin;
+const name = fit(bree, [NAME], NAME_SIZE, maxTextW);
+const claim = fit(lato, CLAIM, CLAIM_SIZE, maxTextW);
 
-// The whole text block is centred on H/2, where the logo sits too. The baselines
-// come from the font metrics and the line steps, and the final paths are then
-// generated at those baselines.
-const sc = (fnt, s) => s / fnt.unitsPerEm;
-const nameAsc = bree.ascender * sc(bree, nameSize);
-const nameDesc = -bree.descender * sc(bree, nameSize);
-const claimAsc = lato.ascender * sc(lato, claimSize);
-const claimDesc = -lato.descender * sc(lato, claimSize);
-const D1 = Math.round(nameDesc + 8 + claimAsc);                            // name to the first claim line
-const D2 = Math.round((lato.ascender - lato.descender) * sc(lato, claimSize) * 1.15); // claim line spacing
-const blockH = nameAsc + D1 + D2 + claimDesc;
-const nameBaseline = Math.round(H / 2 - blockH / 2 + nameAsc);
-const claim1Baseline = nameBaseline + D1;
-const claim2Baseline = claim1Baseline + D2;
-// One path per glyph: resvg's tessellator can abort a merged multi-subpath path
-// partway through for some glyph and coordinate combinations.
-const glyphD = (fnt, text, x, baseline, size) =>
-  fnt.getPaths(text, x, baseline, size).map((p) => p.toPathData(2)).filter(Boolean);
-const nameD = glyphD(bree, NAME_A + NAME_B, textX, nameBaseline, nameSize);
-const claim1D = glyphD(lato, CLAIM1, textX + 4, claim1Baseline, claimSize);
-const claim2D = glyphD(lato, CLAIM2, textX + 4, claim2Baseline, claimSize);
-const paths = (ds, fill) => ds.map((d) => `<path d="${d}" fill="${fill}"/>`).join("");
+// Name and claim are centred as one block on H/2, where the logo's ink centre sits,
+// with the baselines taken from the font metrics.
+const em = (fnt, s) => s / fnt.unitsPerEm;
+const nameAsc = bree.ascender * em(bree, name.size);
+const nameDesc = -bree.descender * em(bree, name.size);
+const claimAsc = lato.ascender * em(lato, claim.size);
+const claimDesc = -lato.descender * em(lato, claim.size);
+const toClaim = Math.round(nameDesc + 16 + claimAsc);
+const claimStep = Math.round((lato.ascender - lato.descender) * em(lato, claim.size) * 1.15);
+const blockH = nameAsc + toClaim + claimStep * (CLAIM.length - 1) + claimDesc;
+const nameBase = Math.round(H / 2 - blockH / 2 + nameAsc);
+const placed = (ds, x, y, fill) => `<g transform="translate(${x.toFixed(2)},${y})">${ds.map((d) => `<path d="${d}" fill="${fill}"/>`).join("")}</g>`;
 
-// Read a logo master as it is and return its inner markup with the scale factor
-// for its own viewBox.
-function embed(logoFile) {
-  const src = readFileSync(join(__dir, logoFile), "utf8");
-  const inner = src.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
-  const m = src.match(/viewBox="[\d.\-]+\s+[\d.\-]+\s+([\d.]+)\s+([\d.]+)"/);
-  const vbW = m ? parseFloat(m[1]) : 960.28;
-  return { inner, scale: logoBox / vbW };
+function write(file, svg) {
+  writeFileSync(join(__dir, `${file}.svg`), svg);
+  const png = new Resvg(svg, { fitTo: { mode: "width", value: W } }).render().asPng();
+  writeFileSync(join(__dir, `${file}.png`), png);
+  console.log(`${file} ok: ${W}x${H}, png ${png.length} bytes`);
 }
 
-// The README banners: the logo on the left, then the wordmark and the claim.
 for (const t of THEMES) {
-  const { inner, scale } = embed(t.logo);
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="TowerTorch">
+  const claimLines = claim.ds.map((ds, i) => placed(ds, textX + 4, nameBase + toClaim + i * claimStep, t.claim)).join("\n  ");
+  write(`towertorch-banner${t.suffix}`, `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${NAME}">
   <rect width="${W}" height="${H}" fill="${t.bg}"/>
-  <g transform="translate(${logoX},${logoY}) scale(${scale.toFixed(6)})">
+  <g transform="${logoAt(logoX)}">
 ${inner}
   </g>
-  ${paths(nameD, t.name)}
-  ${paths(claim1D, t.claim)}
-  ${paths(claim2D, t.claim)}
+  ${placed(name.ds[0], textX, nameBase, t.name)}
+  ${claimLines}
 </svg>
-`;
-  writeFileSync(join(__dir, `towertorch-banner${t.suffix}.svg`), svg);
-  const png = new Resvg(svg, { fitTo: { mode: "width", value: W } }).render().asPng();
-  writeFileSync(join(__dir, `towertorch-banner${t.suffix}.png`), png);
-  console.log(`banner${t.suffix} ok: ${W}x${H}, png ${png.length} bytes`);
+`);
 }
 
-// The support banner: the dunkel logo on white, without any text.
-const { inner: dInner, scale: dScale } = embed("towertorch-dunkel.svg");
-const logoOnly = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="TowerTorch">
+// The support banner: the logo alone, centred on white.
+write("towertorch-banner-logo", `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${NAME}">
   <rect width="${W}" height="${H}" fill="#ffffff"/>
-  <g transform="translate(${(W - logoBox) / 2},${logoY}) scale(${dScale.toFixed(6)})">
-${dInner}
+  <g transform="${logoAt((W - ink.w * scale) / 2)}">
+${inner}
   </g>
 </svg>
-`;
-writeFileSync(join(__dir, "towertorch-banner-logo.svg"), logoOnly);
-const pngLogo = new Resvg(logoOnly, { fitTo: { mode: "width", value: W } }).render().asPng();
-writeFileSync(join(__dir, "towertorch-banner-logo.png"), pngLogo);
-console.log(`banner-logo ok, claim ${claimSize}px`);
+`);
+console.log(`name ${name.size}px, claim ${claim.size}px`);
