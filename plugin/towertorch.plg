@@ -431,6 +431,32 @@ The first release: a small Go engine that starts your containers in dependency o
 - **A careful engine.** The Go daemon listens on a local unix socket behind a same-origin proxy with a strict path allowlist, writes carry Unraid's csrf token, and only read and lifecycle verbs are exposed. The plan and config live on the flash drive and are kept on uninstall. Every build is tested against a real dockerd and measures real throughput through the bandwidth rule.
 </CHANGES>
 
+<!-- The plugin's earlier names were cannonadecommand and, before that,
+     cannonadecommander. The first install under this name takes over their flash
+     folder (config, start plan, limits, icon cache) unless &plgPath; already holds
+     something, and removes the old install, so two daemons never manage the same
+     containers. The old .plg goes as well, or Unraid would install it again at the
+     next boot. -->
+<FILE Run="/bin/bash">
+<INLINE>
+for old in cannonadecommand cannonadecommander; do
+  /usr/local/emhttp/plugins/$old/scripts/rc.$old stop 2>/dev/null
+  for p in $(pgrep -f "/usr/local/emhttp/plugins/$old/bin/$old" 2>/dev/null); do kill -9 "$p" 2>/dev/null; done
+  pkg=$(ls /var/log/packages/ 2>/dev/null | grep -E "^$old-[^-]+-[^-]+-[^-]+$" | head -n1)
+  if [ -n "$pkg" ]; then removepkg "$pkg" >/dev/null 2>&amp;1; fi
+  rm -rf /usr/local/emhttp/plugins/$old
+  rm -f /boot/config/plugins/$old.plg /var/log/plugins/$old.plg /var/run/$old.pid /var/run/$old.sock
+  [ -d /boot/config/plugins/$old ] || continue
+  rm -f /boot/config/plugins/$old/*.txz /boot/config/plugins/$old/*.txz.md5 /boot/config/plugins/$old/*.plg
+  [ -z "$(ls -A &plgPath; 2>/dev/null)" ] || continue
+  if mkdir -p &plgPath; &amp;&amp; cp -r /boot/config/plugins/$old/. &plgPath;/; then
+    rm -rf /boot/config/plugins/$old
+    echo "Settings of $old moved to &plgPath;"
+  fi
+done
+</INLINE>
+</FILE>
+
 <!-- Pre-install: stop the old daemon and WIPE the plugin dir before installing, so
      files removed between versions cannot linger (installpkg overwrites same-path
      files but never deletes orphans - the "old bars/JS still there" symptom). Also
@@ -438,12 +464,6 @@ The first release: a small Go engine that starts your containers in dependency o
      plan/config on the flash (/boot/config/plugins/&slug;) is left untouched. -->
 <FILE Run="/bin/bash">
 <INLINE>
-# one-time migration from the old plugin name (pre-1.1.0: cannonadecommander)
-if [ -d /boot/config/plugins/cannonadecommander ] &amp;&amp; [ ! -d /boot/config/plugins/cannonadecommand ]; then
-  cp -a /boot/config/plugins/cannonadecommander /boot/config/plugins/cannonadecommand
-  rm -f /boot/config/plugins/cannonadecommand/*.txz /boot/config/plugins/cannonadecommand/*.plg 2>/dev/null
-fi
-/usr/local/emhttp/plugins/cannonadecommander/scripts/rc.cannonadecommander stop 2>/dev/null
 &emhttp;/scripts/rc.&slug; stop 2>/dev/null
 rm -rf &emhttp;
 rm -f &plgPath;/*.txz
