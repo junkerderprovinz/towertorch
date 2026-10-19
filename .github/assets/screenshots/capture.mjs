@@ -73,19 +73,20 @@ const PAGES = [
   {
     name: "docker",
     path: "/Docker",
-    accent: "#1D99F3",
+    accent: "#FCC419",
     key: "cc.view",
     views: { list: "list", tiles: "grid" },
-    keep: ["Plex", "Immich", "Nextcloud", "Nginx", "MariaDB", "PostgreSQL", "Redis", "Tautulli", "Cloudflared", "CrowdSec",
+    keep: ["Plex", "Immich", "Nextcloud", "Nginx", "MariaDB", "PostgreSQL", "Redis", "Tautulli", "CrowdSec",
       "OpenWebUI", "Ollama", "Homarr", "StirlingPDF", "Minecraft"],
     rename: { homarr: "Homarr" },
   },
   {
     name: "main",
     path: "/Main",
-    accent: "#FF832B",
+    accent: "#1D99F3",
     key: "cc.diskview",
     views: { list: "list", tiles: "tiles" },
+    wake: true,
   },
   {
     name: "shares",
@@ -219,6 +220,14 @@ function scrubber(server) {
   };
   fn.serials = serials;
   return fn;
+}
+
+// A spun-down disk comes with a grey orb that spins it up and no temperature, and its tile is
+// dimmed. For the picture each one reads as running, with a made-up temperature.
+function wake(text) {
+  let n = 0;
+  return text.replace(/grey-orb('[^>]*?toggle_state\('Device','\w+',')up('(?:(?!<tr>)[^])*?<\\?\/td><td>)\*(<\\?\/td>)/g,
+    (m, orb, row, end) => `green-orb${orb}down${row}${33 + (n++ % 4)}&#8201;&#176;C${end}`);
 }
 
 async function login(page) {
@@ -399,7 +408,7 @@ try {
   const scrub = scrubber(server);
   await page.exposeFunction("shotScrub", (list) => list.map(scrub));
 
-  let state = { settings: {}, frozen: false, shares: {} };
+  let state = { settings: {}, frozen: false, shares: {}, wake: false };
   // A request made while the page is frozen is held, not refused: a refused one would put an
   // error toast into the picture.
   const held = [];
@@ -440,18 +449,19 @@ try {
     if (/ShareList\.php/.test(url)) {
       for (const [from, to] of Object.entries(state.shares)) body = body.replace(new RegExp(`(?<![\\w-])${from}(?![\\w-])`, "g"), to);
     }
+    if (state.wake) body = wake(body);
     return route.fulfill({ response: res, body: scrub(body) });
   });
   await page.routeWebSocket(/./, (ws) => {
     const upstream = ws.connectToServer();
     ws.onMessage((m) => upstream.send(m));
-    upstream.onMessage((m) => { if (!state.frozen) ws.send(typeof m === "string" ? scrub(m) : m); });
+    upstream.onMessage((m) => { if (!state.frozen) ws.send(typeof m === "string" ? scrub(state.wake ? wake(m) : m) : m); });
   });
 
   for (const shot of PAGES.filter((p) => !CHOSEN.length || CHOSEN.includes(p.name))) {
     for (const [view, value] of Object.entries(shot.views)) {
       const settings = Object.assign({ "cc.accent": shot.accent }, { [shot.key]: value });
-      state = { settings, frozen: false, shares: shot.name === "shares" ? shot.rename : {} };
+      state = { settings, frozen: false, shares: shot.name === "shares" ? shot.rename : {}, wake: !!shot.wake };
       for (const route of held.splice(0)) route.abort().catch(() => {});
       await page.goto(`${BASE}/Dashboard`, { waitUntil: "load" });
       await page.evaluate((s) => { for (const [k, v] of Object.entries(s)) window.__ccLS ? window.__ccLS(k, v) : localStorage.setItem(k, v); }, Object.assign({}, LOOK, settings));

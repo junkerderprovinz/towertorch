@@ -99,14 +99,14 @@ Docker, Plugins, VMs, Settings) on or off independently, each with its own style
 Every picture uses a different accent colour. The server and its apps, shares and addresses are made up.
 
 <p align="center">
-  <img src=".github/assets/screenshots/towertorch-1.jpg" alt="The Docker tab with TowerTorch in blue, as cards in front and as a list behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-1.jpg" alt="The Docker tab in TowerTorch's default gold, as cards in front and as a list behind" width="100%">
   <br><em>The Docker tab, as a list and as cards.</em>
 </p>
 
 <br>
 
 <p align="center">
-  <img src=".github/assets/screenshots/towertorch-2.jpg" alt="The Main page in orange, the disks as tiles in front and as a table behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-2.jpg" alt="The Main page in blue, the disks as tiles in front and as a table behind" width="100%">
   <br><em>The Main page with every disk as a table row or as a tile.</em>
 </p>
 
