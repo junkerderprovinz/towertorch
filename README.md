@@ -28,12 +28,6 @@ leaves your server.
 <br>
 
 <p align="center">
-  <a href="https://github.com/junkerderprovinz/towertorch/issues/new/choose"><img src=".github/assets/in-development.png" alt="In development, testers welcome: report a bug" width="100%"></a>
-</p>
-
-<br>
-
-<p align="center">
 A one-knight job: I build it, keep it running, work through the issues and add what people ask for, until nothing is missing. It is free, with no accounts, no telemetry, no ads and no paid tier. No asterisk anywhere. Nothing readable ever leaves your own walls. Forged on evenings and weekends, with heart and stubbornness.
 </p>
 
