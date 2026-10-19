@@ -82,7 +82,7 @@ const dataUrl = (buf, type) => `data:${type};base64,${buf.toString("base64")}`;
 const fonts = "https://github.com/google/fonts/raw/main/ofl";
 const bree = dataUrl(await cached("BreeSerif-Regular.ttf", `${fonts}/breeserif/BreeSerif-Regular.ttf`), "font/ttf");
 const lato = dataUrl(await cached("Lato-Regular.ttf", `${fonts}/lato/Lato-Regular.ttf`), "font/ttf");
-const logo = dataUrl(readFileSync(join(here, "..", "logo.svg")), "image/svg+xml");
+const logo = dataUrl(readFileSync(join(here, "..", "towertorch.svg")), "image/svg+xml");
 
 const STYLE = `
 @font-face { font-family: "Bree Serif"; src: url(${bree}); }
