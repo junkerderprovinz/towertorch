@@ -36,6 +36,8 @@ const DENY = (process.env.SHOT_DENY || "").split(",").map((w) => w.trim()).filte
 const CHOSEN = process.argv.slice(2);
 
 const VIEW = { width: 1440, height: 900 };
+// The pages read TowerTorch's settings, kept in /boot/config/plugins/towertorch, from the engine here.
+const SETTINGS = /\/plugins\/towertorch\/server\/ccapi\.php\?path=config(&|$)/;
 const DEMO_NAME = "Tower";
 const DEMO_DESCRIPTION = "Media server";
 
@@ -409,7 +411,7 @@ try {
     if (/\/webGui\/javascript\/translate\.[A-Za-z_]+\.js/.test(url)) {
       return route.fulfill({ contentType: "application/javascript", body: "function _(t){return t;}" });
     }
-    if (method === "GET" && /ccapi\.php\?path=config\b/.test(url)) {
+    if (method === "GET" && SETTINGS.test(url)) {
       const res = await route.fetch();
       const json = await res.json();
       json.ui_settings = Object.assign(json.ui_settings || {}, LOOK, state.settings);

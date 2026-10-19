@@ -1,7 +1,8 @@
 // Renders the README screenshots in the style of the house's store pictures: each page of
 // TowerTorch twice, the list behind and the tiles in front, in two tilted browser windows on
 // the dark relief ground with the logo pressed into it, a heading and a line of text beside them.
-// 1920x1080 each, so two windows fit with only a corner of the back one covered.
+// 1920x1080 each. The list sits top left, where the front window covers only its lower right and
+// leaves the name column in view; the tiles sit bottom right, uncovered.
 //
 // The pictures come from captures/, taken by capture.mjs at 1440x900 and twice the pixel density.
 // Everything here is rendered at twice the size and scaled down, which keeps the type crisp
@@ -99,8 +100,8 @@ h1 { font: 400 52px/1.14 "Bree Serif", serif; color: #f4f4f4; text-wrap: balance
 h1 em { font-style: normal; color: #FCC419; }
 .sub { font-size: 23px; line-height: 1.4; color: #9d9481; }
 .stage { position: absolute; width: ${WIN_W}px; height: ${WIN_H}px; perspective: 2400px; }
-.back { left: ${W - 60 - WIN_W}px; top: 56px; }
-.front { left: 500px; top: ${H - 56 - WIN_H}px; }
+.back { left: 500px; top: 56px; }
+.front { left: ${W - 60 - WIN_W}px; top: ${H - 56 - WIN_H}px; }
 .floor { position: absolute; left: 6%; right: 6%; bottom: -34px; height: 60px; border-radius: 50%; background: rgba(0,0,0,.75); filter: blur(28px); }
 .win { position: absolute; inset: 0; border-radius: 12px; background: #1c1c1c; transform: rotateY(-7deg) rotateX(3deg);
   box-shadow: 0 0 0 1px #333, 0 1px 0 1px rgba(255,255,255,.05), 0 2px 4px rgba(0,0,0,.35), 0 16px 32px rgba(0,0,0,.4), 0 48px 96px rgba(0,0,0,.5); }
@@ -136,8 +137,8 @@ const windowAt = (place, shot, capture) => `<div class="stage ${place}"><div cla
 const page = (shot) => `<!doctype html><html><head><meta charset="utf-8"><style>${STYLE}</style></head><body>
 <div class="wall"></div><img class="relief" src="${logo}"><div class="vignette"></div>
 <div class="copy"><img src="${logo}"><h1>${shot.caption}</h1><p class="sub">${shot.sub}</p></div>
-${windowAt("back", shot, `${shot.page}-tiles.png`)}
-${windowAt("front", shot, `${shot.page}-list.png`)}
+${windowAt("back", shot, `${shot.page}-list.png`)}
+${windowAt("front", shot, `${shot.page}-tiles.png`)}
 </body></html>`;
 
 const browser = await chromium.launch();
