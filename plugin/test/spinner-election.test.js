@@ -8,8 +8,8 @@
 // only while elected or held, and that it is released the moment it is not.
 const fs = require('fs');
 const path = require('path');
-const HEADER = process.argv[2] || path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local',
-  'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'header.js');
+const HEADER = process.argv[2] || path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local',
+  'emhttp', 'plugins', 'towertorch', 'scripts', 'header.js');
 
 // A trimmed copy of clone-select.test.js's DOM shim, with an inline-style model:
 // setProperty, removeProperty and the plain .display alias share one value, so

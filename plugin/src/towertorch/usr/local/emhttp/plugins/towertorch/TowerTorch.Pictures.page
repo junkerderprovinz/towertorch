@@ -1,12 +1,12 @@
 Menu="Buttons:96"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-pictures-hook"
 ---
 <?php
-/* Menu="Buttons" makes Unraid auto-inject sheets/CannonadeCommand.Pictures.css into the <head> of
+/* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Pictures.css into the <head> of
    every page; the script below loads pictures.js, the animated pictures the areas share as
    window.CCPictures. At :96 it runs before the area scripts at :97 and later, so they find it the
    first time they draw. Link="cc-pictures-hook" renders a bare <div>, no icon. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/pictures.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/pictures.js')?>"></script>

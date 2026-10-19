@@ -16,16 +16,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/bugreport"
-	"github.com/junkerderprovinz/cannonadecommand/internal/hostcpu"
-	"github.com/junkerderprovinz/cannonadecommand/internal/hostnet"
-	"github.com/junkerderprovinz/cannonadecommand/internal/iconsrc"
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
-	"github.com/junkerderprovinz/cannonadecommand/internal/netshape"
-	"github.com/junkerderprovinz/cannonadecommand/internal/orchestrator"
-	"github.com/junkerderprovinz/cannonadecommand/internal/store"
-	"github.com/junkerderprovinz/cannonadecommand/internal/unraidtmpl"
-	"github.com/junkerderprovinz/cannonadecommand/internal/vmctl"
+	"github.com/junkerderprovinz/towertorch/internal/bugreport"
+	"github.com/junkerderprovinz/towertorch/internal/hostcpu"
+	"github.com/junkerderprovinz/towertorch/internal/hostnet"
+	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
+	"github.com/junkerderprovinz/towertorch/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/netshape"
+	"github.com/junkerderprovinz/towertorch/internal/orchestrator"
+	"github.com/junkerderprovinz/towertorch/internal/store"
+	"github.com/junkerderprovinz/towertorch/internal/unraidtmpl"
+	"github.com/junkerderprovinz/towertorch/internal/vmctl"
 )
 
 // Docker is the part of the Docker API the handlers use: reads and the safe

@@ -6,7 +6,7 @@
 // jumps there, and come back the moment adopting stops.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
 const SETTINGS = process.argv[2] || path.join(DIR, 'settings.js');
 
 let pass = 0, fail = 0;

@@ -1,13 +1,13 @@
 Menu="Buttons:99"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-dash-hook"
 ---
 <?php
-/* Menu="Buttons" makes Unraid auto-inject sheets/CannonadeCommand.Dashboard.css into the <head> of
+/* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Dashboard.css into the <head> of
    every page; the script below loads dashboard.js. All CSS is gated behind html.cc-dash-on, which
    dashboard.js sets only on /Dashboard while the header area and master theming are on. The
    Dashboard is the landing page behind the menu bar, so it rides the header area rather than a
    switch of its own. Link="cc-dash-hook" renders a bare <div>, no icon. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/dashboard.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/dashboard.js')?>"></script>

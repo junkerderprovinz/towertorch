@@ -1,4 +1,4 @@
-// Package model holds the types shared by the CannonadeCommand packages: the
+// Package model holds the types shared by the TowerTorch packages: the
 // start plan, its run results and the automation config.
 package model
 

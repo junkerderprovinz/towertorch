@@ -1,4 +1,4 @@
-// Every font size in CannonadeCommand reads one of five sizes, one per role (GlimStone,
+// Every font size in TowerTorch reads one of five sizes, one per role (GlimStone,
 // "The type scale"): 22 status, 16 title, 14 body, 13 sub-line, 12 meta. The badge
 // stages name a role rather than a number, so a stage and the scale cannot drift apart.
 //
@@ -7,7 +7,7 @@
 // here by selector, so a new literal size anywhere else fails.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -23,7 +23,7 @@ function files(dir, exts) {
 }
 // comments go, their line breaks stay, so a failure names the real line
 const clean = (src) => src.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ''));
-const TOKENS = fs.readFileSync(path.join(DIR, 'sheets', 'CannonadeCommand.Tokens.css'), 'utf8');
+const TOKENS = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tokens.css'), 'utf8');
 const dark = (() => { let o = ''; const re = /(^|\})\s*html\s*\{([^}]*)\}/g; let m; while ((m = re.exec(clean(TOKENS)))) o += m[2]; return o; })();
 
 // A value is on the scale when it is a scale token, a stage token, or no size at all.

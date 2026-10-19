@@ -4,7 +4,7 @@
 // live config, so it never drops a field another card or the Docker tab wrote.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;

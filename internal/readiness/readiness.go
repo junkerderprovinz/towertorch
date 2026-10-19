@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 const (

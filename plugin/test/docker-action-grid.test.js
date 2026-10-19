@@ -11,7 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 const { candidates, PAGES } = require('./cascade');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const js = fs.readFileSync(path.join(DIR, 'scripts/docker.js'), 'utf8');
 const theme = fs.readFileSync(path.join(DIR, 'scripts/cc-theme.js'), 'utf8');
 

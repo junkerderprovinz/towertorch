@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // unraidNotify is Unraid's own notification agent.
@@ -25,7 +25,7 @@ func (s SysNotifier) Notify(ctx context.Context, cfg model.Notify, subject, desc
 		// A hung notify agent must not stall the monitor tick.
 		nctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		_ = exec.CommandContext(nctx, unraidNotify,
-			"-e", "CannonadeCommand", "-s", subject, "-d", desc, "-i", importance).Run()
+			"-e", "TowerTorch", "-s", subject, "-d", desc, "-i", importance).Run()
 		cancel()
 	}
 	if cfg.Webhook != "" {

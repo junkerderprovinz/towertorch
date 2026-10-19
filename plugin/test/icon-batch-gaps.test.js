@@ -1,7 +1,7 @@
 // A batch answer that leaves a name out must settle that name, or the queue drains straight back
 // into another request for it and the page asks the engine for it as fast as the network allows.
 const path = require('path');
-const THEME = process.argv[2] || path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'cc-theme.js');
+const THEME = process.argv[2] || path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts', 'cc-theme.js');
 
 const node = () => ({ classList: { add() {}, remove() {}, contains: () => false, toggle() {} }, style: { setProperty() {}, removeProperty() {} }, setAttribute() {}, getAttribute: () => null, appendChild() {}, addEventListener() {}, querySelector: () => null, querySelectorAll: () => [] });
 global.document = Object.assign(node(), { createElement: node, getElementById: () => null, documentElement: node(), body: node(), cookie: '' });

@@ -106,7 +106,7 @@ console.log('\nCA keeps showing and hiding its own entries');
   const dh = win({ tag: 'div', classes: ['dockerSearch', 'caButton', 'ca_hide'], inside: ['.cc-ca-search-extras'], outside: OUT }, 'display');
   ok('Docker Hub keeps CA\'s own visibility', dh && dh.sheet === CA.name, dh && (dh.sheet + ' ' + dh.selector));
   // A spacer <li> has no class to key the cascade on, so its rule is read directly.
-  const spacer = parseRules(fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8')).find((r) => /> li:has\(> hr\)$/.test(r.selector.trim()));
+  const spacer = parseRules(fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8')).find((r) => /> li:has\(> hr\)$/.test(r.selector.trim()));
   ok('the rule spacers are taken out', !!spacer && spacer.decls.some((d) => d.prop === 'display' && d.value === 'none' && d.important), spacer && spacer.selector);
 }
 
@@ -167,7 +167,7 @@ console.log('\nThe Action Centre carries a dot, not a green fill');
   const ac = row(['sectionMenu', 'actionCentre'], {}, ['.menuItems', '.caMenu']);
   ok('no fill while it is not the open entry', val(ac, 'background') === 'transparent', val(ac, 'background'));
   ok('the row\'s case, not capitals', val(ac, 'text-transform') === 'none');
-  const tokens = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8');
+  const tokens = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8');
   ok('a dot in the entry\'s colour', /li\.caMenuItem\.actionCentre::after \{[^}]*background: var\(--cc-rb-c, var\(--cc-accent, #FCC419\)\) !important;/.test(tokens));
   ok('in its ink while the entry is open', /li\.caMenuItem\.actionCentre\.selectedMenu::after \{ background: var\(--cc-rb-ct/.test(tokens));
   ok('grey at rest in the reactive mode', /html\.cc-apps-rbneutral\.cc-popups-on li\.caMenuItem\.actionCentre:not\(\.selectedMenu\):not\(:hover\)::after \{ background: var\(--cc-text-dim/.test(tokens));

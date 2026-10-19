@@ -1,4 +1,4 @@
-// Every table head CannonadeCommand restyles is GlimStone's eyebrow: no fill, the meta size in the
+// Every table head TowerTorch restyles is GlimStone's eyebrow: no fill, the meta size in the
 // muted ink, uppercase and tracked 1.2px, and nothing but space between it and the rows. Main,
 // Shares, Docker, Plugins and VMs read alike. What can quietly break it:
 //   · one table keeping its own shade, weight or tracking

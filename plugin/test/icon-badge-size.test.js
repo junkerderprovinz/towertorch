@@ -5,7 +5,7 @@
 // its own number or a second stage appears.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -22,18 +22,18 @@ function rules(css) {
   return out;
 }
 
-const SHEETS = ['styles/docker.css', 'sheets/CannonadeCommand.VmTab.css', 'sheets/CannonadeCommand.Shares.css', 'sheets/CannonadeCommand.Tokens.css'];
+const SHEETS = ['styles/docker.css', 'sheets/TowerTorch.VmTab.css', 'sheets/TowerTorch.Shares.css', 'sheets/TowerTorch.Tokens.css'];
 // The last compound of a selector that names one of the square icon badges.
 const BADGE = /(\.cc-actbtn|\.cc-sortreset:not\(\[hidden\]\)|\.cc-limbtn|\.cc-day|\.cc-sched-x|\.cc-b-delicon|a\.cc-ud-icon|a\.cc-ibtn|i\.fa-gears(\[disabled\]|\.disabled)?|:is\(i\.fa-remove, i\.fa-times, i\.fa-trash, i\.fa-trash-o, i\.fa-ban\))$/;
 const SIZE = /var\(--cc-icon-badge, 26px\)/;
 
 console.log('\nOne token, one value');
 {
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   const decl = clean(tokens).match(/--cc-icon-badge\s*:\s*[^;]+/g) || [];
   ok('Tokens.css declares --cc-icon-badge once, at 26px', decl.length === 1 && /26px$/.test(decl[0]), decl.join(' | '));
   const stages = new Set();
-  for (const f of SHEETS.concat('sheets/CannonadeCommand.Tokens.css')) for (const m of clean(read(f)).matchAll(/--cc-[\w-]*icon-?badge[\w-]*(?=\s*:)/g)) stages.add(m[0]);
+  for (const f of SHEETS.concat('sheets/TowerTorch.Tokens.css')) for (const m of clean(read(f)).matchAll(/--cc-[\w-]*icon-?badge[\w-]*(?=\s*:)/g)) stages.add(m[0]);
   ok('no second icon badge stage exists', stages.size === 1, [...stages].join(' '));
 }
 
@@ -55,13 +55,13 @@ for (const f of SHEETS) {
   ok(path.basename(f) + ': no icon badge has its own size', bad.length === 0, bad.join(' | '));
 }
 for (const want of ['docker.css .cc-actbtn', 'docker.css .cc-limbtn', 'docker.css .cc-sched-x', 'docker.css .cc-day', 'docker.css .cc-b-delicon',
-  'CannonadeCommand.VmTab.css .cc-actbtn', 'CannonadeCommand.VmTab.css .cc-limbtn', 'CannonadeCommand.Shares.css a.cc-ud-icon', 'CannonadeCommand.Shares.css i.fa-gears', 'CannonadeCommand.Tokens.css .cc-sortreset:not([hidden])']) {
+  'TowerTorch.VmTab.css .cc-actbtn', 'TowerTorch.VmTab.css .cc-limbtn', 'TowerTorch.Shares.css a.cc-ud-icon', 'TowerTorch.Shares.css i.fa-gears', 'TowerTorch.Tokens.css .cc-sortreset:not([hidden])']) {
   ok(want + ' is sized by the token', seen.has(want), [...seen].join(' | '));
 }
 {
   // More opens a menu, so no extra badges unfold inside the bar and nothing there needs a width.
   const docker = clean(read('styles/docker.css'));
-  ok('no action bar unfolds a second block of badges', !/\.cc-actmore/.test(docker) && !/\.cc-actmore/.test(clean(read('sheets/CannonadeCommand.VmTab.css'))));
+  ok('no action bar unfolds a second block of badges', !/\.cc-actmore/.test(docker) && !/\.cc-actmore/.test(clean(read('sheets/TowerTorch.VmTab.css'))));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

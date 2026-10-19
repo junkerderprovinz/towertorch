@@ -1,6 +1,6 @@
 Menu="Utilities"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 ---
 <?php
 /* Settings > Utilities. Appearance prefs live in localStorage under cc.* keys and reach the
@@ -8,7 +8,7 @@ Icon="cannonadecommand.png"
    engine config: it goes through the same-origin proxy into config.json on the flash, which
    survives an uninstall like the start plan. */
 ?>
-<link type="text/css" rel="stylesheet" href="<?autov('/plugins/cannonadecommand/styles/docker.css')?>">
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
 <div id="cc-settings" class="cc-root"></div>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/flags.js')?>"></script>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/settings.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/flags.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/settings.js')?>"></script>

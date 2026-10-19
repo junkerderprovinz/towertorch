@@ -8,7 +8,7 @@ const { DIR, candidates } = require('./cascade');
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 const header = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
-const tokens = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8');
+const tokens = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8');
 function grabFn(src, name) {
   const i = src.indexOf('function ' + name + '(');
   if (i < 0) throw new Error('function not found: ' + name);

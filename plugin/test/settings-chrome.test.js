@@ -1,4 +1,4 @@
-// Pins four properties of the CannonadeCommand settings page's own chrome.
+// Pins four properties of the TowerTorch settings page's own chrome.
 //
 //  1. Every colour swatch is the same size. Rule 5 forbids a ring or a border on
 //     the selected one, so it is marked with a tick and a brightness step. A
@@ -21,9 +21,9 @@
 // WebGUI tests.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const SETTINGS = process.argv[2] || path.join(DIR, 'scripts', 'settings.js');
-const CSS = process.argv[3] || path.join(DIR, 'sheets', 'CannonadeCommand.Tokens.css');
+const CSS = process.argv[3] || path.join(DIR, 'sheets', 'TowerTorch.Tokens.css');
 const THEME = fs.readFileSync(path.join(DIR, 'scripts', 'cc-theme.js'), 'utf8');
 
 let pass = 0, fail = 0;
@@ -215,7 +215,7 @@ const FRAGMENT = {
   // Row 2 carries a rendered README with a table and an image of its own, which a
   // logo hunt not anchored to the row's first cell would preview as the logo. Row 4
   // has no README heading, so its name falls back to the vid-<name> cell id.
-  plugin: `<tr id="cannonadecommand"><td><img src='/plugins/cannonadecommand/images/cannonadecommand.png' class='list'></td><td><span class='desc_readmore' style='display:block'><h1>CannonadeCommand</h1><p>Dependency-aware Docker start orchestration.</p></span> </td><td>junkerderprovinz</td><td id='vid-cannonadecommand' data='43200'>4.32.0&nbsp;<span class='fa fa-info-circle fa-fw big blue-text'></span></td><td id='sid-cannonadecommand' data='0'><span style='color:#267CA8'><i class='fa fa-refresh fa-spin fa-fw'></i>&nbsp;unknown</span></td><td></td></tr>`
+  plugin: `<tr id="towertorch"><td><img src='/plugins/towertorch/images/towertorch.png' class='list'></td><td><span class='desc_readmore' style='display:block'><h1>TowerTorch</h1><p>Dependency-aware Docker start orchestration.</p></span> </td><td>junkerderprovinz</td><td id='vid-towertorch' data='43200'>4.32.0&nbsp;<span class='fa fa-info-circle fa-fw big blue-text'></span></td><td id='sid-towertorch' data='0'><span style='color:#267CA8'><i class='fa fa-refresh fa-spin fa-fw'></i>&nbsp;unknown</span></td><td></td></tr>`
     + `<tr id="unbalanced"><td><a href='/Settings/unbalanced' class='list'><img src='/plugins/unbalanced/unbalanced.png' class='list'></a></td><td><span class='desc_readmore' style='display:block'><h1>unbalanced</h1><table><tr><td><img src='/readme-screenshot-trap.png'></td></tr></table></span> </td><td>anonymous</td><td id='vid-unbalanced' data='202401'>2024.01&nbsp;<span class='fa fa-info-circle fa-fw big blue-text'></span></td><td id='sid-unbalanced' data='0'><span><i class='fa fa-refresh fa-spin fa-fw'></i></span></td><td></td></tr>`
     + `<tr id="unassigneddevicespreclear"><td><a href='/Tools/Preclear' class='list'><i class='icon-preclear list'></i></a></td><td><span class='desc_readmore' style='display:block'><h1>Unassigned Devices Preclear</h1></span> </td><td>anonymous</td><td id='vid-unassigned-devices-preclear' data='202401'>2024.01</td><td id='sid-unassigned-devices-preclear' data='0'><i class='fa fa-refresh fa-spin fa-fw'></i></td><td></td></tr>`
     + `<tr id="userscripts"><td><a href='/Settings/Userscripts' class='list'><i class='fa fa-file-text-o list'></i></a></td><td><span class='desc_readmore' style='display:block'><p>no heading in this readme</p></span> </td><td>anonymous</td><td id='vid-user-scripts' data='202401'>2024.01</td><td id='sid-user-scripts' data='0'></td><td></td></tr>`,
@@ -303,12 +303,12 @@ console.log('\nPart 5: the previews read the row fragment, never the page shell'
     const pl = results.frag_plugin;
     ok('Plugins: all four plugin rows are found', pl.length === 4, JSON.stringify(pl));
     ok('Plugins: a bare <img> and one wrapped in the launch <a> both resolve',
-      pl[0] && pl[0].src === '/plugins/cannonadecommand/images/cannonadecommand.png'
+      pl[0] && pl[0].src === '/plugins/towertorch/images/towertorch.png'
       && pl[1] && pl[1].src === '/plugins/unbalanced/unbalanced.png', JSON.stringify(pl));
     ok('Plugins: an Unraid icon-* glyph comes back as its glyph class', pl[2] && pl[2].src === 'icon-preclear', JSON.stringify(pl));
     ok('Plugins: a FontAwesome glyph comes back as its fa-* class', pl[3] && pl[3].src === 'fa-file-text-o', JSON.stringify(pl));
     ok('Plugins: the name is the README heading, like plugins.js paintRow()',
-      pl[0].name === 'CannonadeCommand' && pl[1].name === 'unbalanced' && pl[2].name === 'Unassigned Devices Preclear', JSON.stringify(pl));
+      pl[0].name === 'TowerTorch' && pl[1].name === 'unbalanced' && pl[2].name === 'Unassigned Devices Preclear', JSON.stringify(pl));
     ok('Plugins: a heading-less README falls back to the vid-<name> cell id', pl[3].name === 'user-scripts', JSON.stringify(pl));
     ok('Plugins: an image inside a rendered README is never taken for a logo',
       pl.every(p => p.src.indexOf('readme-screenshot-trap') < 0), JSON.stringify(pl));

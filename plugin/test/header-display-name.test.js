@@ -3,7 +3,7 @@
 // it is, and an empty field shows that name again.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
 const header = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
 

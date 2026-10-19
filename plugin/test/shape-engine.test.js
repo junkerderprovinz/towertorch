@@ -7,7 +7,7 @@
 //   · the old variables or the circle class coming back beside the tokens
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -71,7 +71,7 @@ ok('50% on a badge fails', !radiusOk('.cc-b', '50%'));
 
 console.log('\nThe three tokens, and every shape answers all three');
 {
-  const tokens = decls(read('sheets/CannonadeCommand.Tokens.css'));
+  const tokens = decls(read('sheets/TowerTorch.Tokens.css'));
   const block = (sel) => Object.fromEntries(tokens.filter((d) => d.sel === sel && /^--cc-radius-/.test(d.decl)).map((d) => d.decl.split(/:\s*/)));
   const want = {
     html: { '--cc-radius-card': '20px', '--cc-radius-control': '12px', '--cc-radius-pill': '9999px' },
@@ -79,7 +79,7 @@ console.log('\nThe three tokens, and every shape answers all three');
     'html[data-cc-shape="square"]': { '--cc-radius-card': '0px', '--cc-radius-control': '0px', '--cc-radius-pill': '0px' },
   };
   for (const [sel, vals] of Object.entries(want)) ok(sel + ' sets card, control and pill', JSON.stringify(block(sel)) === JSON.stringify(vals), JSON.stringify(block(sel)));
-  ok('no rule keys on a round shape by name, round is the bare html', !/data-cc-shape="round"\]/.test(read('sheets/CannonadeCommand.Tokens.css')));
+  ok('no rule keys on a round shape by name, round is the bare html', !/data-cc-shape="round"\]/.test(read('sheets/TowerTorch.Tokens.css')));
 }
 
 console.log('\nThe shape names, and the names from before them, in every copy');
@@ -90,7 +90,7 @@ console.log('\nThe shape names, and the names from before them, in every copy');
     'header.js': new Function(grabFn(header, 'shapeName') + '\nreturn shapeName;')(),
     'settings.js': new Function('window', grabFn(settings, 'shapeName') + '\nreturn shapeName;')({}),
   };
-  const inline = /var shape = g\("cc\.badgeshape", "round"\);[^\n]*\n\s*r\.setAttribute\("data-cc-shape", ([^;]+)\);/.exec(read('CannonadeCommand.Header.page'));
+  const inline = /var shape = g\("cc\.badgeshape", "round"\);[^\n]*\n\s*r\.setAttribute\("data-cc-shape", ([^;]+)\);/.exec(read('TowerTorch.Header.page'));
   ok('the Header.page first paint stamps the shape', !!inline);
   if (inline) copies['Header.page'] = new Function('shape', 'return ' + inline[1] + ';');
   const want = { pill: 'round', rounded: 'soft', square: 'square', circle: 'round', round: 'round', soft: 'soft', leaf: 'round', '': 'round' };

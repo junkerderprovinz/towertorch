@@ -11,7 +11,7 @@
 //     inferred from the badge.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
 const SG = process.argv[2] || path.join(DIR, 'settingsgrid.js');
 
 // The storage shim from icon-pipeline.test.js.

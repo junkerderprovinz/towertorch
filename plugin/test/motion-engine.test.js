@@ -8,7 +8,7 @@
 //   · the blanket "still everything" rules also still the toast and refusal stand-ins
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -50,7 +50,7 @@ function rules(css) {
 console.log('\nThe level names, and the digits from before them, in every copy');
 {
   const theme = read('scripts/cc-theme.js'), header = read('scripts/header.js'), settings = read('scripts/settings.js');
-  const page = read('CannonadeCommand.Header.page');
+  const page = read('TowerTorch.Header.page');
   const copies = {
     'cc-theme.js': new Function(grabFn(theme, 'motionLevel') + '\nreturn motionLevel;')(),
     'header.js': new Function(grabFn(header, 'motionLevel') + '\nreturn motionLevel;')(),
@@ -102,7 +102,7 @@ console.log('\nThe settings picker offers the three names');
 
 console.log('\nEvery level answers every dial');
 {
-  const tokens = rules(read('sheets/CannonadeCommand.Tokens.css'));
+  const tokens = rules(read('sheets/TowerTorch.Tokens.css'));
   const dials = (r) => (r ? (r.body.match(/--cc-motion-[a-z-]+(?=\s*:)/g) || []).sort() : []);
   const still = tokens.find((r) => r.sel === 'html' && !r.media && /--cc-motion-/.test(r.body));
   const lively = tokens.find((r) => r.sel === 'html' && /no-preference/.test(r.media) && /--cc-motion-/.test(r.body));
@@ -135,7 +135,7 @@ for (const f of files(DIR, ['.css', '.js', '.page'])) {
 
 console.log('\nThe stills spare the toast and the refusal stand-ins');
 {
-  const header = rules(read('sheets/CannonadeCommand.Header.css'));
+  const header = rules(read('sheets/TowerTorch.Header.css'));
   const blanket = header.filter((r) => /animation(-duration)?\s*:\s*(none|\.001ms)/.test(r.body) && /(\[class\*="cc-"\]|#displaybox \*|html\.cc-header-on \*|\) \*)/.test(r.sel));
   ok('the blanket stills are found', blanket.length >= 3, String(blanket.length));
   const misses = [];

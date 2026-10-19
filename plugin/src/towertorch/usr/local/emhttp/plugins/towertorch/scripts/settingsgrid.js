@@ -1,8 +1,8 @@
 // Restyles the category tiles on the /Settings and /Tools landing pages into square accent
-// badges. Loaded on every page through CannonadeCommand.SettingsGrid.page, it toggles
+// badges. Loaded on every page through TowerTorch.SettingsGrid.page, it toggles
 // html.cc-settingsgrid-on only on those two pages while the "Einstellungen und Werkzeuge" area
 // is on (cc.enable.settings, default on), mirrors the theme vars onto the root and paints each
-// badge in rainbow mode. Sizing and shape live in sheets/CannonadeCommand.SettingsGrid.css.
+// badge in rainbow mode. Sizing and shape live in sheets/TowerTorch.SettingsGrid.css.
 (function () {
   "use strict";
   var mo = null, moPending = false;

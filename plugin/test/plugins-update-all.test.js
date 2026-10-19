@@ -1,5 +1,5 @@
 // Unraid shows "Update All Plugins" in the Plugins tab row only once two plugin updates are
-// pending. CannonadeCommand shows it from one. What can quietly break it:
+// pending. TowerTorch shows it from one. What can quietly break it:
 //   · the button staying hidden with exactly one update pending
 //   · the button showing with nothing pending, or for the disabled Unraid OS row, which Unraid's
 //     own count leaves out
@@ -8,7 +8,7 @@
 //   · the check running with theming off, where the Plugins tab stays Unraid's own
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const js = fs.readFileSync(path.join(DIR, 'scripts/plugins.js'), 'utf8');
 
 let pass = 0, fail = 0;

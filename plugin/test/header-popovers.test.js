@@ -59,7 +59,7 @@ console.log('\nThe account menu');
 console.log('\nA notification card');
 {
   const header = read('scripts/header.js');
-  const css = read('sheets/CannonadeCommand.Header.css');
+  const css = read('sheets/TowerTorch.Header.css');
   ok('its buttons rest hidden, keeping their place', css.includes('[class~="group/item"] :is(a[class*="text-primary"], span[class*="rounded-md"][class*="inline-flex"]) { opacity: 0;'));
   ok('and come in with the pointer or the focus on the card', /\[class~="group\/item"\]:is\(:hover, :focus-within\) :is\(a\[class\*="text-primary"\], span\[class\*="rounded-md"\]\[class\*="inline-flex"\]\) \{ opacity: 1; \}/.test(css));
   ok('a touch screen keeps them', /@media \(hover: none\) \{\s*html\.cc-popups-on \.unapi div\.fixed\.z-50\.bg-background \[class~="group\/item"\] :is\([^)]*\)[^{]*\{ opacity: 1; \}/.test(css));

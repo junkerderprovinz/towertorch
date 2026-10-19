@@ -12,7 +12,7 @@ const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const HALO = /^0 0 0 3px color-mix\(in srgb, var\(--cc-accent, #FCC419\) 45%, transparent\)$/;
 
 // The list the halo rule names, read from Tokens.css.
-const haloRule = parseRules(read('sheets/CannonadeCommand.Tokens.css')).find((r) => /^:is\([^)]*\.cc-btn[^)]*\):focus-visible$/.test(r.selector.replace(/\s+/g, ' ').trim()));
+const haloRule = parseRules(read('sheets/TowerTorch.Tokens.css')).find((r) => /^:is\([^)]*\.cc-btn[^)]*\):focus-visible$/.test(r.selector.replace(/\s+/g, ' ').trim()));
 const LIST = haloRule ? /^:is\(([^)]*)\)/.exec(haloRule.selector.replace(/\s+/g, ' '))[1].split(',').map((s) => s.trim().slice(1)) : [];
 
 console.log('\nThe halo rule');
@@ -23,7 +23,7 @@ for (const c of ['cc-btn', 'cc-b', 'cc-badge', 'cc-actbtn', 'cc-limbtn', 'cc-bul
 ok('it carries !important, as the blanket rules it competes with do', !!haloRule && haloRule.decls.some((d) => d.prop === 'box-shadow' && d.important && HALO.test(d.value)));
 
 console.log('\nThe blanket no-ring rules leave the same list out');
-const BLANKETS = [['styles/docker.css', /^:is\(a, button, input, select, \[tabindex\]\):where\(:not\(/], ['sheets/CannonadeCommand.Shares.css', /^html\.cc-shares-on :is\(a, button/], ['sheets/CannonadeCommand.VmTab.css', /^html\.cc-vms-on #displaybox :is\(a, button/]];
+const BLANKETS = [['styles/docker.css', /^:is\(a, button, input, select, \[tabindex\]\):where\(:not\(/], ['sheets/TowerTorch.Shares.css', /^html\.cc-shares-on :is\(a, button/], ['sheets/TowerTorch.VmTab.css', /^html\.cc-vms-on #displaybox :is\(a, button/]];
 for (const [sheet, re] of BLANKETS) {
   const r = parseRules(read(sheet)).find((x) => re.test(x.selector.replace(/\s+/g, ' ').trim()));
   const sel = r ? r.selector.replace(/\s+/g, ' ') : '';

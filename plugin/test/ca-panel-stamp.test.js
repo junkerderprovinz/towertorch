@@ -11,7 +11,7 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 const header = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
 const stamped = (header.match(/ccAppsStamp\("([^"]+)"\)/g) || []).map((s) => /"([^"]+)"/.exec(s)[1]);
-const tokens = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8');
+const tokens = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8');
 
 console.log('\nEvery #alternateView rule that reads the stamp has one');
 const readers = [];

@@ -1,4 +1,4 @@
-/* CannonadeCommand: the Tools sub-pages, the native Settings sub-pages and the Docker and plugin
+/* TowerTorch: the Tools sub-pages, the native Settings sub-pages and the Docker and plugin
  * install log pages. Injected on every page through the Tools .page hook, but every rule is scoped
  * to html.cc-tools-on, which header.js sets only when
  *   - the path starts with /Tools/ (System Information, System Devices, Diagnostics, ...),
@@ -151,7 +151,7 @@ html.cc-diskpage #displaybox .main-content dl,
 html.cc-diskpage #displaybox .main-content section.section { border: none !important; box-shadow: none !important; }
 
 /* The label and value colours of a form row. Where forms.js lays the form out as a card,
-   CannonadeCommand.Forms.css takes the row over: label at the start, control at the end. */
+   TowerTorch.Forms.css takes the row over: label at the start, control at the end. */
 html.cc-tools-on #displaybox dl > dt { color: var(--cc-text-chip, #cfcfcf); }
 html.cc-tools-on #displaybox dl > dd { color: var(--cc-text-chip, #cfcfcf); }
 html.cc-tools-on #displaybox dl > dd > .cc-tgl,
@@ -551,7 +551,7 @@ html.cc-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="che
 html.cc-tools-on #displaybox blockquote.inline_help[data-cc-help],
 html.cc-tools-on #displaybox .inline-help[data-cc-help] { display: none !important; }
 
-/* the swatch before a colour field, which opens CannonadeCommand's colour picker (CCTheme.colorSwatch) */
+/* the swatch before a colour field, which opens TowerTorch's colour picker (CCTheme.colorSwatch) */
 html.cc-tools-on #displaybox .cc-colpick {
   width: 30px; height: 30px; padding: 3px; margin-right: 8px; flex: 0 0 auto; box-sizing: border-box;
   background: linear-gradient(var(--cc-cp, transparent), var(--cc-cp, transparent)) content-box, var(--cc-tl-surface2, #232323) !important;

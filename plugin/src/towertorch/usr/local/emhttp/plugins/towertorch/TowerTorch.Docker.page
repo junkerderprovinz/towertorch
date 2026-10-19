@@ -7,5 +7,5 @@ Tag="rocket"
    would render as a stray bar; it only loads the styles and the script, which enhance the
    existing container list in place. Data comes from the same-origin PHP proxy. */
 ?>
-<link type="text/css" rel="stylesheet" href="<?autov('/plugins/cannonadecommand/styles/docker.css')?>">
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/docker.js')?>"></script>
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
+<script defer src="<?autov('/plugins/towertorch/scripts/docker.js')?>"></script>

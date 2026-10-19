@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const { DIR } = require('./cascade');
-const css = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.VmTab.css'), 'utf8');
+const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.VmTab.css'), 'utf8');
 const js = fs.readFileSync(path.join(DIR, 'scripts/vms.js'), 'utf8');
 
 let pass = 0, fail = 0;

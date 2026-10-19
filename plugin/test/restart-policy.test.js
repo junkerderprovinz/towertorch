@@ -3,8 +3,8 @@
 // builds, and that every label exists in both languages.
 const fs = require('fs');
 const path = require('path');
-const DOCKER = process.argv[2] || path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local',
-  'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'docker.js');
+const DOCKER = process.argv[2] || path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local',
+  'emhttp', 'plugins', 'towertorch', 'scripts', 'docker.js');
 
 // A trimmed copy of the DOM shim in clone-select.test.js.
 class CL {

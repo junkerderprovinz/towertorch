@@ -4,7 +4,7 @@
 // header.js's ccToast() go through it, and the two old single-node toasts are gone.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -125,7 +125,7 @@ console.log('\nEvery call site goes through it');
   ok('docker.js flash() calls CCTheme.toast', /window\.CCTheme\.toast\(msg, kind\)/.test(flash));
   ok('flash() rewrites a progress note instead of stacking', /flashToast\.update\(msg, kind\)/.test(flash) && /if \(!\/…\$\/\.test\(msg\)\) flashToast = null;/.test(flash));
   ok('docker.js builds no toast node of its own', !/el\("div", "cc-toast"\)/.test(docker));
-  const css = read('styles/docker.css') + read('sheets/CannonadeCommand.Header.css');
+  const css = read('styles/docker.css') + read('sheets/TowerTorch.Header.css');
   ok('the old toast styles are gone', !/#cc-toast\b|\.cc-toast-show/.test(css));
   ok('no toast sets its own font stack', !/\.cc-toast[^{]*\{[^}]*font-family/.test(css) && !/\.cc-toast[^{]*\{[^}]*font:/.test(css));
   ok('a toast has no border line', /\.cc-toast \{[^}]*border: none;/.test(css));

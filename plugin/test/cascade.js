@@ -14,12 +14,12 @@
 // classes and ids known not to be ancestors ('.cc-pop').
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 
 // The Menu="Buttons:N" sheets load in <head> on every page in N order; docker.css
 // follows on the pages that link it, and settings.js adds its own <style> last.
-const HEAD = ['sheets/CannonadeCommand.Tokens.css', 'sheets/CannonadeCommand.Header.css', 'sheets/CannonadeCommand.SettingsGrid.css',
-  'sheets/CannonadeCommand.Tools.css', 'sheets/CannonadeCommand.Shares.css', 'sheets/CannonadeCommand.Forms.css', 'sheets/CannonadeCommand.VmTab.css', 'sheets/CannonadeCommand.Favorites.css'];
+const HEAD = ['sheets/TowerTorch.Tokens.css', 'sheets/TowerTorch.Header.css', 'sheets/TowerTorch.SettingsGrid.css',
+  'sheets/TowerTorch.Tools.css', 'sheets/TowerTorch.Shares.css', 'sheets/TowerTorch.Forms.css', 'sheets/TowerTorch.VmTab.css', 'sheets/TowerTorch.Favorites.css'];
 const PAGES = { every: HEAD, docker: HEAD.concat(['styles/docker.css']), settings: HEAD.concat(['styles/docker.css', 'scripts/settings.js']) };
 
 function settingsStyle() {
@@ -243,7 +243,7 @@ function candidates(page, el, prop) {
 // light, with the white and azure override on top.
 function tokens(light) {
   const out = {};
-  for (const r of parseRules(fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8'))) {
+  for (const r of parseRules(fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8'))) {
     const sel = r.selector.replace(/\s+/g, ' ');
     if (sel === 'html' || (light && sel === 'html.Theme--white, html.Theme--azure')) for (const d of r.decls) if (d.prop.startsWith('--')) out[d.prop] = d.value;
   }

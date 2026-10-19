@@ -1,6 +1,6 @@
-/* CannonadeCommand: the /VMs tab, styled to match the Docker tab.
+/* TowerTorch: the /VMs tab, styled to match the Docker tab.
  *
- * Loaded globally through the Buttons hook (CannonadeCommand.VmTab.page) and gated on html.cc-vms-on,
+ * Loaded globally through the Buttons hook (TowerTorch.VmTab.page) and gated on html.cc-vms-on,
  * which vms.js sets only on /VMs. It copies Docker's badge rules so vms.js can emit the same classes
  * (cc-b, cc-badge, cc-b-k, cc-b-v, cc-b-info) on #kvm_list. styles/docker.css is not loaded here
  * because its unscoped .cc-b rules and Docker-specific selectors would leak onto every page. Native

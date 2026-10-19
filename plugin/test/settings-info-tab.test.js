@@ -4,7 +4,7 @@
 // in the Docker gear menu are gone.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -37,7 +37,7 @@ console.log('\nThe last tab is Info, with three cards in GlimStone order');
   ok('Version, Help, About', order.join(',') === 'Version,Help,About', order.join(','));
   ok('the engine version comes from the state call', /apiRead\("state"\)\.then\(function \(st\) \{/.test(block));
   ok('an unreachable engine says so', /T\("nicht erreichbar", "not reachable"\)/.test(block));
-  for (const url of ['https://buymeacoffee.com/junkerderprovinz', 'https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS', 'https://junkerderprovinz.github.io/junkerderprovinz/', 'href: REPO }', 'mailto:hello@halleluja.design?subject=CannonadeCommand']) {
+  for (const url of ['https://buymeacoffee.com/junkerderprovinz', 'https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS', 'https://junkerderprovinz.github.io/junkerderprovinz/', 'href: REPO }', 'mailto:hello@halleluja.design?subject=TowerTorch']) {
     ok('About and Help reach ' + url, block.includes(url));
   }
   const coffee = block.indexOf('buymeacoffee'), paypal = block.indexOf('paypal.com'), crypto = block.indexOf('github.io/junkerderprovinz');
@@ -60,9 +60,9 @@ console.log('\nEvery version links to its release page');
 {
   ok('GlimStone is 3.5.0', /var GLS_VER = "3\.5\.0";/.test(settings));
   const verLink = new Function('el', grabFn(settings, 'verLink') + '\nreturn verLink;')(el);
-  const ui = verLink('1.2.3', 'https://github.com/junkerderprovinz/cannonadecommand');
+  const ui = verLink('1.2.3', 'https://github.com/junkerderprovinz/towertorch');
   ok('a release number is a link', ui.tag === 'a' && ui.textContent === 'v1.2.3');
-  ok('to its own tag', ui.href === 'https://github.com/junkerderprovinz/cannonadecommand/releases/tag/v1.2.3');
+  ok('to its own tag', ui.href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.2.3');
   ok('a leading v is not doubled', verLink('v0.9.0', 'R').href === 'R/releases/tag/v0.9.0');
   const dev = verLink('dev', 'R');
   ok('a dev build has no link', dev.tag === 'span' && dev.textContent === 'dev');
@@ -108,7 +108,7 @@ console.log('\nThe update check shows its verdict on the button');
   ok('and shakes it with the reason in a toast', down.fails.length === 1 && down.fails[0][0] === down.btn && /HTTP 403/.test(down.fails[0][1]));
   const off = await run(new Error('offline'));
   ok('a network error is a failure too', off.btn.classList.contains('cc-set-chk-bad') && off.fails.length === 1);
-  ok('it asks the latest release of this repository', /var LATEST_API = "https:\/\/api\.github\.com\/repos\/junkerderprovinz\/cannonadecommand\/releases\/latest";/.test(settings));
+  ok('it asks the latest release of this repository', /var LATEST_API = "https:\/\/api\.github\.com\/repos\/junkerderprovinz\/towertorch\/releases\/latest";/.test(settings));
   for (const [cls, tok] of [['ok', 'ok'], ['new', 'warn'], ['bad', 'err']]) {
     ok('the ' + cls + ' verdict takes the ' + tok + ' state colour and its ink', new RegExp('#cc-settings \\.cc-set-check\\.cc-set-chk-' + cls + ' \\{ background: var\\(--cc-' + tok + ', [^)]+\\); color: var\\(--cc-' + tok + '-fg').test(css));
   }

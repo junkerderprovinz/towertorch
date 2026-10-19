@@ -7,7 +7,7 @@
 // because it has to run on the same bare Node as the other WebGUI tests.
 const fs = require('fs');
 const path = require('path');
-const PLG = process.argv[2] || path.join(__dirname, '..', 'cannonadecommand.plg');
+const PLG = process.argv[2] || path.join(__dirname, '..', 'towertorch.plg');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -83,7 +83,7 @@ console.log('\nThe version entity and the newest CHANGES entry agree');
 console.log('\nThe embedded package is the one the version claims');
 {
   const v = /<!ENTITY version\s+"([^"]+)">/.exec(raw)[1];
-  ok('the txz FILE stanza names this version', raw.indexOf('cannonadecommand-' + v + '-x86_64-1.txz') > 0 || raw.indexOf('&txz;') > 0);
+  ok('the txz FILE stanza names this version', raw.indexOf('towertorch-' + v + '-x86_64-1.txz') > 0 || raw.indexOf('&txz;') > 0);
   ok('the embedded blob is present and non-trivial', blobStart >= 0 && blobEnd - blobStart > 100000, String(blobEnd - blobStart));
 }
 

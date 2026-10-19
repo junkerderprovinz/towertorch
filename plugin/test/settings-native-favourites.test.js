@@ -4,7 +4,7 @@
 // hides the tab. A refused write puts the switch and the tab back and says so.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
 const header = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
 

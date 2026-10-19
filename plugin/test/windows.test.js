@@ -1,4 +1,4 @@
-// Every CannonadeCommand window is one kind of window (GlimStone rule 15): a title badge, a
+// Every TowerTorch window is one kind of window (GlimStone rule 15): a title badge, a
 // lighter content card, a close badge in the top right corner, a button row at the bottom with the
 // forward action on the right, and the page darkened and blurred behind it. It is modal:
 // focus moves in, Tab stays inside, Escape and the scrim dismiss it, and focus returns to the
@@ -284,7 +284,7 @@ console.log('\nThe sheet');
   const delHover = top(['cc-win-btn', 'cc-win-del'], 'background', { hover: true }), cancelHover = top(['cc-win-btn'], 'background', { hover: true });
   ok('and hovers like it', delHover && cancelHover && delHover.value === cancelHover.value);
   ok('no rule paints it in the fault colour', !/--cc-err|#ff8389|#da1e28/i.test(del.value + delHover.value));
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   ok('the windows stay dark on a light theme, in the token island', /\n\.cc-pop, \.cc-menu, \.cc-win, \.cc-rowmenu[, ]/.test(tokens));
   const title = top(['cc-win-title'], 'background');
   ok('the title badge is filled with the colour chain', title && /var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent/.test(title.value));
@@ -334,7 +334,7 @@ console.log('\nThe windows that use it');
   ok('its content has the scrolling content box',/el\("div", "cc-win-card"\)/.test(vmEd));
   ok('its button row holds Apply alone, the close badge comes from the modal', vmEd.indexOf('VMDE ? "Schließen"') < 0 && vmEd.indexOf('"cc-win-btn cc-win-go", VMDE ? "Anwenden"') > 0);
   ok('it is modal through the shared helper', /CT\.modal\(win, \{ opener: anchor/.test(vmEd));
-  ok('no typed corner ✕ and no transparent click layer', !/✕/.test(vmEd) && !/cc-vmlim-ov/.test(vms + read('sheets/CannonadeCommand.VmTab.css')));
+  ok('no typed corner ✕ and no transparent click layer', !/✕/.test(vmEd) && !/cc-vmlim-ov/.test(vms + read('sheets/TowerTorch.VmTab.css')));
 
   const create = grabFn(docker, 'ccOrgCreateFolder'), edit = grabFn(docker, 'openFolderEditor'), del = grabFn(docker, 'ccOrgDeleteFolder');
   ok('a new folder is named in a window with a text field', /input: \{/.test(create) && /t\("newFolderTitle"\)/.test(create));

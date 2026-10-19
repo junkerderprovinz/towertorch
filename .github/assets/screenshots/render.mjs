@@ -1,5 +1,5 @@
 // Renders the README screenshots in the style of the house's store pictures: each page of
-// CannonadeCommand twice, the list behind and the tiles in front, in two tilted browser windows on
+// TowerTorch twice, the list behind and the tiles in front, in two tilted browser windows on
 // the dark relief ground with the logo pressed into it, a heading and a line of text beside them.
 // 1920x1080 each, so two windows fit with only a corner of the back one covered.
 //
@@ -24,35 +24,35 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 const SHOTS = [
   {
-    file: "cannonadecommand-1.jpg",
+    file: "towertorch-1.jpg",
     page: "docker",
     path: "/Docker",
     caption: "Your containers, <em>lined up or laid out</em>",
     sub: "The Docker tab as a list or as cards, with live load, start plan and one-click actions",
   },
   {
-    file: "cannonadecommand-2.jpg",
+    file: "towertorch-2.jpg",
     page: "main",
     path: "/Main",
     caption: "Every disk, <em>temperature included</em>",
     sub: "The Main page shows array, pools and boot device as a table or as tiles with fill level and SMART state",
   },
   {
-    file: "cannonadecommand-3.jpg",
+    file: "towertorch-3.jpg",
     page: "shares",
     path: "/Shares",
     caption: "Every share <em>and its free space</em>",
     sub: "User shares as a list or as tiles, with storage, protection, SMB and NFS on badges",
   },
   {
-    file: "cannonadecommand-4.jpg",
+    file: "towertorch-4.jpg",
     page: "plugins",
     path: "/Plugins",
     caption: "Your plugins, <em>finally in uniform</em>",
     sub: "One logo tile and the same badges for every plugin: author, version, status",
   },
   {
-    file: "cannonadecommand-5.jpg",
+    file: "towertorch-5.jpg",
     page: "vms",
     path: "/VMs",
     caption: "Your VMs, <em>one click from booting</em>",
@@ -69,7 +69,7 @@ const WIN_H = VIEW_H + BAR_H;
 const HOST = "nas.local";
 
 async function cached(file, url) {
-  const path = join(tmpdir(), `cannonadecommand-${file}`);
+  const path = join(tmpdir(), `towertorch-${file}`);
   if (!existsSync(path)) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`${file}: fetch ${res.status}`);

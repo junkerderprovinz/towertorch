@@ -1,11 +1,11 @@
 // Every card title on the settings page is a filled section badge sitting on the card's top
-// edge, and stacked cards keep a 40px rhythm. Every section badge in CannonadeCommand has
+// edge, and stacked cards keep a 40px rhythm. Every section badge in TowerTorch has
 // GlimStone's one size, and a window's title is the same badge notched into the window's top edge. The badge follows the
 // colour engine: the accent, or in rainbow mode its position within its own tab. A heading is not
 // a control, so reactive mode never greys it.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -56,29 +56,29 @@ console.log('\nOne 40px rhythm');
 
 console.log('\nOne section badge size');
 {
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   ok('22px high, 12px type, weight 500, 1.2px tracking, 0 12px padding', /--cc-sec-h: 22px;\s+--cc-sec-fs: var\(--cc-text-meta\);\s+--cc-sec-fw: 500;\s+--cc-sec-ls: 1\.2px;\s+--cc-sec-pad: 0 12px;/.test(tokens));
-  ok('the old head tier is gone', !/--cc-head-(fs|pad)/.test(tokens) && !/--cc-head-(fs|pad)/.test(read('sheets/CannonadeCommand.VmTab.css')));
+  ok('the old head tier is gone', !/--cc-head-(fs|pad)/.test(tokens) && !/--cc-head-(fs|pad)/.test(read('sheets/TowerTorch.VmTab.css')));
   const h = body(css, '.cc-set-h');
   ok('a card title reads the section badge tokens', /--cc-sec-h/.test(decl(h, 'min-height') || '') && decl(h, 'font-size') === 'var(--cc-sec-fs)' && /--cc-sec-fw/.test(decl(h, 'font-weight') || '') && /--cc-sec-ls/.test(decl(h, 'letter-spacing') || '') && /--cc-sec-pad/.test(decl(h, 'padding') || ''), h);
   const heads = {
-    'the Apps page sections': ['sheets/CannonadeCommand.Tokens.css', 'html.cc-popups-on .ca_homeTemplatesHeader .cc-sechead-badge'],
-    'the VM sections': ['sheets/CannonadeCommand.VmTab.css', 'html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head'],
+    'the Apps page sections': ['sheets/TowerTorch.Tokens.css', 'html.cc-popups-on .ca_homeTemplatesHeader .cc-sechead-badge'],
+    'the VM sections': ['sheets/TowerTorch.VmTab.css', 'html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head'],
     'the Plugins sections': ['styles/docker.css', 'html.cc-on-plugins.cc-sections-plugins #displaybox .cc-card-head'],
-    'the category titles on /Settings and /Tools': ['sheets/CannonadeCommand.SettingsGrid.css', 'html.cc-settingsgrid-heads-on #displaybox div.title > span.left'],
-    'the page titles on Unraid\'s own pages': ['sheets/CannonadeCommand.Tools.css', 'html.cc-tools-on #displaybox div.title'],
+    'the category titles on /Settings and /Tools': ['sheets/TowerTorch.SettingsGrid.css', 'html.cc-settingsgrid-heads-on #displaybox div.title > span.left'],
+    'the page titles on Unraid\'s own pages': ['sheets/TowerTorch.Tools.css', 'html.cc-tools-on #displaybox div.title'],
   };
   for (const [what, [file, sel]] of Object.entries(heads)) {
     const b = body(rules(read(file)), sel);
     ok(what + ' take the same size', /var\(--cc-sec-fs\)/.test(decl(b, 'font-size') || '') && /--cc-sec-h/.test(decl(b, 'min-height') || ''), b.slice(0, 120));
   }
-  const main = rules(read('sheets/CannonadeCommand.Shares.css')).find((r) => /\.cc-on-main\.cc-sections-main\) #displaybox \.cc-card-head$/.test(r.sel));
+  const main = rules(read('sheets/TowerTorch.Shares.css')).find((r) => /\.cc-on-main\.cc-sections-main\) #displaybox \.cc-card-head$/.test(r.sel));
   ok('and so do the sections on Main', !!main && /var\(--cc-sec-fs\)/.test(decl(main.body, 'font-size') || ''));
   // Unraid's section head is span.left with a glyph and the title, spaced by its own gap-1, which
   // is 2.5px on Unraid's 10px root. Every section badge sets the 6px a card title has instead.
   const gaps = {
-    'Main and Shares': ['sheets/CannonadeCommand.Shares.css', /cc-on-main\.cc-sections-main\) #displaybox \.cc-card-head > span\.left$/, /cc-on-main\.cc-sections-main\) #displaybox \.cc-card-head i$/],
-    'the VM sections': ['sheets/CannonadeCommand.VmTab.css', /cc-sections-vms #displaybox \.cc-card-head > span\.left$/, /cc-sections-vms #displaybox \.cc-card-head i$/],
+    'Main and Shares': ['sheets/TowerTorch.Shares.css', /cc-on-main\.cc-sections-main\) #displaybox \.cc-card-head > span\.left$/, /cc-on-main\.cc-sections-main\) #displaybox \.cc-card-head i$/],
+    'the VM sections': ['sheets/TowerTorch.VmTab.css', /cc-sections-vms #displaybox \.cc-card-head > span\.left$/, /cc-sections-vms #displaybox \.cc-card-head i$/],
     'the Plugins sections': ['styles/docker.css', /cc-sections-plugins #displaybox \.cc-card-head > span\.left$/, /cc-sections-plugins #displaybox \.cc-card-head i$/],
   };
   for (const [what, [file, spanSel, iconSel]] of Object.entries(gaps)) {
@@ -91,7 +91,7 @@ console.log('\nOne section badge size');
 
 console.log('\nA window title is a notch on the window\'s top edge');
 {
-  const tk = rules(read('sheets/CannonadeCommand.Tokens.css'));
+  const tk = rules(read('sheets/TowerTorch.Tokens.css'));
   const t = body(tk, '.cc-win-title');
   ok('it is placed on the top edge, centred on it by its own height', decl(t, 'position') === 'absolute' && decl(t, 'top') === '0' && decl(t, 'transform') === 'translateY(-50%)', t);
   ok('on the content\'s left edge, 24px in', decl(t, 'left') === '24px');

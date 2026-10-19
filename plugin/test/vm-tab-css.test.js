@@ -1,4 +1,4 @@
-// Pins two rules of CannonadeCommand.VmTab.css. Most VM rows render their icon as
+// Pins two rules of TowerTorch.VmTab.css. Most VM rows render their icon as
 // a font glyph rather than an <img>, so a font-size that is not tied to
 // --cc-logo-img resizes only the invisible box and leaves Kachelgröße looking
 // broken on this tab alone.
@@ -7,8 +7,8 @@
 // from settings-chrome.test.js are reused as they are.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
-const CSS = process.argv[2] || path.join(DIR, 'sheets', 'CannonadeCommand.VmTab.css');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
+const CSS = process.argv[2] || path.join(DIR, 'sheets', 'TowerTorch.VmTab.css');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };

@@ -1,4 +1,4 @@
-// CannonadeCommand's own windows, .cc-pop, .cc-win and .cc-menu, stay dark on a white or azure
+// TowerTorch's own windows, .cc-pop, .cc-win and .cc-menu, stay dark on a white or azure
 // page, so the tokens inside them must read as on a dark theme. A custom property mixed
 // on <html> is inherited as the finished colour, so re-pinning --cc-text in the window
 // does not reach --cc-hover-wash: every token that derives from a flipped one has to be
@@ -15,7 +15,7 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 // Header.css declares a few dark surfaces on :root that the light override also flips.
 const rootDark = {};
-for (const r of parseRules(fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Header.css'), 'utf8'))) {
+for (const r of parseRules(fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8'))) {
   if (r.selector.trim() === ':root') for (const d of r.decls) if (d.prop.startsWith('--')) rootDark[d.prop] = d.value;
 }
 const dark = Object.assign({}, rootDark, tokens(false));
@@ -25,7 +25,7 @@ const darkHtml = computed(dark), lightHtml = computed(light);
 
 const windowDecls = {};
 let islandSel = '';
-for (const r of parseRules(fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8'))) {
+for (const r of parseRules(fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8'))) {
   if (r.selector.replace(/\s+/g, ' ').trim().startsWith('.cc-pop, .cc-menu, .cc-win, .cc-rowmenu')) { islandSel = r.selector; for (const d of r.decls) if (d.prop.startsWith('--')) windowDecls[d.prop] = d.value; }
 }
 function inWindow(htmlComputed) {
@@ -132,7 +132,7 @@ console.log('\nThe field in a question window, such as "Neuer Ordner"');
 {
   const lum = (h) => { const n = parseInt(h.slice(1), 16); const l = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * l(n >> 16 & 255) + 0.7152 * l(n >> 8 & 255) + 0.0722 * l(n & 255); };
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
-  const rule = parseRules(fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8')).find((x) => /\.cc-win \.cc-win-in::placeholder/.test(x.selector));
+  const rule = parseRules(fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8')).find((x) => /\.cc-win \.cc-win-in::placeholder/.test(x.selector));
   const decl = rule && rule.decls.find((d) => d.prop === 'color');
   ok('its placeholder takes the muted ink rather than Unraid\'s link colour', decl && decl.important && /--cc-text-hint/.test(decl.value), decl && decl.value);
   for (const [theme, scope] of [['dark', darkWin], ['white', lightWin]]) {

@@ -1,5 +1,5 @@
 // Package store persists the orchestration plan and the automation config as JSON
-// on the Unraid flash (/boot/config/plugins/cannonadecommand), so they survive
+// on the Unraid flash (/boot/config/plugins/towertorch), so they survive
 // reboots.
 package store
 
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // Store reads and writes the plan and the config, which live next to each other.

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // Docker is the part of the Docker API the monitor uses.

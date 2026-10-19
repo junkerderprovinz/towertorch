@@ -5,7 +5,7 @@
 // Close ends it.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
 
 let pass = 0, fail = 0;
@@ -59,18 +59,18 @@ console.log('\nThe Version card offers the notes before the update check');
   const block = settings.slice(settings.indexOf('// The Info tab in GlimStone'), settings.indexOf('var cHelp ='));
   ok('a "Versionshinweise" button opens the window', /actionBtn\(T\("Versionshinweise", "Release notes"\), "cc-btn cc-set-xbtn cc-set-notes", function \(\) \{ openReleaseNotes\(notes\); \}\)/.test(block));
   ok('it stands before "Nach Updates suchen", which stays last', /crow\.appendChild\(notes\); crow\.appendChild\(chk\); cVer\.appendChild\(crow\);/.test(block));
-  ok('no "New" button, since CannonadeCommand marks no changes', !/Neu ·|New ·/.test(settings));
+  ok('no "New" button, since TowerTorch marks no changes', !/Neu ·|New ·/.test(settings));
 }
 
 console.log('\nWhich release the window reads');
 {
   const { notesSource } = load('1.0.0');
   const rel = notesSource('1.0.0');
-  ok('a release reads its own tag', rel.api === 'https://api.github.com/repos/junkerderprovinz/cannonadecommand/releases/tags/v1.0.0' && rel.ver === '1.0.0', JSON.stringify(rel));
-  ok('and links to its own release page', rel.page === 'https://github.com/junkerderprovinz/cannonadecommand/releases/tag/v1.0.0');
+  ok('a release reads its own tag', rel.api === 'https://api.github.com/repos/junkerderprovinz/towertorch/releases/tags/v1.0.0' && rel.ver === '1.0.0', JSON.stringify(rel));
+  ok('and links to its own release page', rel.page === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0');
   ok('a release candidate reads its own tag', /\/tags\/v1\.1\.0-rc1$/.test(notesSource('v1.1.0-rc1').api));
   const dev = notesSource('dev');
-  ok('a dev build reads the latest release', dev.api === 'https://api.github.com/repos/junkerderprovinz/cannonadecommand/releases/latest' && dev.ver === '');
+  ok('a dev build reads the latest release', dev.api === 'https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest' && dev.ver === '');
 }
 
 console.log('\nA release body becomes elements, never markup');
@@ -78,7 +78,7 @@ console.log('\nA release body becomes elements, never markup');
   const { dom } = load('1.0.0');
   const card = new N('div');
   dom([
-    'CannonadeCommand moves on, with **bold words** and `code`.',
+    'TowerTorch moves on, with **bold words** and `code`.',
     '',
     '## ✨ Added',
     '- **Info tab.** The last tab.',
@@ -128,7 +128,7 @@ console.log('\nThe window');
   ok('titled after the running version', w.byClass('cc-win-title')[0].textContent === 'Neu in 1.0.0');
   ok('it says it is loading until the answer lands', /Lade Versionshinweise/.test(w.byClass('cc-notes')[0].textContent));
   const foot = w.byClass('cc-win-act')[0].childNodes;
-  ok('the release page link is the only action in the foot', foot[0].tagName === 'A' && foot[0].cls.has('cc-win-link') && foot[0].href === 'https://github.com/junkerderprovinz/cannonadecommand/releases/tag/v1.0.0' && foot[0].rel === 'noopener noreferrer');
+  ok('the release page link is the only action in the foot', foot[0].tagName === 'A' && foot[0].cls.has('cc-win-link') && foot[0].href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0' && foot[0].rel === 'noopener noreferrer');
   ok('the foot holds no Close, the modal puts its close badge in the corner', foot.length === 1 && !foot.some((n) => /Schließen/.test(n.textContent)));
   ok('the window is modal, opened from the button, with the notes focused', modalOpts.opener === opener && active === w.byClass('cc-notes')[0]);
   ok('the notes take focus from the keyboard, so long notes scroll without a mouse', w.byClass('cc-notes')[0].getAttribute('tabindex') === '0');
@@ -148,7 +148,7 @@ console.log('\nThe window');
   const w3 = body.byClass('cc-win-notes')[0];
   ok('a dev build opens on a neutral title', w3.byClass('cc-win-title')[0].textContent === 'Versionshinweise');
   await tick(); await tick();
-  ok('and takes the title and the link from the latest release', w3.byClass('cc-win-title')[0].textContent === 'Neu in 1.0.0' && w3.byClass('cc-win-link')[0].href === 'https://github.com/junkerderprovinz/cannonadecommand/releases/tag/v1.0.0');
+  ok('and takes the title and the link from the latest release', w3.byClass('cc-win-title')[0].textContent === 'Neu in 1.0.0' && w3.byClass('cc-win-link')[0].href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0');
   w3.remove();
 
   const down = load('1.0.0', () => Promise.reject(new Error('offline')), theme);

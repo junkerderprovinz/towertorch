@@ -1,4 +1,4 @@
-// The processor tile's core grid on the Dashboard (dashboard.js, CannonadeCommand.Dashboard.css).
+// The processor tile's core grid on the Dashboard (dashboard.js, TowerTorch.Dashboard.css).
 // What can quietly break it:
 //   · grouping read from one CPU model instead of the rows Unraid prints, so another CPU loses cores
 //   · a thread cell copied instead of moved, so Unraid's updates land in a hidden row
@@ -6,9 +6,9 @@
 //   · switching the area off leaving the rows rebuilt
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const js = fs.readFileSync(path.join(DIR, 'scripts', 'dashboard.js'), 'utf8');
-const css = fs.readFileSync(path.join(DIR, 'sheets', 'CannonadeCommand.Dashboard.css'), 'utf8');
+const css = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Dashboard.css'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };

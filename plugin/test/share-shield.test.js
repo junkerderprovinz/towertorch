@@ -6,7 +6,7 @@
 //   · the colours following the accent or rainbow instead of the state
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -27,7 +27,7 @@ function grabObj(src, start) {
   throw new Error('unbalanced: ' + start);
 }
 
-const theme = read('scripts/cc-theme.js'), tiles = read('scripts/sharetiles.js'), shares = read('scripts/shares.js'), css = read('sheets/CannonadeCommand.Shares.css');
+const theme = read('scripts/cc-theme.js'), tiles = read('scripts/sharetiles.js'), shares = read('scripts/shares.js'), css = read('sheets/TowerTorch.Shares.css');
 const gs = theme.indexOf('var GLYPHS = {'), ge = theme.indexOf('\n  };', gs);
 const GLYPHS = new Function('return ' + theme.slice(gs + 'var GLYPHS = '.length, ge + 4) + ';')();
 const glyph = new Function('GLYPHS', grabFn(theme, 'glyph') + '\nreturn glyph;')(GLYPHS);

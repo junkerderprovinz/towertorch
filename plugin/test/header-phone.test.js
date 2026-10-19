@@ -12,7 +12,7 @@ const { DIR, PAGES, candidates, cmp } = require('./cascade');
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
-const css = read('sheets/CannonadeCommand.Header.css');
+const css = read('sheets/TowerTorch.Header.css');
 const header = read('scripts/header.js');
 const body = (name) => { const i = header.indexOf('function ' + name + '('); return i < 0 ? '' : header.slice(i, header.indexOf('\n  }\n', i)); };
 // The sheets as a phone reads them, less the rules for 768px and up, and as a desktop reads them,
@@ -192,7 +192,7 @@ console.log('\nThe user list');
 
 console.log('\nA settings tile without its badge');
 {
-  const sg = read('sheets/CannonadeCommand.SettingsGrid.css');
+  const sg = read('sheets/TowerTorch.SettingsGrid.css');
   const val = (e, prop) => { const c = candidates('every', Object.assign({ attrs: {}, states: {}, html: ['cc-popups-on', 'cc-settingsgrid-heads-on', 'cc-settingsgrid-tint'] }, e), prop); return c.length ? c[c.length - 1].value : null; };
   const tile = { tag: 'a', classes: [], inside: ['#displaybox', '.Panel'] };
   ok('its name is neutral ink, not a blue link', val(tile, 'color') === 'var(--cc-text-chip, #cfcfcf)' && val(tile, 'text-decoration') === 'none');

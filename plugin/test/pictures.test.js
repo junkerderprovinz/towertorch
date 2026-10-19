@@ -1,4 +1,4 @@
-// The shared pictures (CannonadeCommand.Pictures.page, .css, scripts/pictures.js), GlimStone's
+// The shared pictures (TowerTorch.Pictures.page, .css, scripts/pictures.js), GlimStone's
 // "Illustrations". What can quietly break them:
 //   · a level that leaves a dial out, which then inherits the lively number
 //   · an animation outside the no-preference gate, which keeps moving under reduced motion
@@ -9,11 +9,11 @@
 //   · a script that loads after the areas, which then draw without it
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const js = read('scripts/pictures.js');
-const css = read('sheets/CannonadeCommand.Pictures.css');
-const page = read('CannonadeCommand.Pictures.page');
+const css = read('sheets/TowerTorch.Pictures.css');
+const page = read('TowerTorch.Pictures.page');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };

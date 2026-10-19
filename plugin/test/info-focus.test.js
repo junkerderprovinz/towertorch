@@ -1,9 +1,9 @@
-// The (i) glyph shows keyboard focus with CannonadeCommand's 3px accent halo. It has no fill
+// The (i) glyph shows keyboard focus with TowerTorch's 3px accent halo. It has no fill
 // of its own, so an opacity step alone reads exactly like hover (GlimStone asks for visible
 // focus here; CC answers with its halo, since it draws no rings or borders anywhere).
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -11,7 +11,7 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 const clean = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
 console.log('\nThe halo');
-const tokens = clean(read('sheets/CannonadeCommand.Tokens.css'));
+const tokens = clean(read('sheets/TowerTorch.Tokens.css'));
 const body = (/(^|\})\s*\.cc-info:focus-visible \{([^}]*)\}/.exec(tokens) || [])[2] || '';
 ok('Tokens.css, loaded on every page, gives .cc-info a focus-visible rule', body.length > 0);
 ok('it draws the 3px accent halo', /box-shadow: 0 0 0 3px color-mix\(in srgb, var\(--cc-accent, #FCC419\) 45%, transparent\) !important;/.test(body));

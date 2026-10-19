@@ -1,4 +1,4 @@
-// The disk tiles on /Main (CannonadeCommand.Disks.page, .css, disks.js, server/disks.php).
+// The disk tiles on /Main (TowerTorch.Disks.page, .css, disks.js, server/disks.php).
 // What can quietly break it:
 //   · a rule that is not gated on html.cc-dk-on restyles /Main with the Start area off
 //   · a reader that only knows the plain nchan rows and loses a disk once shares.js has badged them
@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execFileSync } = require('child_process');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; }
 
@@ -19,8 +19,8 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
 const js = read('scripts/disks.js');
-const css = read('sheets/CannonadeCommand.Disks.css');
-const page = read('CannonadeCommand.Disks.page');
+const css = read('sheets/TowerTorch.Disks.css');
+const page = read('TowerTorch.Disks.page');
 
 function grabFn(src, name) {
   const i = src.indexOf('function ' + name + '(');
@@ -113,7 +113,7 @@ console.log('\nThe motion stays inside the gate and stops at "off"');
   ok('there are animations', anims.length >= 6, anims.length);
   ok('each one names the quiet level and none the lively one', anims.every((s) => /:not\(\[data-cc-motion="off"\]\)/.test(s)) && !/data-cc-motion="(wild|subtle)"\]/.test(css));
   ok('they all sit in the no-preference block', anims.every((s) => media.includes(s)));
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   for (const d of ['spin', 'seek', 'swing', 'blink', 'flow', 'rise', 'stagger']) ok('the platter, arm, LED, data flow and entrance read --cc-motion-disk-' + d, (css.includes('var(--cc-motion-disk-' + d) || js.includes('getPropertyValue("--cc-motion-disk-' + d + '")')) && (tokens.match(new RegExp('--cc-motion-disk-' + d + ':', 'g')) || []).length === 4);
   ok('the entrance ends at transform: none', /@keyframes cc-dk-in \{[^}]*\}[^}]*to \{ transform: none;/.test(css));
   ok('no CSS animation turns the platter, so nothing can stop it dead', !/cc-dk-spin/.test(css) && !/\.cc-dk-plat \{[^}]*animation/.test(css));

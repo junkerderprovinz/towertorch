@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // apiVersion is pinned because Engine 29 rejects versions older than v1.44.

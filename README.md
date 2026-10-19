@@ -1,15 +1,15 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/junkerderprovinz/cannonadecommand/main/.github/assets/cannonadecommand-banner-dark.png">
-    <img src="https://raw.githubusercontent.com/junkerderprovinz/cannonadecommand/main/.github/assets/cannonadecommand-banner.png" alt="CannonadeCommand" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/towertorch-banner-dark.png">
+    <img src="https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/.github/assets/towertorch-banner.png" alt="TowerTorch" width="100%">
   </picture>
 </p>
 
 <p align="center">
-  <a href="https://github.com/junkerderprovinz/cannonadecommand/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/cannonadecommand/build.yml?branch=main&label=Build&style=for-the-badge&logo=githubactions&logoColor=white" alt="Build" height="36"></a>&nbsp;
-  <a href="https://github.com/junkerderprovinz/cannonadecommand/actions/workflows/lint.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/cannonadecommand/lint.yml?branch=main&label=Lint&style=for-the-badge&logo=githubactions&logoColor=white" alt="Lint" height="36"></a>&nbsp;
-  <a href="https://github.com/junkerderprovinz/cannonadecommand/releases/latest"><img src="https://img.shields.io/github/v/release/junkerderprovinz/cannonadecommand?style=for-the-badge&logo=github&logoColor=white&label=Release&color=1d99f3" alt="Release" height="36"></a>&nbsp;
-  <a href="https://github.com/junkerderprovinz/cannonadecommand/releases"><img src="https://img.shields.io/github/downloads/junkerderprovinz/cannonadecommand/total?style=for-the-badge&logo=github&logoColor=white&label=Downloads&color=1d99f3" alt="Downloads" height="36"></a>&nbsp;
+  <a href="https://github.com/junkerderprovinz/towertorch/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/towertorch/build.yml?branch=main&label=Build&style=for-the-badge&logo=githubactions&logoColor=white" alt="Build" height="36"></a>&nbsp;
+  <a href="https://github.com/junkerderprovinz/towertorch/actions/workflows/lint.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/towertorch/lint.yml?branch=main&label=Lint&style=for-the-badge&logo=githubactions&logoColor=white" alt="Lint" height="36"></a>&nbsp;
+  <a href="https://github.com/junkerderprovinz/towertorch/releases/latest"><img src="https://img.shields.io/github/v/release/junkerderprovinz/towertorch?style=for-the-badge&logo=github&logoColor=white&label=Release&color=1d99f3" alt="Release" height="36"></a>&nbsp;
+  <a href="https://github.com/junkerderprovinz/towertorch/releases"><img src="https://img.shields.io/github/downloads/junkerderprovinz/towertorch/total?style=for-the-badge&logo=github&logoColor=white&label=Downloads&color=1d99f3" alt="Downloads" height="36"></a>&nbsp;
   <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go" height="36"></a>&nbsp;
   <a href="https://unraid.net"><img src="https://img.shields.io/badge/Unraid-Plugin-f15a2c?style=for-the-badge&logo=unraid&logoColor=white" alt="Unraid Plugin" height="36"></a>&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=for-the-badge&logo=gnu&logoColor=white" alt="License: AGPL-3.0" height="36"></a>
@@ -18,7 +18,7 @@
 <br>
 
 <p align="center">
-CannonadeCommand upgrades Unraid's Docker tab into a full container command post:
+TowerTorch upgrades Unraid's Docker tab into a full container command post:
 dependency-aware, health-gated start orchestration, live CPU/RAM/bandwidth limits
 with built-in proof diagnostics, one-click actions, and clean, themeable badges,
 all injected right into the native page. A small Go engine does the work; nothing
@@ -28,7 +28,7 @@ leaves your server.
 <br>
 
 <p align="center">
-  <a href="https://github.com/junkerderprovinz/cannonadecommand/issues/new/choose"><img src=".github/assets/in-development.png" alt="In development, testers welcome: report a bug" width="100%"></a>
+  <a href="https://github.com/junkerderprovinz/towertorch/issues/new/choose"><img src=".github/assets/in-development.png" alt="In development, testers welcome: report a bug" width="100%"></a>
 </p>
 
 <br>
@@ -73,7 +73,7 @@ If it has earned a place on your server or computer, toss a coin to your knight:
 
 ## 1. What is this?
 
-CannonadeCommand gives Unraid's native **Docker, Plugins and VM tabs** both muscle
+TowerTorch gives Unraid's native **Docker, Plugins and VM tabs** both muscle
 and a makeover, without replacing a single page. Everything is enhanced in place.
 
 On the **Docker tab** it replaces start-order guesswork with a **start plan**:
@@ -85,12 +85,12 @@ The **Plugins tab** gets the same styling (uniform logos and badges for author,
 version, status and changelog), and the **VM tab** picks up matching icon theming.
 
 Accent or rainbow colours, a configurable badge shape and a floating action bar tie
-it all together, and CannonadeCommand can extend the same theme to Unraid's **main
+it all together, and TowerTorch can extend the same theme to Unraid's **main
 menu bar** (opt-in) and turn the **Settings page** category icons into large square
 badges. A **Bereiche** (Areas) tab in the settings lets you turn each area (menu bar,
 Docker, Plugins, VMs, Settings) on or off independently, each with its own style tab.
 
-**Firepower and finish for your whole Unraid dashboard. Fire when ready.**
+**Your server's UI on fire. Your disks stay cool.**
 
 <br>
 
@@ -99,35 +99,35 @@ Docker, Plugins, VMs, Settings) on or off independently, each with its own style
 Every picture uses a different accent colour. The server and its apps, shares and addresses are made up.
 
 <p align="center">
-  <img src=".github/assets/screenshots/cannonadecommand-1.jpg" alt="The Docker tab with CannonadeCommand in blue, as a list in front and as cards behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-1.jpg" alt="The Docker tab with TowerTorch in blue, as a list in front and as cards behind" width="100%">
   <br><em>The Docker tab, as a list and as cards.</em>
 </p>
 
 <br>
 
 <p align="center">
-  <img src=".github/assets/screenshots/cannonadecommand-2.jpg" alt="The Main page in orange, the disks as a table in front and as tiles behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-2.jpg" alt="The Main page in orange, the disks as a table in front and as tiles behind" width="100%">
   <br><em>The Main page with every disk as a table row or as a tile.</em>
 </p>
 
 <br>
 
 <p align="center">
-  <img src=".github/assets/screenshots/cannonadecommand-3.jpg" alt="The Shares page in green, the user shares as a list in front and as tiles behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-3.jpg" alt="The Shares page in green, the user shares as a list in front and as tiles behind" width="100%">
   <br><em>User shares and their free space, as a list and as tiles.</em>
 </p>
 
 <br>
 
 <p align="center">
-  <img src=".github/assets/screenshots/cannonadecommand-4.jpg" alt="The Plugins page in violet, the installed plugins as a list in front and as tiles behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-4.jpg" alt="The Plugins page in violet, the installed plugins as a list in front and as tiles behind" width="100%">
   <br><em>Installed plugins, each with the same logo tile and badges.</em>
 </p>
 
 <br>
 
 <p align="center">
-  <img src=".github/assets/screenshots/cannonadecommand-5.jpg" alt="The VMs page in pink, the virtual machines as a list in front and as tiles behind" width="100%">
+  <img src=".github/assets/screenshots/towertorch-5.jpg" alt="The VMs page in pink, the virtual machines as a list in front and as tiles behind" width="100%">
   <br><em>Virtual machines as a list and as tiles.</em>
 </p>
 
@@ -151,7 +151,7 @@ Every picture uses a different accent colour. The server and its apps, shares an
 - Idle auto-stop (ContainerNursery-style): stop a container after it stays idle
   (low CPU **and** low network) for a set number of minutes. A busy container is
   never stopped, and a host/container-network container (whose per-container idle
-  can't be measured) is skipped. CannonadeCommand does not wake it back up: a schedule, the
+  can't be measured) is skipped. TowerTorch does not wake it back up: a schedule, the
   plan, or Unraid's autostart does.
 
 **Resource limits**
@@ -217,7 +217,7 @@ Every picture uses a different accent colour. The server and its apps, shares an
   tab is styled to match the Docker tab exactly (logo badge, state/CPU/RAM/IP badges,
   autostart switch); the Favorites tab reuses the category-icon badges.
 - Tab view: on every tab with sub-tabs (Shares detail, Start/Main, Plugins, VMs)
-  choose per tab whether the sub-tabs render as stacked CannonadeCommand sections or as native
+  choose per tab whether the sub-tabs render as stacked TowerTorch sections or as native
   Unraid sub-tabs (native by default).
 - VM tab: full Docker-tab parity, logo badge, state/CPU/RAM/IP badges, an actions
   column, per-VM CPU/RAM/bandwidth limit gears (a graphical P/E-aware CPU core-picker,
@@ -249,7 +249,7 @@ Every picture uses a different accent colour. The server and its apps, shares an
 Unraid → **Plugins → Install Plugin** → paste:
 
 ```
-https://raw.githubusercontent.com/junkerderprovinz/cannonadecommand/main/plugin/cannonadecommand.plg
+https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin/towertorch.plg
 ```
 
 The plugin installs the UI pages and starts the engine (a single Go daemon
@@ -277,7 +277,7 @@ restarted automatically.
 
 ## 6. The settings page
 
-**Settings → Utilities → CannonadeCommand** holds the appearance settings (accent
+**Settings → Utilities → TowerTorch** holds the appearance settings (accent
 colour with an embedded picker, rainbow palette, shape, motion, density, column
 defaults), one tab per area, the list of containers pinned to their original logo,
 the bandwidth interface (blank = auto-detected from the container's default route)
@@ -291,7 +291,7 @@ every browser and origin sees the same configuration, and only what changed is s
 
 | Piece | What it does |
 | --- | --- |
-| `cannonadecommand` daemon (Go) | Talks to the Docker socket (list/start/stop/update only), computes start stages, runs probes, applies limits, persists plan + config on the flash |
+| `towertorch` daemon (Go) | Talks to the Docker socket (list/start/stop/update only), computes start stages, runs probes, applies limits, persists plan + config on the flash |
 | Unix socket + PHP proxy | The UI talks to `/api/*` through a same-origin proxy with a strict path allowlist; writes carry Unraid's csrf token |
 | Page scripts | Enhance the native Docker tab in place (badges, actions, editors); a settings page under Utilities |
 
@@ -322,7 +322,7 @@ netfilter state from the container's netns, and the monitor's last apply attempt
 
 **Plugins → Remove**. The daemon is stopped by PID and all program files are
 removed. The start plan and config on the flash are kept, so a reinstall picks up
-where you left off; delete `/boot/config/plugins/cannonadecommand/` if you want
+where you left off; delete `/boot/config/plugins/towertorch/` if you want
 a truly clean slate.
 
 <br>
@@ -346,9 +346,9 @@ measurement through the rule.
 
 **Copyright (C) 2026 Junker der Provinz.**
 
-CannonadeCommand is free software under the **GNU Affero General Public License v3.0** (AGPL-3.0); see [LICENSE](LICENSE). You may run, study, share and modify it. If you distribute it, or run a modified version as a network service, you must release your source under the same AGPL-3.0 terms and keep the existing copyright and attribution notices intact.
+TowerTorch is free software under the **GNU Affero General Public License v3.0** (AGPL-3.0); see [LICENSE](LICENSE). You may run, study, share and modify it. If you distribute it, or run a modified version as a network service, you must release your source under the same AGPL-3.0 terms and keep the existing copyright and attribution notices intact.
 
-**Name and branding are not licensed.** The AGPL covers the source code only. "CannonadeCommand", its logo and its branding remain reserved: a fork or derivative must use its own distinct name and branding, and may not present itself as CannonadeCommand. This keeps it unambiguous which project is the original.
+**Name and branding are not licensed.** The AGPL covers the source code only. "TowerTorch", its logo and its branding remain reserved: a fork or derivative must use its own distinct name and branding, and may not present itself as TowerTorch. This keeps it unambiguous which project is the original.
 
 <br>
 
@@ -362,7 +362,7 @@ You do not have to take my word for it. The code is open and every release note 
 
 ## 13. Support this project
 
-Questions, bugs, ideas or feature requests? Please [open a GitHub issue](https://github.com/junkerderprovinz/cannonadecommand/issues).
+Questions, bugs, ideas or feature requests? Please [open a GitHub issue](https://github.com/junkerderprovinz/towertorch/issues).
 
 A one-knight job: I build it, keep it running, work through the issues and add what people ask for, until nothing is missing. It is free, with no accounts, no telemetry, no ads and no paid tier. No asterisk anywhere. Nothing readable ever leaves your own walls. Forged on evenings and weekends, with heart and stubbornness.
 

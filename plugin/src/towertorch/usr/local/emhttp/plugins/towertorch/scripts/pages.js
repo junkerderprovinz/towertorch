@@ -1,8 +1,8 @@
-/* CannonadeCommand: single pages the area enhancers do not reach.
+/* TowerTorch: single pages the area enhancers do not reach.
  *
- * Loaded on every page through CannonadeCommand.Pages.page. It names the current page in
+ * Loaded on every page through TowerTorch.Pages.page. It names the current page in
  * html[data-cc-page] while master theming and the area the page belongs to are on, which is all
- * CannonadeCommand.Pages.css keys on, and does the few things CSS cannot: it translates two native
+ * TowerTorch.Pages.css keys on, and does the few things CSS cannot: it translates two native
  * button captions, moves a hint printed under a field into an (i) bubble, gives the disk usage
  * chart a translated title and groups the VM templates into cards. A caption only changes on a
  * button whose value no form sends.

@@ -2,7 +2,7 @@
 // fields a sentence of ours, a template variable the description its template gives it.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const docker = fs.readFileSync(path.join(DIR, 'scripts/docker.js'), 'utf8');
 const css = fs.readFileSync(path.join(DIR, 'styles/docker.css'), 'utf8');
 

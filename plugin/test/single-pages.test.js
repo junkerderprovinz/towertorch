@@ -1,4 +1,4 @@
-// The single pages the area sheets do not reach (CannonadeCommand.Pages.page, .css, pages.js).
+// The single pages the area sheets do not reach (TowerTorch.Pages.page, .css, pages.js).
 // What can quietly break it:
 //   · a rule that does not key on html[data-cc-page] restyles every page
 //   · a page named while its area or master theming is off
@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 // Splits a selector list at its top-level commas, leaving the ones inside :is() and :not().
 function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; }
@@ -14,9 +14,9 @@ function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of s
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
-const css = read('sheets/CannonadeCommand.Pages.css');
+const css = read('sheets/TowerTorch.Pages.css');
 const js = read('scripts/pages.js');
-const page = read('CannonadeCommand.Pages.page');
+const page = read('TowerTorch.Pages.page');
 
 console.log('\nThe hook');
 ok('the page is a Buttons hook, so its sheet loads on every page', /^Menu="Buttons:\d+"/m.test(page));

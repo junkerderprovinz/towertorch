@@ -7,7 +7,7 @@
 //   · the settings list showing a container that is not pinned, or offering one that is
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
 const read = (f) => fs.readFileSync(path.join(DIR, f), 'utf8');
 
 const store = {};

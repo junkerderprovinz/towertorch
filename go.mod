@@ -1,3 +1,3 @@
-module github.com/junkerderprovinz/cannonadecommand
+module github.com/junkerderprovinz/towertorch
 
 go 1.26

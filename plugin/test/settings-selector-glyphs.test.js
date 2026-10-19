@@ -3,7 +3,7 @@
 // its glyphs.json. The temperature threshold offers a value of its own beside its presets.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
 
 let pass = 0, fail = 0;

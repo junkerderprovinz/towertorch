@@ -6,11 +6,11 @@
 //   · a ring that stays in the cell when the Start area is switched off
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const disks = read('scripts/disks.js');
 const shares = read('scripts/shares.js');
-const dcss = read('sheets/CannonadeCommand.Disks.css');
+const dcss = read('sheets/TowerTorch.Disks.css');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -102,7 +102,7 @@ console.log('\nA running parity check turns its chip into a progress ring');
   const card = grabFn(shares, 'ccAopParityCard');
   ok('the parity card feeds it the percentage it parses, and clears it with the card', /ccAopParityRing\(box, pct\);/.test(card) && /if \(card\) card\.parentNode\.removeChild\(card\); ccAopParityRing\(box, null\); return;/.test(card));
   ok('switching the area off takes the ring out before the chips unwrap', /ccAopParityRing\(dsp, null\);/.test(grabFn(shares, 'aopTeardown')));
-  ok('the chip grows around the ring in the tiles as in the list', /\.cc-b\.cc-aop-status\.cc-aop-ringed \{ height: auto;/.test(dcss) && /\.cc-b\.cc-aop-status\.cc-aop-ringed \{ height: auto;/.test(read('sheets/CannonadeCommand.Shares.css')));
+  ok('the chip grows around the ring in the tiles as in the list', /\.cc-b\.cc-aop-status\.cc-aop-ringed \{ height: auto;/.test(dcss) && /\.cc-b\.cc-aop-status\.cc-aop-ringed \{ height: auto;/.test(read('sheets/TowerTorch.Shares.css')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

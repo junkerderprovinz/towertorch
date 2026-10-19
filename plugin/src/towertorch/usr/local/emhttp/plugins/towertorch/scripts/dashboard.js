@@ -1,8 +1,8 @@
-/* CannonadeCommand: the Dashboard tiles as GlimStone cards.
+/* TowerTorch: the Dashboard tiles as GlimStone cards.
  *
- * Loaded on every page through CannonadeCommand.Dashboard.page and gated to /Dashboard. It toggles
+ * Loaded on every page through TowerTorch.Dashboard.page and gated to /Dashboard. It toggles
  * html.cc-dash-on while the header area and master theming are on, puts a filled glyph into each
- * tile title so CannonadeCommand.Dashboard.css can draw the title as a section badge, paints those
+ * tile title so TowerTorch.Dashboard.css can draw the title as a section badge, paints those
  * badges in the colour mode and redraws the two live charts in the accent. Unraid renders the
  * tiles once and only refreshes their values, so one pass after the page settles is enough; the
  * badge colours follow a tile that is dragged to another place through the sortable's own event.

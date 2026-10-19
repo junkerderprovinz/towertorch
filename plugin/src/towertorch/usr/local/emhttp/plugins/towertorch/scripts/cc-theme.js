@@ -1,6 +1,6 @@
-/* CannonadeCommand: the theme helpers shared by every area script.
+/* TowerTorch: the theme helpers shared by every area script.
  *
- * Loaded on every page, synchronously, from CannonadeCommand.Tokens.page (Menu="Buttons:94"), so
+ * Loaded on every page, synchronously, from TowerTorch.Tokens.page (Menu="Buttons:94"), so
  * window.CCTheme exists before any area script runs. The rainbow offset is one seed kept in
  * cc.rbseed, so every area starts the palette on the same hue and keeps it across reloads. Each
  * area keeps an identical local fallback, so a missed load order degrades instead of breaking.
@@ -303,11 +303,11 @@
     return s;
   }
 
-  // GlimStone's glyph set (reference/glyphs.json), for every glyph CannonadeCommand draws on its own
+  // GlimStone's glyph set (reference/glyphs.json), for every glyph TowerTorch draws on its own
   // controls; Unraid's own icons keep their Font Awesome. Each entry is the square viewBox cropped
   // to the drawing's ink and the drawing, so every glyph fills its box alike. Sources: Streamline
   // Core Solid, free set (CC BY 4.0), Tabler Icons (MIT), and drawings made for GlimStone,
-  // BombVault and KnightLoader. Log is drawn for CannonadeCommand, since the set has no log, and so
+  // BombVault and KnightLoader. Log is drawn for TowerTorch, since the set has no log, and so
   // are Shield, the outline of IconShieldOn, and ShieldAlert, that outline with an exclamation mark
   // cut out where IconShieldOn has its check. Star is Tabler's filled star, which the Favorites tab
   // already wears, and Containers is the Simple Icons whale (CC0).
@@ -395,7 +395,7 @@
   //   tint      always tint
   //   original  the item's own icon as it ships, never swapped and never recoloured; offered per
   //             item only
-  var ICON_PROXY = "/plugins/cannonadecommand/server/ccapi.php";
+  var ICON_PROXY = "/plugins/towertorch/server/ccapi.php";
   var ICON_MODES = ["auto", "native", "flat", "tint", "original"];
   // Luminance spread on a 0-255 scale, measured over the 55 containers of a real box. The values
   // are bimodal: flat glyphs land at 0.0-3.4 (Plex 0.53, Nginx 0.79, CCWB 3.4), anything with
@@ -682,7 +682,7 @@
     return { left: Math.max(m, Math.min(left, vw - w - m)), top: Math.max(m, Math.min(top, vh - h - m)) };
   }
 
-  // CannonadeCommand's colour picker, drawn in the page, so no colour field opens the system's
+  // TowerTorch's colour picker, drawn in the page, so no colour field opens the system's
   // own picker window. Its presets are GlimStone's accent presets, the same eight in the same order
   // in every app of the family, so Blue here is the Blue of the next app. Only the offer changes: a
   // saved cc.accent is never rewritten, whichever preset it came from.
@@ -996,7 +996,7 @@
     return el;
   }
 
-  // Every CannonadeCommand window is modal (GlimStone rule 15): the page behind it is darkened and
+  // Every TowerTorch window is modal (GlimStone rule 15): the page behind it is darkened and
   // blurred by a scrim, focus moves into the window and Tab cycles inside it, Escape and a click on
   // the scrim dismiss it, and focus goes back to the control that opened it. Windows stack, so a
   // question asked from inside a window answers Escape before the window does.
@@ -1263,8 +1263,8 @@
   // config.ui_settings on their own pages and adopt it back on load; this covers every other page
   // and skips those two, so localStorage.setItem is not wrapped twice.
   (function () {
-    if (/^\/Docker(\/|$)/.test(location.pathname) || /^\/Settings\/CannonadeCommand(\/|$)/.test(location.pathname)) return;
-    var PROXY = "/plugins/cannonadecommand/server/ccapi.php";
+    if (/^\/Docker(\/|$)/.test(location.pathname) || /^\/Settings\/TowerTorch(\/|$)/.test(location.pathname)) return;
+    var PROXY = "/plugins/towertorch/server/ccapi.php";
     function apiGet(path) {
       return fetch(PROXY + "?path=" + encodeURIComponent(path), { headers: { Accept: "application/json" } })
         .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });

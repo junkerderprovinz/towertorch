@@ -131,8 +131,8 @@ function rules(css) {
   }
   return out;
 }
-const hcss = rules(read('sheets/CannonadeCommand.Header.css'));
-const tcss = rules(read('sheets/CannonadeCommand.Tokens.css'));
+const hcss = rules(read('sheets/TowerTorch.Header.css'));
+const tcss = rules(read('sheets/TowerTorch.Tokens.css'));
 const dial = (sel, gated, name) => {
   const r = tcss.find((x) => x.sel === sel && /no-preference/.test(x.media) === gated && x.body.includes(name));
   const m = r && new RegExp(name + ':\\s*([^;]+);').exec(r.body);

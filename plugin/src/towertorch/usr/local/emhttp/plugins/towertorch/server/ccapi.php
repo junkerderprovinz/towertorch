@@ -1,11 +1,11 @@
 <?php
 /*
- * Same-origin proxy from the Unraid WebGUI to the CannonadeCommand host
+ * Same-origin proxy from the Unraid WebGUI to the TowerTorch host
  * supervisor's unix-socket API. Only whitelisted path+method pairs are
  * forwarded; nothing else reaches the engine, and the engine itself never
  * exposes Docker create/exec/build. The browser never touches the Docker socket.
  */
-$sock  = getenv('CC_SOCK') ?: '/var/run/cannonadecommand.sock';
+$sock  = getenv('CC_SOCK') ?: '/var/run/towertorch.sock';
 // state/stats: read-only; action: start|stop|restart|pause|unpause (the engine
 // validates the container name against the live list and never exposes
 // create/exec/build); plan/apply: the start-order plan. Nothing else is forwarded.

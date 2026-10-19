@@ -15,8 +15,8 @@
 // DISK_OK, DISK_NP, DISK_NP_DSBL and DISK_NP_MISSING cases.
 const fs = require('fs');
 const path = require('path');
-const SHARES = process.argv[2] || path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local',
-  'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'shares.js');
+const SHARES = process.argv[2] || path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local',
+  'emhttp', 'plugins', 'towertorch', 'scripts', 'shares.js');
 
 // A DOM shim in which text nodes are first-class, since the bare labels are what
 // the enhancements have to find.

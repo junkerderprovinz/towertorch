@@ -1,4 +1,4 @@
-﻿/* CannonadeCommand: restyles Unraid's Plugins tab in place, like the Docker tab. The plugin cell
+﻿/* TowerTorch: restyles Unraid's Plugins tab in place, like the Docker tab. The plugin cell
  * gets a container-sized logo, the name and a support badge; the description keeps its own
  * column, version and changelog badges are stacked, and status and remove become pills, all in
  * the accent or rainbow colours. Idempotent on top of the native #plugin_table
@@ -131,7 +131,7 @@
   var _pinIv = null; try { _pinIv = setInterval(plugPinTick, 600); } catch (e) {}
   try { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", plugPinTick); else plugPinTick(); } catch (e) {}
   // Everything below may fail without taking the pin loop down.
-  var PROXY = "/plugins/cannonadecommand/server/ccapi.php";
+  var PROXY = "/plugins/towertorch/server/ccapi.php";
   var LANG = ((document.documentElement.lang || navigator.language || "en").toLowerCase().indexOf("de") === 0) ? "de" : "en";
   var MARK = "data-ccp";
 
@@ -165,7 +165,7 @@
   // colour on hover, so the whole row reacts.
   function reactive() { return ls("cc.rbmode") === "active"; }
   function restBg(i) { return reactive() ? "#2e2e2e" : colorFor(i); }
-  // Asks before a per-row plugin uninstall, in a CannonadeCommand window in place of Unraid's
+  // Asks before a per-row plugin uninstall, in a TowerTorch window in place of Unraid's
   // separate confirm checkbox.
   function ccPluginConfirm(name, run, opener) {
     var de = LANG === "de";
@@ -305,7 +305,7 @@
     return ensureFlatFilter(hostId, filtId, m ? idealText("#" + m[1]) : "");
   }
   function pill(node, bg, tx) {
-    // the sm size from CannonadeCommand.Tokens.css, like every other small badge
+    // the sm size from TowerTorch.Tokens.css, like every other small badge
     node.style.setProperty("font-size", "var(--cc-sm-fs)", "important");
     node.style.setProperty("vertical-align", "middle", "important");
     node.style.setProperty("background", bg, "important");

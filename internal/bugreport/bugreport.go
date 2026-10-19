@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // Redacted stands in for every value the report leaves out.
@@ -25,16 +25,16 @@ const logTailBytes = 64 << 10
 
 // Sources are the host files the report reads besides the engine's own state.
 type Sources struct {
-	LogFile    string // the engine log rc.cannonadecommand writes
+	LogFile    string // the engine log rc.towertorch writes
 	UnraidFile string // /etc/unraid-version
 	PluginFile string // the installed .plg, whose version entity names the plugin build
 }
 
 // Default is where those files live on an Unraid host.
 var Default = Sources{
-	LogFile:    "/var/log/cannonadecommand.log",
+	LogFile:    "/var/log/towertorch.log",
 	UnraidFile: "/etc/unraid-version",
-	PluginFile: "/var/log/plugins/cannonadecommand.plg",
+	PluginFile: "/var/log/plugins/towertorch.plg",
 }
 
 // Report is everything the file holds. Problems lists what could not be read,
@@ -111,7 +111,7 @@ func readTail(path string, max int64) ([]byte, error) {
 
 // FileName is the name the download is saved under.
 func (r Report) FileName() string {
-	return "cannonadecommand-bugreport-" + r.Created.Format("20060102-150405") + ".txt"
+	return "towertorch-bugreport-" + r.Created.Format("20060102-150405") + ".txt"
 }
 
 // Render writes the report as plain text. The settings and the plan go through
@@ -123,7 +123,7 @@ func (r Report) Render() []byte {
 	known := Secrets(r.Plan, r.Config)
 
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "CannonadeCommand bug report, %s\n\n", r.Created.UTC().Format(time.RFC3339))
+	fmt.Fprintf(&b, "TowerTorch bug report, %s\n\n", r.Created.UTC().Format(time.RFC3339))
 	fmt.Fprintf(&b, "Engine:  %s\n", orUnknown(r.Engine))
 	fmt.Fprintf(&b, "Plugin:  %s\n", orUnknown(r.Plugin))
 	fmt.Fprintf(&b, "Unraid:  %s\n", orUnknown(r.Unraid))

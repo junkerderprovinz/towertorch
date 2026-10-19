@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 type fakeDocker struct {

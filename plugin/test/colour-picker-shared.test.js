@@ -1,4 +1,4 @@
-// CannonadeCommand has one colour picker, CCTheme.colorPicker in cc-theme.js. The settings page
+// TowerTorch has one colour picker, CCTheme.colorPicker in cc-theme.js. The settings page
 // builds every colour field with it, and a colour field of Unraid's own forms or of the container
 // form gets a swatch that opens it in a panel instead of the system's picker window. What can
 // quietly break it:
@@ -112,13 +112,13 @@ console.log('\nA colour variable of the container form, and a native colour inpu
   const nsw = T.colorSwatch(nat, {});
   ok('a native colour input becomes the swatch itself', nsw === nat && nat.cls.has('cc-colpick') && dd.children.filter((c) => c.cls.has('cc-colpick')).length === 2);
   const e = nat.fire('click');
-  ok('its press opens CannonadeCommand\'s picker, not the system\'s', e.defaultPrevented && global.document.body.children.some((c) => c.cls.has('cc-cpop')));
+  ok('its press opens TowerTorch\'s picker, not the system\'s', e.defaultPrevented && global.document.body.children.some((c) => c.cls.has('cc-cpop')));
   ok('and so do Enter and Space', nat.listeners.keydown && nat.listeners.keydown.length === 1);
 }
 
 console.log('\nThe panel looks like the settings page\'s field');
 {
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   ok('the picker\'s look lives in the sheet every page loads', /\.cc-ip-sv \{/.test(tokens) && /\.cc-set-sw-on::after \{/.test(tokens) && !/\.cc-ip-sv \{/.test(read('styles/docker.css')));
   ok('the panel stays dark on a light theme', /\.cc-rowmenu, \.cc-cpop,/.test(tokens));
   const sw = candidates('every', { tag: 'span', classes: ['cc-colpick'] }, 'background').pop();

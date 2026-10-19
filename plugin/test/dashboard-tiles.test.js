@@ -1,4 +1,4 @@
-// The Dashboard tiles as GlimStone cards (CannonadeCommand.Dashboard.page, .css, dashboard.js).
+// The Dashboard tiles as GlimStone cards (TowerTorch.Dashboard.page, .css, dashboard.js).
 // What can quietly break it:
 //   · a rule that is not gated on html.cc-dash-on restyles the Dashboard with the header area off
 //   · a block display with !important on a tile or row beats Unraid's inline display:none, so a
@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 // Splits a selector list at its top-level commas, leaving the ones inside :is() and :not().
 function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; }
@@ -16,9 +16,9 @@ function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of s
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
-const css = read('sheets/CannonadeCommand.Dashboard.css');
+const css = read('sheets/TowerTorch.Dashboard.css');
 const js = read('scripts/dashboard.js');
-const page = read('CannonadeCommand.Dashboard.page');
+const page = read('TowerTorch.Dashboard.page');
 
 // Selectors of every rule, @media blocks unwrapped.
 function selectors(sheet) {

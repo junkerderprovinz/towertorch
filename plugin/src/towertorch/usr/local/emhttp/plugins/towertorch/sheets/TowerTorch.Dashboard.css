@@ -1,4 +1,4 @@
-/* CannonadeCommand: the Dashboard, scoped to html.cc-dash-on, which dashboard.js sets on
+/* TowerTorch: the Dashboard, scoped to html.cc-dash-on, which dashboard.js sets on
    /Dashboard while the header area and master theming are on.
 
    Each tile is one <tbody> of a table.dashboard column, and Unraid's jQuery sortable moves the

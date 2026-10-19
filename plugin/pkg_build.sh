@@ -1,16 +1,16 @@
 #!/bin/bash
-# Build the CannonadeCommand plugin package from the Go supervisor binary and the
+# Build the TowerTorch plugin package from the Go supervisor binary and the
 # plugin files. It uses tar rather than makepkg, so it also runs in CI.
 #
 #   plugin/pkg_build.sh [VERSION]      # VERSION defaults to today (YYYY.MM.DD)
 #
-# It writes plugin/out/cannonadecommand-<version>-x86_64-1.txz and its .sha256.
+# It writes plugin/out/towertorch-<version>-x86_64-1.txz and its .sha256.
 # The release workflow attaches the .txz and injects the sha into the .plg.
 set -euo pipefail
 
 VERSION="${1:-$(date +%Y.%m.%d)}"
 ARCH="x86_64"
-SLUG="cannonadecommand"
+SLUG="towertorch"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLUGIN_SRC="$ROOT/plugin/src/$SLUG"
 BIN_REL="usr/local/emhttp/plugins/$SLUG/bin/$SLUG"
@@ -20,7 +20,7 @@ trap 'rm -rf "$PKGROOT"' EXIT
 
 echo "==> building supervisor binary (linux/amd64)"
 ( cd "$ROOT" && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-  go build -trimpath -ldflags "-s -w -X main.version=v$VERSION" -o "$PLUGIN_SRC/$BIN_REL" ./cmd/cannonadecommand )
+  go build -trimpath -ldflags "-s -w -X main.version=v$VERSION" -o "$PLUGIN_SRC/$BIN_REL" ./cmd/towertorch )
 
 echo "==> assembling package tree"
 cp -a "$PLUGIN_SRC/." "$PKGROOT/"

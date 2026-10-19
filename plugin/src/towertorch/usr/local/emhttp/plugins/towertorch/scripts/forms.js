@@ -1,7 +1,7 @@
 // Lays Unraid's native settings forms out as GlimStone cards. Loaded on every page through
-// CannonadeCommand.Forms.page, it stamps html.cc-forms-on on the Settings and Tools sub-pages, the
+// TowerTorch.Forms.page, it stamps html.cc-forms-on on the Settings and Tools sub-pages, the
 // disk, pool and boot device pages and the share edit page; the look lives in
-// sheets/CannonadeCommand.Forms.css. No field leaves its form, is renamed or is submitted from
+// sheets/TowerTorch.Forms.css. No field leaves its form, is renamed or is submitted from
 // here: a card is a class on Unraid's own form, and every control drawn in place of a native one
 // writes back to that input and fires its events.
 (function () {

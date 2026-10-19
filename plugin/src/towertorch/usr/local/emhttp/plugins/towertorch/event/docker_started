@@ -1,6 +1,6 @@
 #!/bin/bash
 # Starts are orchestrated here because dockerd answers by now and, unlike
 # array_started, this event does not run under an unshare mount namespace.
-DIR=/usr/local/emhttp/plugins/cannonadecommand
-"$DIR/scripts/rc.cannonadecommand" start >/dev/null 2>&1
-"$DIR/bin/cannonadecommand" apply >>/var/log/cannonadecommand.log 2>&1 &
+DIR=/usr/local/emhttp/plugins/towertorch
+"$DIR/scripts/rc.towertorch" start >/dev/null 2>&1
+"$DIR/bin/towertorch" apply >>/var/log/towertorch.log 2>&1 &

@@ -6,7 +6,7 @@
 // styles settings.js injects, and fails on the fault token or a red literal there.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -56,7 +56,7 @@ console.log('\nThe delete controls take their siblings\' colour');
   ok('the bulk Remove is an ordinary bulk button', !/cc-bulkbtn-danger/.test(docker) && !/cc-bulkbtn-danger/.test(read('scripts/docker.js')));
   ok('the icon-only delete draws no white background can, which would vanish on Sunflower', !/\.cc-b-delicon[^{]*\{[^}]*background-image/.test(docker));
   ok('its glyph is an SVG in currentColor', /\.cc-b-delicon svg \{/.test(docker) && /fill="currentColor"/.test(read('scripts/cc-theme.js')));
-  const header = clean(read('sheets/CannonadeCommand.Header.css'));
+  const header = clean(read('sheets/TowerTorch.Header.css'));
   ok('the armed "Delete all" keeps the colour-mode fill', /\.cc-notif-del\.cc-notif-armed \{ background: var\(--cc-rb-c,/.test(header));
   ok('and its glyph follows the ink rather than a pinned white', !/\.cc-notif-del svg \{[^}]*#fff/.test(header));
 }

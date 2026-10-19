@@ -1,6 +1,6 @@
 Menu="Buttons:98"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-dockerform-hook"
 ---
 <?php
@@ -13,6 +13,6 @@ Link="cc-dockerform-hook"
 $ccReq = strtok($_SERVER['REQUEST_URI'] ?? '', '?');
 if (preg_match('#^/(Docker|Apps)/(AddContainer|UpdateContainer)/?$#', $ccReq)):
 ?>
-<link type="text/css" rel="stylesheet" href="<?autov('/plugins/cannonadecommand/styles/docker.css')?>">
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/docker.js')?>"></script>
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
+<script defer src="<?autov('/plugins/towertorch/scripts/docker.js')?>"></script>
 <?php endif; ?>

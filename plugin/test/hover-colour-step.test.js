@@ -6,7 +6,7 @@
 // inline or differs per badge; both land on the same colour.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -27,7 +27,7 @@ function hoverBrightness(src) {
   return out;
 }
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
-const TOKENS = read('sheets/CannonadeCommand.Tokens.css');
+const TOKENS = read('sheets/TowerTorch.Tokens.css');
 const darkBlock = (() => { let o = ''; const re = /(^|\})\s*html\s*\{([^}]*)\}/g; let m; while ((m = re.exec(clean(TOKENS)))) o += m[2]; return o; })();
 
 console.log('\nThe detector finds a brightness hover and passes a colour step');
@@ -63,7 +63,7 @@ console.log('\nThe step follows the fill it sits on');
   ok('the primary button steps its own colour chain', /\.cc-btn-primary:hover \{ background: color-mix\(in srgb, var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent,/.test(docker));
   ok('a chosen dropdown entry is the same step, not a filter', /\.cc-pop \.cc-dsel-opt:hover, \.cc-pop \.cc-dsel-opt\.is-selected \{ background: color-mix\(/.test(docker));
   ok('the plan chip, whose fill differs per mode, takes the wash', /\.cc-plan:hover \{ box-shadow: inset 0 0 0 100vmax var\(--cc-hover-wash\); \}/.test(docker));
-  const shares = clean(read('sheets/CannonadeCommand.Shares.css'));
+  const shares = clean(read('sheets/TowerTorch.Shares.css'));
   ok('an empty slot\'s name label cancels the wash, as it cancelled the filter', /span\.cc-b\.cc-b-name:hover \{ box-shadow: none !important; \}/.test(shares));
   const settings = read('scripts/settings.js');
   ok('the settings page injects no brightness hover', !/:hover\{[^}]*brightness/.test(settings));

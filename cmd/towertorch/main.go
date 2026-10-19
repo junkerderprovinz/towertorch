@@ -1,4 +1,4 @@
-// Command cannonadecommand is the host supervisor for the CannonadeCommand
+// Command towertorch is the host supervisor for the TowerTorch
 // Unraid plugin. It serves the UNIX-socket API behind the plugin's PHP proxy and
 // runs dependency-ordered, health-gated container starts. It runs on the host
 // rather than in a container because only there can it drive the host's own
@@ -19,17 +19,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/api"
-	"github.com/junkerderprovinz/cannonadecommand/internal/bugreport"
-	"github.com/junkerderprovinz/cannonadecommand/internal/dockercli"
-	"github.com/junkerderprovinz/cannonadecommand/internal/iconsrc"
-	"github.com/junkerderprovinz/cannonadecommand/internal/monitor"
-	"github.com/junkerderprovinz/cannonadecommand/internal/netshape"
-	"github.com/junkerderprovinz/cannonadecommand/internal/orchestrator"
-	"github.com/junkerderprovinz/cannonadecommand/internal/readiness"
-	"github.com/junkerderprovinz/cannonadecommand/internal/store"
-	"github.com/junkerderprovinz/cannonadecommand/internal/unraidtmpl"
-	"github.com/junkerderprovinz/cannonadecommand/internal/vmctl"
+	"github.com/junkerderprovinz/towertorch/internal/api"
+	"github.com/junkerderprovinz/towertorch/internal/bugreport"
+	"github.com/junkerderprovinz/towertorch/internal/dockercli"
+	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
+	"github.com/junkerderprovinz/towertorch/internal/monitor"
+	"github.com/junkerderprovinz/towertorch/internal/netshape"
+	"github.com/junkerderprovinz/towertorch/internal/orchestrator"
+	"github.com/junkerderprovinz/towertorch/internal/readiness"
+	"github.com/junkerderprovinz/towertorch/internal/store"
+	"github.com/junkerderprovinz/towertorch/internal/unraidtmpl"
+	"github.com/junkerderprovinz/towertorch/internal/vmctl"
 )
 
 // version is overridden at build time with -ldflags "-X main.version=vX.Y.Z".
@@ -42,9 +42,9 @@ var version = "dev"
 var bannerArt string
 
 const (
-	defaultDataDir    = "/boot/config/plugins/cannonadecommand"
+	defaultDataDir    = "/boot/config/plugins/towertorch"
 	defaultDockerSock = "/var/run/docker.sock"
-	defaultAPISock    = "/var/run/cannonadecommand.sock"
+	defaultAPISock    = "/var/run/towertorch.sock"
 )
 
 func main() {
@@ -62,7 +62,7 @@ func main() {
 	case "banner":
 		fmt.Println(bannerArt)
 	default:
-		fmt.Fprintf(os.Stderr, "usage: cannonadecommand [serve|apply|version]\n")
+		fmt.Fprintf(os.Stderr, "usage: towertorch [serve|apply|version]\n")
 		os.Exit(2)
 	}
 }
@@ -110,13 +110,13 @@ func serve() {
 	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("CC_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
 
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
-		log.Fatalf("cannonadecommand: mkdir %s: %v", dataDir, err)
+		log.Fatalf("towertorch: mkdir %s: %v", dataDir, err)
 	}
 	// A stale socket from an unclean stop would make Listen fail with EADDRINUSE.
 	_ = os.Remove(apiSock)
 	ln, err := net.Listen("unix", apiSock)
 	if err != nil {
-		log.Fatalf("cannonadecommand: listen %s: %v", apiSock, err)
+		log.Fatalf("towertorch: listen %s: %v", apiSock, err)
 	}
 	_ = os.Chmod(apiSock, 0o660)
 
@@ -139,12 +139,12 @@ func serve() {
 	go mon.Run(ctx)
 
 	log.Print("\n" + bannerArt)
-	// No ANSI colour: rc.cannonadecommand sends this to a flat log file that
+	// No ANSI colour: rc.towertorch sends this to a flat log file that
 	// Unraid's log viewer shows as plain text.
-	log.Printf("✓ CANNONADECOMMAND %s IS READY - api %s · data %s · docker %s", version, apiSock, dataDir, dockerSock)
+	log.Printf("✓ TOWERTORCH %s IS READY - api %s · data %s · docker %s", version, apiSock, dataDir, dockerSock)
 
 	if err := httpSrv.Serve(ln); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("cannonadecommand: serve: %v", err)
+		log.Fatalf("towertorch: serve: %v", err)
 	}
 }
 
@@ -163,7 +163,7 @@ func apply() {
 	}
 	resp, err := hc.Post("http://unix/api/apply", "application/json", nil)
 	if err != nil {
-		log.Fatalf("cannonadecommand apply: %v", err)
+		log.Fatalf("towertorch apply: %v", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	_, _ = io.Copy(os.Stdout, resp.Body)

@@ -1,9 +1,9 @@
-/* CannonadeCommand: the /Favorites tiles, matching the Docker and Settings tiles.
+/* TowerTorch: the /Favorites tiles, matching the Docker and Settings tiles.
  *
- * Loaded globally through the Buttons hook (CannonadeCommand.Favorites.page) and gated on
+ * Loaded globally through the Buttons hook (TowerTorch.Favorites.page) and gated on
  * html.cc-favorites-on, which favorites.js sets only on /Favorites. MyFavorites.page uses the same
  * .Panel > a > span, .PanelText and i.favo markup as the settings grid, so these are scoped copies
- * of the tile rules in CannonadeCommand.SettingsGrid.css.
+ * of the tile rules in TowerTorch.SettingsGrid.css.
  */
 
 /* The cc.sgsize=m step (78px, Docker's logo tile). favorites.js sets s (64/32), m (78/38) or

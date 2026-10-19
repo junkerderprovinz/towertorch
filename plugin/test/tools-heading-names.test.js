@@ -3,7 +3,7 @@
 // text, and only a German page is renamed. clearHeads() gives the original back.
 const fs = require('fs');
 const path = require('path');
-const js = fs.readFileSync(path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'settingsgrid.js'), 'utf8');
+const js = fs.readFileSync(path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts', 'settingsgrid.js'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };

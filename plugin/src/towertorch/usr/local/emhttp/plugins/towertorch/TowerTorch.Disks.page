@@ -1,12 +1,12 @@
 Menu="Buttons:97"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-disks-hook"
 ---
 <?php
-/* Menu="Buttons" makes Unraid auto-inject sheets/CannonadeCommand.Disks.css into the <head> of
+/* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Disks.css into the <head> of
    every page; the script below loads disks.js, which draws the disk tiles on /Main. All CSS is
    gated behind html.cc-dk-on, which disks.js sets only while the Start area styles /Main.
    Link="cc-disks-hook" renders a bare <div>, no icon. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/disks.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/disks.js')?>"></script>

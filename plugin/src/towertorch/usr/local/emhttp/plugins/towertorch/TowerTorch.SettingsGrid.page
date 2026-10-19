@@ -1,14 +1,14 @@
 Menu="Buttons:96"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-sgrid-hook"
 ---
 <?php
 /* Registered under Menu="Buttons" so Unraid loads this page's assets into the <head> of every
-   page, /Tools included: sheets/CannonadeCommand.SettingsGrid.css (auto-injected because the
+   page, /Tools included: sheets/TowerTorch.SettingsGrid.css (auto-injected because the
    basename matches this .page) restyles the /Settings and /Tools category icons into square
    badges, and the script below loads the enhancer. Link="cc-sgrid-hook" renders a bare <div>
    instead of a visible icon. All styling is gated behind html.cc-settingsgrid-on, which the
    enhancer sets only on the two landing pages when the "Einstellungen & Werkzeuge" area is on. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/settingsgrid.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/settingsgrid.js')?>"></script>

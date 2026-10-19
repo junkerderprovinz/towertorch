@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 func TestLoadMissingIsEmpty(t *testing.T) {

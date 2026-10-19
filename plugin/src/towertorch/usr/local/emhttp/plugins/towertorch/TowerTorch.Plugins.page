@@ -1,11 +1,11 @@
 Menu="Plugins"
-Icon="cannonadecommand.png"
+Icon="towertorch.png"
 ---
 <?php
 /* Injected into Unraid's Plugins tab. It renders no panel of its own; plugins.js decorates the
    existing #plugin_table in place, like the Docker-tab enhancer, and plugintiles.js draws the tile
-   view from it. sheets/CannonadeCommand.Plugins.css comes in through the matching basename. */
+   view from it. sheets/TowerTorch.Plugins.css comes in through the matching basename. */
 ?>
-<link type="text/css" rel="stylesheet" href="<?autov('/plugins/cannonadecommand/styles/docker.css')?>">
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/plugins.js')?>"></script>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/plugintiles.js')?>"></script>
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
+<script defer src="<?autov('/plugins/towertorch/scripts/plugins.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/plugintiles.js')?>"></script>

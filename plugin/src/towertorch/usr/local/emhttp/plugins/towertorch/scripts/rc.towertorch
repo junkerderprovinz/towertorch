@@ -1,24 +1,24 @@
 #!/bin/bash
-# Start/stop the CannonadeCommand host supervisor (the Go daemon that serves
+# Start/stop the TowerTorch host supervisor (the Go daemon that serves
 # the panel API and orchestrates dependency-ordered, health-gated starts).
-DIR=/usr/local/emhttp/plugins/cannonadecommand
-BIN="$DIR/bin/cannonadecommand"
-PIDFILE=/var/run/cannonadecommand.pid
-DATA=/boot/config/plugins/cannonadecommand
-LOG=/var/log/cannonadecommand.log
+DIR=/usr/local/emhttp/plugins/towertorch
+BIN="$DIR/bin/towertorch"
+PIDFILE=/var/run/towertorch.pid
+DATA=/boot/config/plugins/towertorch
+LOG=/var/log/towertorch.log
 
 # Checks for a process running the binary rather than trusting the pidfile, since
 # `setsid CMD &` can fork and leave $! pointing at the wrong pid.
 is_running() { pgrep -f "$BIN" >/dev/null 2>&1; }
 
 start() {
-  if is_running; then echo "cannonadecommand: already running"; return 0; fi
+  if is_running; then echo "towertorch: already running"; return 0; fi
   [ -x "$BIN" ] || chmod +x "$BIN" 2>/dev/null
   mkdir -p "$DATA" 2>/dev/null
   # setsid detaches the daemon from the caller (the plugin/event hook).
   setsid "$BIN" serve >>"$LOG" 2>&1 &
   echo $! > "$PIDFILE"
-  echo "cannonadecommand: started"
+  echo "towertorch: started"
 }
 
 stop() {
@@ -29,7 +29,7 @@ stop() {
   for _ in $(seq 1 20); do is_running || break; sleep 0.25; done
   for p in $(pgrep -f "$BIN" 2>/dev/null); do kill -9 "$p" 2>/dev/null; done
   rm -f "$PIDFILE"
-  echo "cannonadecommand: stopped"
+  echo "towertorch: stopped"
 }
 
 case "$1" in

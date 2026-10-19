@@ -1,4 +1,4 @@
-/* CannonadeCommand: the main menu bar.
+/* TowerTorch: the main menu bar.
  *
  * Injected into every Unraid page through the Buttons .page hook, so every rule is scoped to
  * html.cc-header-on, which header.js adds only while the Hauptmenueleiste area is enabled.
@@ -964,7 +964,7 @@ html.cc-popups-on .sweet-alert button.cancel[style*="display: none"],
 html.cc-popups-on .sweet-alert button.cancel[style*="display:none"] { display: none !important; }
 
 /* A confirmation, every .sweet-alert that streams no log and is more than the loader, is a
-   CannonadeCommand window: the title notched into the top edge as a section badge, the close badge
+   TowerTorch window: the title notched into the top edge as a section badge, the close badge
    header.js adds in the top right corner, the text straight on the window's one surface (GlimStone
    rule 15) and the buttons at the bottom right, the forward action last and the only one filled.
    The frame leaves its overflow visible for the two notches, so a long text scrolls in its own

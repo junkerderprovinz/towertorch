@@ -1,10 +1,10 @@
 Menu="Buttons:96"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-tools-hook"
 ---
 <?php
-/* Loads sheets/CannonadeCommand.Tools.css into the <head> of every page through basename
+/* Loads sheets/TowerTorch.Tools.css into the <head> of every page through basename
    auto-injection, like the Header hook. The sheet is scoped to html.cc-tools-on, which header.js
    stamps only on the /Tools sub-pages and on the native docker/plugin execution output pages (a
    <fieldset><legend> in #displaybox, such as the "Container hinzufügen" install log).

@@ -2,7 +2,7 @@
 // fields at its end, and labels without the spaces Unraid puts in front of an env var's name.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const header = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
 const docker = fs.readFileSync(path.join(DIR, 'scripts/docker.js'), 'utf8');
 const css = fs.readFileSync(path.join(DIR, 'styles/docker.css'), 'utf8');

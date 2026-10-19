@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const { candidates, withUnraid } = require('./cascade');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const js = fs.readFileSync(path.join(DIR, 'scripts/docker.js'), 'utf8');
 
 let pass = 0, fail = 0;
@@ -143,7 +143,7 @@ console.log('\nThe sheet');
 
 console.log('\nThe bar that appears once rows are picked');
 {
-  const tokens = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Tokens.css'), 'utf8');
+  const tokens = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8');
   const island = /^\.cc-pop, \.cc-menu, \.cc-win, \.cc-rowmenu[^{]*\{/m.exec(tokens);
   ok('it floats as a dark window on every theme, so its count stays readable on white', !!island && /\.cc-bulkbar\b/.test(island[0]), island && island[0]);
   const win = (el, prop) => { const c = candidates(withUnraid('docker'), el, prop); return c[c.length - 1]; };

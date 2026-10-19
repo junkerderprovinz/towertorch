@@ -1,6 +1,6 @@
-/* CannonadeCommand: Unraid's "Reset sorting" control as an icon badge.
+/* TowerTorch: Unraid's "Reset sorting" control as an icon badge.
  *
- * Loaded on every page through CannonadeCommand.Tokens.page. The Docker and VM lists keep the order
+ * Loaded on every page through TowerTorch.Tokens.page. The Docker and VM lists keep the order
  * the user dragged them into, and Unraid puts a list icon into the first column head that drops it
  * again. While master theming is on, that icon gives way to a badge with GlimStone's Sort glyph,
  * shown only while the list is out of Unraid's own order, so the head stays quiet otherwise.

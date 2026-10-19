@@ -12,7 +12,7 @@
 //   7. a drop target wears the accent halo.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const src = fs.readFileSync(path.join(DIR, 'scripts', 'docker.js'), 'utf8');
 const css = fs.readFileSync(path.join(DIR, 'styles', 'docker.css'), 'utf8');
 

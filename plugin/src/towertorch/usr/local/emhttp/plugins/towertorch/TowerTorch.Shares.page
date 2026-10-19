@@ -1,15 +1,15 @@
 Menu="Buttons:97"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-shares-hook"
 ---
 <?php
 /* Registered under Menu="Buttons" so Unraid loads this page's assets into the <head> of every
-   page: sheets/CannonadeCommand.Shares.css (auto-injected because the basename matches this
+   page: sheets/TowerTorch.Shares.css (auto-injected because the basename matches this
    .page) restyles the tabbed sub-page nav on /Shares and /Docker, and the scripts below load the
    shares enhancer and the share tiles. Link="cc-shares-hook" renders a bare <div> instead of a
    visible icon. All styling is gated behind html.cc-shares-on, which the enhancer sets only when
    the "Freigaben" area is enabled in CC settings. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/shares.js')?>"></script>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/sharetiles.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/shares.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/sharetiles.js')?>"></script>

@@ -1,7 +1,7 @@
-/* CannonadeCommand: styles the /Favorites page.
+/* TowerTorch: styles the /Favorites page.
  *
  * /Favorites is rendered on the server (Tabs="false"), so this only toggles html.cc-favorites-on
- * and mirrors the accent and tile size onto :root for CannonadeCommand.Favorites.css.
+ * and mirrors the accent and tile size onto :root for TowerTorch.Favorites.css.
  * Turning it off is removing the class, and the observer never injects anything, so it cannot
  * trigger itself.
  */

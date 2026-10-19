@@ -12,7 +12,7 @@
 // when it did not, and one that throws neither breaks the sync nor its siblings.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
 const THEME = process.argv[2] || path.join(DIR, 'cc-theme.js');
 
 let pass = 0, fail = 0;
@@ -42,7 +42,7 @@ function makeStorage(initial) {
 }
 
 // Runs the sync IIFE as if on /Plugins, since it skips /Docker and
-// /Settings/CannonadeCommand, with a fetch stub answering the config GET.
+// /Settings/TowerTorch, with a fetch stub answering the config GET.
 function runSync(src, ui_settings, localStorage, win) {
   const code = grabSyncBlock(src);
   const fetchStub = (url) => Promise.resolve({ ok: true, json: () => Promise.resolve({ ui_settings: ui_settings }) });

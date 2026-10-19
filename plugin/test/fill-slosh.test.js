@@ -12,9 +12,9 @@
 //   · GlimStone's drifting dots coming back into the liquid
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
-const tokens = read('sheets/CannonadeCommand.Tokens.css');
+const tokens = read('sheets/TowerTorch.Tokens.css');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -116,10 +116,10 @@ console.log('\nThin bars stand still, only the tall ones are handed to the slosh
   ok('none in the CPU and RAM gauges of a Docker card', calls(docker) === 0);
   ok('none in the status island\'s array, RAM and CPU chips', calls(grabFn(header, 'barChip')) === 0);
   const bars = grabFn(header, 'ccStateBars');
-  ok('the 26px /Main usage bars still slosh while the Shares area restyles them', /CT\.slosh\(allBars\[s\], mainOn && !!allBars\[s\]\.closest\("#displaybox"\), highs\[s\]\)/.test(bars) && /rt\.contains\("cc-shares-on"\) && rt\.contains\("cc-on-main"\)/.test(bars) && /html\.cc-shares-on\.cc-on-main #displaybox \.usage-disk:not\(\.sys\):not\(\.mm\) \{[^}]*height: 26px !important;/.test(read('sheets/CannonadeCommand.Shares.css')));
-  ok('and so does the 24px array meter in the menu while the header area is on', /CT\.slosh\(meter, rt\.contains\("cc-header-on"\), meterHigh\)/.test(bars) && /#menu \.usage-bar \{[^}]*height: var\(--cc-md-h, 30px\) !important;[^}]*padding: 3px !important;/.test(read('sheets/CannonadeCommand.Header.css')));
+  ok('the 26px /Main usage bars still slosh while the Shares area restyles them', /CT\.slosh\(allBars\[s\], mainOn && !!allBars\[s\]\.closest\("#displaybox"\), highs\[s\]\)/.test(bars) && /rt\.contains\("cc-shares-on"\) && rt\.contains\("cc-on-main"\)/.test(bars) && /html\.cc-shares-on\.cc-on-main #displaybox \.usage-disk:not\(\.sys\):not\(\.mm\) \{[^}]*height: 26px !important;/.test(read('sheets/TowerTorch.Shares.css')));
+  ok('and so does the 24px array meter in the menu while the header area is on', /CT\.slosh\(meter, rt\.contains\("cc-header-on"\), meterHigh\)/.test(bars) && /#menu \.usage-bar \{[^}]*height: var\(--cc-md-h, 30px\) !important;[^}]*padding: 3px !important;/.test(read('sheets/TowerTorch.Header.css')));
   ok('those are the only callers, so a thin bar elsewhere cannot pick it up again', calls(header) === 2 && calls(read('scripts/shares.js') + read('scripts/dashboard.js') + read('scripts/vms.js')) === 0);
-  ok('the menu meter clips what runs past its end', /html\.cc-header-on #menu \.usage-bar \{[^}]*overflow: hidden;/.test(read('sheets/CannonadeCommand.Header.css')));
+  ok('the menu meter clips what runs past its end', /html\.cc-header-on #menu \.usage-bar \{[^}]*overflow: hidden;/.test(read('sheets/TowerTorch.Header.css')));
 }
 
 // Unraid writes the /Main table anew every second, and a bar measured after another was stamped

@@ -3,7 +3,7 @@
 // The search badge and the "Open" button are secondary, since a view has one filled accent button.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -132,7 +132,7 @@ console.log("\nThe search badge ends on the cards' edge");
 console.log('\nThe empty state reads, on every theme');
 {
   const { candidates, tokens, resolve, parseRules, DIR: D } = require('./cascade');
-  const island = parseRules(fs.readFileSync(path.join(D, 'sheets/CannonadeCommand.Tokens.css'), 'utf8')).filter((r) => r.selector.replace(/\s+/g, ' ').startsWith('.cc-pop, .cc-menu'))[0];
+  const island = parseRules(fs.readFileSync(path.join(D, 'sheets/TowerTorch.Tokens.css'), 'utf8')).filter((r) => r.selector.replace(/\s+/g, ' ').startsWith('.cc-pop, .cc-menu'))[0];
   ok('it is a dark token island', !!island && /#cc-settings \.cc-set-empty/.test(island.selector));
   const lum = (h) => { const n = parseInt(h.slice(1), 16), l = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * l(n >> 16 & 255) + 0.7152 * l(n >> 8 & 255) + 0.0722 * l(n & 255); };
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };

@@ -9,10 +9,10 @@
 //   · a fetched plugin logo skipping the crop, so it fills its box while the others fill 82%
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const clean = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
-const docker = clean(read('styles/docker.css')), vm = clean(read('sheets/CannonadeCommand.VmTab.css'));
+const docker = clean(read('styles/docker.css')), vm = clean(read('sheets/TowerTorch.VmTab.css'));
 const vmsJs = read('scripts/vms.js'), plugJs = read('scripts/plugins.js'), dockerJs = read('scripts/docker.js');
 
 let pass = 0, fail = 0;
@@ -87,7 +87,7 @@ console.log('\nEvery plugin logo is cropped to the same fill');
   const api = new Function('Image', 'document', 'var normCache = {};' + grab('plugSetIconSrc') + grab('applyNorm') + grab('normalizeIcon') + '; return { set: plugSetIconSrc, norm: normalizeIcon };')(Img, document);
   const img = { attrs: { src: '/plugins/x/x.png' }, getAttribute(k) { return k === 'src' ? this.src || this.attrs.src : (k in this.attrs ? this.attrs[k] : null); }, setAttribute(k, v) { if (k === 'src') this.src = v; else this.attrs[k] = v; }, removeAttribute(k) { delete this.attrs[k]; } };
   img.src = '/plugins/x/x.png';
-  api.set(img, '/plugins/cannonadecommand/server/ccapi.php?path=iconsvg&name=x');
+  api.set(img, '/plugins/towertorch/server/ccapi.php?path=iconsvg&name=x');
   api.norm(img);
   const probe = probes[probes.length - 1];
   ok('the fetched logo is measured, not the plugin\'s own', !!probe && /iconsvg/.test(probe.src || ''), probe && probe.src);

@@ -19,7 +19,7 @@ function grabFn(src, name) {
 const read = (f) => fs.readFileSync(path.join(DIR, f), 'utf8');
 const LITERAL = /^#[0-9a-f]{3,8}$/i;
 
-const tokens = read('sheets/CannonadeCommand.Tokens.css').replace(/\/\*[\s\S]*?\*\//g, '');
+const tokens = read('sheets/TowerTorch.Tokens.css').replace(/\/\*[\s\S]*?\*\//g, '');
 const light = /html\.Theme--white,\s*html\.Theme--azure\s*\{([^}]*)\}/.exec(tokens)[1];
 const lightSurface = /--cc-surface-3:\s*(#[0-9a-f]{6})/i.exec(light)[1];
 const luma = (h) => { const n = parseInt(h.slice(1), 16); return 0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255); };
@@ -74,7 +74,7 @@ console.log('\nAn unused limit gear');
 // !important, so a plain :hover background in a sheet never shows; the wash in Tokens.css is
 // the hover.
 console.log('\nNo dead hover rules');
-for (const f of ['styles/docker.css', 'sheets/CannonadeCommand.VmTab.css']) {
+for (const f of ['styles/docker.css', 'sheets/TowerTorch.VmTab.css']) {
   const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
   const dead = (css.match(/[^{}]*\.cc-actbtn:hover\s*\{[^}]*\}/g) || []).filter((r) => /background/.test(r) && !/rbneutral/.test(r));
   ok(`${f}: no background on .cc-actbtn:hover that the inline paint always beats`, dead.length === 0, dead.join(' | ').trim());

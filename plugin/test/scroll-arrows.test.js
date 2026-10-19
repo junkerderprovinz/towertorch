@@ -10,7 +10,7 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const header = read('scripts/header.js');
-const tokens = read('sheets/CannonadeCommand.Tokens.css');
+const tokens = read('sheets/TowerTorch.Tokens.css');
 const body = (name) => { const i = header.indexOf('function ' + name + '('); return i < 0 ? '' : header.slice(i, header.indexOf('\n  }\n', i)); };
 const all = (el, prop, html) => candidates('every', Object.assign({ states: {}, html: ['cc-popups-on'].concat(html || []) }, el), prop);
 const val = (el, prop, html) => { const c = all(el, prop, html); return c.length ? c[c.length - 1].value : null; };

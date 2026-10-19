@@ -1,13 +1,13 @@
 Menu="Buttons:98"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-forms-hook"
 ---
 <?php
-/* Loads sheets/CannonadeCommand.Forms.css into the <head> of every page through basename
+/* Loads sheets/TowerTorch.Forms.css into the <head> of every page through basename
    auto-injection, and the script below, which lays Unraid's native settings forms out as
    GlimStone cards: the Settings and Tools sub-pages, the disk, pool and boot device pages and the
    share edit page. Everything is gated behind html.cc-forms-on, which forms.js stamps only on
    those pages. Link="cc-forms-hook" renders a bare <div> instead of a visible icon. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/forms.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/forms.js')?>"></script>

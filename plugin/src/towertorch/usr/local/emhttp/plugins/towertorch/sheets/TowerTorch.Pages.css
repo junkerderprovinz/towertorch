@@ -1,4 +1,4 @@
-/* CannonadeCommand: single pages the area sheets do not reach. pages.js names the page in
+/* TowerTorch: single pages the area sheets do not reach. pages.js names the page in
    html[data-cc-page] while master theming and the page's area are on, and every rule here keys on
    that name. Where a page already carries an area class (cc-tools-on on /Settings and /Tools, the
    Shares area on /Stats and /Main), the rule keys on both, so the shared form and button rules of

@@ -1,8 +1,8 @@
 // Enhances the Shares, Main, Browse and Stats pages and the sub-page tabs of /Shares and /Docker.
-// Loaded on every page through CannonadeCommand.Shares.page, it toggles html.cc-shares-on while
+// Loaded on every page through TowerTorch.Shares.page, it toggles html.cc-shares-on while
 // the "Freigaben" area is enabled (default off, since enabling flips Unraid's global tabbed
 // setting), mirrors the theme vars onto the root and badges the tables. The styling lives in
-// sheets/CannonadeCommand.Shares.css, scoped to html.cc-shares-on.
+// sheets/TowerTorch.Shares.css, scoped to html.cc-shares-on.
 (function () {
   "use strict";
   var mo = null, moPending = false, tabbedTried = false;

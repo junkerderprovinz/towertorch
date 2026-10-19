@@ -15,11 +15,11 @@
 // want of a CSS engine in the bare-Node runner.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const DOCKER_CSS = path.join(DIR, 'styles', 'docker.css');
-const VMTAB_CSS = path.join(DIR, 'sheets', 'CannonadeCommand.VmTab.css');
+const VMTAB_CSS = path.join(DIR, 'sheets', 'TowerTorch.VmTab.css');
 const PLUGINS_CSS = DOCKER_CSS; // Plugins' per-item badges are styled in docker.css too
-const SETTINGSGRID_CSS = path.join(DIR, 'sheets', 'CannonadeCommand.SettingsGrid.css');
+const SETTINGSGRID_CSS = path.join(DIR, 'sheets', 'TowerTorch.SettingsGrid.css');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -83,7 +83,7 @@ console.log('\nSettingsGrid has no per-kind badge var, so a new one cannot slip 
 {
   const kindVarRe = /--cc-rb-(net|ip|lan|port|vol|cpu|ram|bw)\b/;
   const sgCss = fs.readFileSync(SETTINGSGRID_CSS, 'utf8');
-  ok('CannonadeCommand.SettingsGrid.css carries no per-kind --cc-rb-<kind>', !kindVarRe.test(sgCss), 'a per-kind var turned up, so SettingsGrid needs the same chain as Docker and VMs');
+  ok('TowerTorch.SettingsGrid.css carries no per-kind --cc-rb-<kind>', !kindVarRe.test(sgCss), 'a per-kind var turned up, so SettingsGrid needs the same chain as Docker and VMs');
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

@@ -2,7 +2,7 @@
 // toggle while everything around it wiggles and drags.
 const fs = require('fs');
 const path = require('path');
-const HEADER = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'header.js');
+const HEADER = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts', 'header.js');
 const src = fs.readFileSync(process.argv[2] || HEADER, 'utf8');
 
 let pass = 0, fail = 0;

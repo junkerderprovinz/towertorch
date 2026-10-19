@@ -1,4 +1,4 @@
-// The share tiles on /Shares (CannonadeCommand.Shares.page, Shares.css, sharetiles.js).
+// The share tiles on /Shares (TowerTorch.Shares.page, Shares.css, sharetiles.js).
 // What can quietly break it:
 //   · a tile rule that is not gated on html.cc-sht-on restyles /Shares with the tiles off
 //   · a reader that only knows Unraid's plain rows and loses a share once shares.js has badged them
@@ -7,7 +7,7 @@
 //   · a second key for the view, or a settings row that writes another one
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; }
 
@@ -15,8 +15,8 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
 const js = read('scripts/sharetiles.js');
-const css = read('sheets/CannonadeCommand.Shares.css');
-const page = read('CannonadeCommand.Shares.page');
+const css = read('sheets/TowerTorch.Shares.css');
+const page = read('TowerTorch.Shares.page');
 
 function grabFn(src, name) {
   const i = src.indexOf('function ' + name + '(');

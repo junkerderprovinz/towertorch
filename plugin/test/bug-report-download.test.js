@@ -4,7 +4,7 @@
 // ccapi.php forwards the engine's endpoint and nothing else new.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
 const proxy = fs.readFileSync(path.join(DIR, 'server/ccapi.php'), 'utf8');
 
@@ -33,7 +33,7 @@ async function run(answer) {
   const fn = new Function('window', 'document', 'fetch', 'URL', 'setTimeout', 'el', 'T', 'failed', 'PROXY', 'REPO', 'CC_VER',
     grabFn(settings, 'downloadBugReport') + '\nreturn downloadBugReport;')(
     win, doc, fetch, { createObjectURL: () => 'blob:x', revokeObjectURL() {} }, () => {}, () => anchor, (d, e) => e,
-    (c, m) => log.fails.push([c, m]), '/plugins/cannonadecommand/server/ccapi.php', 'https://github.com/junkerderprovinz/cannonadecommand', '1.2.0');
+    (c, m) => log.fails.push([c, m]), '/plugins/towertorch/server/ccapi.php', 'https://github.com/junkerderprovinz/towertorch', '1.2.0');
   fn(unit);
   await new Promise((r) => setTimeout(r, 0));
   await new Promise((r) => setTimeout(r, 0));
@@ -44,11 +44,11 @@ async function run(answer) {
   console.log('\nA report that arrives is saved and the form opens');
   {
     const { log, tab } = await run({ ok: true, blob: () => Promise.resolve('report') });
-    ok('it asks the engine through the proxy', log.fetched === '/plugins/cannonadecommand/server/ccapi.php?path=bugreport');
+    ok('it asks the engine through the proxy', log.fetched === '/plugins/towertorch/server/ccapi.php?path=bugreport');
     ok('the form\'s tab opens inside the click, before the answer', log.opened.length === 1 && log.opened[0][0] === 'about:blank');
     ok('that tab gets no handle on this page', tab.opener === null);
-    ok('the file is saved under a dated name', log.clicked.length === 1 && /^cannonadecommand-bugreport-\d{8}-\d{6}\.txt$/.test(log.clicked[0]), log.clicked[0]);
-    ok('the tab goes to the bug form with the version filled in', tab.location.href === 'https://github.com/junkerderprovinz/cannonadecommand/issues/new?template=bug_report.yml&version=1.2.0', tab.location.href);
+    ok('the file is saved under a dated name', log.clicked.length === 1 && /^towertorch-bugreport-\d{8}-\d{6}\.txt$/.test(log.clicked[0]), log.clicked[0]);
+    ok('the tab goes to the bug form with the version filled in', tab.location.href === 'https://github.com/junkerderprovinz/towertorch/issues/new?template=bug_report.yml&version=1.2.0', tab.location.href);
     ok('a toast says to attach the file', log.toasts.length === 1 && /Attach the file/.test(log.toasts[0]));
   }
 

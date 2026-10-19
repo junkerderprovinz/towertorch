@@ -9,8 +9,8 @@
 // letters rather than a flag, so the ISO code is all that has to be right.
 const fs = require('fs');
 const path = require('path');
-const HEADER = process.argv[2] || path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local',
-  'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'header.js');
+const HEADER = process.argv[2] || path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local',
+  'emhttp', 'plugins', 'towertorch', 'scripts', 'header.js');
 
 const src = fs.readFileSync(HEADER, 'utf8');
 function grabFn(name) {

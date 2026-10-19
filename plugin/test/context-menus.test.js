@@ -16,7 +16,7 @@ ok('the menu is dark like the CC windows', val(menu, 'background') === '#1a1a1a'
 ok('on a light theme as well', val(menu, 'background', ['cc-popups-on', 'Theme--white']) === '#1a1a1a');
 ok('with no border', val(menu, 'border') === 'none');
 ok('and the card radius', val(menu, 'border-radius') === 'var(--cc-radius-card)');
-const css = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Header.css'), 'utf8');
+const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8');
 ok('its pointer triangle is gone', css.includes('ul.dropdown-menu.dropdown-context::before,') && css.includes('ul.dropdown-menu.dropdown-context::after { display: none !important; }'));
 
 const entry = { tag: 'a', classes: [], inside: ['.dropdown-context'] };

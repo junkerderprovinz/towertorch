@@ -1,4 +1,4 @@
-/* CannonadeCommand: Unraid's native settings forms as GlimStone cards, on the Settings and Tools
+/* TowerTorch: Unraid's native settings forms as GlimStone cards, on the Settings and Tools
  * sub-pages, the disk, pool and boot device pages and the share edit page. Every rule is scoped to
  * html.cc-forms-on, which scripts/forms.js stamps on those pages, and keys on the classes it puts
  * on Unraid's own markup:
@@ -121,7 +121,7 @@ html.cc-forms-on #displaybox .cc-fm-card dd:has(> textarea) { justify-self: stre
 html.cc-forms-on #displaybox .cc-fm-card :is(.cc-tsel-trigger, .cc-sel-trigger) { min-height: var(--cc-md-h, 30px); }
 html.cc-forms-on #displaybox .cc-fm-card :is(.cc-tsel, .cc-sel) { max-width: 100%; }
 
-/* A colour field: the swatch that opens CannonadeCommand's colour picker and the hex code beside
+/* A colour field: the swatch that opens TowerTorch's colour picker and the hex code beside
    it, as one short control. */
 html.cc-forms-on #displaybox .cc-fm-card dd:has(> .cc-colpick) { flex-wrap: nowrap !important; max-width: none !important; }
 html.cc-forms-on #displaybox .cc-fm-card dd > .cc-colpick { width: 30px !important; height: 30px !important; padding: 3px !important; margin: 0 !important; border-radius: var(--cc-radius-control) !important; overflow: hidden; }

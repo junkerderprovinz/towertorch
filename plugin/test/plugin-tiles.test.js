@@ -1,4 +1,4 @@
-// The plugin tiles on /Plugins (CannonadeCommand.Plugins.page, Plugins.css, plugintiles.js) and the
+// The plugin tiles on /Plugins (TowerTorch.Plugins.page, Plugins.css, plugintiles.js) and the
 // compact rows they are read from (plugins.js). What can quietly break it:
 //   · a tile rule that is not gated, restyling /Plugins with the tiles off
 //   · a reader that loses a plugin once plugins.js has painted its row
@@ -9,7 +9,7 @@
 //   · full-colour logos inked to a blob on the badge
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 function splitTop(sel) { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; }
 
@@ -18,8 +18,8 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 const js = read('scripts/plugintiles.js');
 const plugins = read('scripts/plugins.js');
-const css = read('sheets/CannonadeCommand.Plugins.css');
-const page = read('CannonadeCommand.Plugins.page');
+const css = read('sheets/TowerTorch.Plugins.css');
+const page = read('TowerTorch.Plugins.page');
 
 function grabFn(src, name) {
   const i = src.indexOf('function ' + name + '(');
@@ -97,7 +97,7 @@ const NONE = `<tr><td colspan='6' style='text-align:center;padding-top:12px'><i 
 
 console.log('\nThe hook');
 ok('Plugins.page loads plugintiles.js after plugins.js', /scripts\/plugins\.js[\s\S]*scripts\/plugintiles\.js/.test(page));
-ok('the sheet comes in by its basename, beside the page', fs.existsSync(path.join(DIR, 'sheets', 'CannonadeCommand.Plugins.css')) && !/CannonadeCommand\.Plugins\.css'\)/.test(page));
+ok('the sheet comes in by its basename, beside the page', fs.existsSync(path.join(DIR, 'sheets', 'TowerTorch.Plugins.css')) && !/TowerTorch\.Plugins\.css'\)/.test(page));
 ok('plugins.js hands over to the tiles after painting the rows', /if \(typeof window\.ccPluginTilesApply === "function"\) window\.ccPluginTilesApply\(\);\s*\} catch \(e\) \{\}\s*\}\s*\n\s*\/\/ Adopts/.test(plugins));
 
 console.log('\nEvery rule waits for the Plugins page, the tile rules for the tiles');
@@ -127,7 +127,7 @@ console.log('\nThe readers follow the painted rows');
   ok('the logo is the painted one, inked as the row inks it', demo.logo && demo.logo.tagName === 'IMG' && /cc-plug-tint-wht/.test(demo.logo.getAttribute('style')));
   ok('author and version are the row\'s badges, the changelog its link', !!demo.author && R.clean(R.text(demo.version)) === 'Version2026.05.19' && !!demo.changelog && !demo.newer);
   ok('up to date: Unraid\'s words stay, no update button', !demo.update && /Auf dem neusten Stand/.test(R.text(demo.status)));
-  ok('the trash is the row\'s CannonadeCommand trash', demo.remove && /cc-b-delicon/.test(demo.remove.getAttribute('class')));
+  ok('the trash is the row\'s TowerTorch trash', demo.remove && /cc-b-delicon/.test(demo.remove.getAttribute('class')));
   ok('a glyph logo is read too', other.logo && other.logo.tagName === 'I' && other.launch === '');
   ok('a pending update: the button and the new version', other.update && other.update.getAttribute('value') === 'Aktualisieren' && !!other.newer && !other.status);
   ok('without the trash the native remove button stands in', other.remove && other.remove.getAttribute('type') === 'button');

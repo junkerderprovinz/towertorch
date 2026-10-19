@@ -1,5 +1,5 @@
 // Closing the Startplan window with work in it, a new schedule, a changed watchdog or idle stop,
-// asks "Ungespeicherte Änderungen verwerfen?" in a CannonadeCommand window instead of dropping the
+// asks "Ungespeicherte Änderungen verwerfen?" in a TowerTorch window instead of dropping the
 // work. Every way out a user takes goes through that question: Close, Escape, the scrim and a click
 // outside. An untouched window closes at once, and a save still closes without asking.
 const fs = require('fs');
@@ -33,7 +33,7 @@ console.log('\nThe question');
   const h = harness(true);
   h.env.dismiss();
   ok('a window with unsaved work stays open', h.log.length === 0 && h.env.open() !== null);
-  ok('and asks in a CannonadeCommand window', h.asked.length === 1);
+  ok('and asks in a TowerTorch window', h.asked.length === 1);
   const q = h.asked[0] || {};
   ok('whose title says what happens', q.title === 'Ungespeicherte Änderungen verwerfen?', q.title);
   ok('with "Verwerfen" and "Weiter bearbeiten"', q.ok === 'Verwerfen' && q.cancel === 'Weiter bearbeiten');

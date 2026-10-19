@@ -1,10 +1,10 @@
 Menu="Buttons:94"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-tokens-hook"
 ---
 <?php
-/* Menu="Buttons" makes Unraid auto-inject sheets/CannonadeCommand.Tokens.css into the <head> of
+/* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Tokens.css into the <head> of
    every page. It defines the semantic colour tokens and the size canon once on <html>, so every
    CC sheet inherits them and follows all Unraid themes (the light override keys on
    Theme--white/azure) and the accent/rainbow modes. Loaded at :94, before the area sheets at
@@ -14,5 +14,5 @@ Link="cc-tokens-hook"
    persisted rainbow seed, palette/rbColor) exists before the deferred area scripts run.
    sortreset.js turns Unraid's "Reset sorting" icon on the Docker and VM lists into a CC badge. */
 ?>
-<script src="<?autov('/plugins/cannonadecommand/scripts/cc-theme.js')?>"></script>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/sortreset.js')?>"></script>
+<script src="<?autov('/plugins/towertorch/scripts/cc-theme.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/sortreset.js')?>"></script>

@@ -1,11 +1,11 @@
-/* CannonadeCommand for Unraid's VMs tab: state and info badges, the VM icon tint, the per-VM
+/* TowerTorch for Unraid's VMs tab: state and info badges, the VM icon tint, the per-VM
  * limits and the tiles. It reacts live to settings changes through the storage event and clears
  * itself after an uninstall, when the same-origin proxy answers 404. The selectors follow
  * Unraid's VM manager DOM; a build that renders icons differently gets no tint.
  */
 (function () {
   "use strict";
-  var PROXY = "/plugins/cannonadecommand/server/ccapi.php";
+  var PROXY = "/plugins/towertorch/server/ccapi.php";
   // The filled gear from docker.js (tabler-icons MIT, icons/filled/settings.svg), copied because
   // vms.js cannot rely on docker.js being loaded. Change both together.
   var CC_GEAR_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>';
@@ -347,7 +347,7 @@
   // iptables physdev hashlimit that the monitor re-asserts. docker.css is not loaded on /VMs,
   // so the editor styles itself from the global tokens.
   var VMDE = (function () { try { return /de/i.test(document.documentElement.lang || "") || (localStorage.getItem("locale") || "").indexOf("de") === 0; } catch (e) { return false; } })();
-  var CCPROXY = "/plugins/cannonadecommand/server/ccapi.php";
+  var CCPROXY = "/plugins/towertorch/server/ccapi.php";
   var vmLims = {}; // name -> the VM's current limits from /api/vms
   function vmCsrf() {
     try {
@@ -631,7 +631,7 @@
     var showCpu = which === "all" || which === "cpu", showRam = which === "all" || which === "ram";
     var showBw = which === "all" || which === "bw", showDisk = which === "all" || which === "disk";
     var hasLimFields = showCpu || showRam || showBw;
-    // A CannonadeCommand window anchored at the gear, in the .cc-win template of Tokens.css, the
+    // A TowerTorch window anchored at the gear, in the .cc-win template of Tokens.css, the
     // same frame, title badge, content and button row as Docker's editors.
     var win = el("div", "cc-win"); win.id = "cc-vmlim";
     var titleMap = { cpu: VMDE ? "CPU-Limit" : "CPU limit", ram: VMDE ? "RAM-Limit" : "RAM limit", bw: VMDE ? "Bandbreite" : "Bandwidth", disk: VMDE ? "vDisk-Größe" : "vDisk size", all: VMDE ? "VM-Limits" : "VM limits" };
@@ -1353,7 +1353,7 @@
     }, 4000);
   }
   function boot() {
-    // Loaded on every page through CannonadeCommand.VmTab.page, so it gates itself to /VMs;
+    // Loaded on every page through TowerTorch.VmTab.page, so it gates itself to /VMs;
     // otherwise its polling timers would run everywhere.
     try { if (location.pathname.replace(/\/+$/, "") !== "/VMs") return; } catch (e) { return; }
     try { window.ccVmsApply = apply; } catch (e) {} // the settings page's live toggle hook

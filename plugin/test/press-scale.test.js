@@ -5,14 +5,14 @@
 // hover lift and anything a control positions itself with.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 const clean = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
-const tokens = clean(read('sheets/CannonadeCommand.Tokens.css'));
+const tokens = clean(read('sheets/TowerTorch.Tokens.css'));
 // the gate that holds the press rule
 let gate = '';
 for (let i = tokens.indexOf('@media (prefers-reduced-motion: no-preference)'); i >= 0; i = tokens.indexOf('@media (prefers-reduced-motion: no-preference)', i + 1)) {

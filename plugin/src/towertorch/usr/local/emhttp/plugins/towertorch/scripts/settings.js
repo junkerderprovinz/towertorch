@@ -1,4 +1,4 @@
-/* The CannonadeCommand settings page. Client-side only: it renders a card-based form into
+/* The TowerTorch settings page. Client-side only: it renders a card-based form into
  * #cc-settings and persists to localStorage under the cc.* keys, which the Docker-tab enhancer reads
  * and reacts to live through the storage event. */
 (function () {
@@ -152,7 +152,7 @@
       "#cc-settings .cc-tile-paypal{--cc-tile:#003087;--cc-tile-ink:#fff}" +
       "#cc-settings .cc-tile-bitcoin{--cc-tile:#f7931a;--cc-tile-ink:#161616}" +
       "#cc-settings .cc-tile-coffee{--cc-tile:#ffdd00;--cc-tile-ink:#0d0c22}" +
-      // The button that reaches CannonadeCommand's author follows the colour engine.
+      // The button that reaches TowerTorch's author follows the colour engine.
       "#cc-settings .cc-tile-house{--cc-tile:var(--cc-rb-c,var(--cc-rbaccent,var(--cc-accent,#FCC419)));--cc-tile-ink:var(--cc-rb-ct,var(--cc-rbaccent-text,var(--cc-accent-text,#161616)))}" +
       "#cc-settings .cc-rbtn-unit .cc-rbtn:focus-visible .cc-house-mark .cc-mark-rest{display:none}" +
       "#cc-settings .cc-rbtn-unit .cc-rbtn:focus-visible .cc-house-mark .cc-mark-hover{display:block}" +
@@ -188,10 +188,10 @@
   var CC_VER = "@@CCVER@@"; if (CC_VER.indexOf("@@") === 0) CC_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
   var GLS_VER = "3.5.0";
-  var REPO = "https://github.com/junkerderprovinz/cannonadecommand";
+  var REPO = "https://github.com/junkerderprovinz/towertorch";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
-  var LATEST_API = "https://api.github.com/repos/junkerderprovinz/cannonadecommand/releases/latest";
-  var RELEASES_API = "https://api.github.com/repos/junkerderprovinz/cannonadecommand/releases";
+  var LATEST_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest";
+  var RELEASES_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases";
 
   var COLS = [
     { key: "update", label: T("Update-Status", "Update status"), help: T("Ob für das Image ein Update bereitsteht.", "Whether an update is waiting for the image.") },
@@ -282,7 +282,7 @@
   var OFF_BY_DEFAULT = { "cc.enable.main": true, "cc.enable.header": true, "cc.enable.shares": true };
   // render() points this at its own tabs; a row that names who decides its value jumps there.
   var jumpTo = function () {};
-  // The colour field is CannonadeCommand's one colour picker, shared through cc-theme.js with the
+  // The colour field is TowerTorch's one colour picker, shared through cc-theme.js with the
   // colour fields of Unraid's own forms.
   var PRESETS = window.CCTheme.PRESETS, colourField = window.CCTheme.colorPicker, swMark = window.CCTheme.swMark, swMarkRow = window.CCTheme.swMarkRow;
 
@@ -327,7 +327,7 @@
   // Notifications are engine config rather than localStorage, loaded and saved through the
   // same-origin proxy. The whole config is kept, so a save here never drops the per-container
   // schedules and watchdogs set in the Docker tab.
-  var PROXY = "/plugins/cannonadecommand/server/ccapi.php";
+  var PROXY = "/plugins/towertorch/server/ccapi.php";
   var fullConfig = { schedules: [], watchdogs: [], notify: { unraid: false, webhook: "" } };
   var notify = { unraid: false, webhook: "" };
   var shapeIface = "";       // the interface the egress shaping runs on; blank means eth0
@@ -997,8 +997,8 @@
     // change up through their storage listeners or on the next load.
     var themingCard; // the first Allgemein card, which the backup section moves into
     (function () {
-      var tc = card(T("Theming", "Theming"), T("Aus: nur die Docker-Funktionen von CannonadeCommand bleiben (Startplan, Abhängigkeiten, Health-Gate, Watchdog, Zeitpläne, Limits, Bandbreite, Auto-Stop bei Leerlauf). Das gesamte visuelle Theming, also Badges, Farben, Rainbow, Karten und die Umgestaltung aller Tabs, wird abgeschaltet.", "Off: only CannonadeCommand's Docker functions remain (start plan, dependencies, health gate, watchdog, schedules, limits, bandwidth, idle auto-stop). All visual theming, meaning badges, colours, rainbow, cards and every tab's restyling, is turned off."));
-      tc.appendChild(toggleRow(T("Theming aktiv", "Theming on"), T("Schaltet das Aussehen von CannonadeCommand an oder aus, die Docker-Funktionen arbeiten weiter.", "Turns CannonadeCommand's look on or off, while the Docker functions keep working."), localStorage.getItem("cc.theming") !== "0", function (v) { set("cc.theming", v ? "1" : "0"); render(); syncHeaderBar(); syncSharesBar(); }));
+      var tc = card(T("Theming", "Theming"), T("Aus: nur die Docker-Funktionen von TowerTorch bleiben (Startplan, Abhängigkeiten, Health-Gate, Watchdog, Zeitpläne, Limits, Bandbreite, Auto-Stop bei Leerlauf). Das gesamte visuelle Theming, also Badges, Farben, Rainbow, Karten und die Umgestaltung aller Tabs, wird abgeschaltet.", "Off: only TowerTorch's Docker functions remain (start plan, dependencies, health gate, watchdog, schedules, limits, bandwidth, idle auto-stop). All visual theming, meaning badges, colours, rainbow, cards and every tab's restyling, is turned off."));
+      tc.appendChild(toggleRow(T("Theming aktiv", "Theming on"), T("Schaltet das Aussehen von TowerTorch an oder aus, die Docker-Funktionen arbeiten weiter.", "Turns TowerTorch's look on or off, while the Docker functions keep working."), localStorage.getItem("cc.theming") !== "0", function (v) { set("cc.theming", v ? "1" : "0"); render(); syncHeaderBar(); syncSharesBar(); }));
       themingCard = tc;
       wrapMain.appendChild(tc);
     })();
@@ -1032,15 +1032,15 @@
         var r = el("div", "cc-set-row cc-set-inline");
         var rl = el("span", "cc-set-lblwrap");
         rl.appendChild(el("span", null, T("Native Anzeige-Seite", "Native display page")));
-        rl.appendChild(infoIcon(T("Öffnet Unraids Anzeige-Einstellungen im CannonadeCommand-Stil. Dort liegen unter anderem die Kopfzeilen-Farben, das Banner und die Favoriten-Option.", "Opens Unraid's Display Settings in CannonadeCommand style, where the header colours, the banner and the favourites option live.")));
+        rl.appendChild(infoIcon(T("Öffnet Unraids Anzeige-Einstellungen im TowerTorch-Stil. Dort liegen unter anderem die Kopfzeilen-Farben, das Banner und die Favoriten-Option.", "Opens Unraid's Display Settings in TowerTorch style, where the header colours, the banner and the favourites option live.")));
         r.appendChild(rl);
         var b = el("button", "cc-btn", T("Öffnen", "Open")); b.type = "button";
         b.style.marginLeft = "auto";   // flush right, like the switches in the rows around it
         b.addEventListener("click", function () { location.href = "/Settings/DisplaySettings"; });
         r.appendChild(b); cCard.appendChild(r);
         var arLabel = T("Kopf-Farben ans Thema koppeln", "Match header colours to the theme");
-        var arHelp = T("An: die Kopfzeilen-Hintergrund- und Textfarbe folgen automatisch Unraids Farbschema, also dunkler Hintergrund mit heller Schrift beim dunklen Thema und umgekehrt. Wirkt, wenn CannonadeCommands Kopfbereich aus ist.", "On: the header background and text colour follow Unraid's colour scheme automatically, dark background with light text on a dark theme and the reverse on a light one. Applies while CannonadeCommand's header area is off.");
-        // CannonadeCommand's own header area paints over the native colours, so while it is on the
+        var arHelp = T("An: die Kopfzeilen-Hintergrund- und Textfarbe folgen automatisch Unraids Farbschema, also dunkler Hintergrund mit heller Schrift beim dunklen Thema und umgekehrt. Wirkt, wenn TowerTorchs Kopfbereich aus ist.", "On: the header background and text colour follow Unraid's colour scheme automatically, dark background with light text on a dark theme and the reverse on a light one. Applies while TowerTorch's header area is off.");
+        // TowerTorch's own header area paints over the native colours, so while it is on the
         // switch has nothing to show and the line says so.
         if (areaOn("cc.enable.header")) cCard.appendChild(lockRow(arLabel, T("Übermalt vom Kopfbereich", "Painted over by the header area"), T("Zu den Bereichen", "Go to Areas"), function () { jumpTo("general", T("Bereiche", "Areas")); }, arHelp));
         else cCard.appendChild(toggleRow(arLabel, arHelp, get("cc.hdrauto", "1") === "1", function (v) { set("cc.hdrauto", v ? "1" : "0"); if (v) applyHdrAuto(); }));
@@ -1063,9 +1063,9 @@
         } catch (e9) {}
       }).catch(function () {});
     })();
-    // Bereiche: enable/disable each area CannonadeCommand enhances
+    // Bereiche: enable/disable each area TowerTorch enhances
     (function () {
-      var c = card(T("Bereiche", "Areas"), T("Aktiviere, welche Bereiche CannonadeCommand verschönert. Ein deaktivierter Bereich blendet seinen Tab hier sofort aus.", "Choose which areas CannonadeCommand enhances. Disabling an area hides its tab here immediately."));
+      var c = card(T("Bereiche", "Areas"), T("Aktiviere, welche Bereiche TowerTorch verschönert. Ein deaktivierter Bereich blendet seinen Tab hier sofort aus.", "Choose which areas TowerTorch enhances. Disabling an area hides its tab here immediately."));
       [
         ["cc.enable.main", T("Start", "Main"), "0", T("Gestaltet den Tab Start mit dem Array und seinen Laufwerken.", "Styles the Main tab with the array and its disks.")],
         ["cc.enable.header", T("Kopfbereich", "Header area"), "0", T("Gestaltet die Menüleiste, den Streifen darüber mit der Status-Insel und die Übersicht.", "Styles the menu bar, the strip above it with the status island, and the Dashboard.")],
@@ -1100,7 +1100,7 @@
           });
           natRow.appendChild(natTgl);
           var lw = el("span", "cc-set-lblwrap"); lw.appendChild(el("span", null, a[1])); row.appendChild(lw);
-          lw.appendChild(infoIcon(T("Gestaltet den Favoriten-Tab im CannonadeCommand-Stil. Dafür müssen die Favoriten in Unraid an sein.", "Styles the Favorites tab in CannonadeCommand's look. Needs favourites turned on in Unraid.")));
+          lw.appendChild(infoIcon(T("Gestaltet den Favoriten-Tab im TowerTorch-Stil. Dafür müssen die Favoriten in Unraid an sein.", "Styles the Favorites tab in TowerTorch's look. Needs favourites turned on in Unraid.")));
           var favTgl = toggle(cur == null ? true : cur !== "0", function (v) { localStorage.setItem("cc.enable.favorites", v ? "1" : "0"); refreshTabs(); });
           row.appendChild(favTgl);
           var favGate = function (live) {
@@ -1328,7 +1328,7 @@
     // drive the same engine. The picker searches
     // by name and shows real flag images; an emoji flag renders as two letter boxes on Windows.
     if (window.CC_FLAGS && window.CC_FLAGS.length) {
-      var FLAG_BASE = "/plugins/cannonadecommand/images/flags/";
+      var FLAG_BASE = "/plugins/towertorch/images/flags/";
       // The bundled SVG shows the country's actual pattern, and a code with no SVG falls back to
       // the colour-stripe swatch.
       var flagImg = function (f9, big) {
@@ -1552,8 +1552,8 @@
         [["auto", T("Automatisch", "Automatic"), "IconTintAuto"], ["native", T("Natives Icon", "Native icon"), "IconTintNative"], ["flat", T("Nachzeichnen", "Redraw"), "IconTintFlatten"], ["tint", T("Tönen", "Tone"), "IconTintLuminance"]],
         get("cc.iconmode", "auto"),
         function (v) { set("cc.iconmode", v); gsync(); },
-        T("Ein Logo ist entweder eine einzelne durchgehende Form oder ein kleines mehrfarbiges Bild. Eine Form kann man komplett in deiner Farbe nachzeichnen und sie bleibt erkennbar; ein Bild würde dabei zum Farbklecks, weil Hintergrund und Motiv dieselbe Farbe bekämen. Darum zwei Behandlungen:\n\nAutomatisch (empfohlen): CannonadeCommand sieht sich jedes Logo an. Formen werden nachgezeichnet, für bekannte Programme wird dafür sogar ein echtes Marken-Logo geholt; Bilder werden nur eingefärbt.\nNatives Icon: nichts einfärben. Für bekannte Programme nimmt CannonadeCommand dabei ein sauberes Marken-Logo in seinen eigenen Farben, sonst bleibt das Logo, wie es ist.\nNachzeichnen: alles nachzeichnen, auch Bilder.\nTönen: alles nur einfärben, auch Formen.\n\nDie Wahl wirkt, sobald „Icons einfärben“ an ist. Einzelne Container, VMs und Plugins kannst du in ihrem eigenen Fenster abweichend einstellen; diese Einzelwahl gewinnt immer gegen die Einstellung hier. Ganz unverändert bleibt ein Logo mit „Original-Logo“ im Startplan-Fenster des Containers.",
-          "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): CannonadeCommand looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app CannonadeCommand still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window leaves its logo completely untouched."));
+        T("Ein Logo ist entweder eine einzelne durchgehende Form oder ein kleines mehrfarbiges Bild. Eine Form kann man komplett in deiner Farbe nachzeichnen und sie bleibt erkennbar; ein Bild würde dabei zum Farbklecks, weil Hintergrund und Motiv dieselbe Farbe bekämen. Darum zwei Behandlungen:\n\nAutomatisch (empfohlen): TowerTorch sieht sich jedes Logo an. Formen werden nachgezeichnet, für bekannte Programme wird dafür sogar ein echtes Marken-Logo geholt; Bilder werden nur eingefärbt.\nNatives Icon: nichts einfärben. Für bekannte Programme nimmt TowerTorch dabei ein sauberes Marken-Logo in seinen eigenen Farben, sonst bleibt das Logo, wie es ist.\nNachzeichnen: alles nachzeichnen, auch Bilder.\nTönen: alles nur einfärben, auch Formen.\n\nDie Wahl wirkt, sobald „Icons einfärben“ an ist. Einzelne Container, VMs und Plugins kannst du in ihrem eigenen Fenster abweichend einstellen; diese Einzelwahl gewinnt immer gegen die Einstellung hier. Ganz unverändert bleibt ein Logo mit „Original-Logo“ im Startplan-Fenster des Containers.",
+          "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): TowerTorch looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app TowerTorch still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window leaves its logo completely untouched."));
       cLI.appendChild(modeRow);
       cLI.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview")));
       // Three preview sections, each with that area's real icons, each running the same pipeline
@@ -1640,9 +1640,9 @@
     // needs it to look a glyph up and to honour a per-container pin.
     rowIcons("docker", 4).then(function (l9) {
       (l9 || []).forEach(function (it9) { dockPrev.add(it9.src, it9.name || ""); });
-      if (!dockPrev.count()) dockPrev.add("/plugins/cannonadecommand/images/cannonadecommand.png", "");
+      if (!dockPrev.count()) dockPrev.add("/plugins/towertorch/images/towertorch.png", "");
       tintPrev();
-    }).catch(function () { dockPrev.add("/plugins/cannonadecommand/images/cannonadecommand.png", ""); tintPrev(); });
+    }).catch(function () { dockPrev.add("/plugins/towertorch/images/towertorch.png", ""); tintPrev(); });
     function tintPrev() {
       dockPrev.set({ bg: get("cc.iconbg", "0") === "1", bgColor: get("cc.iconbgcolor", ""), tint: tintOnAt("cc."), color: get("cc.iconcolor", ""), adopt: get("cc.iconbgrainbow", "0") === "1", strength: parseInt(get("cc.iconstrength", "100"), 10) || 100, accent: get("cc.accent", "#FCC419") });
     }
@@ -1787,7 +1787,7 @@
       var row = el("div", "cc-set-row cc-set-inline");
       var lw = el("span", "cc-set-lblwrap");
       lw.appendChild(el("span", null, T("Tabansicht", "Tabbed view")));
-      lw.appendChild(infoIcon(T("Aus: die Unterreiter dieses Tabs werden als CannonadeCommand-Abschnitte untereinander gestapelt. Unraids globale Tabansicht ist der Master: steht sie auf „Ohne Tabs“, rendert Unraid überall Abschnitte und dieser Schalter wirkt nicht.", "Off: this tab's sub-tabs stack as CannonadeCommand sections. Unraid's own tabbed view is the master: set to non-tabbed, Unraid renders sections everywhere and this switch has no effect.")));
+      lw.appendChild(infoIcon(T("Aus: die Unterreiter dieses Tabs werden als TowerTorch-Abschnitte untereinander gestapelt. Unraids globale Tabansicht ist der Master: steht sie auf „Ohne Tabs“, rendert Unraid überall Abschnitte und dieser Schalter wirkt nicht.", "Off: this tab's sub-tabs stack as TowerTorch sections. Unraid's own tabbed view is the master: set to non-tabbed, Unraid renders sections everywhere and this switch has no effect.")));
       row.appendChild(lw);
       row.appendChild(toggle(get("cc.sections." + area, "0") === "0", function (v) { set("cc.sections." + area, v ? "0" : "1"); if (applyFn) applyFn(); }));
       return row;
@@ -2044,7 +2044,7 @@
       // A name for CC's header alone: Unraid's own server name stays as it is, and an empty field
       // shows it again. The field shows it as the placeholder, read where header.js reads it.
       var nmRow = el("div", "cc-set-row"), nmL = el("span", "cc-set-rl", T("Angezeigter Name", "Display name"));
-      nmL.appendChild(infoIcon(T("Der Name, den CannonadeCommand oben links im Kopfbereich zeigt. Leer zeigt Unraids Servernamen. Unraids eigener Servername bleibt dabei, wie er ist.", "The name CannonadeCommand shows at the top left of the header. Empty shows Unraid's server name. Unraid's own server name stays as it is.")));
+      nmL.appendChild(infoIcon(T("Der Name, den TowerTorch oben links im Kopfbereich zeigt. Leer zeigt Unraids Servernamen. Unraids eigener Servername bleibt dabei, wie er ist.", "The name TowerTorch shows at the top left of the header. Empty shows Unraid's server name. Unraid's own server name stays as it is.")));
       var nmIn = el("input", "cc-set-txt"); nmIn.id = "cc-set-brandname"; nmIn.type = "text"; nmIn.maxLength = 40; nmIn.spellcheck = false;
       nmIn.value = get("cc.brand.name", ""); nmIn.placeholder = (document.title.split("/")[0] || "").trim() || "Unraid";
       nmIn.addEventListener("input", function () { var v = nmIn.value.trim(); if (v) set("cc.brand.name", v); else del("cc.brand.name"); syncHeaderBar(); });
@@ -2134,8 +2134,8 @@
     buildStyleCards("ccsh.", wrapShares, [], true); // the shares tab pills are glyphs, so badges only
     buildStyleCards("ccs.", wrapSettings, ["fa-cog", "fa-globe", "fa-star"], false); // the settings tiles are glyphs, so the preview shows sample ones
     buildStyleCards("cct.", wrapTools, ["fa-wrench", "fa-terminal", "fa-hdd-o"], false);
-    buildStyleCards("ccp.", wrapPlugin, ["/plugins/dynamix.plugin.manager/images/dynamix.plugin.manager.png", "/plugins/dynamix.docker.manager/images/dynamix.docker.manager.png", "/plugins/cannonadecommand/images/cannonadecommand.png"]);
-    buildStyleCards("ccv.", wrapVms, ["/plugins/dynamix.vm.manager/templates/images/linux.png", "/plugins/dynamix.vm.manager/templates/images/windows.png", "/plugins/cannonadecommand/images/cannonadecommand.png"]);
+    buildStyleCards("ccp.", wrapPlugin, ["/plugins/dynamix.plugin.manager/images/dynamix.plugin.manager.png", "/plugins/dynamix.docker.manager/images/dynamix.docker.manager.png", "/plugins/towertorch/images/towertorch.png"]);
+    buildStyleCards("ccv.", wrapVms, ["/plugins/dynamix.vm.manager/templates/images/linux.png", "/plugins/dynamix.vm.manager/templates/images/windows.png", "/plugins/towertorch/images/towertorch.png"]);
     buildStyleCards("ccf.", wrapFavorites, ["fa-star", "fa-heart", "fa-cog"], false); // glyph tiles again
     buildStyleCards("ccm.", wrapStart, [], true); // /Main has value and name badges but no per-row logos
     // Export, import and reset of every cc-family setting, one row in the Theming card with the
@@ -2144,13 +2144,13 @@
       var cX = themingCard;
       var lblw = el("span", "cc-set-lblwrap");
       lblw.appendChild(el("span", null, T("Sichern & Übertragen", "Backup & transfer")));
-      lblw.appendChild(infoIcon(T("Exportiert alle CannonadeCommand-Einstellungen (cc.*-Schlüssel) als JSON-Datei. Der Import schreibt sie zurück und lädt die Seite neu.", "Exports every CannonadeCommand setting (cc.* keys) as a JSON file. Import writes them back and reloads the page.")));
+      lblw.appendChild(infoIcon(T("Exportiert alle TowerTorch-Einstellungen (cc.*-Schlüssel) als JSON-Datei. Der Import schreibt sie zurück und lädt die Seite neu.", "Exports every TowerTorch setting (cc.* keys) as a JSON file. Import writes them back and reloads the page.")));
       var ex = el("span", "cc-btn cc-set-xbtn", T("Exportieren", "Export"));
       ex.addEventListener("click", function () {
         try {
           // every cc-family key but cc.stateCache, the same set the engine mirrors
           var blob = new Blob([JSON.stringify(collectUISettings(), null, 2)], { type: "application/json" });
-          var a = el("a"); a.href = URL.createObjectURL(blob); a.download = "cannonadecommand-settings.json";
+          var a = el("a"); a.href = URL.createObjectURL(blob); a.download = "towertorch-settings.json";
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
           setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
         } catch (e) { failed(ex, T("Export fehlgeschlagen: ", "Export failed: ") + ((e && e.message) || e)); }
@@ -2193,8 +2193,8 @@
         if (!window.CCTheme || !window.CCTheme.ask) return;
         window.CCTheme.ask({
           title: T("Alle Einstellungen zurücksetzen?", "Reset all settings?"),
-          text: T("Alles, was CannonadeCommand im Browser speichert, also Farben, Form und Bereiche, geht auf den Standard zurück, die Kopie in der Engine auch. Danach lädt die Seite neu. Startplan, Zeitpläne, Limits und Benachrichtigungen bleiben.",
-            "Everything CannonadeCommand keeps in the browser, such as colours, shape and areas, goes back to its default, including the engine's copy, and the page reloads. The start plan, schedules, limits and notifications stay."),
+          text: T("Alles, was TowerTorch im Browser speichert, also Farben, Form und Bereiche, geht auf den Standard zurück, die Kopie in der Engine auch. Danach lädt die Seite neu. Startplan, Zeitpläne, Limits und Benachrichtigungen bleiben.",
+            "Everything TowerTorch keeps in the browser, such as colours, shape and areas, goes back to its default, including the engine's copy, and the page reloads. The start plan, schedules, limits and notifications stay."),
           ok: T("Zurücksetzen", "Reset"), cancel: T("Abbrechen", "Cancel"), danger: true, opener: rs, onOk: resetAll
         });
       });
@@ -2264,14 +2264,14 @@
       cHelp.appendChild(el("p", "cc-set-prose", T("Probleme, Wünsche oder Vorschläge? Mach gern ein Issue auf GitHub auf, oder schreib eine E-Mail.", "Problems, wishes or suggestions? You're welcome to open an issue on GitHub, or send an email.")));
       var hrow = el("div", "cc-rbtn-rows");
       hrow.appendChild(readmeBtn({ brand: "github", name: "GitHub", mark: BRAND_MARKS.github, href: REPO }));
-      hrow.appendChild(readmeBtn({ brand: "house", name: T("E-Mail", "Email"), mark: BRAND_MARKS.mail, href: "mailto:hello@halleluja.design?subject=CannonadeCommand" }));
+      hrow.appendChild(readmeBtn({ brand: "house", name: T("E-Mail", "Email"), mark: BRAND_MARKS.mail, href: "mailto:hello@halleluja.design?subject=TowerTorch" }));
       var bug = readmeBtn({ brand: "house", name: T("Fehlerbericht", "Bug report"), sub: T("Herunterladen", "Download"), mark: BRAND_MARKS.bug, run: function () { downloadBugReport(bug); } });
       hrow.appendChild(bug);
       cHelp.appendChild(hrow);
       wrapInfo.appendChild(cHelp);
 
       var cAbout = card(T("Über", "About"));
-      cAbout.appendChild(el("p", "cc-set-prose", T("CannonadeCommand ist ein kostenloses Plugin für Unraids Docker-, Plugin- und VM-Tabs, gebaut von einem einzelnen Ritter an Abenden und Wochenenden, ohne Konto, ohne Telemetrie und ohne Werbung.", "CannonadeCommand is a free plugin for Unraid's Docker, Plugins and VM tabs, built by one knight on evenings and weekends, with no accounts, no telemetry and no ads.")));
+      cAbout.appendChild(el("p", "cc-set-prose", T("TowerTorch ist ein kostenloses Plugin für Unraids Docker-, Plugin- und VM-Tabs, gebaut von einem einzelnen Ritter an Abenden und Wochenenden, ohne Konto, ohne Telemetrie und ohne Werbung.", "TowerTorch is a free plugin for Unraid's Docker, Plugins and VM tabs, built by one knight on evenings and weekends, with no accounts, no telemetry and no ads.")));
       cAbout.appendChild(el("p", "cc-set-prose", T("Wenn es sich einen Platz auf deinem Server verdient hat, wirf deinem Ritter eine Münze zu: Das hilft bei den Kosten und hält das Projekt am Leben.", "If it has earned a place on your server, toss a coin to your knight: it helps cover the costs and keeps the project alive.")));
       // The give row in its house form: hosted pages first, the wallet last.
       var give = el("div", "cc-rbtn-rows cc-set-give");
@@ -2418,7 +2418,7 @@
       .then(function (blob) {
         var d = new Date(), p = function (n) { return ("0" + n).slice(-2); };
         var a = el("a"); a.href = URL.createObjectURL(blob);
-        a.download = "cannonadecommand-bugreport-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + ".txt";
+        a.download = "towertorch-bugreport-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + ".txt";
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
         var form = REPO + "/issues/new?template=bug_report.yml&version=" + encodeURIComponent(CC_VER);

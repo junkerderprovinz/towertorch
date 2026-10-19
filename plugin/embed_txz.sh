@@ -1,5 +1,5 @@
 #!/bin/bash
-# Splice the built .txz into cannonadecommand.plg's txz FILE stanza as base64,
+# Splice the built .txz into towertorch.plg's txz FILE stanza as base64,
 # replacing whatever sits between its <INLINE> tags: the @@TXZ_BASE64@@
 # placeholder on a fresh checkout, or a prior release's blob.
 #
@@ -7,7 +7,7 @@
 #
 # Run it after plugin/pkg_build.sh <VERSION>. With the blob embedded, the reinstall
 # Unraid's rc.local runs at boot needs no network; the comment above the FILE
-# stanza in cannonadecommand.plg says why that matters.
+# stanza in towertorch.plg says why that matters.
 #
 # Type="base64" has to sit on the <FILE> tag rather than the nested <INLINE> one,
 # because dynamix.plugin.manager reads $file->attributes()->Type off the FILE
@@ -17,8 +17,8 @@ set -euo pipefail
 
 VERSION="${1:?usage: embed_txz.sh <VERSION>}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PLG="$ROOT/plugin/cannonadecommand.plg"
-TXZ="$ROOT/plugin/out/cannonadecommand-$VERSION-x86_64-1.txz"
+PLG="$ROOT/plugin/towertorch.plg"
+TXZ="$ROOT/plugin/out/towertorch-$VERSION-x86_64-1.txz"
 
 [ -f "$TXZ" ] || { echo "missing $TXZ, run pkg_build.sh $VERSION first" >&2; exit 1; }
 

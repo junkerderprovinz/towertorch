@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/hostcpu"
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/hostcpu"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // fakeHostMem is what the fake daemon reports, used where /proc/meminfo is
@@ -539,7 +539,7 @@ func TestBugReportIsARedactedDownload(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("code = %d", rec.Code)
 	}
-	if cd := rec.Header().Get("Content-Disposition"); !strings.HasPrefix(cd, `attachment; filename="cannonadecommand-bugreport-`) {
+	if cd := rec.Header().Get("Content-Disposition"); !strings.HasPrefix(cd, `attachment; filename="towertorch-bugreport-`) {
 		t.Errorf("Content-Disposition = %q", cd)
 	}
 	body := rec.Body.String()

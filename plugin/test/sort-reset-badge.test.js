@@ -1,12 +1,12 @@
 // Unraid's "Reset sorting" icon on the Docker and VM lists becomes a CC badge (sortreset.js,
-// loaded on every page from CannonadeCommand.Tokens.page). What can quietly break it:
+// loaded on every page from TowerTorch.Tokens.page). What can quietly break it:
 //   · the badge showing on a list in Unraid's own order, or missing on one the user arranged
 //   · a click that does nothing because Unraid's lock is closed, or that leaves the lock open
 //   · Unraid's icon vanishing with theming off, or standing next to the badge with it on
 //   · a size or colour of its own instead of the icon badge token and the accent
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -20,7 +20,7 @@ function grabFn(src, name) {
   throw new Error('unbalanced function: ' + name);
 }
 
-const js = read('scripts/sortreset.js'), theme = read('scripts/cc-theme.js'), tokens = read('sheets/CannonadeCommand.Tokens.css'), page = read('CannonadeCommand.Tokens.page');
+const js = read('scripts/sortreset.js'), theme = read('scripts/cc-theme.js'), tokens = read('sheets/TowerTorch.Tokens.css'), page = read('TowerTorch.Tokens.page');
 const LISTS = /var LISTS = \{[^\n]+\};/.exec(js)[0];
 
 console.log('\nAn arranged list is told from Unraid\'s name order');
@@ -114,7 +114,7 @@ console.log('\nThe badge stands in for Unraid\'s icon and shows only while there
 
 console.log('\nWhere it loads and how it looks');
 {
-  ok('Tokens.page loads sortreset.js deferred, after cc-theme.js', /scripts\/cc-theme\.js'\)\?>"><\/script>\n<script defer src="<\?autov\('\/plugins\/cannonadecommand\/scripts\/sortreset\.js'\)\?>"><\/script>/.test(page));
+  ok('Tokens.page loads sortreset.js deferred, after cc-theme.js', /scripts\/cc-theme\.js'\)\?>"><\/script>\n<script defer src="<\?autov\('\/plugins\/towertorch\/scripts\/sortreset\.js'\)\?>"><\/script>/.test(page));
   ok('it watches the list body, where Unraid refills and drags', /new MutationObserver\(soon\)\.observe\(tb, \{ childList: true \}\);/.test(js));
   ok('Sort is in the glyph set', /^    "Sort": \["0\.042 0 14 14", '<path fill-rule="evenodd" d="M3\.75002 0c/m.test(theme));
   const body = (sel) => { const i = tokens.indexOf(sel + ' {'); return i < 0 ? '' : tokens.slice(i, tokens.indexOf('}', i)); };

@@ -4,7 +4,7 @@
 // stay UD's own nodes, so UD's handlers keep answering, and no badge line keeps room for them.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const shares = read('scripts/shares.js');
 
@@ -196,7 +196,7 @@ console.log('\nIn the list the controls go back to the section head');
 
 console.log('\nThe card is laid out like a settings card');
 {
-  const disks = rules(read('sheets/CannonadeCommand.Disks.css'));
+  const disks = rules(read('sheets/TowerTorch.Disks.css'));
   const find = (re, media) => disks.find((r) => re.test(r.sel) && (media ? re.test(r.sel) && media.test(r.media) : !r.media));
   const unit = find(/\.cc-ud-panel \.cc-ud-unit$/);
   const lbl = find(/\.cc-ud-panel \.cc-ud-lbl$/);
@@ -206,13 +206,13 @@ console.log('\nThe card is laid out like a settings card');
   ok('the card is as wide as its lines beside the other three', !!card && /flex: none/.test(card.body));
   const phone = disks.find((r) => /\.cc-dk-udrow > \.cc-ud-panel/.test(r.sel) && /max-width: 600px/.test(r.media));
   ok('and on a phone as wide as the screen, like them', !!phone && /flex: 1 1 100%/.test(phone.body));
-  const fill = rules(read('sheets/CannonadeCommand.Shares.css')).find((r) => r.sel.split(',').some((s) => /#displaybox \.cc-ud-panel > div\.title$/.test(s.trim())));
+  const fill = rules(read('sheets/TowerTorch.Shares.css')).find((r) => r.sel.split(',').some((s) => /#displaybox \.cc-ud-panel > div\.title$/.test(s.trim())));
   ok('its badge line has no fill, like the badge lines of UD\'s parts', !!fill && /background: none !important/.test(fill.body));
 }
 
 console.log('\nNo badge line keeps room for the controls');
 {
-  const css = read('sheets/CannonadeCommand.Disks.css');
+  const css = read('sheets/TowerTorch.Disks.css');
   ok('shares.js measures nothing', !/ResizeObserver|--cc-ud-ctrls-w|ccUdCtrlsMeasure/.test(shares));
   ok('no badge line keeps their width free', !/--cc-ud-ctrls-w/.test(css) && !rules(css).some((r) => /\.cc-dk-udrow.*div\.title/.test(r.sel) && /padding-right/.test(r.body)));
   const head = rules(css).find((r) => /section\.cc-dk-box:has\(> \.cc-dk-udrow\) > \.cc-card-head$/.test(r.sel) && !r.media);

@@ -84,7 +84,7 @@ console.log('\nA drag');
 
 console.log('\nThe array operations on a narrow page');
 {
-  const css = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Shares.css'), 'utf8');
+  const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Shares.css'), 'utf8');
   const narrow = css.slice(css.indexOf('@media (max-width: 1023px)'));
   const body = narrow.slice(0, narrow.indexOf('\n}\n'));
   const rules = parseRules(body.slice(body.indexOf('{') + 1));
@@ -101,7 +101,7 @@ console.log('\nThe array operations on a narrow page');
 
 console.log('\nThe header on a phone');
 {
-  const css = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.Header.css'), 'utf8');
+  const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8');
   const at = css.indexOf('/* On a phone the name and the island');
   const block = css.slice(css.indexOf('@media (max-width: 767.98px) {', at), css.indexOf('\n}\n', at));
   ok('the island goes under a long server name instead of past the edge', /#header \{ flex-wrap: wrap;/.test(block) && /#cc-island \{[^}]*order: 3; flex: 1 0 100%;/.test(block));

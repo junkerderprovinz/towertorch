@@ -1,10 +1,10 @@
 Menu="Buttons:98"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-vmtab-hook"
 ---
 <?php
-/* Registered under Menu="Buttons" so Unraid auto-injects sheets/CannonadeCommand.VmTab.css into
+/* Registered under Menu="Buttons" so Unraid auto-injects sheets/TowerTorch.VmTab.css into
    the <head> of every page, like the Header/Shares/SettingsGrid hooks; a <link> in a Menu="VMs"
    page does not load. All rules are gated behind html.cc-vms-on, which vms.js sets only when the
    VM area and master theming are on. Link="cc-vmtab-hook" renders a bare <div> instead of a
@@ -14,4 +14,4 @@ Link="cc-vmtab-hook"
    tabbed layout's inline-eval branch, which does not execute <script> tags. vms.js gates itself
    to /VMs. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/vms.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/vms.js')?>"></script>

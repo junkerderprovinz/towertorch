@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 // withImplicitDeps appends a ready-when-running, never-blocking node for every

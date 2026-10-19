@@ -1,14 +1,14 @@
 Menu="Buttons:99"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-pages-hook"
 ---
 <?php
-/* Menu="Buttons" makes Unraid auto-inject sheets/CannonadeCommand.Pages.css into the <head> of
+/* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Pages.css into the <head> of
    every page; the script below loads pages.js. The sheet covers single pages the area sheets do
    not reach: the user and VM editors, the statistics, plugin pages with layouts of their own, the
    Vue tool pages and Community Applications' message boxes. pages.js names the page in
    html[data-cc-page] only while master theming and the page's area are on, and every rule keys on
    that name, so the sheet is inert everywhere else. Link="cc-pages-hook" renders a bare <div>. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/pages.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/pages.js')?>"></script>

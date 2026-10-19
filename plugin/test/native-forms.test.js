@@ -15,12 +15,12 @@ const val = (w) => (w ? w.value : '(none)');
 
 console.log('\nThe sheet is inert until forms.js opts a page in');
 {
-  const rules = parseRules(read('sheets/CannonadeCommand.Forms.css'));
+  const rules = parseRules(read('sheets/TowerTorch.Forms.css'));
   const split = (sel) => { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; else if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } return out.concat(cur); };
   const loose = [];
   for (const r of rules) for (const s of split(r.selector)) if (!/^html\.cc-forms-on\b/.test(s.trim())) loose.push(s.trim());
   ok('every selector starts at html.cc-forms-on', loose.length === 0, loose.slice(0, 3).join(' | '));
-  const pg = read('CannonadeCommand.Forms.page');
+  const pg = read('TowerTorch.Forms.page');
   ok('the page hook loads the sheet by its basename and the script', /Menu="Buttons:\d+"/.test(pg) && /scripts\/forms\.js/.test(pg));
 }
 
@@ -55,7 +55,7 @@ for (const type of ['button', 'submit']) {
 
 console.log('\nA row keeps Unraid\'s own arrangement, in a card centred in the window');
 {
-  const rules = parseRules(read('sheets/CannonadeCommand.Forms.css'));
+  const rules = parseRules(read('sheets/TowerTorch.Forms.css'));
   // The first rule for a selector is the desktop one; the phone rules follow in a media query.
   const first = (sel) => rules.find((r) => r.selector === sel);
   const decl = (r, prop) => { const d = r && r.decls.find((x) => x.prop === prop); return d ? d.value : '(none)'; };

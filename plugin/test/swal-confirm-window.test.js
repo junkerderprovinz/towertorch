@@ -1,5 +1,5 @@
 // Every confirmation Unraid and Community Applications ask through SweetAlert looks like a
-// CannonadeCommand window: the title as a section badge notched into the top edge, the close badge
+// TowerTorch window: the title as a section badge notched into the top edge, the close badge
 // in the top right corner, the buttons at the bottom right with the forward action last and the only
 // filled one, Cancel grey, and never red for a delete. SweetAlert keeps one node for every dialog,
 // the streaming install windows included, so the close badge shows on a confirmation only, and it
@@ -18,7 +18,7 @@ const inSa = (tag, classes, extra) => Object.assign({ tag, classes: classes || [
 console.log('\nThe frame and its title');
 {
   const frame = { tag: 'div', classes: ['sweet-alert'], attrs: {}, states: {}, html: HTML };
-  ok('the frame is as wide as a CannonadeCommand window', win(frame, 'width') === '420px', win(frame, 'width'));
+  ok('the frame is as wide as a TowerTorch window', win(frame, 'width') === '420px', win(frame, 'width'));
   ok('and lets the notches stand over its edge', win(frame, 'overflow') === 'visible', win(frame, 'overflow'));
   const h2 = inSa('h2');
   ok('the title is notched into the top edge', win(h2, 'position') === 'absolute' && win(h2, 'transform') === 'translateY(-50%)', win(h2, 'position') + ' ' + win(h2, 'transform'));
@@ -46,7 +46,7 @@ console.log('\nThe close badge');
   ok('a confirmation shows it', win(x, 'display') === 'inline-flex', win(x, 'display'));
   ok('in the dark window\'s grey on every theme', win(x, 'background') === '#2e2e2e');
   ok('with popups off it stays hidden', win(Object.assign({}, x, { html: [] }), 'display') === 'none', win(Object.assign({}, x, { html: [] }), 'display'));
-  const css = read('sheets/CannonadeCommand.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const css = read('sheets/TowerTorch.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
   ok('it is shown only where the frame is neither a stream nor the loader', /html\.cc-popups-on \.sweet-alert:not\(\.nchan, \.cc-only-loader\):not\(:has\(pre\)\) > \.cc-win-x \{ display: inline-flex; \}/.test(css));
 
   // swalClose() against a stand-in SweetAlert node.

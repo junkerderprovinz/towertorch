@@ -311,7 +311,7 @@ func (r *Resolver) get(url string) ([]byte, int, error) {
 		return nil, 0, err
 	}
 	req.Header.Set("Accept", "image/svg+xml,*/*")
-	req.Header.Set("User-Agent", "CannonadeCommand-icons/1")
+	req.Header.Set("User-Agent", "TowerTorch-icons/1")
 	resp, err := r.client.Do(req)
 	if err != nil {
 		return nil, 0, err

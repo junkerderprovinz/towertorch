@@ -1,5 +1,5 @@
 // Takes the raw pictures for the README screenshots from a running Unraid server with
-// CannonadeCommand installed: each page once as a list and once as tiles, in English and with
+// TowerTorch installed: each page once as a list and once as tiles, in English and with
 // made-up names in place of the server's own. render.mjs frames them.
 //
 // The server is only read. Every request other than a GET or a GraphQL query is dropped, and the
@@ -7,7 +7,7 @@
 // with it and for a share that does not exist, so nothing gets computed either. The look (accent,
 // colour mode, view) is handed to the page in the settings response and never written back.
 //
-// Unraid prints its text in the server's language. CannonadeCommand follows the lang attribute,
+// Unraid prints its text in the server's language. TowerTorch follows the lang attribute,
 // Unraid's scripts get an English translate.js, and what PHP printed is mapped back through the
 // server's own language files.
 //
@@ -100,7 +100,7 @@ const PAGES = [
     accent: "#BE95FF",
     key: "cc.pluginview",
     views: { list: "list", tiles: "tiles" },
-    keep: ["CannonadeCommand", "Community Applications", "Unassigned Devices", "Fix Common Problems", "User Scripts", "Tailscale",
+    keep: ["TowerTorch", "Community Applications", "Unassigned Devices", "Fix Common Problems", "User Scripts", "Tailscale",
       "Nvidia Driver", "GPU Statistics", "Unassigned Devices Plus", "Unassigned Devices Preclear", "Dynamix Cache Directories",
       "Dynamix File Integrity", "Dynamix System Information", "Dynamix System Statistics", "Dynamix System Temperature",
       "Appdata Cleanup Plus", "unBALANCED"],

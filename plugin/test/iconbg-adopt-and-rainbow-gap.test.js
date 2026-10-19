@@ -14,7 +14,7 @@
 // build through card() or folderTile().
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const DOCKER = process.argv[2] || path.join(DIR, 'scripts', 'docker.js');
 const CSS = process.argv[3] || path.join(DIR, 'styles', 'docker.css');
 

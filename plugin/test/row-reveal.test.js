@@ -16,7 +16,7 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 const clean = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 const flat = (css) => clean(css).replace(/\s+/g, ' ');
-const docker = flat(read('styles/docker.css')), vm = flat(read('sheets/CannonadeCommand.VmTab.css'));
+const docker = flat(read('styles/docker.css')), vm = flat(read('sheets/TowerTorch.VmTab.css'));
 
 console.log('\nThe buttons come in on hover and on focus');
 {

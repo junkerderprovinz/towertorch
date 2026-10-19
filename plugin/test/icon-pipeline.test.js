@@ -7,7 +7,7 @@
 // target from vanishing into the dark surfaces underneath it.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
 const THEME = process.argv[2] || path.join(DIR, 'cc-theme.js');
 const DOCKER = process.argv[3] || path.join(DIR, 'docker.js');
 
@@ -204,7 +204,7 @@ console.log('\nGlobal default + per-item pin');
 console.log('\nAll pins live in ONE cc.* key, so they ride the existing settings sync');
 {
   reset();
-  CI.setOverride('plugin', 'CannonadeCommand', 'native');
+  CI.setOverride('plugin', 'TowerTorch', 'native');
   const keys = Object.keys(store);
   ok('exactly one storage key is written', keys.length === 1, JSON.stringify(keys));
   ok('and it carries the cc. prefix the sync mirrors', /^cc[a-z]*\./.test(keys[0]), keys[0]);
@@ -507,7 +507,7 @@ console.log('\nensureMonoFilter stays the Logo-Hintergrund spelling of the same 
 console.log('\nThe engine URL the frontend points an <img> at');
 {
   const u = CI.svgUrl('Stirling-PDF');
-  ok('goes through the same-origin PHP proxy (so the canvas read is not tainted)', u.indexOf('/plugins/cannonadecommand/server/ccapi.php') === 0, u);
+  ok('goes through the same-origin PHP proxy (so the canvas read is not tainted)', u.indexOf('/plugins/towertorch/server/ccapi.php') === 0, u);
   ok('asks the iconsvg path', u.indexOf('path=iconsvg') > 0, u);
   ok('carries the name, url-encoded and lowercased', u.indexOf('name=stirling-pdf') > 0, u);
 }

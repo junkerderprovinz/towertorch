@@ -4,7 +4,7 @@
 // that use it: limits, bandwidth, plan and editor saves, the settings saves, VM limits.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -63,7 +63,7 @@ console.log('\nfail() is shake plus an error toast');
 
 console.log('\nThe sheet: 360ms, through translate, a pulse when still');
 {
-  const css = read('sheets/CannonadeCommand.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const css = read('sheets/TowerTorch.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
   const kf = (/@keyframes cc-shake \{([\s\S]*?)\n\}/.exec(css) || [])[1] || '';
   ok('the keyframe moves through translate, not transform', /translate:/.test(kf) && !/transform/.test(kf));
   ok('it ends where it started', /0%, 100% \{ translate: none; \}/.test(kf));

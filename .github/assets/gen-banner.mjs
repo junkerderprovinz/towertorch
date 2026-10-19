@@ -1,8 +1,8 @@
 /**
- * Generates the CannonadeCommand README banners (1600x500):
- *   cannonadecommand-banner.svg / .png       light: dunkel logo on white
- *   cannonadecommand-banner-dark.svg / .png  dark:  hell logo on #0d1117 (GitHub dark)
- *   cannonadecommand-banner-logo.svg / .png  text-free, dunkel on white (support thread)
+ * Generates the TowerTorch README banners (1600x500):
+ *   towertorch-banner.svg / .png       light: dunkel logo on white
+ *   towertorch-banner-dark.svg / .png  dark:  hell logo on #0d1117 (GitHub dark)
+ *   towertorch-banner-logo.svg / .png  text-free, dunkel on white (support thread)
  *
  * The README serves the light and dark banner as a <picture> pair. Each theme
  * embeds its own logo master unchanged rather than recolouring one, and the
@@ -41,8 +41,8 @@ const maxTextW = W - textX - 80;     // what is left between textX and the right
 
 // Each theme embeds the logo variant that reads on its background.
 const THEMES = [
-  { suffix: "", bg: "#ffffff", name: "#1f2328", claim: "#5a5d5e", logo: "cannonadecommand-dunkel.svg" },
-  { suffix: "-dark", bg: "#0d1117", name: "#e6edf3", claim: "#9aa4ad", logo: "cannonadecommand-hell.svg" },
+  { suffix: "", bg: "#ffffff", name: "#1f2328", claim: "#5a5d5e", logo: "towertorch-dunkel.svg" },
+  { suffix: "-dark", bg: "#0d1117", name: "#e6edf3", claim: "#9aa4ad", logo: "towertorch-hell.svg" },
 ];
 
 async function font(file, url) {
@@ -112,7 +112,7 @@ function embed(logoFile) {
 for (const t of THEMES) {
   const { inner, scale } = embed(t.logo);
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="CannonadeCommand">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="TowerTorch">
   <rect width="${W}" height="${H}" fill="${t.bg}"/>
   <g transform="translate(${logoX},${logoY}) scale(${scale.toFixed(6)})">
 ${inner}
@@ -122,23 +122,23 @@ ${inner}
   ${paths(claim2D, t.claim)}
 </svg>
 `;
-  writeFileSync(join(__dir, `cannonadecommand-banner${t.suffix}.svg`), svg);
+  writeFileSync(join(__dir, `towertorch-banner${t.suffix}.svg`), svg);
   const png = new Resvg(svg, { fitTo: { mode: "width", value: W } }).render().asPng();
-  writeFileSync(join(__dir, `cannonadecommand-banner${t.suffix}.png`), png);
+  writeFileSync(join(__dir, `towertorch-banner${t.suffix}.png`), png);
   console.log(`banner${t.suffix} ok: ${W}x${H}, png ${png.length} bytes`);
 }
 
 // The support banner: the dunkel logo on white, without any text.
-const { inner: dInner, scale: dScale } = embed("cannonadecommand-dunkel.svg");
+const { inner: dInner, scale: dScale } = embed("towertorch-dunkel.svg");
 const logoOnly = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="CannonadeCommand">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="TowerTorch">
   <rect width="${W}" height="${H}" fill="#ffffff"/>
   <g transform="translate(${(W - logoBox) / 2},${logoY}) scale(${dScale.toFixed(6)})">
 ${dInner}
   </g>
 </svg>
 `;
-writeFileSync(join(__dir, "cannonadecommand-banner-logo.svg"), logoOnly);
+writeFileSync(join(__dir, "towertorch-banner-logo.svg"), logoOnly);
 const pngLogo = new Resvg(logoOnly, { fitTo: { mode: "width", value: W } }).render().asPng();
-writeFileSync(join(__dir, "cannonadecommand-banner-logo.png"), pngLogo);
+writeFileSync(join(__dir, "towertorch-banner-logo.png"), pngLogo);
 console.log(`banner-logo ok, claim ${claimSize}px`);

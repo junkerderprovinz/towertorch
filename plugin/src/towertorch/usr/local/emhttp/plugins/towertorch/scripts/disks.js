@@ -1,4 +1,4 @@
-// The disk tiles on /Main. Loaded on every page through CannonadeCommand.Disks.page and live only
+// The disk tiles on /Main. Loaded on every page through TowerTorch.Disks.page and live only
 // where the Start area styles /Main (shares.js), it puts one Liste/Kacheln switch on the page and
 // draws one card per disk of the array, the pools, the boot device and Unassigned Devices.
 //
@@ -935,7 +935,7 @@
 
   function loadExtra() {
     if (!live() || !window.fetch) return;
-    fetch("/plugins/cannonadecommand/server/disks.php", { headers: { Accept: "application/json" } })
+    fetch("/plugins/towertorch/server/disks.php", { headers: { Accept: "application/json" } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { if (j && typeof j === "object") { extra = j; soon(); } })
       .catch(function () {});

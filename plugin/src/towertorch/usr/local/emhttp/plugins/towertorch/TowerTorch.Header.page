@@ -1,11 +1,11 @@
 Menu="Buttons:95"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-hdr-hook"
 ---
 <?php
 /* Registered under Menu="Buttons" so Unraid loads this page's assets into the <head> of every
-   page: sheets/CannonadeCommand.Header.css (auto-injected because the basename matches this
+   page: sheets/TowerTorch.Header.css (auto-injected because the basename matches this
    .page) restyles the main menu bar, and the script below loads the header enhancer.
    Link="cc-hdr-hook" makes Navigation render a bare <div> instead of a visible icon. All styling
    is gated behind html.cc-header-on, which the enhancer sets only when the main menu bar area
@@ -42,4 +42,4 @@ Link="cc-hdr-hook"
   } catch (e) {}
 })();
 </script>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/header.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/header.js')?>"></script>

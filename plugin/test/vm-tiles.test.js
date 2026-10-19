@@ -7,9 +7,9 @@
 //   · the tiles showing with theming off, or a second key for the view
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const src = fs.readFileSync(path.join(DIR, 'scripts/vms.js'), 'utf8');
-const css = fs.readFileSync(path.join(DIR, 'sheets/CannonadeCommand.VmTab.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.VmTab.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };

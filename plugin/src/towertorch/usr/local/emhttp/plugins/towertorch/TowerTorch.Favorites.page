@@ -1,12 +1,12 @@
 Menu="Buttons:99"
-Title="CannonadeCommand"
-Icon="cannonadecommand.png"
+Title="TowerTorch"
+Icon="towertorch.png"
 Link="cc-fav-hook"
 ---
 <?php
-/* Menu="Buttons" makes Unraid auto-inject sheets/CannonadeCommand.Favorites.css into the <head>
+/* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Favorites.css into the <head>
    of every page; the script below loads favorites.js. All CSS is gated behind
    html.cc-favorites-on, which favorites.js sets only on /Favorites when the Favoriten area and
    master theming are on. Link="cc-fav-hook" renders a bare <div>, no icon. */
 ?>
-<script defer src="<?autov('/plugins/cannonadecommand/scripts/favorites.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/favorites.js')?>"></script>

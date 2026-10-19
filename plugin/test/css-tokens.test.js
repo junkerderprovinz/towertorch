@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', 'src');
-const TOKENS = path.join(ROOT, 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'sheets', 'CannonadeCommand.Tokens.css');
+const TOKENS = path.join(ROOT, 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'sheets', 'TowerTorch.Tokens.css');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -68,7 +68,7 @@ console.log('\nEvery call site falls back to the colour its token holds');
 console.log('\nThe card surface follows the light themes like the text on it');
 {
   const tokens = fs.readFileSync(TOKENS, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-  const header = fs.readFileSync(path.join(path.dirname(TOKENS), 'CannonadeCommand.Header.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const header = fs.readFileSync(path.join(path.dirname(TOKENS), 'TowerTorch.Header.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   const light = (/html\.Theme--white,\s*html\.Theme--azure\s*\{([^}]*)\}/.exec(tokens) || [])[1] || '';
   const lum = (h) => { const n = parseInt(h.slice(1), 16); return 0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255); };
   ok('the light override block is found', light.length > 0);
@@ -86,7 +86,7 @@ console.log('\nThe card surface follows the light themes like the text on it');
 console.log('\nChips on the header bar take the header ink, not the page ink');
 {
   const tokens = fs.readFileSync(TOKENS, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-  const header = fs.readFileSync(path.join(path.dirname(TOKENS), 'CannonadeCommand.Header.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const header = fs.readFileSync(path.join(path.dirname(TOKENS), 'TowerTorch.Header.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   // the dark defaults are spread over every plain html { } block
   let dark = ''; const blocks = /(^|\})\s*html\s*\{([^}]*)\}/g; let b;
   while ((b = blocks.exec(tokens))) dark += b[2];
@@ -109,7 +109,7 @@ console.log('\nChips on the header bar take the header ink, not the page ink');
 // to the page, so the surface needs a light value on the light themes.
 console.log('\nThe Tools card surface turns light with the page text');
 {
-  const tools = fs.readFileSync(path.join(path.dirname(TOKENS), 'CannonadeCommand.Tools.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const tools = fs.readFileSync(path.join(path.dirname(TOKENS), 'TowerTorch.Tools.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   const light = (/html\.cc-tools-on\.Theme--white,\s*html\.cc-tools-on\.Theme--azure\s*\{([^}]*)\}/.exec(tools) || [])[1] || '';
   ok('the light block for the Tools pages is found', light.length > 0);
   ok('it gives --cc-tl-surface a light value', /--cc-tl-surface:\s*var\(--cc-surface-1\b/.test(light), light);

@@ -1,7 +1,7 @@
-/* CannonadeCommand: the theme tokens.
+/* TowerTorch: the theme tokens.
  *
  * Every semantic colour and the size canon in one place, loaded globally from
- * CannonadeCommand.Tokens.page (Menu="Buttons:94"), so every CC sheet on every page inherits it and
+ * TowerTorch.Tokens.page (Menu="Buttons:94"), so every CC sheet on every page inherits it and
  * a component reads a token instead of a literal.
  *
  * The dark defaults below are what the black and gray Unraid themes already render. The single light
@@ -375,7 +375,7 @@ html.Theme--azure {
   --cc-elev-2: 0 8px 20px rgba(0, 0, 0, .14);
   --cc-elev-3: 0 10px 24px rgba(0, 0, 0, .18);
 }
-/* CannonadeCommand's own windows, the .cc-pop editors, the .cc-win windows, the .cc-menu gear menu,
+/* TowerTorch's own windows, the .cc-pop editors, the .cc-win windows, the .cc-menu gear menu,
    a row's .cc-rowmenu, the Docker list's .cc-bulkbar, the settings search's empty state and the
    panel of CA's Statistics, Credits and Change Log views, stay dark on every theme, so inside them
    each token the light override flips reads its dark value again. The tokens mixed from those on
@@ -402,11 +402,11 @@ html.cc-popups-on #alternateView .alternateViewContent {
   --cc-card-bg: var(--cc-surface-1);  --cc-card-inset: var(--cc-surface-2);  --cc-field-bg: var(--cc-surface-3);
 }
 
-/* A CannonadeCommand window (GlimStone rule 15, in the look of CC's update window): one dark
+/* A TowerTorch window (GlimStone rule 15, in the look of CC's update window): one dark
    surface, the title as a badge across its full width, the content straight on it, the buttons in
    a row at the bottom, no line anywhere. CCTheme.modal puts the scrim behind it, one step under the
    window's own z-index. The scrim and these windows live here because this sheet is on every page:
-   the VM tab, the Plugins page and the CannonadeCommand settings ask questions too. A .cc-dlg is a
+   the VM tab, the Plugins page and the TowerTorch settings ask questions too. A .cc-dlg is a
    question window, centred and above Unraid's own popovers, whose z-index reaches 999999. */
 .cc-scrim {
   position: fixed; inset: 0; z-index: 99998;
@@ -502,7 +502,7 @@ html .cc-win .cc-win-in::placeholder { color: var(--cc-text-hint, #a3a3a3) !impo
   background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
   color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616)));
 }
-/* CannonadeCommand's colour picker (CCTheme.colorPicker), on the settings page and in the panel a
+/* TowerTorch's colour picker (CCTheme.colorPicker), on the settings page and in the panel a
    colour field of Unraid's own forms opens: a saturation and value square and a hue bar drawn with
    CSS gradients, with draggable dots, and under it the presets in one row with the hex field. */
 .cc-ip { flex: 1; width: 100%; min-width: 0; }

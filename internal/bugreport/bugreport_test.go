@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
 const webhook = "https://discord.com/api/webhooks/123456/s3cr3t-T0KEN"
@@ -82,7 +82,7 @@ func TestTextLosesCredentials(t *testing.T) {
 			}
 		}
 	}
-	plain := "✓ CANNONADECOMMAND v1.2.0 IS READY - api /var/run/cannonadecommand.sock"
+	plain := "✓ TOWERTORCH v1.2.0 IS READY - api /var/run/towertorch.sock"
 	if got := RedactText(plain, nil); got != plain {
 		t.Errorf("a plain line changed: %q", got)
 	}
@@ -106,7 +106,7 @@ func TestKnownSecretsLeaveTheLogToo(t *testing.T) {
 			t.Errorf("the report lacks %q", want)
 		}
 	}
-	if r.FileName() != "cannonadecommand-bugreport-20261014-093000.txt" {
+	if r.FileName() != "towertorch-bugreport-20261014-093000.txt" {
 		t.Errorf("file name = %q", r.FileName())
 	}
 }

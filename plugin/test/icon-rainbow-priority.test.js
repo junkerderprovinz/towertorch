@@ -8,15 +8,15 @@
 // file pins too so the two paths do not get conflated.
 //
 // Covered: Docker and Plugins in docker.css, and the Settings/Tools category grid
-// in CannonadeCommand.SettingsGrid.css. Its plain rainbow paint has no CSS chain
+// in TowerTorch.SettingsGrid.css. Its plain rainbow paint has no CSS chain
 // to fall back on, being a hard inline write, so paintGrid()'s body is checked
 // from source instead. The helpers come from settings-chrome.test.js, this being
 // a string-level pin for want of a CSS engine in the bare-Node runner.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const CSS = process.argv[2] || path.join(DIR, 'styles', 'docker.css');
-const SG_CSS = path.join(DIR, 'sheets', 'CannonadeCommand.SettingsGrid.css');
+const SG_CSS = path.join(DIR, 'sheets', 'TowerTorch.SettingsGrid.css');
 const SG_JS = path.join(DIR, 'scripts', 'settingsgrid.js');
 
 let pass = 0, fail = 0;

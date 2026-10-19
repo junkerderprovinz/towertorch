@@ -1,4 +1,4 @@
-// The plugin tiles on /Plugins. Loaded after plugins.js through CannonadeCommand.Plugins.page, it
+// The plugin tiles on /Plugins. Loaded after plugins.js through TowerTorch.Plugins.page, it
 // puts one Liste/Kacheln switch beside the Check button and draws one card per installed plugin.
 //
 // The cards read the rows plugins.js has painted, which stay in the page, hidden. Unraid's update
@@ -156,7 +156,7 @@
   }
 
   // Clicks the row's own control: the update button and the changelog link carry Unraid's
-  // handlers, the trash carries the CannonadeCommand confirmation in front of Unraid's remove.
+  // handlers, the trash carries the TowerTorch confirmation in front of Unraid's remove.
   function run(kind, c, at) {
     var p = c.__ccPlugin; if (!p) return;
     if (kind === "update" && p.update) p.update.click();

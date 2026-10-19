@@ -1,12 +1,12 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
-  <!ENTITY name      "cannonadecommand">
-  <!ENTITY slug      "cannonadecommand">
+  <!ENTITY name      "towertorch">
+  <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
   <!ENTITY version   "1.2.0">
-  <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/cannonadecommand/main/plugin">
+  <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
-  <!ENTITY pkgURL    "https://github.com/junkerderprovinz/cannonadecommand/releases/download/v&version;">
+  <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
@@ -21,7 +21,7 @@
 
 <!-- FanCtrlPlus convention: the name is the lowercase slug so Unraid resolves the
      logo (plugins/<slug>/images/<slug>.png) AND the Plugins-tab description
-     (plugins/<slug>/README.md). The pretty "CannonadeCommand" name is in README.md. -->
+     (plugins/<slug>/README.md). The pretty "TowerTorch" name is in README.md. -->
 <ICON>
 /usr/local/emhttp/plugins/&slug;/images/&slug;.png
 </ICON>
@@ -478,7 +478,7 @@ chmod +x &emhttp;/bin/&slug; &emhttp;/scripts/rc.&slug; &emhttp;/event/* 2>/dev/
 echo ""
 &emhttp;/bin/&slug; banner 2>/dev/null
 echo ""
-echo "CannonadeCommand ist ready!"
+echo "TowerTorch ist ready!"
 </INLINE>
 </FILE>
 

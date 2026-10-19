@@ -1,4 +1,4 @@
-// Pins CannonadeCommand's colour tokens to GlimStone: the accent presets, the
+// Pins TowerTorch's colour tokens to GlimStone: the accent presets, the
 // default accent, the rainbow palette, the state colours with their light-theme
 // variants, the accent ink for text on the page, and the scrim behind a window.
 //
@@ -7,9 +7,9 @@
 // was, and only what a user who never chose sees changes.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const SCRIPTS = path.join(DIR, 'scripts');
-const TOKENS = fs.readFileSync(path.join(DIR, 'sheets', 'CannonadeCommand.Tokens.css'), 'utf8');
+const TOKENS = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tokens.css'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -49,8 +49,8 @@ ok('the dark themes do not darken it', decl(dark, '--cc-ink-mix') === '100%');
 ok('the light themes mix it 55%', decl(light, '--cc-ink-mix') === '55%', decl(light, '--cc-ink-mix'));
 ok('the light override does not redeclare the ink itself, so it keeps following the accent', decl(light, '--cc-accent-ink') == null);
 {
-  const fav = fs.readFileSync(path.join(DIR, 'sheets', 'CannonadeCommand.Favorites.css'), 'utf8');
-  const tools = fs.readFileSync(path.join(DIR, 'sheets', 'CannonadeCommand.Tools.css'), 'utf8');
+  const fav = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Favorites.css'), 'utf8');
+  const tools = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tools.css'), 'utf8');
   const docker = fs.readFileSync(path.join(DIR, 'styles', 'docker.css'), 'utf8');
   ok('the empty-favourites line is accent text, so it reads the ink', /#nofavs \{ color: var\(--cc-accent-ink,/.test(fav));
   ok('links on the Tools pages read the ink', /#displaybox a:not\(\.button\) \{ color: var\(--cc-accent-ink,/.test(tools));

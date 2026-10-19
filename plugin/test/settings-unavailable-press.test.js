@@ -4,7 +4,7 @@
 // window can use it.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const { specificity, cmp } = require('./cascade');
 
@@ -19,7 +19,7 @@ function grabFn(src, name) {
 }
 const settings = read('scripts/settings.js');
 const theme = read('scripts/cc-theme.js');
-const header = read('sheets/CannonadeCommand.Header.css');
+const header = read('sheets/TowerTorch.Header.css');
 
 class Ctl {
   constructor() { this.cls = new Set(); this.attrs = {}; this.on = {}; this.kids = []; this.style = {}; this.offsetWidth = 10; }

@@ -7,7 +7,7 @@
 //   · its text sits on the type scale in the host's font, with no font stack of its own
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
 let pass = 0, fail = 0;
@@ -103,7 +103,7 @@ console.log('\nThe bubble stays with its anchor');
 
 console.log('\nThe sheet');
 {
-  const css = read('sheets/CannonadeCommand.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const css = read('sheets/TowerTorch.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
   const box = (/html\.cc-popups-on #cc-tipfloat \{([^}]*)\}/.exec(css) || [])[1] || '';
   ok('the bubble text is on the type scale', /font-size: var\(--cc-text-meta\);/.test(box));
   ok('the bubble sets no font stack of its own', !/font-family|font:/.test(box));

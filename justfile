@@ -1,4 +1,4 @@
-# CannonadeCommand task runner. The recipes mirror the CI gates in build.yml and
+# TowerTorch task runner. The recipes mirror the CI gates in build.yml and
 # lint.yml and the packaging in pkg_build.sh. Run `just --list` to see them all.
 set shell := ["sh", "-cu"]
 
@@ -57,7 +57,7 @@ pkg version="":
 # Build the daemon, start it and curl its socket, as build.yml does (needs Linux and curl)
 smoke:
     bash plugin/pkg_build.sh 0.0.0-dev
-    BIN=plugin/src/cannonadecommand/usr/local/emhttp/plugins/cannonadecommand/bin/cannonadecommand; \
+    BIN=plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/bin/towertorch; \
     "$BIN" version; \
     CC_SOCK=/tmp/cc-dev.sock CC_DATA_DIR=/tmp/ccdata-dev CC_DOCKER_SOCK=/tmp/nope.sock "$BIN" serve & \
     PID=$!; \

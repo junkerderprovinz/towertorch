@@ -30,7 +30,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/junkerderprovinz/cannonadecommand/internal/netshape"
+	"github.com/junkerderprovinz/towertorch/internal/netshape"
 )
 
 // callTimeout bounds a single virsh invocation.

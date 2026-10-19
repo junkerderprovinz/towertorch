@@ -1,5 +1,5 @@
 // Pins the cross-origin cc.* settings sync in all three copies of it: docker.js
-// runs on /Docker, settings.js on /Settings/CannonadeCommand and cc-theme.js on
+// runs on /Docker, settings.js on /Settings/TowerTorch and cc-theme.js on
 // every other page, with never more than one of them active at a time.
 //
 // Each patches localStorage so a cc.* write lands in a pending map that is pushed
@@ -8,7 +8,7 @@
 // deletion that only happens locally is resurrected by the next adopt.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand', 'scripts');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
 const DOCKER = process.argv[2] || path.join(DIR, 'docker.js');
 const SETTINGS = process.argv[3] || path.join(DIR, 'settings.js');
 const THEME = process.argv[4] || path.join(DIR, 'cc-theme.js');
@@ -71,7 +71,7 @@ function makeStorage() {
   ok('window.__ccLSRemove exposes the raw removeItem the same way', typeof win.__ccLSRemove === 'function');
 }
 
-// settings.js patches the same way, and only loads on /Settings/CannonadeCommand.
+// settings.js patches the same way, and only loads on /Settings/TowerTorch.
 {
   const src = fs.readFileSync(SETTINGS, 'utf8');
   const code = grabBetween(src,
@@ -96,7 +96,7 @@ function makeStorage() {
 {
   const src = fs.readFileSync(THEME, 'utf8');
   const code = grabBetween(src,
-    'if (/^\\/Docker(\\/|$)/.test(location.pathname) || /^\\/Settings\\/CannonadeCommand(\\/|$)/.test(location.pathname)) return;',
+    'if (/^\\/Docker(\\/|$)/.test(location.pathname) || /^\\/Settings\\/TowerTorch(\\/|$)/.test(location.pathname)) return;',
     'function push() {');
 
   console.log('\ncc-theme.js: the same on every other page, such as Plugins, VMs or Shares');

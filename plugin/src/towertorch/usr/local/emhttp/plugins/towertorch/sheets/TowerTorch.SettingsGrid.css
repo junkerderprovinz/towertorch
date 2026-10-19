@@ -1,4 +1,4 @@
-/* CannonadeCommand: the category tiles and headings on the /Settings and /Tools landing pages.
+/* TowerTorch: the category tiles and headings on the /Settings and /Tools landing pages.
  *
  * Injected into every Unraid page through the Buttons hook, so every rule is scoped to one of two
  * classes that settingsgrid.js sets only on those two pages while the area is enabled:
@@ -60,8 +60,8 @@ html.cc-settingsgrid-on #displaybox .Panel > a[href*="ailscale"] > span::after {
   content: ""; display: block;   /* centred by the span's flex box */
   width: var(--cc-sg-glyph, 38px); height: var(--cc-sg-glyph, 38px);
   background-color: currentColor;   /* the span's ink, which matches i.PanelIcon in every mode */
-  -webkit-mask: url(/plugins/cannonadecommand/images/tailscale-dots.svg) center / contain no-repeat;
-  mask: url(/plugins/cannonadecommand/images/tailscale-dots.svg) center / contain no-repeat;
+  -webkit-mask: url(/plugins/towertorch/images/tailscale-dots.svg) center / contain no-repeat;
+  mask: url(/plugins/towertorch/images/tailscale-dots.svg) center / contain no-repeat;
 }
 /* the favourites heart that Settings.page injects into the span on hover -> pin it to a
    corner so it doesn't sit under the glyph, and keep it readable on the accent badge */

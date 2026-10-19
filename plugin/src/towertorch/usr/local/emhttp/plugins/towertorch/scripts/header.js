@@ -1,8 +1,8 @@
 // Enhances Unraid's main menu bar. Loaded on every page through
-// CannonadeCommand.Header.page, it keeps the JS side small: toggle html.cc-header-on, which gates
-// every rule in sheets/CannonadeCommand.Header.css, and mirror the accent, text and shape
+// TowerTorch.Header.page, it keeps the JS side small: toggle html.cc-header-on, which gates
+// every rule in sheets/TowerTorch.Header.css, and mirror the accent, text and shape
 // settings onto the document root so the sheet follows the configured theme. The area is off by
-// default, opt in under Settings > CannonadeCommand > Bereiche > Hauptmenueleiste.
+// default, opt in under Settings > TowerTorch > Bereiche > Hauptmenueleiste.
 (function () {
   "use strict";
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
@@ -275,7 +275,7 @@
       try { ccPopIframes(); } catch (ePI) {}
     } catch (e) {}
   }
-  // A confirmation closes from CannonadeCommand's close badge in its corner. The press clicks
+  // A confirmation closes from TowerTorch's close badge in its corner. The press clicks
   // SweetAlert's Cancel, shown or hidden, as Escape does, so the callback hears a cancel. SweetAlert
   // keeps one node for every dialog, so the badge is added once and Header.css shows it only on a
   // confirmation.
@@ -862,7 +862,7 @@
       items.push({ label: label, sub: href, kind: "page", go: function () { location.href = href; } });
     });
     items.push({ label: T("Anordnen ein/aus", "Toggle arranging"), sub: T("Menü & Insel umsortieren", "Rearrange menu & island"), kind: "action", go: function () { ccToggleArrange(); } });
-    items.push({ label: T("CannonadeCommand-Einstellungen", "CannonadeCommand settings"), sub: "/Settings/CannonadeCommand", kind: "action", go: function () { location.href = "/Settings/CannonadeCommand"; } });
+    items.push({ label: T("TowerTorch-Einstellungen", "TowerTorch settings"), sub: "/Settings/TowerTorch", kind: "action", go: function () { location.href = "/Settings/TowerTorch"; } });
     // On the settings page the palette leads with that page's own search and hands it what was typed.
     // It opens a tick later, after the click that chose it, which the search would otherwise take
     // for a click beside it and close on.
@@ -1037,7 +1037,7 @@
   // plain HTTP instead works on every page and through any proxy; the engine computes host CPU
   // percent from /proc/stat deltas, so the first reading is the baseline and the rest are live.
   function ccStartCpu() {
-    var PROXY = "/plugins/cannonadecommand/server/ccapi.php", stopped = false;
+    var PROXY = "/plugins/towertorch/server/ccapi.php", stopped = false;
     function poll() {
       if (stopped || !ccLiveSubs) return;
       fetch(PROXY + "?path=" + encodeURIComponent("hostcpu"), { headers: { Accept: "application/json" } })
@@ -1053,7 +1053,7 @@
   // cumulative byte counters, polled over plain HTTP like the CPU above. Successive readings become
   // a per-second rate; the first sample and a counter reset leave no rate to show yet.
   function ccStartNet() {
-    var PROXY = "/plugins/cannonadecommand/server/ccapi.php", stopped = false, prev = null;
+    var PROXY = "/plugins/towertorch/server/ccapi.php", stopped = false, prev = null;
     function poll() {
       if (stopped || !ccLiveSubs) return;
       fetch(PROXY + "?path=" + encodeURIComponent("hostnet"), { headers: { Accept: "application/json" } })
@@ -1811,7 +1811,7 @@
       img.onerror = function () { img.style.display = "none"; };
       container.insertBefore(img, container.firstChild);
     }
-    var src = "/plugins/cannonadecommand/images/flags/" + iso + ".svg";
+    var src = "/plugins/towertorch/images/flags/" + iso + ".svg";
     if (img.getAttribute("src") !== src) { img.style.display = ""; img.src = src; }
   }
   // Scoped to the locale select: every other select on the site goes through the same generic
@@ -1831,7 +1831,7 @@
   // /Apps with the pack's name queued for ccAppsAutoSearch to drop into CA's search box.
   function ccLangAugmentPanel(sel, panel) {
     var installed = {}; for (var i = 0; i < sel.options.length; i++) installed[sel.options[i].value] = true;
-    fetch("/plugins/cannonadecommand/server/langpacks.php", { headers: { Accept: "application/json" } })
+    fetch("/plugins/towertorch/server/langpacks.php", { headers: { Accept: "application/json" } })
       .then(function (r) { return r.ok ? r.json() : []; })
       .then(function (packs) {
         if (!Array.isArray(packs) || !panel.isConnected) return;
@@ -2101,7 +2101,7 @@
       }
       ccRowHelp();
       // Unraid's header colour fields are plain hex text inputs with no picker, so each gets a
-      // swatch that opens CannonadeCommand's colour picker, and a native <input type=color> opens
+      // swatch that opens TowerTorch's colour picker, and a native <input type=color> opens
       // that picker instead of the system's. Text fields are recognised by a hex value together
       // with a colour-like name; the picker writes the field without the # Unraid leaves out and
       // fires input and change, so Apply still works.
@@ -2659,7 +2659,7 @@
       // docker/plugin execution-output pages, but not CC's own settings page, which owns
       // #cc-settings.
       try {
-        var p0 = location.pathname, ownPg = /^\/Settings\/CannonadeCommand/.test(p0);
+        var p0 = location.pathname, ownPg = /^\/Settings\/TowerTorch/.test(p0);
         // The disk and pool detail pages and the boot parameters editor are reka settings forms
         // with the same layout as a /Settings sub-page. They are matched by URL rather than by
         // probing for a fieldset, which races the async render. The /Main root stays native.
@@ -2833,7 +2833,7 @@
       if (CC_VER === "dev") return;
       if (g("cc.theming", "1") === "0") return;
       var last = g("cc.lastver", "");
-      if (last && last !== CC_VER) { setTimeout(function () { ccToast(T("CannonadeCommand auf v" + CC_VER + " aktualisiert.", "CannonadeCommand updated to v" + CC_VER + ".")); }, 1400); }
+      if (last && last !== CC_VER) { setTimeout(function () { ccToast(T("TowerTorch auf v" + CC_VER + " aktualisiert.", "TowerTorch updated to v" + CC_VER + ".")); }, 1400); }
       if (last !== CC_VER) syncedSet("cc.lastver", CC_VER);
     } catch (e) {}
   }
@@ -3272,7 +3272,7 @@
   function ccCaStatsFetch() {
     if (ccCaStats || ccCaStatsWanted) return;
     ccCaStatsWanted = true;
-    fetch("/plugins/cannonadecommand/server/castats.php").then(function (r) { return r.json(); })
+    fetch("/plugins/towertorch/server/castats.php").then(function (r) { return r.json(); })
       .then(function (d) { ccCaStats = (d && typeof d === "object") ? d : {}; ccApps(); })
       .catch(function () { ccCaStats = {}; });
   }

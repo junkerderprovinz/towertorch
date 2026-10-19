@@ -11,7 +11,7 @@
 //   6. no density choice left anywhere in the folder view.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const DOCKER = process.argv[2] || path.join(DIR, 'scripts', 'docker.js');
 
 let pass = 0, fail = 0;

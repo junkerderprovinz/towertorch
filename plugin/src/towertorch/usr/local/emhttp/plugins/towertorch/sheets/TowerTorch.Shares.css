@@ -1,4 +1,4 @@
-/* CannonadeCommand: sub-page tabs (Shares, Docker), the shares and disk lists, and /Main.
+/* TowerTorch: sub-page tabs (Shares, Docker), the shares and disk lists, and /Main.
  *
  * Injected into every Unraid page through the Buttons .page hook, so every rule is scoped to
  * html.cc-shares-on, which shares.js adds only while the Freigaben area is enabled.

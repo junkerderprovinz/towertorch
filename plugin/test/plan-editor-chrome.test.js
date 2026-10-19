@@ -12,8 +12,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const DOCKER = process.argv[2] || path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local',
-  'emhttp', 'plugins', 'cannonadecommand', 'scripts', 'docker.js');
+const DOCKER = process.argv[2] || path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local',
+  'emhttp', 'plugins', 'towertorch', 'scripts', 'docker.js');
 
 let pass = 0, fail = 0;
 function ok(cond, msg) { if (cond) { pass++; console.log('  PASS  ' + msg); } else { fail++; console.log('  FAIL  ' + msg); } }
@@ -372,7 +372,7 @@ ok(/"padding", "10px", "important"/.test(harden), 'the action row agrees with th
 // CC_* constants, cc.* keys and --cc-* properties, and stays. Only string literals
 // reach a user, so only those are scanned: a line-based grep would flag the class
 // names and a blind replace would break the plugin.
-console.log('\nPart 13: user-facing prose says "CannonadeCommand", not "CC"');
+console.log('\nPart 13: user-facing prose says "TowerTorch", not "CC"');
 function proseStrings(source) {
   const BS = String.fromCharCode(92);
   const out = [];
@@ -408,8 +408,8 @@ const BARE_CC = /(^|[^A-Za-z0-9_])CC(-[A-Za-zÄÖÜäöü]|[^A-Za-z0-9_-]|$)/;
   ok(hits.length === 0, name + ' has no bare "CC" in any string a user can read'
     + (hits.length ? ': ' + hits.map(h => 'L' + h.line + ': …' + h.s.slice(Math.max(0, h.s.search(BARE_CC) - 24), h.s.search(BARE_CC) + 40) + '…').join(' | ') : ''));
 });
-ok(/CannonadeCommand startet sie zuerst/.test(src) && /CannonadeCommand starts them first/.test(src), '"Hängt ab von" names the product in full, in German and English');
-ok(/bevor CannonadeCommand stoppt/.test(src) && /before CannonadeCommand stops it/.test(src), 'so does the idle-stop bubble, in both');
+ok(/TowerTorch startet sie zuerst/.test(src) && /TowerTorch starts them first/.test(src), '"Hängt ab von" names the product in full, in German and English');
+ok(/bevor TowerTorch stoppt/.test(src) && /before TowerTorch stops it/.test(src), 'so does the idle-stop bubble, in both');
 // The other half: the source-code prefix a blind find-and-replace would destroy.
 ok(/cc-pop-lbl/.test(css) && /CC_GEAR_SVG/.test(src) && /"cc\.rainbow"/.test(src), 'the cc- class namespace, the CC_* constants and the cc.* keys stay as they are');
 

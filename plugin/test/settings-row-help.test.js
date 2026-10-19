@@ -1,10 +1,10 @@
-// Every setting on CannonadeCommand's settings page carries an (i) whose bubble says what it does
+// Every setting on TowerTorch's settings page carries an (i) whose bubble says what it does
 // (GlimStone rule 8), the page starts without a heading (rule 30), it sets its text in Unraid's own
 // face, and at phone width a row's control moves under its name instead of pushing the page
 // sideways.
 const fs = require('fs');
 const path = require('path');
-const DIR = path.join(__dirname, '..', 'src', 'cannonadecommand', 'usr', 'local', 'emhttp', 'plugins', 'cannonadecommand');
+const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
 
 let pass = 0, fail = 0;

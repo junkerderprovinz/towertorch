@@ -1,4 +1,4 @@
-// The share tiles on /Shares. Loaded on every page through CannonadeCommand.Shares.page and live
+// The share tiles on /Shares. Loaded on every page through TowerTorch.Shares.page and live
 // only where the Freigaben area styles /Shares (shares.js), it puts one Liste/Kacheln switch in the
 // tab bar and draws one card per user share and per disk share.
 //

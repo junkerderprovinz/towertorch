@@ -1,4 +1,4 @@
-// Every glyph CannonadeCommand puts on a control of its own is a drawing from GlimStone's set
+// Every glyph TowerTorch puts on a control of its own is a drawing from GlimStone's set
 // (reference/glyphs.json, the "Icon glyphs" section), rendered as inline SVG by CCTheme.glyph.
 // Unraid's and CA's own icons keep their Font Awesome, and so does the spinner in the process
 // window, which matches the one Unraid shows over a busy container. What can quietly break it:
@@ -34,7 +34,7 @@ console.log('\nThe set');
   ok('and hides it from a screen reader, which reads the control\'s own name', /aria-hidden="true"/.test(out) && /focusable="false"/.test(out));
   ok('an unknown name draws nothing rather than a broken image', glyph('Nope') === '');
   ok('glyph() is published for the area scripts', /glyph: glyph,/.test(theme));
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   ok('a glyph is as tall as the text of what holds it', /\.cc-glyph \{[^}]*width: 1em; height: 1em;[^}]*fill: currentColor;/.test(tokens));
 }
 
@@ -76,9 +76,9 @@ console.log('\nNo script builds a Font Awesome glyph of its own');
     const hits = code.split('\n').filter((l) => /["']fa fa-|className = ["']fa\b|\(["']i["'], ["']fa\b|class=["']fa\b/.test(l));
     ok(path.basename(f) + ': no <i class="fa ..."> is created', hits.length === 0, hits.map((l) => l.trim().slice(0, 90)).join(' | '));
   }
-  const tokens = read('sheets/CannonadeCommand.Tokens.css');
+  const tokens = read('sheets/TowerTorch.Tokens.css');
   ok('CA\'s pin button wears GlimStone\'s Pin as a mask, not a Font Awesome codepoint', !/fontAwesome/i.test(tokens.replace(/\/\*[\s\S]*?\*\//g, '')) && /\.pinPopup::before \{[^}]*mask: url\("data:image\/svg\+xml;utf8,<svg [^"]*viewBox='2\.25 2\.5 15\.5 15\.5'><path d='M6 2\.5h8v2/.test(tokens));
-  ok('the process window keeps the spinner that matches Unraid\'s', /\.cc-nchan-loader \.cc-nchan-fa \{/.test(read('sheets/CannonadeCommand.Header.css')));
+  ok('the process window keeps the spinner that matches Unraid\'s', /\.cc-nchan-loader \.cc-nchan-fa \{/.test(read('sheets/TowerTorch.Header.css')));
 }
 
 // An emoji draws its own colours and shape, so it ignores the control's ink and every colour mode.

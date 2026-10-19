@@ -1,4 +1,4 @@
-/* CannonadeCommand: restyles Unraid's Docker list in place.
+/* TowerTorch: restyles Unraid's Docker list in place.
  *
  * Every datum becomes a borderless pill of the same shape and size. Info badges take a solid accent
  * background with its contrast ink, while state, update and changelog badges keep a meaningful colour.
@@ -6,7 +6,7 @@
  * stay live (the nchan CPU and RAM figures), clickable and sortable, and uninstalling removes the
  * stylesheet, which brings everything back.
  *
- * The accent, the states and the badge size metrics live in CannonadeCommand.Tokens.css.
+ * The accent, the states and the badge size metrics live in TowerTorch.Tokens.css.
  */
 
 /* Hide Unraid's Docker Containers title bar, a div.title from the tabless page layout. The
@@ -209,7 +209,7 @@ html.cc-docker-on .cc-grid-holder .cc-tile-dot.cc-badge-running:not(.cc-badge-al
    rest of the state family into the palette, because the other members carry their value a second
    way: a usage bar in its fill length, a status or update badge in its text. The dot is
    font-size:0, so colour is all it has, and a page-global --cc-rbaccent would give a running and a
-   stopped container the same light. /Main's disk orb in CannonadeCommand.Shares.css works the same
+   stopped container the same light. /Main's disk orb in TowerTorch.Shares.css works the same
    way. */
 /* info badges (network, IP, LAN, port, CPU, RAM, id, author, image tag): solid accent, light text */
 .cc-b,
@@ -225,7 +225,7 @@ html.cc-docker-on .cc-grid-holder .cc-tile-dot.cc-badge-running:not(.cc-badge-al
 .cc-plug .cc-plugauth, .cc-plug-lite .cc-plugauth { font-size: var(--cc-pagebadge-fs) !important; }
 /* The delete control shared by the plugin list and the Shares detail page: a badge that hugs its
    text, with the confirm checkbox as an accent-tinted sibling beside it rather than inside the
-   pill. CannonadeCommand.Shares.css carries the same look, scoped to the detail page. Deleting is
+   pill. TowerTorch.Shares.css carries the same look, scoped to the detail page. Deleting is
    never painted red: the badge takes the colour its sibling badges take, and the confirmation says
    what is at stake. */
 .cc-b-del {
@@ -1086,7 +1086,7 @@ html .cc-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--cc-t
 /* ShipLog's "update all" button (a.sl-updall), restyled to match our badges: an accent
    pill (green in rainbow mode) with auto-contrast text, sitting left of the view toggle.
    Colours come from --cc-updall-bg/-text (set on :root by docker.js, so they reach this
-   element outside our table). Only applies while CannonadeCommand is installed. */
+   element outside our table). Only applies while TowerTorch is installed. */
 .sl-updall { align-items: center !important; line-height: 1.2 !important;
   display: inline-flex; align-items: center; height: 24px; padding: 0 13px;
   border-radius: var(--cc-radius-pill) !important; background: var(--cc-updall-bg, #FCC419) !important;
@@ -1316,7 +1316,7 @@ html.cc-on-plugins input.cc-plugbar-btn:hover:not(:disabled) { background: var(-
 .cc-plug-lite tbody td { padding-top: 6px !important; padding-bottom: 6px !important; }
 /* The name with the support link beside it, and the version with the changelog link beside it;
    a pending update's Neu badge takes a line of its own above them. A long name wraps rather than
-   pushing the link under it. The links live in CannonadeCommand.Plugins.css. */
+   pushing the link under it. The links live in TowerTorch.Plugins.css. */
 .cc-plugtxt { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 .cc-plugtitle { min-width: 0; font-size: var(--cc-text-title); font-weight: 600; } /* the Docker tab's container-name look */
 .cc-plugver { display: grid; grid-template-columns: auto auto; justify-content: start; align-items: center; gap: 5px 10px; }
@@ -1493,7 +1493,7 @@ html.cc-tools-rbneutral #cc-settings .cc-dsel-opt.is-selected {
 .cc-set-prev { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; align-items: center; }
 .cc-set-prev .cc-b-lg { font-size: var(--cc-text-title); font-weight: 700; padding: 6px 16px; letter-spacing: .2px; } /* the live lg tier of the Shares sheet */
 /* The main menu bar preview: the top nav tabs as an idle grey pill and one filled active pill,
-   mirroring CannonadeCommand.Header.css. settings.js paintPv() sets the active tab's colour
+   mirroring TowerTorch.Header.css. settings.js paintPv() sets the active tab's colour
    inline; the idle tabs keep the grey pill below. */
 .cc-set-navprev { gap: 6px; align-items: center; }
 .cc-navtab { display: inline-flex; align-items: center; justify-content: center; height: var(--cc-md-h, 30px); padding: 0 16px; line-height: 1; border-radius: var(--cc-radius-pill); background: rgba(128,128,128,.18); color: var(--cc-text-chip, #cfcfcf); font-size: var(--cc-md-fs); font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; white-space: nowrap; }   /* the padding stays 0 16px rather than --cc-md-pad: the preview strip is narrow */
@@ -1722,7 +1722,7 @@ html.cc-shares-rbneutral .sl-bubble .sl-upd:not(.sl-upd-off):hover, html.cc-shar
 
 /* The add-container and update-container forms, gated on html.cc-docker-on.cc-on-addct, which
    docker.js ctApply() sets on those two URLs only, so nothing here leaks. They take the
-   /Shares detail-form look from CannonadeCommand.Shares.css with the Docker area's accent. The
+   /Shares detail-form look from TowerTorch.Shares.css with the Docker area's accent. The
    native markup is CreateDocker.php's #canvas form. */
 html.cc-docker-on.cc-on-addct #canvas input[type="text"],
 html.cc-docker-on.cc-on-addct #canvas input[type="number"],

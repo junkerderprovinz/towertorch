@@ -30,7 +30,7 @@ jobs:
       - name: Boot smoke
         run: |
           set -euo pipefail
-          BIN=plugin/src/cannonadecommand/usr/local/emhttp/plugins/cannonadecommand/bin/cannonadecommand
+          BIN=plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/bin/towertorch
           echo "version: $("$BIN" version)"
           CC_SOCK=/tmp/cc.sock CC_DATA_DIR=/tmp/ccdata CC_DOCKER_SOCK=/tmp/nope.sock "$BIN" serve &
           PID=$!
@@ -51,7 +51,7 @@ jobs:
       - name: Limits integration against real docker
         run: |
           set -euo pipefail
-          BIN=plugin/src/cannonadecommand/usr/local/emhttp/plugins/cannonadecommand/bin/cannonadecommand
+          BIN=plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/bin/towertorch
           CC_SOCK=/tmp/cc-int.sock CC_DATA_DIR=/tmp/ccdata-int "$BIN" serve &
           for _ in $(seq 1 20); do [ -S /tmp/cc-int.sock ] && break; sleep 0.5; done
           CURL="curl -fsS --unix-socket /tmp/cc-int.sock"
@@ -119,5 +119,5 @@ jobs:
       - name: Upload package artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: cannonadecommand-txz
+          name: towertorch-txz
           path: plugin/out/*.txz
