@@ -30,7 +30,7 @@
 </head>
 <body>
 
-<h1>TowerTorch: a start order you can trust, and Unraid's pages lit up</h1>
+<h1>TowerTorch: a fully revamped, modern UI for your Unraid server</h1>
 <p class="subtitle">Your server's UI on fire. Your disks stay cool.</p>
 
 <p align="center">
@@ -48,14 +48,16 @@
 </p>
 
 <h2>What is this?</h2>
-<p>An Unraid <strong>plugin</strong> that does two things. It starts your containers in the
-right order: a <strong>start plan</strong> says which container waits for which, and the next
-one only starts once the one before is actually <strong>ready</strong>, not merely "running".
-And it gives Unraid's own pages a new coat without replacing any of them: Docker, Main,
-Shares, Plugins and VMs can show <strong>tiles</strong> as well as lists, disks and the array
-get small animated pictures, and the settings pages and forms turn into cards with switches.
-A small <strong>Go daemon</strong> on a local unix socket does the work; nothing leaves your
-server.</p>
+<p>An Unraid <strong>plugin</strong> that gives your whole server a <strong>fully revamped,
+modern interface</strong>, without replacing a single page. Dashboard, Main, Shares, Docker,
+Plugins, VMs and Settings get one clean, consistent look: <strong>tiles</strong> or lists,
+cards with switches instead of checkboxes, small animated pictures for the disks, the array and
+the mover, one accent colour or a rainbow, light and dark. Everything stays where Unraid put it,
+so nothing you know moves.</p>
+<p>Underneath, it looks after your containers: a <strong>start plan</strong> starts each one
+only once the container it depends on is actually <strong>ready</strong>, not merely "running",
+with per-container limits, a watchdog and schedules on top. A small <strong>Go daemon</strong>
+on a local unix socket does the work; nothing leaves your server.</p>
 
 <h2>Highlights</h2>
 <ul>
