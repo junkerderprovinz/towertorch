@@ -127,6 +127,20 @@ Every picture uses a different accent colour. The server and its apps, shares an
 
 <br>
 
+<p align="center">
+  <img src=".github/assets/screenshots/towertorch-6.jpg" alt="The start plan window in teal, a chain from MariaDB and Redis to Nextcloud, with the Docker list behind" width="100%">
+  <br><em>The start plan: what a container waits for, drawn as a chain.</em>
+</p>
+
+<br>
+
+<p align="center">
+  <img src=".github/assets/screenshots/towertorch-7.jpg" alt="Unraid's login page in orange, in the light theme behind and in the dark theme in front" width="100%">
+  <br><em>The login page in the same look, light or dark.</em>
+</p>
+
+<br>
+
 ## 3. Features
 
 **Orchestration**

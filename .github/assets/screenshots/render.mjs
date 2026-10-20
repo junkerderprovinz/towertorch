@@ -9,7 +9,7 @@
 // through the tilt.
 //
 // Deps (global): playwright-core with its Chromium installed.
-// Run: node .github/assets/screenshots/render.mjs
+// Run: node .github/assets/screenshots/render.mjs [page...]   (no page renders them all)
 
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -59,8 +59,23 @@ const SHOTS = [
     caption: "Your VMs, <em>one click from booting</em>",
     sub: "The VM tab as a list or as tiles, with cores, memory, disks and graphics at a glance",
   },
+  {
+    file: "towertorch-6.jpg",
+    page: "startplan",
+    path: "/Docker",
+    caption: "Start order, <em>by who needs whom</em>",
+    sub: "Each container waits until the ones it depends on are ready, drawn as a chain you can read at a glance",
+  },
+  {
+    file: "towertorch-7.jpg",
+    page: "login",
+    path: "/login",
+    caption: "Even the login <em>fits the look</em>",
+    sub: "Your accent, your shape and your logo on Unraid's login page, in the dark or the light theme",
+  },
 ];
 
+const CHOSEN = process.argv.slice(2);
 const W = 1920;
 const H = 1080;
 const WIN_W = 940;
@@ -143,7 +158,7 @@ ${windowAt("front", shot, `${shot.page}-tiles.png`)}
 
 const browser = await chromium.launch();
 try {
-  for (const shot of SHOTS) {
+  for (const shot of SHOTS.filter((s) => !CHOSEN.length || CHOSEN.includes(s.page))) {
     const big = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
     await big.setContent(page(shot));
     await big.evaluate(() => document.fonts.ready);

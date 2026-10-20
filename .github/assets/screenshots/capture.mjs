@@ -41,6 +41,23 @@ const SETTINGS = /\/plugins\/towertorch\/server\/ccapi\.php\?path=config(&|$)/;
 const DEMO_NAME = "Tower";
 const DEMO_DESCRIPTION = "Media server";
 
+// The start plan the pictures show instead of the server's own, so the chain in the window is a
+// plain home-server one. The plan is only answered from here, never written to the server.
+const DEMO_PLAN = {
+  nodes: [
+    { name: "MariaDB", after: [], delay_seconds: 0, probe: { kind: "health" }, policy: "abort" },
+    { name: "Redis", after: [], delay_seconds: 0, probe: { kind: "health" }, policy: "abort" },
+    { name: "PostgreSQL", after: [], delay_seconds: 0, probe: { kind: "health" }, policy: "abort" },
+    { name: "Nextcloud", after: ["MariaDB", "Redis"], delay_seconds: 10, probe: { kind: "health" }, policy: "abort" },
+    { name: "Immich", after: ["PostgreSQL", "Redis"], delay_seconds: 10, probe: { kind: "health" }, policy: "abort" },
+    { name: "Tautulli", after: ["Plex"], delay_seconds: 20, probe: { kind: "health" }, policy: "continue" },
+  ],
+};
+
+// Unraid prints the login page in the server's language and the pictures are English.
+const LOGIN_ENGLISH = { "Passwort-Wiederherstellung": "Password recovery", Benutzername: "Username", Passwort: "Password", Anmelden: "Login" };
+const LOGIN_ACCENT = "#FF832B";
+
 // Applied on every page on top of the server's own settings, so each picture shows the accent
 // itself rather than the palette, and every area follows the one accent.
 const LOOK = {
@@ -79,6 +96,18 @@ const PAGES = [
     keep: ["Plex", "Immich", "Nextcloud", "Nginx", "MariaDB", "PostgreSQL", "Redis", "Tautulli", "CrowdSec",
       "OpenWebUI", "Ollama", "Homarr", "StirlingPDF", "Minecraft"],
     rename: { homarr: "Homarr" },
+  },
+  {
+    name: "startplan",
+    path: "/Docker",
+    accent: "#3DDBD9",
+    key: "cc.view",
+    views: { list: "list", tiles: "list" },
+    keep: ["Plex", "Immich", "Nextcloud", "Nginx", "MariaDB", "PostgreSQL", "Redis", "Tautulli", "CrowdSec",
+      "OpenWebUI", "Ollama", "Homarr", "StirlingPDF", "Minecraft"],
+    rename: { homarr: "Homarr" },
+    plan: DEMO_PLAN,
+    open: "Nextcloud",
   },
   {
     name: "main",
@@ -408,7 +437,7 @@ try {
   const scrub = scrubber(server);
   await page.exposeFunction("shotScrub", (list) => list.map(scrub));
 
-  let state = { settings: {}, frozen: false, shares: {}, wake: false };
+  let state = { settings: {}, frozen: false, shares: {}, wake: false, plan: null };
   // A request made while the page is frozen is held, not refused: a refused one would put an
   // error toast into the picture.
   const held = [];
@@ -419,6 +448,13 @@ try {
     if (state.frozen && req.resourceType() !== "image") return void held.push(route);
     if (/\/webGui\/javascript\/translate\.[A-Za-z_]+\.js/.test(url)) {
       return route.fulfill({ contentType: "application/javascript", body: "function _(t){return t;}" });
+    }
+    if (method === "GET" && state.plan && /\/plugins\/towertorch\/server\/ccapi\.php\?path=state(&|$)/.test(url)) {
+      const res = await route.fetch();
+      const json = await res.json();
+      json.plan = state.plan;
+      json.last_run = null;
+      return route.fulfill({ response: res, body: scrub(JSON.stringify(json)), contentType: "application/json" });
     }
     if (method === "GET" && SETTINGS.test(url)) {
       const res = await route.fetch();
@@ -458,15 +494,20 @@ try {
     upstream.onMessage((m) => { if (!state.frozen) ws.send(typeof m === "string" ? scrub(state.wake ? wake(m) : m) : m); });
   });
 
-  for (const shot of PAGES.filter((p) => !CHOSEN.length || CHOSEN.includes(p.name))) {
+  const shots = PAGES.filter((p) => !CHOSEN.length || CHOSEN.includes(p.name));
+  for (const shot of shots) {
     for (const [view, value] of Object.entries(shot.views)) {
       const settings = Object.assign({ "cc.accent": shot.accent }, { [shot.key]: value });
-      state = { settings, frozen: false, shares: shot.name === "shares" ? shot.rename : {}, wake: !!shot.wake };
+      state = { settings, frozen: false, shares: shot.name === "shares" ? shot.rename : {}, wake: !!shot.wake, plan: shot.plan || null };
       for (const route of held.splice(0)) route.abort().catch(() => {});
       await page.goto(`${BASE}/Dashboard`, { waitUntil: "load" });
       await page.evaluate((s) => { for (const [k, v] of Object.entries(s)) window.__ccLS ? window.__ccLS(k, v) : localStorage.setItem(k, v); }, Object.assign({}, LOOK, settings));
       await page.goto(`${BASE}${shot.path}`, { waitUntil: "load", timeout: 60000 });
       await page.waitForTimeout(9000);
+      if (shot.open && view === "tiles") {
+        await page.locator("#docker_list tr", { hasText: shot.open }).first().locator("a.cc-plan").first().click();
+        await page.waitForTimeout(2500);
+      }
       await page.mouse.move(VIEW.width / 2, 2);
       state.frozen = true;
       await page.evaluate(() => {
@@ -482,6 +523,32 @@ try {
       for (const h of hits) console.log(`  ${shot.name}-${view}: ${h}`);
       await page.screenshot({ path: join(out, `${shot.name}-${view}.png`) });
       console.log(`wrote ${shot.name}-${view}.png`);
+    }
+  }
+  // The login page is taken in a context that never logged in: dark in front and light behind, the
+  // server's name and the words in English. Unraid takes the light look from a class on <html>.
+  if (!CHOSEN.length || CHOSEN.includes("login")) {
+    for (const [view, light] of [["tiles", false], ["list", true]]) {
+      const guest = await browser.newContext({ ignoreHTTPSErrors: true, viewport: VIEW, deviceScaleFactor: 2, locale: "en-US", colorScheme: "dark" });
+      await guest.addInitScript((accent) => { localStorage.setItem("cc.accent", accent); }, LOGIN_ACCENT);
+      const gp = await guest.newPage();
+      await gp.route(/./, async (route) => {
+        if (route.request().resourceType() !== "document") return route.continue();
+        const res = await route.fetch();
+        let body = scrub(await res.text());
+        for (const [from, to] of Object.entries(LOGIN_ENGLISH)) body = body.split(from).join(to);
+        body = body.replace(/<html([^>]*?)\blang="[^"]*"/, '<html$1lang="en"');
+        if (light) body = body.replace("Theme--black", "Theme--white");
+        return route.fulfill({ response: res, body });
+      });
+      await gp.goto(`${BASE}/login`, { waitUntil: "load", timeout: 60000 });
+      await gp.waitForTimeout(1500);
+      await gp.addStyleTag({ content: "*, *::before, *::after { transition: none !important; animation: none !important; caret-color: transparent !important; }" });
+      const hits = await gp.evaluate(leaks, { deny: [...DENY, server.name].filter((w) => w && w.length > 2), demoNet: "192.168.1." });
+      for (const hit of hits) console.log(`  login-${view}: ${hit}`);
+      await gp.screenshot({ path: join(out, `login-${view}.png`) });
+      console.log(`wrote login-${view}.png`);
+      await guest.close();
     }
   }
 } finally {
