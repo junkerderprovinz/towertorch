@@ -1015,14 +1015,15 @@
       };
       // Matches the native header background and text colour to Unraid's active theme, read from
       // the theme's real body colour.
-      function applyHdrAuto() {
+      function applyHdrAuto(live) {
         try {
           var bg = getComputedStyle(document.body).backgroundColor || "";
           var m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (!m) return;
           var toHex = function (n) { return ("0" + (n & 255).toString(16)).slice(-2); };
           var bghex = toHex(+m[1]) + toHex(+m[2]) + toHex(+m[3]);
           var ink = idealText("#" + bghex).replace(/^#/, "");
-          postDisplayMulti({ header: ink, headermetacolor: ink, background: bghex });
+          var fields = { header: ink, headermetacolor: ink, background: bghex };
+          if (live) postDisplay(fields).catch(function () {}); else postDisplayMulti(fields);
         } catch (e9) {}
       }
       // The header rows sit in the Theming card rather than in a card of their own.
@@ -1038,6 +1039,34 @@
         b.style.marginLeft = "auto";   // flush right, like the switches in the rows around it
         b.addEventListener("click", function () { location.href = "/Settings/DisplaySettings"; });
         r.appendChild(b); cCard.appendChild(r);
+        // Unraid's dark and light colour themes, switched in place: the theme sheet and the class
+        // on <html> change at once and the display setting follows, so the page keeps its state.
+        // The variant left behind is remembered, so a gray theme comes back as gray.
+        var unraidTheme = function () {
+          var m = /Theme--(black|gray|white|azure)/.exec(document.documentElement.className);
+          return m ? m[1] : "black";
+        };
+        var swapTheme = function (from, to) {
+          var sheet = document.querySelector('link[href*="/webGui/styles/themes/' + from + '.css"]');
+          if (!sheet) return false;
+          var fresh = sheet.cloneNode();
+          fresh.href = sheet.href.replace("/themes/" + from + ".css", "/themes/" + to + ".css");
+          fresh.addEventListener("load", function () { sheet.remove(); if (get("cc.hdrauto", "1") === "1" && !areaOn("cc.enable.header")) applyHdrAuto(true); });
+          sheet.after(fresh);
+          document.documentElement.classList.replace("Theme--" + from, "Theme--" + to);
+          return true;
+        };
+        var darkRow = toggleRow(T("Dunkelmodus", "Dark mode"), T("Schaltet Unraids Farbschema zwischen dunkel und hell um und speichert es in den Anzeige-Einstellungen. Die Seite lädt nicht neu.", "Switches Unraid's colour theme between dark and light and saves it in the display settings. The page does not reload."), /^(black|gray)$/.test(unraidTheme()), function (v) {
+          var back = function () { darkRow.querySelector(".cc-set-toggle")._setOn(!v); };
+          var from = unraidTheme(), to = get("cc.theme." + (v ? "dark" : "light"), v ? "black" : "white");
+          set("cc.theme." + (v ? "light" : "dark"), from);
+          if (!swapTheme(from, to)) { back(); return failed(null, T("Das Farbschema wurde nicht gefunden.", "The colour theme sheet was not found.")); }
+          postDisplay({ theme: to }).catch(function () {
+            swapTheme(to, from); back();
+            failed(null, T("Die Anzeige-Einstellung wurde nicht gespeichert.", "The display setting was not saved."));
+          });
+        });
+        cCard.appendChild(darkRow);
         var arLabel = T("Kopf-Farben ans Thema koppeln", "Match header colours to the theme");
         var arHelp = T("An: die Kopfzeilen-Hintergrund- und Textfarbe folgen automatisch Unraids Farbschema, also dunkler Hintergrund mit heller Schrift beim dunklen Thema und umgekehrt. Wirkt, wenn TowerTorchs Kopfbereich aus ist.", "On: the header background and text colour follow Unraid's colour scheme automatically, dark background with light text on a dark theme and the reverse on a light one. Applies while TowerTorch's header area is off.");
         // TowerTorch's own header area paints over the native colours, so while it is on the

@@ -1,0 +1,24 @@
+Menu="Buttons:100"
+Title="TowerTorch"
+Icon="towertorch.png"
+Link="cc-custom-hook"
+---
+<?php
+/* Last of the Buttons pages, so the user's own files come after every TowerTorch sheet and script.
+   custom.css and custom.js live on the flash next to the plugin's other settings and are never
+   touched by an update. The script waits for the load event because the area scripts are deferred.
+   Link="cc-custom-hook" renders a bare <div>, no icon. */
+$customDir = '/boot/config/plugins/towertorch';
+if (is_file("$customDir/custom.css")): ?>
+<style id="cc-custom-css">
+<?= str_ireplace('</style', '<\/style', file_get_contents("$customDir/custom.css")) ?>
+</style>
+<?php endif;
+if (is_file("$customDir/custom.js")): ?>
+<script id="cc-custom-js">
+window.addEventListener("load", function () {
+<?= str_ireplace('</script', '<\/script', file_get_contents("$customDir/custom.js")) ?>
+
+});
+</script>
+<?php endif; ?>

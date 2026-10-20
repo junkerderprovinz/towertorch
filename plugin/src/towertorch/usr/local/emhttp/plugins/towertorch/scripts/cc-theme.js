@@ -12,6 +12,11 @@
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function s(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
+  // A page that no longer renders can still be opened with ?towertorch=off, which flips the
+  // theming master switch before any area script reads it; ?towertorch=on flips it back.
+  var safe = /[?&]towertorch=(off|on)(?:&|$)/.exec(location.search);
+  if (safe) s("cc.theming", safe[1] === "off" ? "0" : "1");
+
   // GlimStone's palette, the Carbon 30 steps once round the wheel: red, orange, Sunflower, green,
   // teal, blue, purple and magenta. Sunflower is the default accent, so one position always matches
   // it. A stored cc.rbpal replaces the whole set and is never rewritten.
