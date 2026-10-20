@@ -1002,6 +1002,36 @@
       themingCard = tc;
       wrapMain.appendChild(tc);
     })();
+    // The logo on Unraid's login page. The file goes to the flash through loginlogo.php, where the
+    // login page reads it; without one the page shows the TowerTorch mark.
+    (function () {
+      var LOGO_URL = "/plugins/towertorch/server/loginlogo.php";
+      var end = el("span", "cc-set-colend"), prev = el("img", "cc-set-loginlogo"), pick = el("input");
+      prev.alt = ""; prev.hidden = true; prev.style.maxHeight = "36px"; prev.style.maxWidth = "72px";
+      pick.type = "file"; pick.accept = "image/png,image/jpeg,image/webp,image/svg+xml"; pick.hidden = true;
+      var choose = el("button", "cc-btn", T("Logo wählen", "Choose logo")); choose.type = "button";
+      var clear = el("button", "cc-btn", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
+      function show(info) {
+        prev.hidden = !info || !info.has; clear.hidden = prev.hidden;
+        if (info && info.has) prev.src = info.src;
+      }
+      function send(form) {
+        form.append("csrf_token", csrfToken());
+        return fetch(LOGO_URL, { method: "POST", body: form, credentials: "same-origin" })
+          .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }).then(show)
+          .catch(function () { failed(null, T("Das Logo wurde nicht gespeichert. Erlaubt sind PNG, JPEG, WebP und SVG bis 1 MB.", "The logo was not saved. PNG, JPEG, WebP and SVG up to 1 MB are allowed.")); });
+      }
+      choose.addEventListener("click", function () { pick.click(); });
+      pick.addEventListener("change", function () {
+        if (!pick.files[0]) return;
+        var form = new FormData(); form.append("logo", pick.files[0]);
+        send(form); pick.value = "";
+      });
+      clear.addEventListener("click", function () { var form = new FormData(); form.append("clear", "1"); send(form); });
+      [prev, choose, clear, pick].forEach(function (n) { end.appendChild(n); });
+      themingCard.appendChild(inlineRow(T("Logo der Anmeldeseite", "Login page logo"), T("Das Bild über dem Servernamen auf Unraids Anmeldeseite. Ohne eigenes Bild steht dort das TowerTorch-Zeichen. Akzentfarbe und Form folgen den Einstellungen hier, hell oder dunkel folgt Unraids Farbschema.", "The picture above the server name on Unraid's login page. Without your own, the TowerTorch mark is shown. Accent and shape follow the settings here, light or dark follows Unraid's colour theme."), end));
+      fetch(LOGO_URL, { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(show).catch(function () {});
+    })();
     // Unraid's display settings stay on Unraid's own page, which CC styles anyway, rather than
     // being mirrored field by field. The few controls kept here write the native setting itself
     // through postDisplay(), and the theme coupling reloads, since the native header only reads its

@@ -1,0 +1,20 @@
+#!/bin/bash
+# Adds or removes the include line that puts TowerTorch on Unraid's login pages. The pages live in
+# the RAM root and are restored on every boot, so the plugin install runs this again each time.
+DIR=/usr/local/emhttp/plugins/dynamix/include
+MARK='towertorch/include/login-head.php'
+LINE='<?php @include "/usr/local/emhttp/plugins/towertorch/include/login-head.php"; ?>'
+
+for page in "$DIR/.login.php" "$DIR/.set-password.php"; do
+  [ -f "$page" ] || continue
+  case "$1" in
+    install)
+      grep -q "$MARK" "$page" && continue
+      sed -i "0,/<\/head>/s##${LINE}\n</head>#" "$page"
+      ;;
+    remove)
+      sed -i "\#$MARK#d" "$page"
+      ;;
+  esac
+done
+exit 0

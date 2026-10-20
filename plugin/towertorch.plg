@@ -489,7 +489,8 @@ rm -f $(ls &plgPath;/&slug;-*.txz 2>/dev/null | grep -v '&txz;')
      supervisor daemon immediately, no reboot needed. -->
 <FILE Run="/bin/bash">
 <INLINE>
-chmod +x &emhttp;/bin/&slug; &emhttp;/scripts/rc.&slug; &emhttp;/event/* 2>/dev/null
+chmod +x &emhttp;/bin/&slug; &emhttp;/scripts/rc.&slug; &emhttp;/scripts/login-hook &emhttp;/event/* 2>/dev/null
+&emhttp;/scripts/login-hook install
 &emhttp;/scripts/rc.&slug; restart
 echo ""
 &emhttp;/bin/&slug; banner 2>/dev/null
@@ -518,6 +519,7 @@ echo "TowerTorch ist ready!"
 echo ""
 echo "Bye!"
 echo ""
+&emhttp;/scripts/login-hook remove 2>/dev/null
 &emhttp;/scripts/rc.&slug; stop 2>/dev/null
 for p in $(pgrep -f '&emhttp;/bin/&slug;' 2>/dev/null); do kill -9 "$p" 2>/dev/null; done
 pkg=$(ls /var/log/packages/ 2>/dev/null | grep -E "^&slug;(-[^-]+-[^-]+-[^-]+)?$" | head -n1)
