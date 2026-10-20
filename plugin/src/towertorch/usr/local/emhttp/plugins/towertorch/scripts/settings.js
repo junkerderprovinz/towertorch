@@ -1015,8 +1015,8 @@
         prev.hidden = !info || !info.has; clear.hidden = prev.hidden;
         if (info && info.has) prev.src = info.src;
       }
-      function send(form) {
-        form.append("csrf_token", csrfToken());
+      function send(fields) {
+        var form = new URLSearchParams(fields); form.append("csrf_token", csrfToken());   // multipart times out, see postDisplay
         return fetch(LOGO_URL, { method: "POST", body: form, credentials: "same-origin" })
           .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }).then(show)
           .catch(function () { failed(null, T("Das Logo wurde nicht gespeichert. Erlaubt sind PNG, JPEG, WebP und SVG bis 1 MB.", "The logo was not saved. PNG, JPEG, WebP and SVG up to 1 MB are allowed.")); });
@@ -1024,10 +1024,11 @@
       choose.addEventListener("click", function () { pick.click(); });
       pick.addEventListener("change", function () {
         if (!pick.files[0]) return;
-        var form = new FormData(); form.append("logo", pick.files[0]);
-        send(form); pick.value = "";
+        var reader = new FileReader();
+        reader.onload = function () { send({ logo: String(reader.result).split(",")[1] || "" }); };
+        reader.readAsDataURL(pick.files[0]); pick.value = "";
       });
-      clear.addEventListener("click", function () { var form = new FormData(); form.append("clear", "1"); send(form); });
+      clear.addEventListener("click", function () { send({ clear: "1" }); });
       [prev, choose, clear, pick].forEach(function (n) { end.appendChild(n); });
       themingCard.appendChild(inlineRow(T("Logo der Anmeldeseite", "Login page logo"), T("Das Bild über dem Servernamen auf Unraids Anmeldeseite. Ohne eigenes Bild steht dort das TowerTorch-Zeichen. Akzentfarbe und Form folgen den Einstellungen hier, hell oder dunkel folgt Unraids Farbschema.", "The picture above the server name on Unraid's login page. Without your own, the TowerTorch mark is shown. Accent and shape follow the settings here, light or dark follows Unraid's colour theme."), end));
       fetch(LOGO_URL, { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(show).catch(function () {});

@@ -1,7 +1,8 @@
 <?php
 /*
  * The logo on the login page. GET returns whether one is stored and its data URL, POST with a
- * file field named logo stores it, POST with clear=1 removes it. The file sits on the flash
+ * the image as base64 in the logo field stores it, POST with clear=1 removes it. A multipart
+ * body never gets through Unraid's web server in time, hence the plain form encoding. The file sits on the flash
  * next to the plugin's other settings, where include/login-head.php reads it. Unraid checks the
  * csrf_token of every POST before this file runs.
  */
@@ -42,12 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['ok' => true, 'has' => false]);
         exit;
     }
-    $upload = $_FILES['logo'] ?? null;
-    if (!$upload || $upload['error'] !== UPLOAD_ERR_OK || $upload['size'] > MAX_BYTES) {
+    $bytes = base64_decode((string) ($_POST['logo'] ?? ''), true);
+    if ($bytes === false || $bytes === '' || strlen($bytes) > MAX_BYTES) {
         fail(400, 'upload');
     }
-    $bytes = file_get_contents($upload['tmp_name']);
-    $ext = $bytes === false ? null : extension($bytes);
+    $ext = extension($bytes);
     if ($ext === null) {
         fail(415, 'type');
     }
