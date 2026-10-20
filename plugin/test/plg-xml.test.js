@@ -14,13 +14,7 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 const raw = fs.readFileSync(PLG, 'utf8');
 
-// The embedded .txz blob is megabytes of base64 and cannot contain either character, so
-// scanning it is pure cost. Cut it out and check everything else.
-const blobStart = raw.indexOf('<INLINE>');
-const blobEnd = raw.lastIndexOf('</INLINE>');
-const text = (blobStart >= 0 && blobEnd > blobStart)
-  ? raw.slice(0, blobStart) + raw.slice(blobEnd)
-  : raw;
+const text = raw;
 
 console.log('\nThe plugin manifest is well-formed XML');
 {
@@ -80,11 +74,18 @@ console.log('\nThe version entity and the newest CHANGES entry agree');
   if (v && m) ok('and it names the version being released', v[1] === m[1], v[1] + ' vs ' + m[1]);
 }
 
-console.log('\nThe embedded package is the one the version claims');
+console.log('\nThe package is fetched from the release and checked against a hash');
 {
-  const v = /<!ENTITY version\s+"([^"]+)">/.exec(raw)[1];
-  ok('the txz FILE stanza names this version', raw.indexOf('towertorch-' + v + '-x86_64-1.txz') > 0 || raw.indexOf('&txz;') > 0);
-  ok('the embedded blob is present and non-trivial', blobStart >= 0 && blobEnd - blobStart > 100000, String(blobEnd - blobStart));
+  const stanza = /<FILE Name="&plgPath;\/&txz;"[^>]*>([\s\S]*?)<\/FILE>/.exec(raw);
+  ok('the txz FILE stanza exists', !!stanza);
+  if (stanza) {
+    ok('it downloads from the release URL', /<URL>&pkgURL;\/&txz;<\/URL>/.test(stanza[1]));
+    ok('it declares the sha256 entity', /<SHA256>&sha256;<\/SHA256>/.test(stanza[1]));
+    ok('it embeds no payload', !/<INLINE>/.test(stanza[1]) && !/Type="base64"/.test(stanza[0]));
+  }
+  const h = /<!ENTITY sha256\s+"([^"]*)">/.exec(raw);
+  ok('the sha256 entity is a 64-digit hex hash', !!h && /^[0-9a-f]{64}$/.test(h[1]), h ? h[1] : 'missing');
+  ok('the manifest stays small enough for the review tooling', raw.length < 500000, String(raw.length));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
