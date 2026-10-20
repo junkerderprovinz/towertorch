@@ -18,8 +18,7 @@
   var safe = /[?&]towertorch=(off|on)(?:&|$)/.exec(location.search);
   if (safe && safe[1] === "off") s("tt.off", "1");
   if (safe && safe[1] === "on") { try { localStorage.removeItem("tt.off"); localStorage.removeItem("cc.theming"); } catch (e) {} }
-  var held = function (k) { return k === "cc.theming" && g("tt.off", "0") === "1"; };
-  if (held("cc.theming")) s("cc.theming", "0");
+  if (g("tt.off", "0") === "1") s("cc.theming", "0");
 
   // GlimStone's palette, the Carbon 30 steps once round the wheel: red, orange, Sunflower, green,
   // teal, blue, purple and magenta. Sunflower is the default accent, so one position always matches
@@ -1303,7 +1302,7 @@
           // some keys unchanged on every render, the settings tab among them.
           var same = false; try { same = localStorage.getItem(k) === String(v); } catch (e) {}
           orig(k, v);
-          try { if (!same && /^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !held(String(k))) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
+          try { if (!same && /^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !(String(k) === "cc.theming" && localStorage.getItem("tt.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
         };
       }
     } catch (e) {}
@@ -1315,7 +1314,7 @@
         window.__ccLSRemove = origRm;
         localStorage.removeItem = function (k) {
           origRm(k);
-          try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !held(String(k))) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
+          try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !(String(k) === "cc.theming" && localStorage.getItem("tt.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
         };
       }
     } catch (e) {}
@@ -1360,7 +1359,7 @@
     function adopt(u, busy) {
       var changed = false, skip = unsynced();
       Object.keys(busy || {}).forEach(function (k) { skip[k] = 1; });
-      try { Object.keys(u || {}).forEach(function (k) { if (/^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !held(k) && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ccLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
+      try { Object.keys(u || {}).forEach(function (k) { if (/^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !(k === "cc.theming" && localStorage.getItem("tt.off") === "1") && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ccLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
       return changed;
     }
     // adopt() corrects localStorage from the server copy after the page has already drawn itself
@@ -1378,7 +1377,7 @@
       if (adopt(c.ui_settings, bootBusy)) rerenderAdoptedAreas();
       if (!c.ui_settings || !Object.keys(c.ui_settings).length) {
         var seed = {};
-        try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !held(k)) seed[k] = localStorage.getItem(k); } } catch (e) {}
+        try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !(k === "cc.theming" && localStorage.getItem("tt.off") === "1")) seed[k] = localStorage.getItem(k); } } catch (e) {}
         if (Object.keys(seed).length) { Object.keys(seed).forEach(function (k) { pending[k] = 1; }); push(); }
       }
     });

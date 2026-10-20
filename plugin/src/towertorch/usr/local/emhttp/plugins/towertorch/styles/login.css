@@ -1,7 +1,7 @@
 /* TowerTorch: login page. include/login-head.php writes this into Unraid's login page, whose own
    styles come first, so every rule here repeats html and body to win. Sizes are in px because the
    login page keeps the browser's 16px rem. The accent and the shape arrive from scripts/login.js
-   as --tt-accent, --tt-accent-ink and data-tt-shape on <html>. */
+   as --tt-accent, --tt-accent-ink and data-cc-shape on <html>. */
 html {
   --tt-base: #161616;
   --tt-card: #1e1e1e;
@@ -14,11 +14,13 @@ html {
   --tt-ok: #6fdc8c;
   --tt-ok-soft: rgba(111, 220, 140, .14);
   --tt-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+  --cc-text-status: 22px;
+  --cc-text-body: 14px;
   --tt-accent: #FCC419;
   --tt-accent-ink: #161616;
-  --tt-r-card: 20px;
-  --tt-r-field: 12px;
-  --tt-r-btn: 999px;
+  --cc-radius-card: 20px;
+  --cc-radius-control: 12px;
+  --cc-radius-pill: 9999px;
   color-scheme: dark;
 }
 html.Theme--white,
@@ -36,8 +38,8 @@ html.Theme--azure {
   --tt-shadow: 0 24px 60px rgba(30, 40, 60, .18);
   color-scheme: light;
 }
-html[data-tt-shape="soft"] { --tt-r-card: 8px; --tt-r-field: 5px; --tt-r-btn: 5px; }
-html[data-tt-shape="square"] { --tt-r-card: 0; --tt-r-field: 0; --tt-r-btn: 0; }
+html[data-cc-shape="soft"] { --cc-radius-card: 8px; --cc-radius-control: 5px; --cc-radius-pill: 5px; }
+html[data-cc-shape="square"] { --cc-radius-card: 0px; --cc-radius-control: 0px; --cc-radius-pill: 0px; }
 
 html body {
   background: var(--tt-base);
@@ -53,7 +55,7 @@ html body #login {
   width: min(420px, 100%);
   margin: 0;
   background: var(--tt-card);
-  border-radius: var(--tt-r-card);
+  border-radius: var(--cc-radius-card);
   box-shadow: var(--tt-shadow);
   animation: tt-rise .5s cubic-bezier(.16, 1, .3, 1);
 }
@@ -78,7 +80,7 @@ html body #login .tt-logo img { width: 120px; height: auto; max-height: 140px; o
 html body #login h1 {
   margin: 0;
   text-align: center;
-  font-size: 24px;
+  font-size: var(--cc-text-status);
   font-weight: 700;
   letter-spacing: .01em;
 }
@@ -95,7 +97,7 @@ html body #login input[type=password] {
   padding: 13px 16px 13px 46px;
   border: 0;
   outline: 0;
-  border-radius: var(--tt-r-field);
+  border-radius: var(--cc-radius-control);
   background-color: var(--tt-field);
   background-repeat: no-repeat;
   background-position: 16px center;
@@ -125,7 +127,7 @@ html body #login .form button {
   margin: 4px 0 0;
   padding: 13px 16px;
   border: 0;
-  border-radius: var(--tt-r-btn);
+  border-radius: var(--cc-radius-pill);
   background: var(--tt-accent);
   color: var(--tt-accent-ink);
   font: 700 16px "Segoe UI", system-ui, sans-serif;
@@ -133,10 +135,10 @@ html body #login .form button {
   text-transform: none;
   box-shadow: none;
   cursor: pointer;
-  transition: filter .15s, transform .15s;
+  transition: background .15s, transform .15s;
 }
 html body #login .button:hover,
-html body #login .form button:hover { background: var(--tt-accent); color: var(--tt-accent-ink); filter: brightness(1.08); }
+html body #login .form button:hover { color: var(--tt-accent-ink); background: color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)); }
 html body #login .button:active,
 html body #login .form button:active { transform: scale(.98); }
 html body #login .button:focus-visible,
@@ -145,10 +147,10 @@ html body #login .form button:focus-visible { outline: 2px solid var(--tt-text);
 html body #login .error {
   margin: 12px 0 0;
   padding: 10px 14px;
-  border-radius: var(--tt-r-field);
+  border-radius: var(--cc-radius-control);
   background: var(--tt-err-soft);
   color: var(--tt-err);
-  font-size: 14px;
+  font-size: var(--cc-text-body);
 }
 html body #login .error:empty { display: none; }
 html body #login .error.tt-ok { background: var(--tt-ok-soft); color: var(--tt-ok); }
@@ -156,7 +158,7 @@ html body #login .error.tt-ok { background: var(--tt-ok-soft); color: var(--tt-o
 html body #login .content > a {
   align-self: center;
   color: var(--tt-muted);
-  font-size: 14px;
+  font-size: var(--cc-text-body);
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;

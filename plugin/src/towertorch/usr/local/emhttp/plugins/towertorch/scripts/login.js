@@ -24,7 +24,7 @@
   root.style.setProperty("--tt-accent", accent);
   root.style.setProperty("--tt-accent-ink", idealText(accent));
   var shape = g("cc.badgeshape", "round");
-  root.setAttribute("data-tt-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
+  root.setAttribute("data-cc-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
 
   document.addEventListener("DOMContentLoaded", function () {
     var content = document.querySelector("#login .content");
