@@ -37,6 +37,30 @@
       box.appendChild(img);
       content.insertBefore(box, content.firstChild);
     }
+    // The server name looks like the name in the header: the same cc.brand.* keys, with the same
+    // defaults, and a web font from Google where the header would load one.
+    var title = document.querySelector("#login h1");
+    if (title) {
+      var custom = g("cc.brand.name", "");
+      if (custom) title.textContent = custom;
+      var size = g("cc.brand.size", "30");
+      if (/^\d{1,3}$/.test(size)) title.style.fontSize = size + "px";
+      title.style.fontWeight = g("cc.brand.weight", "650");
+      title.style.fontStyle = g("cc.brand.italic", "0") === "1" ? "italic" : "normal";
+      var color = g("cc.brand.color", "");
+      if (/^#[0-9a-f]{6}$/i.test(color)) title.style.color = color;
+      var font = g("cc.brand.font", "");
+      if (font) {
+        title.style.fontFamily = font;
+        var m = /^\s*(?:"([^"]+)"|'([^']+)'|([^,]+))/.exec(font), family = m ? (m[1] || m[2] || m[3] || "").trim() : "";
+        if (family && !/^(system-ui|-apple-system|segoe ui)$/i.test(family)) {
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = "https://fonts.googleapis.com/css2?family=" + family.replace(/ /g, "+") + ":wght@400;700&display=swap";
+          document.head.appendChild(link);
+        }
+      }
+    }
     // "Successfully logged out" comes in the error element; it gets the calm tint instead.
     var note = document.getElementById("error");
     if (note && /logged out|abgemeldet/i.test(note.textContent)) note.classList.add("tt-ok");
