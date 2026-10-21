@@ -414,20 +414,25 @@ html.cc-tools-on #displaybox .cc-tsel.cc-tsel-disabled .cc-tsel-trigger,
 html.cc-popups-on #displaybox .cc-tsel.cc-tsel-disabled .cc-tsel-trigger { opacity: .5; cursor: not-allowed; }
 html.cc-tools-on #displaybox .cc-tsel-group,
 html.cc-popups-on #displaybox .cc-tsel-group { font-size: var(--cc-text-meta); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #9a9a9a; padding: 4px 12px 0; }
-/* in rainbow mode each item takes its own palette colour (--cc-rb-c per item from ccPaintRotate)
-   and hover or selection steps it; accent mode uses the single accent */
+/* An option rests neutral, and the hovered and the chosen one wear the dropdown's one colour: the
+   .cc-tsel wrapper's --cc-rb-c from ccPaintRotate under rainbow, the accent otherwise. The panel
+   is dark on every theme, so the resting grey is too. */
 html.cc-tools-on #displaybox .cc-tsel-opt,
 html.cc-popups-on #displaybox .cc-tsel-opt {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
   line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--cc-radius-pill);
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); border: none;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); white-space: nowrap;
-  transition: filter .12s;
+  background: rgba(128, 128, 128, .16); border: none; color: #e4e4e4; white-space: nowrap;
+  transition: background .12s, color .12s, filter .12s;
 }
 html.cc-tools-on #displaybox .cc-tsel-opt:hover,
 html.cc-tools-on #displaybox .cc-tsel-opt.is-selected,
 html.cc-popups-on #displaybox .cc-tsel-opt:hover,
-html.cc-popups-on #displaybox .cc-tsel-opt.is-selected { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); box-shadow: none !important; }
+html.cc-popups-on #displaybox .cc-tsel-opt.is-selected {
+  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
+  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); box-shadow: none !important;
+}
+html.cc-tools-on #displaybox .cc-tsel-opt.is-selected:hover,
+html.cc-popups-on #displaybox .cc-tsel-opt.is-selected:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); }
 html.cc-tools-on #displaybox .cc-tsel-opt.is-disabled,
 html.cc-popups-on #displaybox .cc-tsel-opt.is-disabled { opacity: .45; cursor: not-allowed; }
 /* Languages that are not installed yet get a dimmer fill rather than a border. They carry no
@@ -449,18 +454,6 @@ html.cc-popups-on #displaybox .cc-lang-flag {
   border-radius: calc(var(--cc-radius-control) / 4); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
 }
 html.cc-popups-on #displaybox .cc-tsel-avail-flag { display: inline-flex; flex: 0 0 auto; }
-/* In the reactive sub-mode (cc.rbmode=active) the items rest neutral and show their own colour on
-   hover or when selected; full rainbow keeps them coloured. The extra .cc-tools-rbneutral class
-   outranks the base rule. */
-html.cc-tools-on.cc-tools-rbneutral #displaybox .cc-tsel-opt {
-  background: rgba(128, 128, 128, .16); color: #e4e4e4;
-}
-html.cc-tools-on.cc-tools-rbneutral #displaybox .cc-tsel-opt:hover,
-html.cc-tools-on.cc-tools-rbneutral #displaybox .cc-tsel-opt.is-selected {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616)));
-  filter: none;
-}
 
 /* The Notification Agents page hides its native <select> (Betreff, Beschreibung) behind a jQuery
    UI dropdownchecklist, which ccToolsWrapSelect never sees. The widget gets the CC dropdown look:
@@ -501,8 +494,8 @@ html.cc-tools-on #displaybox .ui-dropdownchecklist-dropcontainer {
   padding: 8px !important; min-width: 180px !important; max-width: min(92vw, 460px) !important;
   height: auto !important; max-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important;
 }
-/* Each row is a twin of .cc-tsel-opt. Full rainbow gives each item its own colour (--cc-rb-c from
-   ccPaintRotate); the reactive mode rests neutral and colours on hover or when checked. The native
+/* Each row is a twin of .cc-tsel-opt: neutral at rest, and the list's one colour (its trigger's
+   --cc-rb-c from ccPaintRotate) on hover and while checked. The native
    checkbox is hidden and the chip colour marks the checked state. The widget's toggle handler sits
    on the item div (the label's for= is broken by a trailing slash), so the label ignores pointer
    events and every click reaches the div. */
@@ -513,8 +506,7 @@ html.cc-tools-on #displaybox .ui-dropdownchecklist-item {
      lets it match the cc-tsel options (about 29px) */
   height: auto !important; min-height: 0 !important; box-sizing: border-box !important;
   border: none !important; border-radius: var(--cc-radius-pill) !important;
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important;
+  background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
   transition: filter .12s, background .12s, color .12s;
 }
 html.cc-tools-on #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
@@ -525,17 +517,11 @@ html.cc-tools-on #displaybox .ui-dropdownchecklist-item:not(.ui-dropdownchecklis
 html.cc-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-hover,
 html.cc-tools-on #displaybox .ui-dropdownchecklist-item:hover,
 html.cc-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-active,
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked) { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; box-shadow: none !important; }
-/* reactive sub-mode: neutral at rest, colour on hover or when checked, like .cc-tsel-opt */
-html.cc-tools-on.cc-tools-rbneutral #displaybox .ui-dropdownchecklist-item {
-  background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
-}
-html.cc-tools-on.cc-tools-rbneutral #displaybox .ui-dropdownchecklist-item:hover,
-html.cc-tools-on.cc-tools-rbneutral #displaybox .ui-dropdownchecklist-item.ui-state-hover,
-html.cc-tools-on.cc-tools-rbneutral #displaybox .ui-dropdownchecklist-item:has(input:checked) {
+html.cc-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked) {
   background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; filter: none;
+  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; box-shadow: none !important;
 }
+html.cc-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked):hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; }
 /* the explicitClose "...schließen" row carries no checkbox -> a muted, centred footer link, never a coloured chip */
 html.cc-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])) {
   background: transparent !important; color: #9a9a9a !important; justify-content: center;

@@ -311,7 +311,7 @@ html.cc-header-on #cc-brand {
 /* the logo is a little taller than the name's cap height, so a square mark does not look shrunk */
 html.cc-header-on #cc-brand .cc-brand-logo {
   display: block; flex: none; width: auto; max-width: 4em; object-fit: contain;
-  height: calc(var(--cc-brand-size, 30px) * 1.2);
+  height: calc(var(--cc-brand-size, 30px) * .9);
 }
 /* the native version dropdown trigger stays FUNCTIONAL, dressed as an S-tier chip */
 html.cc-header-on unraid-header-os-version span[id^="reka-menu-trigger"] {
@@ -1532,8 +1532,6 @@ html.Theme--white #cc-island,
 html.Theme--azure #cc-island { color: #e8e8e8; }
 html.Theme--white #cc-island .cc-isl-chip,
 html.Theme--azure #cc-island .cc-isl-chip { background: rgba(255, 255, 255, .12); color: #e8e8e8; }
-html.Theme--white.cc-tools-rbneutral #displaybox .cc-tsel-opt,
-html.Theme--azure.cc-tools-rbneutral #displaybox .cc-tsel-opt { background: rgba(0, 0, 0, .06); color: #1c1c1c; }
 html.Theme--white.cc-tools-on #displaybox dl > dt,
 html.Theme--azure.cc-tools-on #displaybox dl > dt { color: #303030; }
 html.Theme--white.cc-tools-on #displaybox dl > dd,

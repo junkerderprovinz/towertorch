@@ -495,10 +495,8 @@ html.cc-vms-on #kvm_list .switch-button-background .switch-button-button {
 #cc-vmlim .cc-dsel.cc-open .cc-dsel-panel { display: flex; }
 #cc-vmlim .cc-dsel-opt {
   display: flex; align-items: center; padding: 6px 12px; cursor: pointer; border-radius: var(--cc-radius-pill); white-space: nowrap;
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616)));
+  background: rgba(128, 128, 128, .16); color: var(--cc-text, #e6e6e6);
   transition: background .12s, color .12s;
 }
-#cc-vmlim .cc-dsel-opt:hover, #cc-vmlim .cc-dsel-opt.is-selected { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); }
-html.cc-vm-rbneutral #cc-vmlim .cc-dsel-opt { background: rgba(128, 128, 128, .16); color: var(--cc-text, #e6e6e6); }
-html.cc-vm-rbneutral #cc-vmlim .cc-dsel-opt:hover,
-html.cc-vm-rbneutral #cc-vmlim .cc-dsel-opt.is-selected { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); }
+#cc-vmlim .cc-dsel-opt:hover, #cc-vmlim .cc-dsel-opt.is-selected { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); }
+#cc-vmlim .cc-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); }

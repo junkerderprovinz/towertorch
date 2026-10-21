@@ -45,6 +45,9 @@ console.log('\nThe header shows the display name, else the server name');
   const logo = brand(Object.assign({ 'cc.brand.logo': '1', 'cc.brand.logov': '42' }, on), 'Bottich/Settings');
   ok('with it the logo comes first, left of the name', logo.children[0].tag === 'img' && logo.children[1].className === 'cc-brand-name');
   ok('the logo URL carries the upload version, so a new logo is not served from the cache', /loginlogo\.php\?img=1&v=42$/.test(logo.children[0].src));
+  const sheet = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8');
+  ok('the logo is a little smaller than the name\'s font size', /\.cc-brand-logo \{[^}]*height: calc\(var\(--cc-brand-size, 30px\) \* \.9\);/.test(sheet));
+  ok('its buttons on the settings page are card buttons like the others', /el\("button", "cc-btn cc-set-xbtn", T\("Logo wählen", "Choose logo"\)\)/.test(settings) && /el\("button", "cc-btn cc-set-xbtn", T\("Entfernen", "Remove"\)\)/.test(settings));
 }
 
 console.log('\nThe field on the Kopfbereich tab');

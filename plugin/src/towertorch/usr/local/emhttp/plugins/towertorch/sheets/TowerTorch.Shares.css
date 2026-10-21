@@ -1124,43 +1124,27 @@ html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-dropconta
   height: auto !important; width: auto !important; overflow: visible !important;
   border: none !important; box-shadow: none !important; background: transparent !important; padding: 0 !important;  /* strip jQuery-UI's translucent .ui-widget-content frame; the inner dropcontainer carries the fill and shadow */
 }
-/* Same contract as .cc-tsel-opt and .cc-dsel-opt: one rotating palette slot per item, stamped by
-   cc-theme.js paintSelects, falling back through --cc-rbaccent to this area's --cc-shr-accent in
-   accent mode. */
+/* Same contract as .cc-tsel-opt and .cc-dsel-opt: neutral at rest, and the list's one colour on
+   hover and when picked, stamped by cc-theme.js paintSelects on the wrapper and falling back
+   through --cc-rbaccent to this area's --cc-shr-accent in accent mode. */
 html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item,
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt {
   display: flex !important; align-items: center; gap: 8px; justify-content: flex-start;
   height: auto !important; line-height: 1.3 !important; margin: 0 !important;
   padding: 6px 12px; cursor: pointer; border-radius: var(--cc-radius-pill);
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) !important;
-  border: none !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-shr-accent-text, #161616))) !important; white-space: nowrap;
+  background: rgba(128, 128, 128, .16) !important;
+  border: none !important; color: #e4e4e4 !important; white-space: nowrap;
   transition: background .12s, color .12s, filter .12s;
 }
-/* a hovered dropdown option, disk item or cc-select overlay steps its own colour */
 html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:hover,
-html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; }
-/* Reactive sub-mode: neutral at rest, own colour on hover or when picked. The gate is header.js's
-   cc-tools-rbneutral rather than this area's cc-shares-rbneutral, which shares.js stamps on
-   cc.rbmode alone and which would grey out lists that must stay accent in accent mode. */
-html.cc-tools-rbneutral.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item,
-html.cc-tools-rbneutral.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt {
-  background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
-}
-html.cc-tools-rbneutral.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:hover,
-html.cc-tools-rbneutral.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt:hover {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-shr-accent-text, #161616))) !important; filter: none;
-}
-/* a selected item keeps its own stamped colour and a hover steps it */
-html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked):hover,
-html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt.is-selected:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; }
-html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked),
-html.cc-tools-rbneutral.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked),
-html.cc-tools-rbneutral.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt.is-selected {
+html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt:hover,
+html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked) {
   background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) !important;
   color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-shr-accent-text, #161616))) !important;
   box-shadow: none !important;   /* no frames or rings, on selected badges either */
 }
+html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked):hover,
+html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt.is-selected:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; }
 html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
 html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item label,
 html.cc-shares-on.cc-on-share-detail #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-text {
@@ -1317,10 +1301,9 @@ html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-panel {
 }
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel.cc-open .cc-sel-panel { display: flex; }
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel.cc-sel-disabled .cc-sel-trigger { opacity: .5; cursor: not-allowed; }
-/* the picked chip steps its stamped colour, read through the same chain as every other option, so
-   it does not jump back to the flat accent in a rotating list */
+/* the picked chip wears the list's colour, read through the same chain as every other option */
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-sel-opt.is-selected {
-  background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important;
+  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) !important;
   color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-shr-accent-text, #161616))) !important;
   box-shadow: none !important;   /* no frames or rings, on selected badges either */
 }

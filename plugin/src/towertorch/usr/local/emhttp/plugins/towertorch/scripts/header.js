@@ -1493,11 +1493,18 @@
       // Tools area would never be stamped at all.
       var tgls = document.querySelectorAll("html.cc-tools-on #displaybox .cc-tgl, html.cc-tools-on #displaybox .switch-button-background, html.cc-tools-on #displaybox .cc-tsel, html.cc-tools-on #displaybox .ui-dropdownchecklist-selector-wrapper, html.cc-diskpage #displaybox h3.section-header, html.cc-popups-on #displaybox .cc-tsel");
       for (var t = 0; t < tgls.length; t++) { if (!on) clear(tgls[t]); else stamp(tgls[t], t); }
-      // Each dropdown option gets its own slot, rotated within its panel, so an open list reads as
-      // a run of colours while the trigger rests neutral until hover. Covers the CC overlay
-      // dropdown and the jQuery dropdownchecklist.
+      // A dropdown wears one colour, its trigger's, on the hovered and the chosen option (GlimStone,
+      // "Under rainbow"). A .cc-tsel panel sits inside its stamped wrapper and inherits it. The
+      // jQuery dropdownchecklist puts its list in a sibling of the trigger, so its options take
+      // the trigger's slot directly.
+      var tglList = Array.prototype.slice.call(tgls);
       var panels = document.querySelectorAll("html.cc-tools-on #displaybox .cc-tsel-panel, html.cc-tools-on #displaybox .ui-dropdownchecklist-dropcontainer, html.cc-popups-on #displaybox .cc-tsel-panel");
-      for (var pn = 0; pn < panels.length; pn++) { var opts = panels[pn].querySelectorAll(".cc-tsel-opt, .ui-dropdownchecklist-item"); for (var oi = 0; oi < opts.length; oi++) { if (!on) clear(opts[oi]); else stamp(opts[oi], oi); } }
+      for (var pn = 0; pn < panels.length; pn++) {
+        var opts = panels[pn].querySelectorAll(".cc-tsel-opt, .ui-dropdownchecklist-item");
+        var holder = panels[pn].parentNode, trig = holder && holder.previousElementSibling;
+        var slot = trig ? tglList.indexOf(trig) : -1;
+        for (var oi = 0; oi < opts.length; oi++) { if (!on || panels[pn].classList.contains("cc-tsel-panel")) clear(opts[oi]); else stamp(opts[oi], slot >= 0 ? slot : pn); }
+      }
       // The notification drawer's badges rotate as well: tabs, type filters, gear, the bulk action
       // icons and the per-card buttons.
       var nd = document.querySelector(".unapi div.fixed.z-50.bg-background");

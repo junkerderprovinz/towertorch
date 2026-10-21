@@ -97,6 +97,8 @@
       // a value of its own beside a selector, a short field with its unit after it
       "#cc-settings .cc-set-numwrap{display:inline-flex;align-items:center;gap:6px;color:var(--cc-text-dim,#8a8a8a);font-size:var(--cc-text-subline)}" +
       "#cc-settings .cc-set-numwrap .cc-set-num{flex:none;width:56px;min-width:0;margin:0;text-align:center}" +
+      "#cc-settings .cc-set-row.cc-set-ownrow{flex-wrap:wrap;row-gap:8px}" +
+      "#cc-settings .cc-set-ownline{flex:0 0 100%;justify-content:flex-end}" +
       // a view sketch right under the selector it belongs to, in a well of its own
       "#cc-settings .cc-set-viewprev{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin-top:12px}" +
       "#cc-settings .cc-set-viewprev > .cc-set-lbl{margin:0}" +
@@ -1003,8 +1005,8 @@
       var end = el("span", "cc-set-colend"), prev = el("img", "cc-set-loginlogo"), pick = el("input");
       prev.alt = ""; prev.hidden = true; prev.style.maxHeight = "36px"; prev.style.maxWidth = "72px";
       pick.type = "file"; pick.accept = "image/png,image/jpeg,image/webp,image/svg+xml"; pick.hidden = true;
-      var choose = el("button", "cc-btn", T("Logo wählen", "Choose logo")); choose.type = "button";
-      var clear = el("button", "cc-btn", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
+      var choose = el("button", "cc-btn cc-set-xbtn", T("Logo wählen", "Choose logo")); choose.type = "button";
+      var clear = el("button", "cc-btn cc-set-xbtn", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
       function show(info) {
         prev.hidden = !info || !info.has; clear.hidden = prev.hidden;
         if (info && info.has) prev.src = info.src;
@@ -2813,9 +2815,11 @@
       failed(num, T("Bitte einen Wert von " + o.min + " bis " + o.max + " " + o.unit + ".", "Please enter a value from " + o.min + " to " + o.max + " " + o.unit + "."));
       num.value = stored(); num.setAttribute("aria-invalid", "false");
     });
-    var end = el("span", "cc-set-colend");
-    end.appendChild(row.lastChild); end.appendChild(field);
-    row.appendChild(end);
+    // GlimStone: the selector keeps the row's end and the free value stands at the end of a line
+    // of its own under it.
+    field.classList.add("cc-set-ownline");
+    row.classList.add("cc-set-ownrow");
+    row.appendChild(field);
     return row;
   }
   function tempWarnRow(onChange) {

@@ -170,16 +170,16 @@
         c = rbColor(i, null);   // guarded by `on`, so this never returns the null accent
         wraps[i].style.setProperty("--cc-rb-c", c); wraps[i].style.setProperty("--cc-rb-ct", idealText(c));
       }
-      // Rotate within each panel, as ccPaintRotate does for .cc-tsel-panel, so an open list reads
-      // as a rainbow rather than one colour repeated down the column.
+      // A dropdown wears one colour on its hovered and chosen option (GlimStone, "Under rainbow").
+      // A panel inside a stamped wrapper inherits the wrapper's; a .cc-drop has no wrapper and
+      // takes a slot of its own.
       var panels = scope.querySelectorAll(CC_SEL_PANELS);
       for (var p = 0; p < panels.length; p++) {
         var opts = panels[p].querySelectorAll(CC_SEL_OPTS);
-        for (n = 0; n < opts.length; n++) {
-          if (!on) { opts[n].style.removeProperty("--cc-rb-c"); opts[n].style.removeProperty("--cc-rb-ct"); continue; }
-          c = rbColor(n, null);
-          opts[n].style.setProperty("--cc-rb-c", c); opts[n].style.setProperty("--cc-rb-ct", idealText(c));
-        }
+        for (n = 0; n < opts.length; n++) { opts[n].style.removeProperty("--cc-rb-c"); opts[n].style.removeProperty("--cc-rb-ct"); }
+        if (!on || panels[p].closest(CC_SEL_WRAPS)) { panels[p].style.removeProperty("--cc-rb-c"); panels[p].style.removeProperty("--cc-rb-ct"); continue; }
+        c = rbColor(wraps.length + p, null);
+        panels[p].style.setProperty("--cc-rb-c", c); panels[p].style.setProperty("--cc-rb-ct", idealText(c));
       }
     } catch (e) {}
   }

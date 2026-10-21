@@ -61,7 +61,7 @@ console.log('\nThe step follows the fill it sits on');
   ok('the force-update link steps the accent', /td\.updatecolumn a\.exec:hover \{ background: var\(--cc-accent-hover\); \}/.test(docker));
   ok('the apply-update link steps the warning fill', /a\.exec:has\(span\.orange-text\):hover \{ background: var\(--cc-warn-hover\); \}/.test(docker));
   ok('the primary button steps its own colour chain', /\.cc-btn-primary:hover \{ background: color-mix\(in srgb, var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent,/.test(docker));
-  ok('a chosen dropdown entry is the same step, not a filter', /\.cc-pop \.cc-dsel-opt:hover, \.cc-pop \.cc-dsel-opt\.is-selected \{ background: color-mix\(/.test(docker));
+  ok('a hover on a chosen dropdown entry is the same step, not a filter', /\.cc-pop \.cc-dsel-opt\.is-selected:hover \{ background: color-mix\(/.test(docker));
   ok('the plan chip, whose fill differs per mode, takes the wash', /\.cc-plan:hover \{ box-shadow: inset 0 0 0 100vmax var\(--cc-hover-wash\); \}/.test(docker));
   const shares = clean(read('sheets/TowerTorch.Shares.css'));
   ok('an empty slot\'s name label cancels the wash, as it cancelled the filter', /span\.cc-b\.cc-b-name:hover \{ box-shadow: none !important; \}/.test(shares));

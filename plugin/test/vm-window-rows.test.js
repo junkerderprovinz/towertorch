@@ -64,7 +64,7 @@ console.log('\nThe icon colouring is CC\'s dropdown');
   ok('the trigger draws its arrow', /border-top:\s*5px solid/.test(after), after);
   const trig = body('#cc-vmlim .cc-dsel-trigger');
   ok('on the field fill every other field in the window has', /var\(--cc-surface-3/.test(decl(trig, 'background-color')), decl(trig, 'background-color'));
-  ok('the reactive mode rests its items neutral', /rgba\(128, 128, 128, \.16\)/.test(body('html.cc-vm-rbneutral #cc-vmlim .cc-dsel-opt')));
+  ok('its items rest neutral in every colour mode', /rgba\(128, 128, 128, \.16\)/.test(body('#cc-vmlim .cc-dsel-opt')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
