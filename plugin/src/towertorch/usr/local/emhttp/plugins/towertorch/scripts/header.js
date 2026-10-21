@@ -2200,15 +2200,23 @@
       // The cc.brand.* keys are inlined here and are part of the signature, so a settings change
       // re-renders the name.
       var bSize = g("cc.brand.size", "30"), bWeight = g("cc.brand.weight", "650"), bItalic = g("cc.brand.italic", "0"),
-          bFont = g("cc.brand.font", ""), bColor = g("cc.brand.color", "");
-      var sig = name + "|" + bSize + "|" + bWeight + "|" + bItalic + "|" + bFont + "|" + bColor;
+          bFont = g("cc.brand.font", ""), bColor = g("cc.brand.color", ""),
+          bLogo = g("cc.brand.logo", "0"), bLogoV = g("cc.brand.logov", "0");
+      var sig = name + "|" + bSize + "|" + bWeight + "|" + bItalic + "|" + bFont + "|" + bColor + "|" + bLogo + "|" + bLogoV;
       if (br && sig === ccBrandSig) return;   // a profile rebuild re-runs this, but only a real change re-renders
       ccBrandSig = sig;
       if (!br) { br = document.createElement("span"); br.id = "cc-brand"; hdr.insertBefore(br, hdr.firstChild); }
       while (br.firstChild) br.removeChild(br.firstChild);
+      // The login page's logo, or the TowerTorch mark without one. cc.brand.logov changes with every
+      // upload, so the browser keeps the image cached until there is a new one.
+      if (bLogo === "1") {
+        var lg = document.createElement("img"); lg.className = "cc-brand-logo"; lg.alt = "";
+        lg.src = "/plugins/towertorch/server/loginlogo.php?img=1&v=" + encodeURIComponent(bLogoV);
+        br.appendChild(lg);
+      }
       var nm = document.createElement("span"); nm.className = "cc-brand-name";
       // an unset key leaves the sheet's default in place
-      if (/^\d{1,3}$/.test(bSize)) nm.style.fontSize = bSize + "px";
+      if (/^\d{1,3}$/.test(bSize)) { nm.style.fontSize = bSize + "px"; br.style.setProperty("--cc-brand-size", bSize + "px"); }
       if (bWeight) nm.style.fontWeight = bWeight;
       nm.style.fontStyle = bItalic === "1" ? "italic" : "normal";
       if (bFont) {

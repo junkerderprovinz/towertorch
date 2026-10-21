@@ -257,6 +257,7 @@ html.cc-header-on #cc-island .cc-isl-net .cc-isl-net-seg + .cc-isl-net-seg { mar
 @media (max-width: 767.98px) {
   html.cc-header-on:not(.Theme--sidebar) #header { flex-wrap: wrap; height: auto !important; padding-bottom: 10px; }
   html.cc-header-on #cc-brand .cc-brand-name { font-size: 36px !important; line-height: 1.2; }
+  html.cc-header-on #cc-brand .cc-brand-logo { height: 43px; }
   html.cc-header-on #cc-island {
     order: 3; flex: 1 0 100%; min-width: 0; max-width: none; box-sizing: border-box;
     margin: 6px 0 0; padding: 0 16px 0 7px;   /* on the tabs' 15px edge, less #header's own 8px */
@@ -306,6 +307,11 @@ html.cc-header-on #cc-brand {
   /* -8px for #header's own left offset, so the brand lines up with the tabs */
   margin-left: calc(var(--cc-align-left, 15px) - 8px);
   margin-right: 14px; order: 0;   /* leftmost on the #header flex row (island 2, version chip 3) */
+}
+/* the logo is a little taller than the name's cap height, so a square mark does not look shrunk */
+html.cc-header-on #cc-brand .cc-brand-logo {
+  display: block; flex: none; width: auto; max-width: 4em; object-fit: contain;
+  height: calc(var(--cc-brand-size, 30px) * 1.2);
 }
 /* the native version dropdown trigger stays FUNCTIONAL, dressed as an S-tier chip */
 html.cc-header-on unraid-header-os-version span[id^="reka-menu-trigger"] {

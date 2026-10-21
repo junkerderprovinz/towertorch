@@ -1002,8 +1002,9 @@
       themingCard = tc;
       wrapMain.appendChild(tc);
     })();
-    // The logo on Unraid's login page. The file goes to the flash through loginlogo.php, where the
-    // login page reads it; without one the page shows the TowerTorch mark.
+    // The logo on Unraid's login page and, when switched on, beside the server name in the header.
+    // The file goes to the flash through loginlogo.php, where both read it; without one they show
+    // the TowerTorch mark.
     (function () {
       var LOGO_URL = "/plugins/towertorch/server/loginlogo.php";
       var end = el("span", "cc-set-colend"), prev = el("img", "cc-set-loginlogo"), pick = el("input");
@@ -1018,7 +1019,12 @@
       function send(fields) {
         var form = new URLSearchParams(fields); form.append("csrf_token", csrfToken());   // multipart times out, see postDisplay
         return fetch(LOGO_URL, { method: "POST", body: form, credentials: "same-origin" })
-          .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }).then(show)
+          .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+          .then(function (info) {
+            show(info);
+            set("cc.brand.logov", String(Date.now()));   // a new version in the header's image URL skips the cached logo
+            syncHeaderBar();
+          })
           .catch(function () { failed(null, T("Das Logo wurde nicht gespeichert. Erlaubt sind PNG, JPEG, WebP und SVG bis 1 MB.", "The logo was not saved. PNG, JPEG, WebP and SVG up to 1 MB are allowed.")); });
       }
       choose.addEventListener("click", function () { pick.click(); });
@@ -1030,7 +1036,7 @@
       });
       clear.addEventListener("click", function () { send({ clear: "1" }); });
       [prev, choose, clear, pick].forEach(function (n) { end.appendChild(n); });
-      themingCard.appendChild(inlineRow(T("Logo der Anmeldeseite", "Login page logo"), T("Das Bild über dem Servernamen auf Unraids Anmeldeseite. Ohne eigenes Bild steht dort das TowerTorch-Zeichen. Akzentfarbe und Form folgen den Einstellungen hier, hell oder dunkel folgt Unraids Farbschema.", "The picture above the server name on Unraid's login page. Without your own, the TowerTorch mark is shown. Accent and shape follow the settings here, light or dark follows Unraid's colour theme."), end));
+      themingCard.appendChild(inlineRow(T("Logo", "Logo"), T("Das Bild über dem Servernamen auf Unraids Anmeldeseite. Im Kopfbereich steht es links vom Servernamen, wenn du es unter Servername einschaltest. Ohne eigenes Bild ist es das TowerTorch-Zeichen. Akzentfarbe und Form der Anmeldeseite folgen den Einstellungen hier, hell oder dunkel folgt Unraids Farbschema.", "The picture above the server name on Unraid's login page. In the header it sits left of the server name once you switch it on under Server name. Without your own, it is the TowerTorch mark. The login page's accent and shape follow the settings here, light or dark follows Unraid's colour theme."), end));
       fetch(LOGO_URL, { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(show).catch(function () {});
     })();
     // Unraid's display settings stay on Unraid's own page, which CC styles anyway, rather than
@@ -2109,6 +2115,7 @@
       nmIn.value = get("cc.brand.name", ""); nmIn.placeholder = (document.title.split("/")[0] || "").trim() || "Unraid";
       nmIn.addEventListener("input", function () { var v = nmIn.value.trim(); if (v) set("cc.brand.name", v); else del("cc.brand.name"); syncHeaderBar(); });
       nmRow.appendChild(nmL); nmRow.appendChild(nmIn); cB.appendChild(nmRow);
+      cB.appendChild(toggleRow(T("Logo zeigen", "Show logo"), T("Zeigt das Logo links vom Servernamen, dasselbe wie auf der Anmeldeseite. Ein eigenes wählst du unter Theming bei Logo, ohne eines ist es das TowerTorch-Zeichen. Es wächst mit der Größe des Namens.", "Shows the logo left of the server name, the same one as on the login page. Pick your own under Theming at Logo; without one it is the TowerTorch mark. It grows with the name's size."), get("cc.brand.logo", "0") === "1", function (v) { set("cc.brand.logo", v ? "1" : "0"); syncHeaderBar(); }));
       var SZ = ["16", "18", "20", "22", "24", "26", "28", "30", "32", "36", "40", "44", "48", "56", "64"].map(function (s) { return [s, s + " px"]; });
       cB.appendChild(dropRow(T("Größe", "Size"), SZ, get("cc.brand.size", "30"), function (v) { set("cc.brand.size", v); syncHeaderBar(); },
         T("Die Schriftgröße des Servernamens.", "The font size of the server name.")));

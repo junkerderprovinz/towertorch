@@ -20,21 +20,31 @@ function grabFn(src, name) {
 console.log('\nThe header shows the display name, else the server name');
 {
   // ccBrand() against a header element and a store, reading back the text it renders.
-  function render(store, title) {
+  function brand(store, title) {
     const kids = [];
-    const mk = (tag) => ({ tag, style: {}, children: [], firstChild: null, className: '', appendChild(c) { this.children.push(c); this.firstChild = this.children[0]; return c; }, removeChild(c) { this.children.splice(this.children.indexOf(c), 1); this.firstChild = this.children[0] || null; } });
+    const mk = (tag) => ({ tag, style: { setProperty() {} }, children: [], firstChild: null, className: '', appendChild(c) { this.children.push(c); this.firstChild = this.children[0]; return c; }, removeChild(c) { this.children.splice(this.children.indexOf(c), 1); this.firstChild = this.children[0] || null; } });
     const hdr = mk('div'); hdr.insertBefore = (c) => { kids.push(c); c.id = 'cc-brand'; };
     const document = { title, getElementById: (id) => id === 'header' ? hdr : (id === 'cc-brand' ? kids[0] || null : null), createElement: mk, createTextNode: (t) => ({ text: t }), querySelector: () => null };
     const g = (k, d) => (k in store ? store[k] : d);
     new Function('document', 'g', 'window', 'var ccBrandSig = "";\n' + grabFn(header, 'ccBrandOn') + '\n' + grabFn(header, 'ccBrand') + '\nccBrand();')(document, g, {});
-    const br = kids[0];
-    return br ? br.children[0].children[0].text : null;
+    return kids[0] || null;
+  }
+  function render(store, title) {
+    const br = brand(store, title);
+    const nm = br && br.children.find((c) => c.className === 'cc-brand-name');
+    return nm ? nm.children[0].text : null;
   }
   const on = { 'cc.enable.header': '1' };
   ok('no display name: the server name from the title', render(Object.assign({}, on), 'Bottich/Settings') === 'Bottich');
   ok('a display name: that name instead', render(Object.assign({ 'cc.brand.name': 'Kommandostand' }, on), 'Bottich/Settings') === 'Kommandostand');
   ok('blanks around it are dropped', render(Object.assign({ 'cc.brand.name': '  Feste  ' }, on), 'Bottich/Settings') === 'Feste');
   ok('a name of blanks counts as empty', render(Object.assign({ 'cc.brand.name': '   ' }, on), 'Bottich/Settings') === 'Bottich');
+
+  const plain = brand(Object.assign({}, on), 'Bottich/Settings');
+  ok('without the logo switch the name stands alone', plain.children.length === 1 && plain.children[0].className === 'cc-brand-name');
+  const logo = brand(Object.assign({ 'cc.brand.logo': '1', 'cc.brand.logov': '42' }, on), 'Bottich/Settings');
+  ok('with it the logo comes first, left of the name', logo.children[0].tag === 'img' && logo.children[1].className === 'cc-brand-name');
+  ok('the logo URL carries the upload version, so a new logo is not served from the cache', /loginlogo\.php\?img=1&v=42$/.test(logo.children[0].src));
 }
 
 console.log('\nThe field on the Kopfbereich tab');
