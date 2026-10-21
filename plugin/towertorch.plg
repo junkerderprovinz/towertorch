@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.2.0">
+  <!ENTITY version   "1.2.1">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "d6b1ffdb8317ae1b7727b5151f25507da78ef8e06c5f71b90c2bca250597fb80">
+  <!ENTITY sha256    "040132399719d6643144e939d5187780ca089663cc67fbf6ee40911932aa37de">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,16 @@
 </ICON>
 
 <CHANGES>
+### 1.2.1
+TowerTorch now covers Unraid's login page as well, in your accent and shape, light or dark, with your own logo if you want one. Three smaller switches come with it: a way to turn the theming off from the address bar, your own CSS and JavaScript on top, and Unraid's dark mode right in the settings.
+
+**✨ Added**
+- **The login page in the same look.** Unraid's login and set-password pages use your accent colour and shape and follow Unraid's light or dark theme. The server name is set in the header's font.
+- **Your logo on the login page and in the header.** The "Logo" row in the settings takes a PNG, JPEG, WebP or SVG up to 1 MB. Without one, the TowerTorch mark is shown. "Show logo" under Server name puts it left of the server name in the header, sized to match the name.
+- **An off switch in the address bar.** Add `?towertorch=off` to any Unraid address and this browser shows the stock interface, login page included. `?towertorch=on` brings TowerTorch back. Useful when a page stops rendering.
+- **custom.css and custom.js.** Put either file in `/boot/config/plugins/towertorch/` and it loads after everything TowerTorch brings. Updates never touch them.
+- **Dark mode switch.** The settings switch Unraid's colour theme between dark and light without reloading the page. A gray theme comes back as gray.
+
 ### 1.2.0
 CannonadeCommand is now TowerTorch. With the new name and logo comes a release that touches every page. Main, Shares, Plugins and VMs can show tiles, and the disks, the array, the mover and the start plan have small animated pictures. The settings page is laid out from scratch, Unraid's own forms are cards now, and the Docker tab stays quiet while nothing needs you.
 
