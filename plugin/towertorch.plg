@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.2.1">
+  <!ENTITY version   "1.2.2">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "040132399719d6643144e939d5187780ca089663cc67fbf6ee40911932aa37de">
+  <!ENTITY sha256    "4a8bac9485a734d9e0952319d3b5bb889ac974921d2df6bc15027fd265838763">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,15 @@
 </ICON>
 
 <CHANGES>
+### 1.2.2
+The server name can now take a size of your own, and the settings start right below the main menu.
+
+**✨ Added**
+- **A size of your own for the server name.** Under Settings &gt; Utilities &gt; TowerTorch &gt; Header area &gt; Server name, the "Size" list ends with "Custom", which opens a field for any value from 10 to 120 px. The header and the login page follow as you type.
+
+**🎨 Design**
+- **Less space above the settings.** The settings search has no row of its own anymore, so the cards start right below the main menu. Press "/" or choose "Search the settings" in the command palette (Ctrl+K) to open it above the cards.
+
 ### 1.2.1
 TowerTorch now covers Unraid's login page as well, in your accent and shape, light or dark, with your own logo if you want one. Three smaller switches come with it: a way to turn the theming off from the address bar, your own CSS and JavaScript on top, and Unraid's dark mode right in the settings.
 
