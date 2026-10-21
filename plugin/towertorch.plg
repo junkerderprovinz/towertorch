@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.2.2">
+  <!ENTITY version   "1.2.3">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "4a8bac9485a734d9e0952319d3b5bb889ac974921d2df6bc15027fd265838763">
+  <!ENTITY sha256    "e653ef9eee852b4a2d6c49c284128040e39d24e4f131f7c78c45cd7a0558de3f">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,17 @@
 </ICON>
 
 <CHANGES>
+### 1.2.3
+Dropdowns follow GlimStone again, and a few things on the settings page sit where they belong.
+
+**🎨 Design**
+- **Dropdowns in one colour.** The options in every TowerTorch dropdown rest in a quiet grey. Only the one under the pointer and the chosen one take the dropdown's colour, in rainbow mode too.
+- **Your own value below the list.** For the server name's size and the temperature warning threshold, the list stays at the right end of its row. Pick "Custom" and the field for your value opens on a line below it.
+- **A smaller logo in the header.** The logo next to the server name is now 0.9 times the name's size instead of 1.2.
+
+**🐛 Fixed**
+- **Logo buttons.** "Choose logo" and "Remove" have the same size and shape as the other buttons in the settings.
+
 ### 1.2.2
 The server name can now take a size of your own, and the settings start right below the main menu.
 
