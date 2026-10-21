@@ -1337,18 +1337,15 @@ html.cc-on-plugins input.cc-plugbar-btn:hover:not(:disabled) { background: var(-
 /* the segments are a pill group with no outer frame */
 #cc-settings .cc-seg { border: none !important; background: #232323; border-radius: var(--cc-radius-pill); padding: 3px; gap: 3px; overflow: visible; }
 #cc-settings .cc-seg-btn { border: 0 !important; border-radius: var(--cc-radius-pill); }
-.cc-set-head { display: flex; flex-direction: column; gap: 5px; padding: 6px 0 0; margin-bottom: 32px; }   /* space, not a line, sets the head off from the tabs */
-.cc-set-hero { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
-.cc-set-heroleft { display: flex; align-items: center; gap: 16px; }
-.cc-set-logo { width: 64px; height: 64px; border-radius: var(--cc-radius-control); display: block; }
-.cc-set-claim { color: var(--dim); font-size: var(--cc-text-subline); font-style: italic; margin-top: 2px; }
 /* GlimStone's vertical tiles: the tab selector turned on its side, a column beside the cards that
    stays in view while they scroll. Every tile is 66px tall, 4px apart, and keeps that height
    whatever its name: two lines of a long name fit, and the column is as tall as its tiles and scrolls
    only where the window is shorter. Below 1024px the column shows the glyphs alone, and
    settings.js moves each name into its bubble. The two widths are GlimStone's 12.75rem and
-   3.25rem in pixels, since Unraid sets the root font size to 10px. */
-.cc-set-body { display: flex; align-items: flex-start; gap: 24px; }
+   3.25rem in pixels, since Unraid sets the root font size to 10px. The body's top margin is the
+   room a card's name tag takes above the card, so the first tag sits as far below the main menu as
+   the section badge on Unraid's own settings page. */
+.cc-set-body { display: flex; align-items: flex-start; gap: 24px; margin-top: 12px; }
 /* The cards stop at a reading width, so a row's name and its control stay close enough to read as
    one line. */
 .cc-set-main { flex: 1 1 auto; min-width: 0; max-width: 920px; }
@@ -1373,11 +1370,6 @@ html.cc-on-plugins input.cc-plugbar-btn:hover:not(:disabled) { background: var(-
 .cc-set-tab-on .cc-set-tabico,
 #cc-settings.cc-set-reactive .cc-set-tab:not(.cc-set-tab-on) .cc-set-tabico { color: inherit; }
 #cc-settings.cc-set-reactive .cc-set-tab:not(.cc-set-tab-on):is(:hover, :focus-visible) .cc-set-tabico { color: var(--cc-rb-c, var(--cc-accent, #FCC419)); }
-.cc-set-brand { font-size: 24px; letter-spacing: .2px; } .cc-set-brand b { font-weight: 700; } .cc-set-brand span { font-weight: 400; color: var(--dim); }
-/* The settings palette is dark, made for the cards; the brand and claim sit on Unraid's page
-   instead, so on a light theme they take the page's ink. */
-html.Theme--white #cc-settings .cc-set-heroleft,
-html.Theme--azure #cc-settings .cc-set-heroleft { --txt: var(--cc-text, #1c1c1c); --dim: var(--cc-text-dim, #545454); color: var(--txt); }
 /* The cards stay dark on the light themes, so the quiet tokens inside one keep their dark-theme
    values: a grey chip such as an idle tab in an area's preview, a lock line's "Folgt", a hint, the
    colour mode's groove and an off switch's track. */

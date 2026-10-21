@@ -55,7 +55,7 @@ console.log('\nThe field on the Kopfbereich tab');
   ok('its name carries a bubble that says Unraid\'s own name stays', /nmL\.appendChild\(infoIcon\(T\([^)]*Unraids eigener Servername bleibt/.test(block));
   ok('a typed name is saved and the header follows at once', /if \(v\) set\("cc\.brand\.name", v\); else del\("cc\.brand\.name"\); syncHeaderBar\(\);/.test(block));
   ok('the server name it falls back to is the placeholder', /nmIn\.placeholder = \(document\.title\.split\("\/"\)\[0\] \|\| ""\)\.trim\(\) \|\| "Unraid";/.test(block));
-  ok('it sits in the Servername card, first', settings.indexOf('var nmRow') > settings.indexOf('card(T("Servername", "Server name")') && settings.indexOf('var nmRow') < settings.indexOf('dropRow(T("Größe", "Size")'));
+  ok('it sits in the Servername card, first', settings.indexOf('var nmRow') > settings.indexOf('card(T("Servername", "Server name")') && settings.indexOf('var nmRow') < settings.indexOf('label: T("Größe", "Size")'));
   ok('nothing writes Unraid\'s hostname', !/NAME=|ident\.cfg|#file", "ident/.test(settings));
 }
 

@@ -1,6 +1,7 @@
 // Every choice of a selector on the settings page carries a small glyph before its label, as the
 // settings of the other apps in the family do: GlimStone's drawing for that choice, named as in
-// its glyphs.json. The temperature threshold offers a value of its own beside its presets.
+// its glyphs.json. The temperature threshold and the server name size offer a value of their own
+// beside their presets.
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -55,20 +56,24 @@ console.log('\nEvery selector on the page names a glyph for each choice');
   ok('a long list stays a dropdown without glyphs', long.every((l) => tuples(l.text).every((t) => !t[2])), long.map((l) => l.name).join(' '));
 }
 
-console.log('\nThe temperature threshold takes a value of its own');
+console.log('\nA preset row takes a value of its own');
 {
-  const valid = new Function('TEMP_MIN', 'TEMP_MAX', grabFn('tempWarnValid') + '\nreturn tempWarnValid;')(30, 110);
-  ok('a value inside 30 to 110 °C is taken', valid('65') && valid('30') && valid('110'));
-  ok('one outside it is not', !valid('29') && !valid('111') && !valid('0') && !valid('1000'));
-  ok('nor is anything but a whole number', !valid('6.5') && !valid('') && !valid('abc') && !valid('-60'));
-  const row = grabFn('tempWarnRow');
-  ok('Eigene is the fourth choice, after the three presets', /presets\.concat\(\[\["custom", T\("Eigene", "Custom"\), "IconCustomValue"\]\]\)/.test(row));
+  const valid = new Function(grabFn('ownValueValid') + '\nreturn ownValueValid;')();
+  ok('a value inside the range is taken', valid('65', 30, 110) && valid('30', 30, 110) && valid('110', 30, 110));
+  ok('one outside it is not', !valid('29', 30, 110) && !valid('111', 30, 110) && !valid('0', 30, 110) && !valid('1000', 30, 110));
+  ok('nor is anything but a whole number', !valid('6.5', 30, 110) && !valid('', 30, 110) && !valid('abc', 30, 110) && !valid('-60', 30, 110));
+  const row = grabFn('ownValueRow');
+  ok('Eigene is the last choice, after the presets', /o\.presets\.concat\(\[own\]\)/.test(row) && /var own = \["custom", T\("Eigene", "Custom"\)\];/.test(row));
+  ok('it wears its glyph only in a selector, not in a dropdown that reads the third entry as a face', /if \(o\.presets\.length < SEG_MAX\) own\.push\("IconCustomValue"\);/.test(row));
   ok('a stored value that is no preset opens on Eigene with its field', /field\.hidden = isPreset\(stored\(\)\);/.test(row) && /field\.hidden \? stored\(\) : "custom"/.test(row));
-  ok('a preset hides the field and stores the preset', /field\.hidden = v !== "custom";/.test(row) && /set\("cc\.tempwarn", v\); onChange\(\);/.test(row));
-  ok('only a valid value is stored', /if \(ok\) \{ set\("cc\.tempwarn", String\(\+num\.value\)\); onChange\(\); \}/.test(row));
-  ok('an invalid one says why and goes back to the stored value', /if \(tempWarnValid\(num\.value\)\) return;\s*failed\(num,/.test(row) && /num\.value = stored\(\);/.test(row));
+  ok('a preset hides the field and stores the preset', /field\.hidden = v !== "custom";/.test(row) && /set\(o\.key, v\); onChange\(\);/.test(row));
+  ok('only a valid value is stored', /if \(ok\) \{ set\(o\.key, String\(\+num\.value\)\); onChange\(\); \}/.test(row));
+  ok('an invalid one says why and goes back to the stored value', /if \(ownValueValid\(num\.value, o\.min, o\.max\)\) return;\s*failed\(num,/.test(row) && /num\.value = stored\(\);/.test(row));
   ok('the field stands right of the selector', /end\.appendChild\(row\.lastChild\); end\.appendChild\(field\);/.test(row));
+  const temp = grabFn('tempWarnRow');
+  ok('the temperature threshold is one, from 30 to 110 °C', /ownValueRow\(\{\s*key: "cc\.tempwarn", def: "60", min: 30, max: 110, unit: "°C"/.test(temp));
   ok('the status island card uses it', /cI\.appendChild\(tempWarnRow\(syncHeaderBar\)\)/.test(settings));
+  ok('the server name size is one, from 10 to 120 px, and the header follows', /cB\.appendChild\(ownValueRow\(\{\s*key: "cc\.brand\.size", def: "30", min: 10, max: 120, unit: "px", presets: SZ,[\s\S]*?\}, syncHeaderBar\)\);/.test(settings));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

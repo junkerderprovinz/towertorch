@@ -71,9 +71,8 @@ ok('the icon colouring has no jargon', !/Ink-Flatten|Luminanz-Tint|Ink flatten|L
 
 console.log('\nThe page has no heading');
 {
-  const i = settings.indexOf('  function render() {'), head = settings.slice(i, settings.indexOf('root.appendChild(head);', i));
-  ok('no logo, wordmark or claim above the tabs', !/cc-set-logo|cc-set-brand|cc-set-claim|Firepower/.test(head));
-  ok('the head row keeps the search', /hero\.appendChild\(searchBadge\)/.test(settings));
+  const i = settings.indexOf('  function render() {'), top = settings.slice(i, settings.indexOf('var body = el("div", "cc-set-body")', i));
+  ok('no logo, wordmark or claim above the tabs', !/cc-set-logo|cc-set-brand[^n]|cc-set-claim|Firepower/.test(top));
 }
 
 console.log('\nOne font and a phone-width page');

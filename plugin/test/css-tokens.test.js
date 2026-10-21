@@ -126,9 +126,6 @@ console.log('\nText on Unraid\'s own surfaces follows the theme');
   const bar = []; const re = /([^{}]+)\{([^}]*)\}/g; let m;
   while ((m = re.exec(docker))) if (/div\.js-actions/.test(m[1]) && /(^|;)\s*color:\s*#[c-f]/i.test(m[2])) bar.push(m[1].trim().slice(0, 90));
   ok('no action bar rule hard-codes a light ink', bar.length === 0, bar.join(' | '));
-  const hero = (/html\.Theme--white #cc-settings \.cc-set-heroleft,\s*html\.Theme--azure #cc-settings \.cc-set-heroleft\s*\{([^}]*)\}/.exec(docker) || [])[1] || '';
-  ok('the settings hero takes the page ink on the light themes', /--txt:\s*var\(--cc-text\b/.test(hero) && /--dim:\s*var\(--cc-text-dim\b/.test(hero), hero);
-  ok('and re-applies it, since the inherited colour is computed above it', /(^|;)\s*color:\s*var\(--txt\)/.test(hero), hero);
 }
 
 console.log('\nEvery comment closes before the next one opens');

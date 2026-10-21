@@ -27,21 +27,18 @@
       "#cc-settings .cc-set-swatches.cc-fill .cc-set-ibtn:hover{background:var(--cc-accent,#FCC419);color:var(--cc-accent-text, #161616)}" +
       "#cc-settings .cc-set-swatches.cc-fill .cc-set-hexin{flex:1 1 0;height:30px;min-width:0;box-sizing:border-box;padding:0 8px;align-self:center;font-size:var(--cc-text-meta);letter-spacing:0;margin:0}" +
       // the settings search and the reset-everything button
-      "#cc-settings .cc-set-searchrow{margin:12px 0 2px}" +
       "#cc-settings .cc-set-search{box-sizing:border-box;width:100%;max-width:420px;background:#232323;color:#eaeaea;border:none;outline:none;border-radius:var(--cc-radius-control);padding:9px 13px;font-size:var(--cc-text-subline);transition:background-color .12s}" +
       // Unraid's default-base.css paints every placeholder in the theme's link colour, so a hint
       // reads as a link or as an already filled value. One rule per sheet covers every field; the
       // Docker half of the same guard lives in docker.css.
       "#cc-settings input::placeholder{color:#8d8d8d;opacity:1}" +
       "#cc-settings .cc-set-search:focus{background:#2e2e2e}" +
-      // The search is a secondary badge that expands into an input on click, grey like every
-      // button in a card, so it takes the colour mode only under the pointer.
-      "#cc-settings .cc-set-searchbadge{margin-left:auto;display:inline-flex;align-items:center;background:#2e2e2e;border-radius:var(--cc-radius-pill);height:34px;overflow:hidden;transition:background-color .12s}" +
-      "#cc-settings .cc-set-searchbadge .cc-set-searchicon{flex:0 0 auto;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:#e6e6e6;cursor:pointer;transition:color .12s}" +
-      "#cc-settings .cc-set-searchbadge:not(.cc-open):hover{background:var(--cc-rbaccent,var(--cc-accent,#FCC419))}" +
-      "#cc-settings .cc-set-searchbadge:not(.cc-open):hover .cc-set-searchicon{color:var(--cc-rbaccent-text,var(--cc-accent-text,#161616))}" +
-      "#cc-settings .cc-set-searchbadge .cc-set-search{box-sizing:border-box;width:0;max-width:0;padding:0;background:transparent;transition:width .2s,max-width .2s,padding .2s}" +
-      "#cc-settings .cc-set-searchbadge.cc-open .cc-set-search{width:220px;max-width:220px;padding:0 12px 0 2px}" +
+      // The search is a grey pill above the cards, like every button in a card, and takes no room
+      // while it is closed. Its magnifier closes it again.
+      "#cc-settings .cc-set-searchbadge{display:flex;width:fit-content;align-items:center;margin:0 0 24px;background:#2e2e2e;border-radius:var(--cc-radius-pill);height:34px;overflow:hidden}" +
+      "#cc-settings .cc-set-searchbadge:not(.cc-open){display:none}" +
+      "#cc-settings .cc-set-searchbadge .cc-set-searchicon{flex:0 0 auto;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:#e6e6e6;cursor:pointer}" +
+      "#cc-settings .cc-set-searchbadge .cc-set-search{width:260px;max-width:260px;padding:0 12px 0 2px;background:transparent}" +
       // What a search shows when no setting matches, in the place the cards would take and dark
       // like them on every theme: Tokens.css counts it among the dark token islands.
       "#cc-settings .cc-set-empty{display:flex;align-items:center;gap:14px;max-width:420px;box-sizing:border-box;padding:18px;background:var(--cc-surface-2);border-radius:var(--cc-radius-card);box-shadow:var(--cc-elev-1)}" +
@@ -929,12 +926,10 @@
     root.style.setProperty("--cc-accent", accent);
     root.style.setProperty("--cc-accent-text", idealText(accent));
 
-    // The page has no heading (GlimStone rule 30): the tile column already says where this is. The
-    // head row holds only the settings search, which filters cards and rows across every tab, a
-    // badge at the right with a magnifier that expands into the input on click.
-    var head = el("div", "cc-set-head");
-    var hero = el("div", "cc-set-hero");
-    head.appendChild(hero);
+    // The page has no heading (GlimStone rule 30): the tile column already says where this is, so
+    // the cards start right below the main menu. The settings search, which filters cards and rows
+    // across every tab, opens with "/" or from the command palette and shows above the cards only
+    // while it is open.
     var setSearch = el("input", "cc-set-search"); setSearch.type = "search"; setSearch.placeholder = T("Einstellungen durchsuchen …", "Search settings …"); setSearch.spellcheck = false;
     var searchBadge = el("div", "cc-set-searchbadge");
     var searchIcon = el("span", "cc-set-searchicon"); searchIcon.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14 3.072a8 8 0 0 1 2.32 11.834l5.387 5.387a1 1 0 0 1 -1.414 1.414l-5.388 -5.387a8 8 0 1 1 -.905 -13.249" /></svg>';   // tabler filled/search
@@ -946,7 +941,6 @@
       e.preventDefault();
       if (setSearch.value) { setSearch.value = ""; runFilter(""); } else { searchBadge.classList.remove("cc-open"); setSearch.blur(); }
     });
-    hero.appendChild(searchBadge);
     // The search collapses again on a click beside it, clearing the query and resetting the filter
     // through an input event so the existing listener runs. Bound once, since render() re-enters.
     if (!window.__ccSetSearchDoc) {
@@ -956,7 +950,6 @@
         if (sb && !sb.contains(e.target)) { sb.classList.remove("cc-open"); var si = sb.querySelector(".cc-set-search"); if (si && si.value) { si.value = ""; try { si.dispatchEvent(new Event("input", { bubbles: true })); } catch (e2) {} } }
       });
     }
-    root.appendChild(head);
     // "/" opens the search from anywhere on the page outside a field. Ctrl+K stays with header.js's
     // command palette, which takes it on every page and here offers this search first. Bound once,
     // since render() re-enters; it looks the badge up when the key is pressed.
@@ -972,7 +965,7 @@
       });
     }
 
-    // the Unraid title strip between the main menu and our hero is redundant here
+    // the Unraid title strip between the main menu and our tiles is redundant here
     try { Array.prototype.slice.call(document.querySelectorAll("div.title")).forEach(function (tt) { tt.style.setProperty("display", "none", "important"); }); } catch (e9) {}
     // three sections: Docker Tab | Plugin Tab | VM Tab (minimal tab row)
     var tabRow = el("div", "cc-set-tabs");
@@ -1324,6 +1317,7 @@
     body.appendChild(tabRow); body.appendChild(main);
     root.appendChild(body);
     alignSetTabs(); // indent the page to the first main-menu tab
+    main.appendChild(searchBadge);
     [wrapMain, wrapStart, wrapHeader, wrapShares, wrap, wrapPlugin, wrapVms, wrapSettings, wrapTools, wrapFavorites, wrapInfo].forEach(function (w) { main.appendChild(w); });
 
     // The picker stays visible with a hex field beside it, both editing the same value and staying
@@ -2103,8 +2097,8 @@
       wrapHeader.appendChild(cT);
     })();
     // The server name's look. header.js reads the cc.brand.* keys live and inlines them, so the
-    // real header is the preview. Every control is a dropdown, apart from the colour, which is a
-    // picker like every other colour control here.
+    // real header is the preview. The look is set with dropdowns, the size also by a value of its
+    // own, and the colour with a picker like every other colour control here.
     (function () {
       var cB = card(T("Servername", "Server name"), T("Aussehen des Servernamens oben links. Änderungen erscheinen live im Kopfbereich.", "Look of the server name at the top left. Changes appear live in the header."));
       // A name for CC's header alone: Unraid's own server name stays as it is, and an empty field
@@ -2117,8 +2111,12 @@
       nmRow.appendChild(nmL); nmRow.appendChild(nmIn); cB.appendChild(nmRow);
       cB.appendChild(toggleRow(T("Logo zeigen", "Show logo"), T("Zeigt das Logo links vom Servernamen, dasselbe wie auf der Anmeldeseite. Ein eigenes wählst du unter Theming bei Logo, ohne eines ist es das TowerTorch-Zeichen. Es wächst mit der Größe des Namens.", "Shows the logo left of the server name, the same one as on the login page. Pick your own under Theming at Logo; without one it is the TowerTorch mark. It grows with the name's size."), get("cc.brand.logo", "0") === "1", function (v) { set("cc.brand.logo", v ? "1" : "0"); syncHeaderBar(); }));
       var SZ = ["16", "18", "20", "22", "24", "26", "28", "30", "32", "36", "40", "44", "48", "56", "64"].map(function (s) { return [s, s + " px"]; });
-      cB.appendChild(dropRow(T("Größe", "Size"), SZ, get("cc.brand.size", "30"), function (v) { set("cc.brand.size", v); syncHeaderBar(); },
-        T("Die Schriftgröße des Servernamens.", "The font size of the server name.")));
+      cB.appendChild(ownValueRow({
+        key: "cc.brand.size", def: "30", min: 10, max: 120, unit: "px", presets: SZ,
+        label: T("Größe", "Size"),
+        aria: T("Eigene Schriftgröße in px", "Own font size in px"),
+        help: T("Die Schriftgröße des Servernamens.", "The font size of the server name.")
+      }, syncHeaderBar));
       cB.appendChild(dropRow(T("Stärke", "Weight"), [["300", T("Dünn", "Thin"), "IconWeightThin"], ["400", "Normal", "IconWeightRegular"], ["500", "Medium", "IconWeightMedium"], ["650", T("Halbfett", "Semibold"), "IconWeightSemibold"], ["800", T("Fett", "Bold"), "IconWeightBold"]], get("cc.brand.weight", "650"), function (v) { set("cc.brand.weight", v); syncHeaderBar(); },
         T("Wie kräftig der Servername geschrieben ist.", "How heavy the server name is set.")));
       cB.appendChild(dropRow(T("Kursiv", "Italic"), [["0", T("Normal", "Normal"), "IconUpright"], ["1", T("Kursiv", "Italic"), "IconItalic"]], get("cc.brand.italic", "0"), function (v) { set("cc.brand.italic", v); syncHeaderBar(); },
@@ -2783,41 +2781,51 @@
     c.appendChild(slot); c.appendChild(prev.el);
     prev.mark(cur);
   }
-  // The temperature warning threshold: three presets, or a value of its own in a field beside
-  // them. Both land in cc.tempwarn as a plain number, which header.js reads as it is, and
+  // A selector of presets with Eigene as the last choice, which shows a field for a value of
+  // one's own beside it. Both land in o.key as a plain number that the readers take as it is, and
   // onChange runs after each write.
-  var TEMP_MIN = 30, TEMP_MAX = 110;
-  function tempWarnValid(v) { return /^\d{2,3}$/.test(String(v).trim()) && +v >= TEMP_MIN && +v <= TEMP_MAX; }
-  function tempWarnRow(onChange) {
-    var presets = [["50", "50 °C", "IconTempLow"], ["60", "60 °C", "IconTempMid"], ["70", "70 °C", "IconTempHigh"]];
-    var stored = function () { return get("cc.tempwarn", "60"); };
-    var isPreset = function (v) { return presets.some(function (p) { return p[0] === v; }); };
+  function ownValueValid(v, min, max) { return /^\d{1,3}$/.test(String(v).trim()) && +v >= min && +v <= max; }
+  function ownValueRow(o, onChange) {
+    var stored = function () { return get(o.key, o.def); };
+    var isPreset = function (v) { return o.presets.some(function (p) { return p[0] === v; }); };
     var field = el("span", "cc-set-numwrap"), num = el("input", "cc-set-txt cc-set-num");
     num.type = "text"; num.inputMode = "numeric"; num.maxLength = 3; num.spellcheck = false;
-    num.setAttribute("aria-label", T("Eigene Warnschwelle in °C", "Own warning threshold in °C"));
-    field.appendChild(num); field.appendChild(el("span", "cc-set-unit", "°C"));
+    num.setAttribute("aria-label", o.aria);
+    field.appendChild(num); field.appendChild(el("span", "cc-set-unit", o.unit));
     field.hidden = isPreset(stored());
     num.value = stored();
-    var row = dropRow(T("Temperatur-Warnschwelle", "Temperature warning threshold"), presets.concat([["custom", T("Eigene", "Custom"), "IconCustomValue"]]), field.hidden ? stored() : "custom", function (v) {
+    // a long list is a dropdown, whose third entry would be read as a font face
+    var own = ["custom", T("Eigene", "Custom")];
+    if (o.presets.length < SEG_MAX) own.push("IconCustomValue");
+    var row = dropRow(o.label, o.presets.concat([own]), field.hidden ? stored() : "custom", function (v) {
       field.hidden = v !== "custom";
       if (v === "custom") { num.value = stored(); num.focus(); num.select(); return; }
-      set("cc.tempwarn", v); onChange();
-    }, T("Ab dieser Temperatur wird ein Wert in der Status-Insel orange, 15 °C darüber rot. Eigene: ein Wert von " + TEMP_MIN + " bis " + TEMP_MAX + " °C.", "From this temperature a reading in the status island turns orange, and red 15 °C above it. Custom: a value from " + TEMP_MIN + " to " + TEMP_MAX + " °C."));
+      set(o.key, v); onChange();
+    }, o.help + " " + T("Eigene: ein Wert von " + o.min + " bis " + o.max + " " + o.unit + ".", "Custom: a value from " + o.min + " to " + o.max + " " + o.unit + "."));
     num.addEventListener("input", function () {
-      var ok = tempWarnValid(num.value);
+      var ok = ownValueValid(num.value, o.min, o.max);
       num.setAttribute("aria-invalid", ok ? "false" : "true");
-      if (ok) { set("cc.tempwarn", String(+num.value)); onChange(); }
+      if (ok) { set(o.key, String(+num.value)); onChange(); }
     });
     // A value outside the range is never stored, and leaving the field puts the stored one back.
     num.addEventListener("change", function () {
-      if (tempWarnValid(num.value)) return;
-      failed(num, T("Bitte einen Wert von " + TEMP_MIN + " bis " + TEMP_MAX + " °C.", "Please enter a value from " + TEMP_MIN + " to " + TEMP_MAX + " °C."));
+      if (ownValueValid(num.value, o.min, o.max)) return;
+      failed(num, T("Bitte einen Wert von " + o.min + " bis " + o.max + " " + o.unit + ".", "Please enter a value from " + o.min + " to " + o.max + " " + o.unit + "."));
       num.value = stored(); num.setAttribute("aria-invalid", "false");
     });
     var end = el("span", "cc-set-colend");
     end.appendChild(row.lastChild); end.appendChild(field);
     row.appendChild(end);
     return row;
+  }
+  function tempWarnRow(onChange) {
+    var presets = [["50", "50 °C", "IconTempLow"], ["60", "60 °C", "IconTempMid"], ["70", "70 °C", "IconTempHigh"]];
+    return ownValueRow({
+      key: "cc.tempwarn", def: "60", min: 30, max: 110, unit: "°C", presets: presets,
+      label: T("Temperatur-Warnschwelle", "Temperature warning threshold"),
+      aria: T("Eigene Warnschwelle in °C", "Own warning threshold in °C"),
+      help: T("Ab dieser Temperatur wird ein Wert in der Status-Insel orange, 15 °C darüber rot.", "From this temperature a reading in the status island turns orange, and red 15 °C above it.")
+    }, onChange);
   }
   function segRow(labelText, opts, cur, onChange, help) {
     return dropRow(labelText, opts, cur, onChange, help);
@@ -2907,7 +2915,7 @@
     document.addEventListener("click", function () { var o = document.querySelectorAll("#cc-settings .cc-dsel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open"); });
     window.addEventListener("scroll", function (e) { var tgt = e && e.target; if (tgt && tgt.closest && tgt.closest(".cc-dsel-panel")) return; var o = document.querySelectorAll("#cc-settings .cc-dsel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open"); }, true);
   }
-  // Indents the whole panel, hero, tab strip and cards alike, so it starts at the first main-menu
+  // Indents the whole panel, tab strip and cards alike, so it starts at the first main-menu
   // tab; header.js stamps the offset. Padding the root is safe to repeat, since the root's border
   // edge does not move with its own padding.
   function alignSetTabs() {
@@ -2916,9 +2924,8 @@
       var rr = root.getBoundingClientRect();
       var need = al - rr.left;
       if (need > 0 && need < 60) root.style.paddingLeft = need + "px"; else root.style.paddingLeft = "";
-      // Unraid's #displaybox is a few pixels wider than the viewport, so the panel and the search
-      // icon pinned to its right would spill past the edge. The right is padded to mirror the
-      // left inset, which brings both back inside.
+      // Unraid's #displaybox is a few pixels wider than the viewport, so the panel would spill past
+      // the edge. The right is padded to mirror the left inset, which brings it back inside.
       var padR = Math.round(rr.right - (document.documentElement.clientWidth - al));
       if (padR > 0 && padR < 80) root.style.paddingRight = padR + "px"; else root.style.paddingRight = "";
     } catch (e) {}

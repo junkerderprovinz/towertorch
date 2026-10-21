@@ -31,7 +31,7 @@ const ON_SCALE = /^(var\(--cc-text-(status|title|body|subline|meta)\)|var\(--cc-
 const PICTURES = [
   /td\.ct-name \.outer > span\.hand i\.img \{/,                 // the container logo glyph, sized with its tile
   /var\(--cc-(logo-img|sg-glyph|fav-glyph|md-icon),/,           // logo and glyph tiles, the header icon size
-  /#cc-brand( \.cc-brand-name)? \{/, /\.cc-set-brand \{/,       // the two wordmarks
+  /#cc-brand( \.cc-brand-name)? \{/,                            // the header wordmark
   /\.cc-ud-ctrls\) a :is\(i, img, span\[class\*="icon"\]\) \{/, // Unassigned Devices' 20px control glyphs
   /table\.indexer i\[id\^="check_"\] \{/,                       // the file browser's checkbox glyph
   /width: 40px !important; height: 40px !important;/,           // a 40px icon button's glyph

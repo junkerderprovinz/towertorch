@@ -1,6 +1,6 @@
 // The settings search matches the explanations in the bubbles as well as the visible text, shows
 // an empty state when nothing matches, and opens with "/". Ctrl+K stays with the command palette.
-// The search badge and the "Open" button are secondary, since a view has one filled accent button.
+// The search and the "Open" button are secondary, since a view has one filled accent button.
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -80,8 +80,7 @@ console.log('\nOpening and closing');
 console.log('\nOne filled accent button per view');
 {
   const badge = (/"#cc-settings \.cc-set-searchbadge\{([^}]*)\}"/.exec(settings) || [])[1] || '';
-  ok('the search badge rests grey', /background:#2e2e2e/.test(badge), badge);
-  ok('and takes the colour mode only under the pointer', /\.cc-set-searchbadge:not\(\.cc-open\):hover\{background:var\(--cc-rbaccent,var\(--cc-accent/.test(settings));
+  ok('the search rests grey', /background:#2e2e2e/.test(badge), badge);
   ok('"Open" is a plain secondary button', /el\("button", "cc-btn", T\("Öffnen", "Open"\)\)/.test(settings) && !/cc-btn-accent/.test(settings));
 }
 
@@ -117,14 +116,14 @@ console.log('\nCtrl+K reaches the settings search through the palette');
   ok('on other pages the palette has no such entry', !lst2.children.some((it) => it.pinned));
 }
 
-// The cards run the full width of the page, so the search badge at the end of the hero ends on
-// their edge on every tab, with nothing to measure.
-console.log("\nThe search badge ends on the cards' edge");
+// The cards start right below the main menu. The search has no row of its own: it opens above
+// the cards and is gone again once it closes.
+console.log('\nThe search takes room only while it is open');
 {
-  const { candidates } = require('./cascade');
-  const hero = candidates('settings', { tag: 'div', classes: ['cc-set-hero'], attrs: {}, states: {}, inside: ['#cc-settings'] }, 'justify-content');
-  ok('the hero puts the badge at its end', hero.length && hero[hero.length - 1].value === 'space-between');
-  ok('no script moves the badge after the cards', !/ccSetAlignSearch|__ccSetAlignSearch/.test(settings));
+  ok('no head row sits between the main menu and the cards', !/"cc-set-head"|"cc-set-hero"/.test(settings) && !/\.cc-set-head|\.cc-set-hero/.test(read('styles/docker.css')));
+  ok('the search stands first in the cards\' column', /main\.appendChild\(searchBadge\);\s*\[wrapMain,/.test(settings));
+  ok('a closed search is not shown', /"#cc-settings \.cc-set-searchbadge:not\(\.cc-open\)\{display:none\}"/.test(settings));
+  ok('the palette and "/" still open it', /sb\.classList\.add\("cc-open"\)/.test(header) && /sb\.classList\.add\("cc-open"\); si\.focus\(\);/.test(settings));
 }
 
 // The empty state stands in for the cards, dark like them on every theme, and its two lines

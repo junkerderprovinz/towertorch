@@ -1,5 +1,5 @@
 // Parts of a surface are set off by space or a surface step, never by a rule line: the limit
-// group at the foot of a Docker card and the head of the settings page above its tabs.
+// group at the foot of a Docker card.
 const { candidates, withUnraid } = require('./cascade');
 
 let pass = 0, fail = 0;
@@ -10,7 +10,6 @@ const lines = (page, e) => SIDES.flatMap((p) => candidates(page, e, p).filter((c
 
 const parts = [
   ['the limit group on a Docker card', 'docker', { tag: 'div', classes: ['cc-rowbadges', 'cc-resgroup', 'cc-card-res'], inside: ['.cc-card'], outside: ['#docker_list', '.cc-enh'], html: ['cc-docker-on'] }],
-  ['the head of the settings page', 'settings', { tag: 'div', classes: ['cc-set-head'], inside: ['#cc-settings'] }],
 ];
 for (const [name, page, e] of parts) {
   const found = lines(withUnraid(page), e);
@@ -20,8 +19,6 @@ for (const [name, page, e] of parts) {
 const card = candidates(withUnraid('docker'), { tag: 'div', classes: ['cc-card'], inside: ['.cc-grid-holder'], outside: ['#docker_list', '.cc-enh'], html: ['cc-docker-on'] }, 'gap').pop();
 const space = candidates(withUnraid('docker'), { tag: 'div', classes: ['cc-grid-holder'], html: ['cc-docker-on'] }, '--cc-card-space').pop();
 ok('the limit group keeps its distance from the action row above', card && /var\(--cc-card-space\)/.test(card.value) && space && parseFloat(space.value) >= 8, (card && card.value) + ' / ' + (space && space.value));
-const head = candidates(withUnraid('settings'), parts[1][2], 'margin-bottom').pop();
-ok('the settings head keeps its distance from the tabs', head && parseFloat(head.value) >= 24, head && head.value);
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
 process.exit(fail ? 1 : 0);
