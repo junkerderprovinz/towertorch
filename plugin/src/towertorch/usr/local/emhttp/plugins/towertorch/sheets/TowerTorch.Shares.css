@@ -1088,6 +1088,9 @@ html.cc-shares-on.cc-on-share-detail #displaybox .cc-del-wrap:has(.cc-cb-del:che
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-del-wrap:has(.cc-cb-del:checked) .cc-b-del:hover {
   background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-shr-accent-text, #161616))) !important;
 }
+/* The switch also turns Unraid's Apply into a second Delete (chkDelete), so that one steps aside
+   while the switch is on. The badge still submits through it, hidden or not. */
+html.cc-shares-on.cc-on-share-detail #displaybox dl:has(> .cc-del-wrap > .cc-cb-del:checked) #cmdEditShare { display: none !important; }
 
 /* The disk Include/Exclude controls are jQuery-UI dropdownchecklist widgets rather than <select>,
    so CC's select rules never reached them; their line and caret live on .ui-dropdownchecklist*.
@@ -1765,15 +1768,14 @@ html.cc-shares-on.cc-sht-on #displaybox :is(.cc-sht-card, .cc-sht-ib, .cc-sht-cb
 
 /* The folder stands in a tile the size of the Docker and Plugins logo tiles, on the dark well the
    disk drawings stand on, in the card's colour. It rests closed and opens while the card has the
-   pointer or the focus. The shield is a glyph on its front in a dark shade of the folder, so it
-   reads on yellow and on the resting grey alike; its shape tells protected from not. */
+   pointer or the focus. */
 html.cc-shares-on.cc-sht-on {
   --cc-sht-paper: #d4d4d4;
 }
 html.cc-shares-on.cc-sht-on:is(.Theme--white, .Theme--azure) { --cc-sht-paper: #ffffff; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic {
   --cc-sht-fold: var(--cc-sht-c, var(--cc-shr-accent, #FCC419));
-  position: relative; display: flex; flex: none; align-items: center; justify-content: center;
+  display: flex; flex: none; align-items: center; justify-content: center;
   width: var(--cc-logo-box, 78px); height: var(--cc-logo-box, 78px); border-radius: var(--cc-radius-control); background: var(--cc-sht-inset);
 }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder { display: block; width: var(--cc-logo-img, 62px); height: var(--cc-logo-img, 62px); }
@@ -1785,14 +1787,11 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-ffront {
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:is(:hover, :focus-within) .cc-sht-ffront { y: 24px; height: 28px; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fback { fill: color-mix(in srgb, var(--cc-sht-fold) 70%, #000); }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fsheet { fill: var(--cc-sht-paper); }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic > .cc-shield {
-  position: absolute; left: 50%; top: 61%; translate: -50% -50%; margin: 0;
-  font-size: var(--cc-text-status); color: color-mix(in srgb, var(--cc-sht-fold) 30%, #000); transition: color var(--cc-motion-control-dur, 0s);
-}
 
-/* Beside the folder the name, with its size following on its line and dropping below it only when
-   the card is too narrow, and the comment under them. The actions keep the top corner. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* Beside the folder and level with its top edge the shield and the name, with the size following on
+   their line and dropping below it only when the card is too narrow, and the comment under them.
+   The actions keep the top corner. */
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-head { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-id { display: flex; flex: 1 1 auto; flex-direction: column; gap: 6px; min-width: 0; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; min-height: 28px; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-nb {
@@ -1800,6 +1799,15 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-nb {
   border-radius: var(--cc-radius-pill); background: var(--cc-sht-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-sht-ct, var(--cc-shr-accent-text, #161616));
   font-size: var(--cc-text-body); font-weight: 700;
 }
+/* The shield is an icon badge as tall as the name, filled with the state's own colour in every
+   colour mode, so it stays green or orange while the name rests grey. */
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title > .cc-shield {
+  justify-content: center; width: 28px; height: 28px; margin: 0; border-radius: var(--cc-radius-pill);
+  background: var(--cc-chip); color: var(--cc-text-dim);
+}
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title > .cc-shield-ok { background: var(--cc-ok); color: var(--cc-ok-fg); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title > .cc-shield-warn { background: var(--cc-warn); color: var(--cc-warn-fg); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title > .cc-shield .cc-glyph { width: 15px; height: 15px; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-size { display: inline-flex; gap: 10px; white-space: nowrap; font-size: var(--cc-text-meta); color: var(--cc-text-hint); font-variant-numeric: tabular-nums; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-size b { color: var(--cc-text); font-weight: 600; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-cmt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cc-text-subline); color: var(--cc-text-dim); }

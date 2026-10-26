@@ -124,11 +124,11 @@ console.log('\nThe readers follow Unraid\'s rows');
   ok('no shares: Unraid\'s own notice is kept', none.shares.length === 0 && none.notice === 'Es existieren keine zu exportierenden Datenträgerfreigaben');
 }
 
-console.log('\nA card reads like a plugin card: the folder, name, size and actions, the split, then storage, exports and Compute');
+console.log('\nA card reads like a plugin card: the folder, shield, name, size and actions, the split, then storage, exports and Compute');
 {
   const txt = js.slice(js.indexOf('var TXT = {'), js.indexOf('};', js.indexOf('var TXT = {')) + 2);
   const folder = js.slice(js.indexOf('var FOLDER = '), js.indexOf("</svg>';", js.indexOf('var FOLDER = ')) + 8);
-  const fns = ['kids', 'tag', 'attr', 'hasCls', 'find', 'text', 'clean', 'esc', 'bytes', 'cells', 'computeLink', 'waiting', 'storage', 'readRow', 'readList', 'usage', 't', 'glyph', 'lvl', 'act', 'shield', 'cornerBtn', 'exportChip', 'picture', 'cardHtml'];
+  const fns = ['kids', 'tag', 'attr', 'hasCls', 'find', 'text', 'clean', 'esc', 'bytes', 'cells', 'computeLink', 'waiting', 'storage', 'readRow', 'readList', 'usage', 't', 'glyph', 'lvl', 'act', 'shield', 'cornerBtn', 'exportChip', 'cardHtml'];
   const src = ['var LANG = "de";', txt, grabVar(js, 'POW'), folder].concat(fns.map((n) => grabFn(js, n))).join('\n') + '\nreturn { readList, cardHtml };';
   const C = new Function('window', src)({});
   const html = (rows, disk) => C.cardHtml(C.readList(tbody(rows)).shares[0], disk);
@@ -141,17 +141,18 @@ console.log('\nA card reads like a plugin card: the folder, name, size and actio
   ok('media: the head and the footer', order(media) === 'cc-sht-head cc-sht-foot', order(media));
   const head = media.children[0];
   ok('the head holds the folder, the name with the comment, and the actions for the top corner', order(head) === 'cc-sht-pic cc-sht-id cc-sht-acts', order(head));
-  ok('the folder is drawn, not loaded, and carries the shield', order(head.children[0]) === 'cc-sht-folder cc-shield cc-shield-ok' && head.children[0].children[0].tagName === 'SVG');
+  ok('everything in the head sits on the card\'s top edge', /\.cc-sht-head \{[^}]*align-items: flex-start;/.test(css));
+  ok('the folder is drawn, not loaded, and carries nothing else', order(head.children[0]) === 'cc-sht-folder' && head.children[0].children[0].tagName === 'SVG');
   ok('the folder is back, sheet and front, in that order', head.children[0].children[0].children.length > 0 && /cc-sht-fback[\s\S]*cc-sht-fback[\s\S]*cc-sht-fsheet[\s\S]*cc-sht-ffront/.test(html(MEDIA, false)));
   ok('the name stands over the comment', order(head.children[1]) === 'cc-sht-title cc-sht-cmt');
-  ok('the free space stands on the name\'s line, right after the name badge', order(head.children[1].children[0]) === 'cc-sht-nb cc-sht-size' && html(MEDIA, false).includes('<b>9.09 TB</b> frei'));
+  ok('the shield badge leads the name\'s line, the free space follows the name badge', order(head.children[1].children[0]) === 'cc-shield cc-shield-ok cc-sht-nb cc-sht-size' && html(MEDIA, false).includes('<b>9.09 TB</b> frei'));
   ok('the top corner holds Durchsuchen and Einstellungen', acts(media) === 'browse open');
   const foot = last(media);
   ok('the footer holds the chips and then Berechnen', order(foot) === 'cc-sht-chips cc-sht-cb' && foot.children[1].attrs['data-act'] === 'compute', order(foot));
   ok('the storage badge leads, SMB and NFS follow on its row', order(foot.children[0]) === 'cc-sht-chip cc-sht-store cc-sht-chip cc-sht-chip cc-sht-off');
   const backup = card(BACKUP, false);
-  ok('backup: used and free together in the head, the split before the footer', backup.children[0].children[1].children[0].children[1].children.length === 2 && order(backup) === 'cc-sht-head cc-sht-parts cc-sht-foot', order(backup));
-  ok('a share without an orb has no shield on its folder', order(card(BACKUP.replace(/<a class='info nohand'[^]*?<\/a>(?=<a href="\/Shares\/Share)/, ''), false).children[0].children[0]) === 'cc-sht-folder');
+  ok('backup: used and free together in the head, the split before the footer', backup.children[0].children[1].children[0].children[2].children.length === 2 && order(backup) === 'cc-sht-head cc-sht-parts cc-sht-foot', order(backup));
+  ok('a share without an orb has no shield before its name', order(card(BACKUP.replace(/<a class='info nohand'[^]*?<\/a>(?=<a href="\/Shares\/Share)/, ''), false).children[0].children[1].children[0]) === 'cc-sht-nb cc-sht-size');
   ok('a computed share offers Neu berechnen in the same corner and not among the actions', order(last(backup)) === 'cc-sht-chips cc-sht-cb' && last(backup).children[1].attrs['data-act'] === 'again' && acts(backup) === 'browse open');
   const disk = card(DISK1, true);
   ok('a computed disk share keeps its bar before the split', order(disk) === 'cc-sht-head cc-sht-track cc-sht-parts cc-sht-foot', order(disk));
@@ -171,8 +172,19 @@ console.log('\nThe folder looks like the logo tiles of Docker and Plugins');
   ok('the tile size follows cc.sgsize like the other areas', /function logoSizes\(\) \{ return \(\{ s: \["48px", "62px"\], m: \["62px", "78px"\], l: \["76px", "94px"\] \}\)\[g\("cc\.sgsize", "m"\)\]/.test(js));
   ok('the folder takes the card\'s colour and rests grey in the reactive mode', /--cc-sht-fold: var\(--cc-sht-c, var\(--cc-shr-accent, #FCC419\)\);/.test(css) && /\.cc-shares-rbneutral #displaybox \.cc-sht-card:not\(:hover\):not\(:focus-within\) \.cc-sht-pic \{ --cc-sht-fold: var\(--cc-text-dim\); \}/.test(css));
   ok('its corners follow the shape setting', /\.cc-sht-folder rect \{ rx: var\(--cc-pic-corner, 6px\);/.test(css));
-  ok('the shield is a plain glyph on the folder\'s front, in a dark shade of the folder', /\.cc-sht-pic > \.cc-shield \{[^}]*position: absolute;[^}]*color: color-mix\(in srgb, var\(--cc-sht-fold\) 30%, #000\);/.test(css) && !/\.cc-sht-pic > \.cc-shield \{[^}]*background/.test(css));
   ok('the folder rests closed and opens while the card has the pointer or the focus', /cc-sht-ffront" x="6" y="14" width="52" height="38"/.test(js) && /\.cc-sht-card:is\(:hover, :focus-within\) \.cc-sht-ffront \{ y: 24px; height: 28px; \}/.test(css));
+}
+
+console.log('\nThe shield is a badge of its own before the name');
+{
+  const rule = (sel) => { const m = new RegExp(sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{([^}]*)\\}').exec(css); return m ? m[1] : ''; };
+  const base = rule('#displaybox .cc-sht-title > .cc-shield');
+  ok('it is as tall as the name badge', /height: 28px;/.test(base) && /height: 28px;/.test(rule('#displaybox .cc-sht-nb')));
+  ok('it takes the badge shape', /border-radius: var\(--cc-radius-pill\);/.test(base));
+  ok('protected fills it green and not fully protected orange, each with its own ink',
+    /background: var\(--cc-ok\); color: var\(--cc-ok-fg\);/.test(rule('#displaybox .cc-sht-title > .cc-shield-ok')) &&
+    /background: var\(--cc-warn\); color: var\(--cc-warn-fg\);/.test(rule('#displaybox .cc-sht-title > .cc-shield-warn')));
+  ok('the folder carries no shield', !/\.cc-sht-pic > \.cc-shield/.test(css));
 }
 
 console.log('\nThe actions click the row\'s own controls');
