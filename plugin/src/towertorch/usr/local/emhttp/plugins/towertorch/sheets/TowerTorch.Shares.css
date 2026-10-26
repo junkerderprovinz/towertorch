@@ -1214,19 +1214,27 @@ html.cc-shares-on:is(.cc-on-share-detail.cc-sections-share, .cc-on-shares.cc-sec
 
 /* The clone-settings block ("Einstellungen lesen von", "kopieren zu") becomes a card of its own
    beside the settings card, titled by the badge shares.js puts on its top edge. shares.js reuses the
-   native .relative as the flex row (.cc-split-row) holding .cc-main-col and .cc-side-card, and whole
+   native .relative as the row (.cc-split-row) holding .cc-main-col and .cc-side-card, and whole
    forms move as units. */
 html.cc-shares-on.cc-on-share-detail #displaybox .tab-content:has(.cc-split-row) {
   background: none; box-shadow: none; border-radius: 0; padding: 0;   /* a host, not a card, so no enclosing frame */
 }
+/* The settings card stands in the middle of the page, where Unraid puts its form and where every
+   other form card stands, and the copy card takes the free column to its right. Where that column
+   is too narrow for it, the copy card goes under the settings card. */
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row {
-  display: flex; flex-wrap: wrap; gap: 24px 32px; align-items: flex-start;
+  display: grid; grid-template-columns: minmax(0, 920px); justify-content: center; align-items: start; gap: 24px 32px;
   margin-bottom: 28px;   /* the hidden .title.cc-carded between two stacked rows breaks `+` adjacency, so the spacing is per row */
 }
+@media (min-width: 1880px) {
+  html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row { grid-template-columns: minmax(0, 1fr) minmax(0, 920px) minmax(0, 1fr); justify-content: stretch; }
+  html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row > .cc-main-col { grid-column: 2; }
+  html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row > .cc-side-card { grid-column: 3; grid-row: 1; }
+}
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row:last-child { margin-bottom: 0; }
-html.cc-shares-on.cc-on-share-detail #displaybox .cc-main-col { flex: 0 1 920px; min-width: 0; }
+html.cc-shares-on.cc-on-share-detail #displaybox .cc-main-col { min-width: 0; }
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-side-card {
-  position: relative; flex: 0 1 520px; min-width: 0; align-self: flex-start; box-sizing: border-box;
+  position: relative; width: min(100%, 520px); min-width: 0; justify-self: start; box-sizing: border-box;
   margin-top: 11px; padding: 24px 18px 12px; border-radius: var(--cc-radius-card);
   background: var(--cc-fm-card, #222222); box-shadow: var(--cc-elev-1, 0 1px 4px rgba(0, 0, 0, .35));
 }
