@@ -1,0 +1,13 @@
+Menu="Buttons:98"
+Title="TowerTorch"
+Icon="towertorch.png"
+Link="cc-labels-hook"
+---
+<?php
+/* Loads sheets/TowerTorch.Labels.css into the <head> of every page through basename
+   auto-injection, and labels.js, GlimStone's label engine for the Unraid buttons TowerTorch draws
+   as badges: their caption, their glyph or both, after cc.labels.buttons. Everything is gated
+   behind data-cc-labels-buttons on <html>, which labels.js sets only while theming is on.
+   Link="cc-labels-hook" renders a bare <div> instead of a visible icon. */
+?>
+<script defer src="<?autov('/plugins/towertorch/scripts/labels.js')?>"></script>

@@ -1,0 +1,61 @@
+/* TowerTorch: GlimStone's label engine on the Unraid buttons TowerTorch draws as badges
+ * (scripts/labels.js). labels.js puts the mode on <html> as data-cc-labels-buttons and marks each
+ * button whose caption has a glyph with data-cc-lbl, the glyph's name. Text mode marks nothing,
+ * so there the buttons stay as the area sheets draw them. The glyph is a background layer of the
+ * button, drawn in its ink as --cc-lbl-img. labels.js places the layer at --cc-lbl-bp, sizes it at
+ * --cc-lbl-bs and pads the button by --cc-lbl-ps and --cc-lbl-pe, all inline and all set here per
+ * mode and state, and sets what it measured on the button:
+ *   --cc-lbl-pl, --cc-lbl-pr  the button's own padding
+ *   --cc-lbl-tw               the width of its caption
+ *   --cc-lbl-gs               the glyph beside a caption, as tall as the caption's text
+ *   --cc-lbl-h                the button's height, the side of its square in glyph mode
+ *   --cc-lbl-w                its width with glyph and caption, which reactive opens to
+ *   --cc-lbl-gap              the gap between glyph and caption
+ * The rules that size the square sit in a cascade layer: an important declaration in a layer
+ * outranks every unlayered important one, and the area sheets reach these buttons through one or
+ * two ids with !important on their width. */
+
+/* Reactive's opening rides on the motion engine: wild opens over 320ms with an overshoot, subtle
+   over 160ms, off and a system that asks for reduced motion show the words at once. */
+html { --cc-motion-label-dur: 0s; --cc-motion-label-ease: ease-out; }
+@media (prefers-reduced-motion: no-preference) {
+  html { --cc-motion-label-dur: 320ms; --cc-motion-label-ease: cubic-bezier(.34, 1.56, .64, 1); }
+  html[data-cc-motion="subtle"] { --cc-motion-label-dur: 160ms; --cc-motion-label-ease: ease-out; }
+  html[data-cc-motion="off"] { --cc-motion-label-dur: 0s; }
+}
+
+/* Glyph and caption: the caption moves over by the glyph and the gap, and the two are centred
+   together, as the button centres its caption alone. */
+html[data-cc-labels-buttons] [data-cc-lbl] {
+  --cc-lbl-ps: calc(var(--cc-lbl-pl) + var(--cc-lbl-gs) + var(--cc-lbl-gap));
+  --cc-lbl-pe: var(--cc-lbl-pr);
+  --cc-lbl-bs: var(--cc-lbl-gs) var(--cc-lbl-gs);
+  --cc-lbl-bp: calc(50% + (var(--cc-lbl-pl) - var(--cc-lbl-pr) - var(--cc-lbl-gap) - var(--cc-lbl-tw)) / 2) center;
+}
+/* The glyph alone sits in the middle of a square, and GlimStone's glyph alone in its square is
+   half the square. Reactive rests the same way, with its glyph at the caption's size. */
+html[data-cc-labels-buttons="glyph"] [data-cc-lbl],
+html[data-cc-labels-buttons="reactive"] [data-cc-lbl]:not(:is(:hover, :focus-visible):not(:disabled)) {
+  --cc-lbl-ps: 0px; --cc-lbl-pe: 0px; --cc-lbl-bp: center;
+}
+html[data-cc-labels-buttons="glyph"] [data-cc-lbl] { --cc-lbl-bs: calc(var(--cc-lbl-h) / 2) calc(var(--cc-lbl-h) / 2); }
+
+@layer cc-labels {
+  /* The square. The caption stays the button's value and accessible name and is only not painted. */
+  html:is([data-cc-labels-buttons="glyph"], [data-cc-labels-buttons="reactive"]) [data-cc-lbl]:not([data-cc-lbl-off]) {
+    width: var(--cc-lbl-h) !important; min-width: 0 !important; max-width: none !important;
+    overflow: hidden !important; -webkit-text-fill-color: transparent !important;
+  }
+  /* Reactive: the caption opens under the pointer and on keyboard focus. A disabled button never
+     opens; its caption is in its bubble instead. */
+  html[data-cc-labels-buttons="reactive"] [data-cc-lbl]:not([data-cc-lbl-off]):is(:hover, :focus-visible):not(:disabled) {
+    width: var(--cc-lbl-w) !important; -webkit-text-fill-color: currentColor !important;
+  }
+  /* The area sheets' own colour transitions are named again, since this one replaces them. */
+  html[data-cc-labels-buttons="reactive"] [data-cc-lbl]:not([data-cc-lbl-off], [data-cc-lbl-still]) {
+    transition: width var(--cc-motion-label-dur) var(--cc-motion-label-ease), padding var(--cc-motion-label-dur) var(--cc-motion-label-ease),
+      background-position var(--cc-motion-label-dur) var(--cc-motion-label-ease), -webkit-text-fill-color calc(var(--cc-motion-label-dur) * .6) ease-out,
+      background-color .12s, color .12s, filter .12s !important;
+  }
+  html[data-cc-labels-buttons] [data-cc-lbl-still] { transition: none !important; }
+}

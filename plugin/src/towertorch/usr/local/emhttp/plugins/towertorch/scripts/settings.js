@@ -267,7 +267,13 @@
     IconWeightSemibold: ["0.277 0.278 13.444 13.444", '<path d="M8.25 2.109L3.85 12.909A1.35 1.35 0 0 1 1.35 11.891L5.75 1.091A1.35 1.35 0 0 1 8.25 2.109ZM8.25 1.091L12.65 11.891A1.35 1.35 0 0 1 10.15 12.909L5.75 2.109A1.35 1.35 0 0 1 8.25 1.091ZM3.944 7.75L10.056 7.75A1.35 1.35 0 0 1 10.056 10.45L3.944 10.45A1.35 1.35 0 0 1 3.944 7.75Z" />'],
     IconWeightBold: ["0 0 14.001 14.001", '<path d="M8.482 2.204L4.082 13.004A1.6 1.6 0 0 1 1.118 11.796L5.518 0.996A1.6 1.6 0 0 1 8.482 2.204ZM8.482 0.996L12.882 11.796A1.6 1.6 0 0 1 9.918 13.004L5.518 2.204A1.6 1.6 0 0 1 8.482 0.996ZM3.944 7.5L10.056 7.5A1.6 1.6 0 0 1 10.056 10.7L3.944 10.7A1.6 1.6 0 0 1 3.944 7.5Z" />'],
     IconUpright: ["0.9 0.9 12.2 12.2", '<path d="M8.1 2L8.1 12A1.1 1.1 0 0 1 5.9 12L5.9 2A1.1 1.1 0 0 1 8.1 2ZM4 0.9L10 0.9A1.1 1.1 0 0 1 10 3.1L4 3.1A1.1 1.1 0 0 1 4 0.9ZM4 10.9L10 10.9A1.1 1.1 0 0 1 10 13.1L4 13.1A1.1 1.1 0 0 1 4 10.9Z" />'],
-    IconItalic: ["0.899 0.9 12.2 12.2", '<path d="M9.648 2.335L6.448 12.335A1.1 1.1 0 0 1 4.352 11.665L7.552 1.665A1.1 1.1 0 0 1 9.648 2.335ZM5.6 0.9L11.6 0.9A1.1 1.1 0 0 1 11.6 3.1L5.6 3.1A1.1 1.1 0 0 1 5.6 0.9ZM2.4 10.9L8.4 10.9A1.1 1.1 0 0 1 8.4 13.1L2.4 13.1A1.1 1.1 0 0 1 2.4 10.9Z" />']
+    IconItalic: ["0.899 0.9 12.2 12.2", '<path d="M9.648 2.335L6.448 12.335A1.1 1.1 0 0 1 4.352 11.665L7.552 1.665A1.1 1.1 0 0 1 9.648 2.335ZM5.6 0.9L11.6 0.9A1.1 1.1 0 0 1 11.6 3.1L5.6 3.1A1.1 1.1 0 0 1 5.6 0.9ZM2.4 10.9L8.4 10.9A1.1 1.1 0 0 1 8.4 13.1L2.4 13.1A1.1 1.1 0 0 1 2.4 10.9Z" />'],
+    // The label modes have no drawing in the set. These share one box, so the glyph and the lines
+    // keep their sizes against each other from choice to choice.
+    IconLabelText: ["0 0 14 14", '<path d="M1.9 4.6H12.1A0.9 0.9 0 0 1 12.1 6.4H1.9A0.9 0.9 0 0 1 1.9 4.6ZM1.9 7.6H8.1A0.9 0.9 0 0 1 8.1 9.4H1.9A0.9 0.9 0 0 1 1.9 7.6Z" />'],
+    IconLabelTextGlyph: ["0 0 14 14", '<path d="M1.7 4.5H4.3A1.2 1.2 0 0 1 5.5 5.7V8.3A1.2 1.2 0 0 1 4.3 9.5H1.7A1.2 1.2 0 0 1 0.5 8.3V5.7A1.2 1.2 0 0 1 1.7 4.5ZM7.9 4.6H12.6A0.9 0.9 0 0 1 12.6 6.4H7.9A0.9 0.9 0 0 1 7.9 4.6ZM7.9 7.6H10.6A0.9 0.9 0 0 1 10.6 9.4H7.9A0.9 0.9 0 0 1 7.9 7.6Z" />'],
+    IconLabelGlyph: ["0 0 14 14", '<path d="M5.1 3.5H8.9A1.6 1.6 0 0 1 10.5 5.1V8.9A1.6 1.6 0 0 1 8.9 10.5H5.1A1.6 1.6 0 0 1 3.5 8.9V5.1A1.6 1.6 0 0 1 5.1 3.5Z" />'],
+    IconLabelReactive: ["0 0 14 14", '<path d="M1.7 4.5H4.3A1.2 1.2 0 0 1 5.5 5.7V8.3A1.2 1.2 0 0 1 4.3 9.5H1.7A1.2 1.2 0 0 1 0.5 8.3V5.7A1.2 1.2 0 0 1 1.7 4.5ZM8 6.1A0.9 0.9 0 1 1 8 7.9A0.9 0.9 0 1 1 8 6.1ZM10.8 6.2A0.8 0.8 0 1 1 10.8 7.8A0.8 0.8 0 1 1 10.8 6.2ZM12.95 6.45A0.55 0.55 0 1 1 12.95 7.55A0.55 0.55 0 1 1 12.95 6.45Z" />']
   };
   function segGlyph(name) {
     var g = SEG_GLYPHS[name], svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -2097,6 +2103,19 @@
       // an icon-only mode beside the icon switch, in the same card, since both fill the same pill
       cT.appendChild(toggleRow(T("Text anzeigen", "Show text"), T("Zeigt den Namen in jedem Tab, ohne ihn bleibt nur das Symbol.", "Shows the name in each tab, without it only the icon stays."), get("cc.tabtext", "1") !== "0", function (v) { set("cc.tabtext", v ? "1" : "0"); try { window.ccTabIcons && window.ccTabIcons(); } catch (e) {} }));
       wrapHeader.appendChild(cT);
+    })();
+    // GlimStone's label engine on Unraid's own buttons, beside the main tabs' icon and text.
+    // labels.js reads the key on every page and redraws at once on a change.
+    (function () {
+      var LM = ["text", "textGlyph", "glyph", "reactive"], cur = get("cc.labels.buttons", "textGlyph");
+      var cL = card(T("Beschriftungen", "Labels"), T("Wie viel von einem Bedienelement gezeigt wird: seine Wörter, sein Symbol oder beides.", "How much of a control is shown: its words, its symbol, or both."));
+      cL.appendChild(dropRow(T("Buttons", "Buttons"),
+        [["text", T("Text", "Text"), "IconLabelText"], ["textGlyph", T("Text und Symbol", "Text and symbol"), "IconLabelTextGlyph"], ["glyph", T("Symbol", "Symbol"), "IconLabelGlyph"], ["reactive", T("Reaktiv", "Reactive"), "IconLabelReactive"]],
+        LM.indexOf(cur) < 0 ? "textGlyph" : cur,
+        function (v) { set("cc.labels.buttons", v); try { window.ccLabelsApply && window.ccLabelsApply(); } catch (e) {} },
+        T("Gilt für Unraids eigene Buttons, die TowerTorch als Badge zeichnet. Reaktiv zeigt nur das Symbol und blendet die Wörter ein, sobald du darauf zeigst oder sie mit der Tastatur erreichst. Ein Button ohne passendes Symbol behält seinen Text.",
+          "Applies to Unraid's own buttons that TowerTorch draws as badges. Reactive shows the symbol alone and slides the words in when you point at it or reach it with the keyboard. A button without a matching symbol keeps its text.")));
+      wrapHeader.appendChild(cL);
     })();
     // The server name's look. header.js reads the cc.brand.* keys live and inlines them, so the
     // real header is the preview. The look is set with dropdowns, the size also by a value of its
