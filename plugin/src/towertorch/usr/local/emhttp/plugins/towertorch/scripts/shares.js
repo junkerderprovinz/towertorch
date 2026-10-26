@@ -89,7 +89,8 @@
         // size and then the date follow perm_N, each a plain text td with a numeric data=""
         var perm = tr.querySelector('td[id^="perm_"]');
         var size = perm && perm.nextElementSibling;
-        if (size && size.hasAttribute("data") && !size.querySelector("*") && !size.classList.contains("loc")) ccBrowseCell(size, "cc-b-size");
+        // a folder's size is Unraid's <FOLDER> marker, which stays plain text
+        if (size && size.hasAttribute("data") && !size.querySelector("*") && !size.classList.contains("loc")) ccBrowseCell(size, /^<.*>$/.test((size.textContent || "").trim()) ? "cc-b-size cc-b-dir" : "cc-b-size");
         var dateTd = size && size.nextElementSibling;
         if (dateTd && dateTd.hasAttribute("data") && !dateTd.querySelector("*") && !dateTd.classList.contains("loc")) ccBrowseCell(dateTd, "cc-b-date");
       }
