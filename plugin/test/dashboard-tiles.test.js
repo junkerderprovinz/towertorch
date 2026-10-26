@@ -82,7 +82,7 @@ function run(store, dom = {}) {
     window: win, location: { pathname: '/Dashboard' },
     localStorage: { getItem: (k) => (k in store ? store[k] : null) },
     setTimeout: () => 0,
-    getComputedStyle: () => ({ getPropertyValue: (p) => (p === '--cc-accent' ? ' #1f9d55' : p === '--cc-text-dim' ? '#8a8a8a' : '') }),
+    getComputedStyle: () => ({ getPropertyValue: (p) => (p === '--cc-accent' ? ' #1f9d55' : p === '--cc-text-dim' ? '#8a8a8a' : p === '--cc-text' ? '#e6e6e6' : '') }),
     document: {
       readyState: 'complete',
       documentElement: { lang: 'de', classList: { toggle: (c, on) => (on ? classes.add(c) : classes.delete(c)), contains: (c) => classes.has(c) } },
@@ -114,7 +114,7 @@ console.log('\nThe charts follow the area');
   const cpu = r.win.cpuchart, net = r.win.netchart;
   ok('the CPU line is the accent', cpu.seriesSet[0].options.strokeStyle === '#1f9d55', cpu.seriesSet[0].options.strokeStyle);
   ok('the grid is gone', cpu.options.grid.strokeStyle === 'transparent' && cpu.options.grid.verticalSections === 0 && cpu.options.grid.borderVisible === false);
-  ok('inbound and outbound share the accent, outbound fainter and unfilled', net.seriesSet[0].options.strokeStyle === '#1f9d55' && /^rgba\(31,157,85,0\.7\)$/.test(net.seriesSet[1].options.strokeStyle) && net.seriesSet[1].options.fillStyle === undefined);
+  ok('inbound takes the accent and outbound the text colour, unfilled', net.seriesSet[0].options.strokeStyle === '#1f9d55' && net.seriesSet[1].options.strokeStyle === '#e6e6e6' && net.seriesSet[1].options.fillStyle === undefined, net.seriesSet[1].options.strokeStyle);
   store['cc.enable.header'] = '0';
   r.fire();
   ok('switched off, the area class goes', !r.classes.has('cc-dash-on'));
