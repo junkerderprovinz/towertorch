@@ -171,7 +171,8 @@ console.log('\nThe folder looks like the logo tiles of Docker and Plugins');
   ok('the tile size follows cc.sgsize like the other areas', /function logoSizes\(\) \{ return \(\{ s: \["48px", "62px"\], m: \["62px", "78px"\], l: \["76px", "94px"\] \}\)\[g\("cc\.sgsize", "m"\)\]/.test(js));
   ok('the folder takes the card\'s colour and rests grey in the reactive mode', /--cc-sht-fold: var\(--cc-sht-c, var\(--cc-shr-accent, #FCC419\)\);/.test(css) && /\.cc-shares-rbneutral #displaybox \.cc-sht-card:not\(:hover\):not\(:focus-within\) \.cc-sht-pic \{ --cc-sht-fold: var\(--cc-text-dim\); \}/.test(css));
   ok('its corners follow the shape setting', /\.cc-sht-folder rect \{ rx: var\(--cc-pic-corner, 6px\);/.test(css));
-  ok('the shield sits on the tile\'s corner as an icon badge', /\.cc-sht-pic > \.cc-shield \{[^}]*position: absolute;[^}]*width: var\(--cc-icon-badge, 26px\); height: var\(--cc-icon-badge, 26px\);/.test(css));
+  ok('the shield is a plain glyph on the folder\'s front, in a dark shade of the folder', /\.cc-sht-pic > \.cc-shield \{[^}]*position: absolute;[^}]*color: color-mix\(in srgb, var\(--cc-sht-fold\) 30%, #000\);/.test(css) && !/\.cc-sht-pic > \.cc-shield \{[^}]*background/.test(css));
+  ok('the folder rests closed and opens while the card has the pointer or the focus', /cc-sht-ffront" x="6" y="14" width="52" height="38"/.test(js) && /\.cc-sht-card:is\(:hover, :focus-within\) \.cc-sht-ffront \{ y: 24px; height: 28px; \}/.test(css));
 }
 
 console.log('\nThe actions click the row\'s own controls');

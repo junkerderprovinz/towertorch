@@ -166,11 +166,12 @@
   }
   function cornerBtn(kind, label) { return '<span class="cc-sht-cb" role="button" tabindex="0" data-act="' + kind + '">' + esc(label) + "</span>"; }
   // The folder in the hand of the picture kit: filled shapes whose corners follow the shape
-  // setting through the sheet's rx. The back with its tab, a sheet of paper, the front.
+  // setting through the sheet's rx. The back with its tab, a sheet of paper, the front, which
+  // covers the paper until hovering the card lowers it.
   var FOLDER = '<svg class="cc-sht-folder" viewBox="3 2 58 58" aria-hidden="true">' +
     '<rect class="cc-sht-fback" x="6" y="10" width="24" height="10"/><rect class="cc-sht-fback" x="6" y="14" width="52" height="38"/>' +
-    '<rect class="cc-sht-fsheet" x="11" y="18" width="42" height="24"/><rect class="cc-sht-ffront" x="6" y="24" width="52" height="28"/></svg>';
-  // The folder stands in the logo tile of the Docker and Plugins cards and carries the shield.
+    '<rect class="cc-sht-fsheet" x="11" y="18" width="42" height="24"/><rect class="cc-sht-ffront" x="6" y="14" width="52" height="38"/></svg>';
+  // The folder stands in the logo tile of the Docker and Plugins cards, the shield drawn on its front.
   function picture(sh) { return '<span class="cc-sht-pic">' + FOLDER + shield(sh) + "</span>"; }
   // Laid out like a plugin card. The head holds the folder, the name with its size and the comment
   // beside it, and the actions in the top corner; below come the bar and the per-disk split, and

@@ -1764,8 +1764,9 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:focus-within { background: 
 html.cc-shares-on.cc-sht-on #displaybox :is(.cc-sht-card, .cc-sht-ib, .cc-sht-cb):focus-visible { outline: none !important; box-shadow: 0 0 0 3px var(--cc-sht-c, var(--cc-shr-accent, #FCC419)) !important; filter: none; }
 
 /* The folder stands in a tile the size of the Docker and Plugins logo tiles, on the dark well the
-   disk drawings stand on, in the card's colour. The shield sits on the tile's corner like a state
-   badge, on the card's own surface, so it reads as cut out of the tile. */
+   disk drawings stand on, in the card's colour. It rests closed and opens while the card has the
+   pointer or the focus. The shield is a glyph on its front in a dark shade of the folder, so it
+   reads on yellow and on the resting grey alike; its shape tells protected from not. */
 html.cc-shares-on.cc-sht-on {
   --cc-sht-paper: #d4d4d4;
 }
@@ -1777,15 +1778,17 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic {
 }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder { display: block; width: var(--cc-logo-img, 62px); height: var(--cc-logo-img, 62px); }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder rect { rx: var(--cc-pic-corner, 6px); transition: fill var(--cc-motion-control-dur, 0s); }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-ffront { fill: var(--cc-sht-fold); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-ffront {
+  fill: var(--cc-sht-fold);
+  transition: fill var(--cc-motion-control-dur, 0s), y var(--cc-motion-control-dur, 0s), height var(--cc-motion-control-dur, 0s);
+}
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:is(:hover, :focus-within) .cc-sht-ffront { y: 24px; height: 28px; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fback { fill: color-mix(in srgb, var(--cc-sht-fold) 70%, #000); }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fsheet { fill: var(--cc-sht-paper); }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic > .cc-shield {
-  position: absolute; right: -6px; bottom: -6px; justify-content: center; margin: 0;
-  width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); border-radius: var(--cc-radius-pill); background: var(--cc-sht-card);
-  transition: background-color var(--cc-motion-control-dur, 0s);
+  position: absolute; left: 50%; top: 61%; translate: -50% -50%; margin: 0;
+  font-size: var(--cc-text-status); color: color-mix(in srgb, var(--cc-sht-fold) 30%, #000); transition: color var(--cc-motion-control-dur, 0s);
 }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:is(:hover, :focus-within) .cc-sht-pic > .cc-shield { background: var(--cc-sht-card-hover); }
 
 /* Beside the folder the name, with its size following on its line and dropping below it only when
    the card is too narrow, and the comment under them. The actions keep the top corner. */
