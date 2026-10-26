@@ -1134,6 +1134,12 @@
         if (nameCell) Array.prototype.slice.call(nameCell.children).forEach(function (chn) { if (!chn.classList || !chn.classList.contains("outer")) chn.style.setProperty("display", "none", "important"); });
         var outerBox = nameCell && nameCell.querySelector(".outer");
         if (outerBox) { outerBox.style.setProperty("display", "flex", "important"); outerBox.style.setProperty("align-items", "center", "important"); outerBox.style.setProperty("height", "auto", "important"); }
+        // The grip stands in for Unraid's move arrow, which went with the stray children above.
+        // docker.css shows it only while the list is sortable, so it needs no lock state here.
+        if (tile && !tile.querySelector(".cc-grip")) {
+          var grip = el("span", "cc-grip"); grip.setAttribute(MARK, "1"); grip.innerHTML = ccGlyph("Grip");
+          tile.appendChild(grip);
+        }
       }
       var adv = isAdvancedView(), c = containerByName(name);
       // The actions cell has to exist before any nth-child lookup below, because it sits at

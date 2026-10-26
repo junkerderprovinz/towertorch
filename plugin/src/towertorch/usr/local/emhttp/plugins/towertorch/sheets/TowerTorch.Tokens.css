@@ -84,6 +84,9 @@ html {
   --cc-motion-bell-dur:             0s;
   --cc-motion-bell-swing:           0deg;
   --cc-motion-bell-mark:            block;
+  --cc-motion-wiggle-dur:           0s;
+  --cc-motion-wiggle-tilt:          0deg;
+  --cc-motion-wiggle-lift:          0px;
   --cc-dir-sign: 1;
 }
 html[dir="rtl"] { --cc-dir-sign: -1; }   /* a keyframe does not mirror on its own */
@@ -119,6 +122,10 @@ html[dir="rtl"] { --cc-dir-sign: -1; }   /* a keyframe does not mirror on its ow
     --cc-motion-bell-dur:             1600ms;
     --cc-motion-bell-swing:           26deg;
     --cc-motion-bell-mark:            none;
+    /* A row in move mode: one beat of its wiggle, how far it tilts and how far it lifts. */
+    --cc-motion-wiggle-dur:           320ms;
+    --cc-motion-wiggle-tilt:          .16deg;
+    --cc-motion-wiggle-lift:          1px;
   }
   html[data-cc-motion="subtle"] {
     --cc-motion-control-dur: 80ms;
@@ -145,6 +152,9 @@ html[dir="rtl"] { --cc-dir-sign: -1; }   /* a keyframe does not mirror on its ow
     --cc-motion-bell-dur:             1600ms;
     --cc-motion-bell-swing:           15deg;
     --cc-motion-bell-mark:            none;
+    --cc-motion-wiggle-dur:           440ms;
+    --cc-motion-wiggle-tilt:          .08deg;
+    --cc-motion-wiggle-lift:          .5px;
   }
   html[data-cc-motion="off"] {
     --cc-motion-control-dur: 0s;
@@ -171,6 +181,9 @@ html[dir="rtl"] { --cc-dir-sign: -1; }   /* a keyframe does not mirror on its ow
     --cc-motion-bell-dur:             0s;
     --cc-motion-bell-swing:           0deg;
     --cc-motion-bell-mark:            block;
+    --cc-motion-wiggle-dur:           0s;
+    --cc-motion-wiggle-tilt:          0deg;
+    --cc-motion-wiggle-lift:          0px;
   }
 }
 /* Every button and clickable badge gives way on press and returns on release. It goes through the

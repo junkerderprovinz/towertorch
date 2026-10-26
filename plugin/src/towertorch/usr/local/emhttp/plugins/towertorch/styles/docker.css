@@ -272,6 +272,45 @@ html td.ct-name span.cc-pick:focus-visible {
   box-shadow: 0 0 0 3px rgba(252, 196, 25, .42) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent) !important;
 }
+/* Unraid's lock makes #docker_list sortable, and then the rows wiggle like icons in an edit mode,
+   each a little out of step with its neighbours, and a grip on the logo tile's corner stands in
+   for the orange arrow. The whole row stays the drag handle, so the grip only shows it. The row
+   under the pointer holds still and its grip takes the row's colour: it is the one a press picks
+   up, and without a transform it is no containing block for the popovers opened from it. */
+html.cc-docker-on #docker_list i.mover { display: none !important; }
+html td.ct-name span.cc-pick > .cc-grip { display: none; }
+html.cc-docker-on #docker_list.ui-sortable td.ct-name span.cc-pick > .cc-grip {
+  position: absolute; top: -7px; left: -7px; z-index: 3;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: var(--cc-radius-pill); pointer-events: none;
+  background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text-chip, #cfcfcf);
+  /* a ring in the page's shade parts the badge from a tile of the same fill */
+  box-shadow: 0 0 0 2px var(--cc-surface-base, #161616), var(--cc-elev-1);
+  font-size: var(--cc-text-meta);
+  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+}
+html.cc-docker-on #docker_list.ui-sortable tr:is(:hover, .ui-sortable-helper) td.ct-name span.cc-pick > .cc-grip {
+  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
+  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616)));
+}
+/* where the dragged row will land */
+html.cc-docker-on #docker_list tr.ui-sortable-placeholder { visibility: visible !important; background: var(--cc-chip) !important; }
+html.cc-docker-on #docker_list tr.ui-sortable-placeholder > td { background: transparent !important; box-shadow: none !important; }
+/* A wide row turns far at its ends for a small angle, so the tilt is a fraction of a degree. Every
+   beat starts and ends untransformed. */
+@keyframes cc-row-wiggle {
+  0%, 100% { transform: none; }
+  25% { transform: rotate(calc(var(--cc-motion-wiggle-tilt, 0deg) * -1)) translateY(calc(var(--cc-motion-wiggle-lift, 0px) * -1)); }
+  75% { transform: rotate(var(--cc-motion-wiggle-tilt, 0deg)) translateY(var(--cc-motion-wiggle-lift, 0px)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html.cc-docker-on:not([data-cc-motion="off"]) #docker_list.ui-sortable > tr.sortable:not(:hover, :focus-within, .ui-sortable-helper, .ui-sortable-placeholder) {
+    animation: cc-row-wiggle var(--cc-motion-wiggle-dur, 0s) ease-in-out infinite; transform-origin: 50% 50%;
+  }
+  html.cc-docker-on:not([data-cc-motion="off"]) #docker_list.ui-sortable > tr.sortable:nth-child(2n) { animation-delay: calc(var(--cc-motion-wiggle-dur, 0s) * -.5); }
+  html.cc-docker-on:not([data-cc-motion="off"]) #docker_list.ui-sortable > tr.sortable:nth-child(3n) { animation-delay: calc(var(--cc-motion-wiggle-dur, 0s) * -.25); }
+  html.cc-docker-on:not([data-cc-motion="off"]) #docker_list.ui-sortable > tr.sortable:nth-child(5n) { animation-delay: calc(var(--cc-motion-wiggle-dur, 0s) * -.75); }
+}
 /* The Mehrfachauswahl badge takes its whole look from the same rules as the native bar buttons, in
    the div.js-actions block further down. Nothing about its size, shape or colour belongs here, or
    the sm-tier chip look comes back. */
