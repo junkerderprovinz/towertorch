@@ -302,7 +302,7 @@ html.cc-tools-on[data-cc-page="acp"] #displaybox hr { display: none; }
    column becomes a card with section badges for headings, and the long explanations step down to
    the secondary text. */
 html.cc-tools-on[data-cc-page="nvidia"] #displaybox :is(b[style*="color"], font[color], span[style*="color"]) { color: inherit !important; }
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox h1:has(span[style*="color"]) { display: none; }
+html.cc-tools-on[data-cc-page="nvidia"] #displaybox h1:has(span) { display: none; }
 html.cc-tools-on[data-cc-page="nvidia"] #displaybox div[style*="width: 47%"] {
   min-width: 0 !important; flex: 1 1 460px; box-sizing: border-box;
   background: var(--cc-surface-2, #222222); border-radius: var(--cc-radius-card); box-shadow: var(--cc-elev-1); padding: 18px 20px;
@@ -365,7 +365,7 @@ html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[cla
   width: auto !important; max-width: max-content !important; opacity: 1 !important;
   background: var(--cc-chip) !important; color: var(--cc-text-chip, #cfcfcf) !important;
 }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"]:has(> [class*="from-unraid-red"]) {
+html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"]:has(> .from-unraid-red) {
   background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
 }
 html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"] * { color: inherit !important; }

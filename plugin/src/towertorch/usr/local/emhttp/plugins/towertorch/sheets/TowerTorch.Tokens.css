@@ -730,9 +730,11 @@ html.cc-popups-on div.spinner > i.fa-spin { display: none !important; }
 html.cc-popups-on div.spinner.cc-spin-dupe { display: none !important; }
 /* The marker alone is not enough: ccInjectSpinner runs only in a bounded window after boot, because
    an unbounded self-observing MutationObserver here froze the tab, so a spinner CA raises later is
-   never marked. Unraid toggles the overlay through an inline display, so
-   :not([style*="display: none"]) reads whether it is genuinely up. */
-html.cc-popups-on body:has(div.spinner.fixed:not([style*="display: none"])) div.spinner:not(.fixed) {
+   never marked. Unraid toggles the overlay through an inline display, which header.js mirrors into
+   .cc-shut. A :has() that reads a style or class attribute itself makes every inline style or class
+   change anywhere on the page restyle the whole document, and the Dashboard animates its CPU bars
+   through exactly those, dozens of times a second. */
+html.cc-popups-on body:has(div.spinner.fixed:not(.cc-shut)) div.spinner:not(.fixed) {
   display: none !important;
 }
 /* the in-page loader, promoted to a fixed overlay below, is still a sized in-flow box and would
@@ -2395,9 +2397,9 @@ html.cc-apps-rbneutral.cc-popups-on.cc-ca-settings #displaybox input[type="submi
    overlay appears partway through, so a guard keyed on the last class leaves both rings on screen
    for a few hundred milliseconds. showSweetAlert is the class it sets first and covers the whole
    sequence; show-sweet-alert with hyphens is SweetAlert2 and never matches here. The
-   :not([style*="display: none"]) guard matters because the swal node stays in the DOM after
-   closing, so a class-only selector risks hiding the tab-load overlay for good. */
-html.cc-popups-on:has(.sweet-alert.showSweetAlert:not([style*="display: none"]),
+   :not(.cc-shut) guard matters because CA hides the swal node with an inline display and leaves
+   its classes, so a class-only selector risks hiding the tab-load overlay for good. */
+html.cc-popups-on:has(.sweet-alert.showSweetAlert:not(.cc-shut),
                       .sweet-alert.visible, .swal-overlay--show-modal) div.spinner.fixed { display: none !important; }
 /* One scroll lock for every fullscreen loader phase, driven by html.cc-loading, which
    ccLoadState() stamps from getComputedStyle rather than a CSS guess: a
