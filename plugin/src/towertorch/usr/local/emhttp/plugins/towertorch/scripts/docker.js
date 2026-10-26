@@ -495,7 +495,9 @@
     chip.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openEditor(chip, name); });
     return chip;
   }
-  function lastRunPill(name) { var lr = lastRun[name]; if (!lr) return null; var p = el("span", "cc-pill cc-pill-" + lr.state, runLabel(lr.state)); if (lr.reason) p.setAttribute("data-tip", lr.reason); return p; }
+  // The plan's last verdict on this container, shown only when it went wrong: a container that came
+  // up ready is the normal case, and its plan badge already reads "Startplan bereit".
+  function lastRunPill(name) { var lr = lastRun[name]; if (!lr || lr.state === "ready") return null; var p = el("span", "cc-pill cc-pill-" + lr.state, runLabel(lr.state)); if (lr.reason) p.setAttribute("data-tip", lr.reason); return p; }
   // Where this container stands in the start plan, as far as its dependencies decide it: failed
   // when one of them failed or was skipped, ready when all of them are, waiting otherwise. Only a
   // node with dependencies of its own has a state; one that waits for nothing has nothing to say.

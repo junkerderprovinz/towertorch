@@ -1,6 +1,7 @@
 // The Docker tab keeps its normal case calm and names every thing once. The green "up to date"
 // chip stays, an exception to GlimStone rule 33. What can quietly break it:
 //   · the green "up to date" chip hidden
+//   · a "ready" pill under it repeating what the start plan badge says
 //   · the gear menu reporting a healthy engine in maintenance jargon
 //   · Unraid's untranslated "3rd Party" standing beside its own "Drittanbieter"
 //   · the page action sliding back to the start of the bar
@@ -28,6 +29,21 @@ console.log('\nUp to date shows as a green chip');
   ok('no rule hides it', !/span\.green-text \{ display: none/.test(css));
   ok('it takes the ok green while its column is on', /\.cc-enh\.cc-c-update #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text \{ background: var\(--cc-ok, #6fdc8c\);/.test(css));
   ok('and goes with the update-status column', /\.cc-enh:not\(\.cc-c-update\)  #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text,/.test(css));
+}
+
+console.log('\nA start plan run that went well leaves no pill');
+{
+  const lastRun = {};
+  const el = (tag, cls, txt) => ({ cls, txt, setAttribute() {} });
+  const pill = new Function('lastRun', 'el', 'runLabel', grab('lastRunPill') + '\nreturn lastRunPill;')(lastRun, el, (s) => s);
+  lastRun.ccwb = { name: 'ccwb', state: 'ready' };
+  ok('a container the plan brought up ready shows no pill beside "Startplan bereit"', pill('ccwb') === null);
+  for (const st of ['degraded', 'failed', 'skipped']) {
+    lastRun.ccwb = { name: 'ccwb', state: st };
+    const p = pill('ccwb');
+    ok('a ' + st + ' run still shows its pill', !!p && p.cls === 'cc-pill cc-pill-' + st);
+  }
+  ok('no sheet colours a ready pill', !/\.cc-pill-ready/.test(css));
 }
 
 console.log('\nThe gear menu is quiet');
