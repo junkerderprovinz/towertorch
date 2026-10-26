@@ -376,13 +376,13 @@ html.cc-header-on [data-cc-trig="bell"][data-cc-bell="alert"] { --cc-bell-c: var
 html.cc-header-on [data-cc-trig="bell"][data-cc-bell="warning"] { --cc-bell-c: var(--cc-warn-ink, #ff832b); }
 html.cc-header-on [data-cc-trig="bell"][data-cc-bell="notice"] { --cc-bell-c: color-mix(in srgb, var(--cc-rb-c, var(--cc-hdr-accent, #FCC419)) var(--cc-ink-mix, 100%), black); }
 /* A notice in the accent would vanish on a box filled with the accent, so it is coloured only on
-   the grey box and not while the pointer fills it. */
-html.cc-header-on [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]) svg:not([class*="absolute"]),
-html.cc-header-on.cc-header-rbneutral [data-cc-trig="bell"][data-cc-bell="notice"]:not(:hover) svg:not([class*="absolute"]) { color: var(--cc-bell-c) !important; }
+   the grey box. While the pointer fills the grey box, every level gives way to the box's ink, as
+   on every other header button. */
+html.cc-header-on:not(.cc-header-rbneutral) [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]) svg:not([class*="absolute"]),
+html.cc-header-on.cc-header-rbneutral [data-cc-trig="bell"][data-cc-bell]:not(:hover) svg:not([class*="absolute"]) { color: var(--cc-bell-c) !important; }
 /* On a filled box red and orange are too close to the fill, so the glyph keeps a rim in the box's
    ink under its colour. */
-html.cc-header-on:not(.cc-header-rbneutral) [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]) svg:not([class*="absolute"]),
-html.cc-header-on.cc-header-rbneutral [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]):hover svg:not([class*="absolute"]) {
+html.cc-header-on:not(.cc-header-rbneutral) [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]) svg:not([class*="absolute"]) {
   stroke: var(--cc-rb-ct, var(--cc-hdr-accent-text, #161616)); stroke-width: 3px; stroke-linejoin: round; paint-order: stroke;
 }
 /* There the notice glyph looks like any other, so where the bell may not swing a dot in the box's
