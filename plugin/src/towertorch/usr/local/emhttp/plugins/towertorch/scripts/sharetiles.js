@@ -157,7 +157,7 @@
     var off = !v || v === "-";
     return '<span class="cc-sht-chip' + (off ? " cc-sht-off" : "") + '">' + proto + " <b>" + esc(off ? t("off") : v) + "</b></span>";
   }
-  // Unraid's protection orb becomes a shield on the folder, with the orb's own words as its bubble.
+  // Unraid's protection orb becomes a shield badge before the name, with the orb's own words as its bubble.
   function shield(sh) {
     if (!sh.prot) return "";
     var tip = sh.protTip || t({ ok: "protected", warn: "partly", idle: "unknown" }[sh.prot]);
@@ -171,10 +171,9 @@
   var FOLDER = '<svg class="cc-sht-folder" viewBox="3 2 58 58" aria-hidden="true">' +
     '<rect class="cc-sht-fback" x="6" y="10" width="24" height="10"/><rect class="cc-sht-fback" x="6" y="14" width="52" height="38"/>' +
     '<rect class="cc-sht-fsheet" x="11" y="18" width="42" height="24"/><rect class="cc-sht-ffront" x="6" y="14" width="52" height="38"/></svg>';
-  // The folder stands in the logo tile of the Docker and Plugins cards, the shield drawn on its front.
-  function picture(sh) { return '<span class="cc-sht-pic">' + FOLDER + shield(sh) + "</span>"; }
-  // Laid out like a plugin card. The head holds the folder, the name with its size and the comment
-  // beside it, and the actions in the top corner; below come the bar and the per-disk split, and
+  // Laid out like a plugin card. The head holds the folder in the logo tile of the Docker and Plugins
+  // cards, the shield, the name with its size and the comment beside it, all on its top edge, and
+  // the actions in the top corner; below come the bar and the per-disk split, and
   // the foot holds where the share lives and how it is exported, with Compute at its right end.
   // Compute and Recompute run the same computeShare, so the corner holds whichever the row offers.
   function cardHtml(sh, disk) {
@@ -189,7 +188,7 @@
     var parts = sh.parts.map(function (p) {
       return '<span class="cc-sht-part' + (p.outside ? " cc-sht-warn" : "") + '"' + (p.outside ? ' data-tip="' + esc(t("outside")) + '"' : "") + ">" + esc(p.name) + " <b>" + esc(p.size) + "</b></span>";
     }).join("");
-    return '<div class="cc-sht-head">' + picture(sh) + '<div class="cc-sht-id"><span class="cc-sht-title"><span class="cc-sht-nb">' + esc(sh.name) + "</span>" +
+    return '<div class="cc-sht-head"><span class="cc-sht-pic">' + FOLDER + '</span><div class="cc-sht-id"><span class="cc-sht-title">' + shield(sh) + '<span class="cc-sht-nb">' + esc(sh.name) + "</span>" +
       (used || free ? '<span class="cc-sht-size">' + used + free + "</span>" : "") + "</span>" +
       (sh.comment ? '<span class="cc-sht-cmt">' + esc(sh.comment) + "</span>" : "") + '</div><span class="cc-sht-acts">' + acts + "</span></div>" +
       (pct != null ? '<div class="cc-sht-track"><div class="cc-sht-fill ' + lvl(pct) + '" style="width:' + Math.max(pct, 1.5).toFixed(1) + '%"></div></div>' : "") +
