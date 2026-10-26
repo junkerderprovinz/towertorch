@@ -79,8 +79,10 @@ html.cc-dash-on.cc-header-rbneutral table.dashboard > tbody:not(:hover, :focus-w
 }
 
 /* The system tile's power controls stand in the card's bottom right corner while its content is
-   open. Folded, the card is its head row alone, and they stay in it. */
-html.cc-dash-on table.dashboard > tbody.system:not(:has(> tr:nth-child(2)[style*="none"])) .tile-ctrl {
+   open. Folded, the card is its head row alone, and they stay in it. Unraid turns the fold arrow
+   down whenever it folds a tile. The arrow's class is read rather than the rows' inline display,
+   which a :has() would test again on every frame of the CPU bars' animation. */
+html.cc-dash-on table.dashboard > tbody.system:not(:has(.openclose.fa-chevron-down)) .tile-ctrl {
   position: absolute; right: 10px; bottom: 16px; z-index: 1;
 }
 /* the server's description is dropped where it only repeats the name the badge carries */

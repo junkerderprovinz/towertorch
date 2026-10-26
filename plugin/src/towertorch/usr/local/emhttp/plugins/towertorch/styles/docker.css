@@ -465,8 +465,7 @@ html .cc-b.cc-plan.cc-plan-failed  { background: var(--cc-err, #ff8389) !importa
 .cc-badge-toggle { cursor: pointer; user-select: none; transition: box-shadow .12s; }
 .cc-badge-toggle:hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash); } /* a colour step, not a ring */
 
-/* last-run pill */
-.cc-pill-ready { background: #1f7a45; color: #dff5e8; }
+/* last-run pill, only for a run that went wrong */
 .cc-pill-degraded { background: #7a5a1e; color: #ffe6b3; }
 .cc-pill-failed { background: #7a2a28; color: #ffd9d7; }
 .cc-pill-skipped { background: #3a3a3a; color: #c8c8c8; }

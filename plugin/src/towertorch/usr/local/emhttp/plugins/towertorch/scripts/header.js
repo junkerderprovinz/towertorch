@@ -4225,6 +4225,7 @@
      Watching the element's class attribute catches every open, and its content is already in place
      when the class flips. Attributes only, so a streaming install log makes no noise here. */
   function ccAttachSwalObs() {
+    ccWatchShut();
     try {
       var shells = document.querySelectorAll(".sweet-alert, .swal-modal, .swal2-popup");
       for (var i = 0; i < shells.length; i++) {
@@ -4232,6 +4233,25 @@
         if (sa.__ccSwalObs) continue;
         sa.__ccSwalObs = new MutationObserver(ccSwalScan);
         sa.__ccSwalObs.observe(sa, { attributes: true, attributeFilter: ["class"] });
+      }
+    } catch (e) {}
+  }
+
+  /* The tab-load overlay and the SweetAlert shell are shown and hidden through an inline display,
+     which is mirrored into .cc-shut so the sheet's :has() rules can test a class. Watching the style
+     of these few nodes costs nothing; a :has() that reads [style] restyles the whole page whenever
+     any inline style changes. */
+  var ccShutObs = null;
+  function ccMirrorShut(el) { el.classList.toggle("cc-shut", el.style.display === "none"); }
+  function ccWatchShut() {
+    try {
+      if (!ccShutObs) ccShutObs = new MutationObserver(function (recs) { for (var i = 0; i < recs.length; i++) ccMirrorShut(recs[i].target); });
+      var els = document.querySelectorAll("div.spinner.fixed, .sweet-alert");
+      for (var i = 0; i < els.length; i++) {
+        if (els[i].__ccShut) continue;
+        els[i].__ccShut = true;
+        ccMirrorShut(els[i]);
+        ccShutObs.observe(els[i], { attributes: true, attributeFilter: ["style"] });
       }
     } catch (e) {}
   }

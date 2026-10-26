@@ -186,7 +186,7 @@ console.log('\nThe badges and their corner in the sheet');
   ok('a badge has the one icon badge size', !!badge && /width: var\(--cc-icon-badge, 26px\)/.test(badge[1]) && /height: var\(--cc-icon-badge, 26px\)/.test(badge[1]));
   ok('it is filled in the colour mode', !!badge && /background: var\(--cc-rb-c, var\(--cc-accent/.test(badge[1]));
   ok('the reactive mode rests it grey until the tile has the pointer or the focus', rules.some(([s]) => /cc-header-rbneutral table\.dashboard > tbody:not\(:hover, :focus-within\) \.cc-dash-btn/.test(s)));
-  const corner = rules.find(([s]) => /tbody\.system:not\(:has\(> tr:nth-child\(2\)\[style\*="none"\]\)\) \.tile-ctrl/.test(s));
+  const corner = rules.find(([s]) => /tbody\.system:not\(:has\(\.openclose\.fa-chevron-down\)\) \.tile-ctrl/.test(s));
   ok('the power controls stand in the bottom right corner while the card is open', !!corner && /position: absolute/.test(corner[1]) && /bottom:/.test(corner[1]) && /right:/.test(corner[1]));
 }
 
