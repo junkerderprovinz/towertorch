@@ -21,6 +21,12 @@ html.cc-dash-on table.dashboard > tbody > tr > td { display: flow-root; border: 
 /* a cell narrowed to max-width 0 for the table ellipsis trick (the BombVault log) would collapse as
    a block, so it takes the card width */
 html.cc-dash-on table.dashboard > tbody > tr > td[class] { max-width: none; }
+/* Unraid animates every load bar's width with jQuery, one frame at a time for each core on every
+   message, and reads the width back before each step. Firefox lays out a changed bar's ancestors
+   again, and here those are block rows and the core grids, so every frame relaid the whole column
+   and the feed fell behind. Every bar has a fixed height and takes its width from outside, so size
+   and layout containment keep a frame's change inside the bar. */
+html.cc-dash-on table.dashboard .usage-disk { contain: size layout; }
 /* the head row leaves room under the title badge, which straddles the card's top edge */
 html.cc-dash-on table.dashboard > tbody > tr:first-child > td { padding-top: 20px; }
 /* while a tile is dragged, the sortable's placeholder shows where it will land as an empty slot */
@@ -124,6 +130,51 @@ html.cc-dash-on table.dashboard .outer:is(.stopped, .paused) .inner > i,
 html.cc-dash-on table.dashboard .outer:is(.stopped, .paused) .inner > .state { color: var(--cc-text-dim, #8a8a8a); }
 html.cc-dash-on table.dashboard .outer { background: none; }
 html.cc-dash-on table.dashboard .outer .inner span[class*="blue"] { color: inherit; }
+
+/* The containers and VMs as a grid of small tiles. Running ones lead and show no state, paused
+   ones follow with the warning dot, stopped ones come last with a grey icon and dot. Unraid
+   rebuilds the row on every reload and hides stopped items with an inline display, so the tiles
+   are drawn on its own elements and their display stays below that inline style. The icon keeps
+   Unraid's click handler, and its hit area spans the tile. */
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) > tr.updated > td {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; padding-bottom: 16px;
+}
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer {
+  position: relative; display: flex; align-items: center; gap: 10px; box-sizing: border-box; min-width: 0; min-height: 46px;
+  float: none; margin: 0; padding: 6px 10px 6px 7px; background: var(--cc-chip); border-radius: var(--cc-radius-control);
+  transition: background var(--cc-motion-control-dur, 0s);
+}
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--cc-chip-hover); }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started { order: -2; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.paused { order: -1; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand { display: flex; flex: none; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand > .img { width: 32px; height: 32px; margin: 0; object-fit: contain; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped > span.hand > * { filter: grayscale(1); opacity: .5; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner {
+  display: block; flex: 1; width: auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: var(--cc-text-subline); font-weight: 600; line-height: 1.4; color: var(--cc-text, #e6e6e6);
+}
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped .inner { color: var(--cc-text-chip, #cfcfcf); }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started .inner > :is(br, i.started, .state) { display: none; }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i:is(.stopped, .paused) {
+  display: inline-block; width: 8px; height: 8px; margin: 0 6px 0 0; border-radius: 50%; font-size: 0; vertical-align: middle;
+  background: var(--cc-text-dim, #8a8a8a);
+}
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i.paused { background: var(--cc-warn, #ff832b); }
+html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > .state {
+  margin: 0; font-size: var(--cc-text-meta); font-weight: 400; color: var(--cc-text-dim, #8a8a8a);
+}
+/* a VM's PCI or SR-IOV warning keeps its tooltip above the tile's hit area */
+html.cc-dash-on table.dashboard #vm_view span.outer .inner > i.fa-warning { position: relative; z-index: 1; margin-left: 4px; }
+html.cc-dash-on table.dashboard :is(#no_apps, #no_vms) { grid-column: 1 / -1; color: var(--cc-text-dim, #8a8a8a); }
+/* a container without an icon (dashboard.js) */
+html.cc-dash-on table.dashboard span.hand.cc-dash-noicon > img { display: none; }
+html.cc-dash-on table.dashboard span.hand.cc-dash-noicon {
+  align-items: center; justify-content: center; width: 32px; height: 32px;
+  border-radius: var(--cc-radius-control); background: var(--cc-chip); color: var(--cc-text-dim, #8a8a8a);
+}
+html.cc-dash-on table.dashboard span.hand.cc-dash-noicon > .cc-glyph { width: 20px; height: 20px; }
 
 /* A spun-down disk rests, with the moon and the word the disk tiles on /Main use */
 html.cc-dash-on table.dashboard .cc-dash-rest {

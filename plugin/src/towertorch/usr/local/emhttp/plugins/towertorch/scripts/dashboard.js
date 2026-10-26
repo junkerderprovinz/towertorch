@@ -438,6 +438,26 @@
     for (var i = 0; i < rs.length; i++) rs[i].parentNode.replaceChild(document.createTextNode("*"), rs[i]);
   }
 
+  // A container without an icon falls back to Unraid's question mark picture, which Unraid 7.3
+  // does not ship, and the picture's onerror sets that same address again on every failure: an
+  // endless run of requests. Error events do not bubble, so the capture listener sees the failure
+  // before the inline handler and drops it; the tile then shows the Docker glyph.
+  var MISSING = /\/dynamix\.docker\.manager\/images\/question\.png/;
+  function iconMissing(e) {
+    var img = e.target;
+    if (!wasLive || !img || img.tagName !== "IMG" || !MISSING.test(img.src) || !img.closest("table.dashboard")) return;
+    img.onerror = null;
+    img.removeAttribute("onerror");
+    var hand = img.parentNode;
+    if (!hasCls(hand, "hand") || hasCls(hand, "cc-dash-noicon")) return;
+    hand.classList.add("cc-dash-noicon");
+    hand.insertAdjacentHTML("beforeend", '<svg class="cc-glyph cc-dash-noicon-g" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' + P.docker + "</svg>");
+  }
+  function unmarkIcons() {
+    var gs = document.querySelectorAll("table.dashboard .cc-dash-noicon-g");
+    for (var i = 0; i < gs.length; i++) { gs[i].parentNode.classList.remove("cc-dash-noicon"); gs[i].parentNode.removeChild(gs[i]); }
+  }
+
   var hooked = false;
   function hookFeed() {
     var feed = window.dashboard;
@@ -451,12 +471,13 @@
     var live = isLive();
     document.documentElement.classList.toggle("cc-dash-on", live);
     if (live) { decorate(); badgeControls(); paint(); paintCharts(true); buildCores(); fixCards(); hideModel(); hideDupName(); tintCase(); fixRows(); hookFeed(); }
-    else if (wasLive) { strip(); unbadgeControls(); paintCharts(false); unbuildCores(); unswap(); showModel(); showDupName(); unfixRows(); }
+    else if (wasLive) { strip(); unbadgeControls(); paintCharts(false); unbuildCores(); unswap(); showModel(); showDupName(); unfixRows(); unmarkIcons(); }
     wasLive = live;
   }
 
   function boot() {
     if (!onDash()) return;
+    document.addEventListener("error", iconMissing, true);
     apply();
     // dynamix fills in plugin tiles and starts the charts after its own load handlers, so the pass
     // runs again once that has happened.
