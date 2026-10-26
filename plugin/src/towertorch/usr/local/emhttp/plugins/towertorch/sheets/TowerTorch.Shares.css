@@ -1214,19 +1214,27 @@ html.cc-shares-on:is(.cc-on-share-detail.cc-sections-share, .cc-on-shares.cc-sec
 
 /* The clone-settings block ("Einstellungen lesen von", "kopieren zu") becomes a card of its own
    beside the settings card, titled by the badge shares.js puts on its top edge. shares.js reuses the
-   native .relative as the flex row (.cc-split-row) holding .cc-main-col and .cc-side-card, and whole
+   native .relative as the row (.cc-split-row) holding .cc-main-col and .cc-side-card, and whole
    forms move as units. */
 html.cc-shares-on.cc-on-share-detail #displaybox .tab-content:has(.cc-split-row) {
   background: none; box-shadow: none; border-radius: 0; padding: 0;   /* a host, not a card, so no enclosing frame */
 }
+/* The settings card stands in the middle of the page, where Unraid puts its form and where every
+   other form card stands, and the copy card takes the free column to its right. Where that column
+   is too narrow for it, the copy card goes under the settings card. */
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row {
-  display: flex; flex-wrap: wrap; gap: 24px 32px; align-items: flex-start;
+  display: grid; grid-template-columns: minmax(0, 920px); justify-content: center; align-items: start; gap: 24px 32px;
   margin-bottom: 28px;   /* the hidden .title.cc-carded between two stacked rows breaks `+` adjacency, so the spacing is per row */
 }
+@media (min-width: 1880px) {
+  html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row { grid-template-columns: minmax(0, 1fr) minmax(0, 920px) minmax(0, 1fr); justify-content: stretch; }
+  html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row > .cc-main-col { grid-column: 2; }
+  html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row > .cc-side-card { grid-column: 3; grid-row: 1; }
+}
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-split-row:last-child { margin-bottom: 0; }
-html.cc-shares-on.cc-on-share-detail #displaybox .cc-main-col { flex: 0 1 920px; min-width: 0; }
+html.cc-shares-on.cc-on-share-detail #displaybox .cc-main-col { min-width: 0; }
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-side-card {
-  position: relative; flex: 0 1 520px; min-width: 0; align-self: flex-start; box-sizing: border-box;
+  position: relative; width: min(100%, 520px); min-width: 0; justify-self: start; box-sizing: border-box;
   margin-top: 11px; padding: 24px 18px 12px; border-radius: var(--cc-radius-card);
   background: var(--cc-fm-card, #222222); box-shadow: var(--cc-elev-1, 0 1px 4px rgba(0, 0, 0, .35));
 }
@@ -1441,65 +1449,124 @@ html.cc-shares-rbneutral.cc-on-main #displaybox table.array_status a.cc-aop-link
         loses to that inline, and !important would beat Browse.css and flash all twelve buttons
         before the table exists. The native input margins lay the row out already. */
 
-/* The table becomes a CC surface: fill and shadow, no border lines. The fill is translucent because
-   the listing's text and its unchecked check glyphs are coloured by the native theme (Browse.css
-   re-points --browse-icon-color to --browse-text-color, #1d1b1b on the azure and white themes), so
-   an opaque dark card would put near-black text on a dark background. */
+/* The listing is a card like the share tiles, on the surface tokens, which follow the light themes,
+   so the ink is the card's own text token rather than the native theme's. */
+html.cc-shares-on.cc-on-browse { --cc-fm-list: var(--cc-surface-4); }
+html.cc-shares-on.cc-on-browse:is(.Theme--white, .Theme--azure) { --cc-fm-list: var(--cc-surface-1); }
 html.cc-shares-on.cc-on-browse #displaybox .TableContainer {
-  background-color: rgba(128, 128, 128, .07); border: none; box-shadow: var(--cc-elev-1, 0 1px 4px rgba(0, 0, 0, .35));
+  padding: 6px 10px; background-color: var(--cc-fm-list); border: none; border-radius: var(--cc-radius-card);
+  box-shadow: var(--cc-elev-1, 0 1px 4px rgba(0, 0, 0, .35));
 }
-/* background-COLOR, not the shorthand: `background` would reset background-image and wipe the native
-   tablesorter sort-arrow artwork off the sorted column header. */
+html.cc-shares-on.cc-on-browse #displaybox table.indexer { color: var(--cc-text); border-collapse: separate; border-spacing: 0; }
+/* The head is GlimStone's eyebrow, as on /Shares. background-color, not the shorthand: `background`
+   would reset background-image and wipe the native sort arrows off the sorted column. */
 html.cc-shares-on.cc-on-browse #displaybox table.indexer thead th {
-  background-color: rgba(128, 128, 128, .14); border: none;
-  font-weight: 600; text-transform: uppercase; letter-spacing: .6px; font-size: var(--cc-sm-fs);
+  background-color: transparent; border: none; box-shadow: none; color: var(--cc-text-dim);
+  font-size: var(--cc-text-meta); font-weight: 500; text-transform: uppercase; letter-spacing: 1.2px;
+  padding-top: 8px; padding-bottom: 12px;
 }
-/* roomier rows, matching the /Shares list; padding only, never height or display (see 1 and 2) */
-html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td { padding-top: 6px; padding-bottom: 6px; border: none; }
-/* the "N objects" summary is the tfoot, so it reads as a quiet footer strip; only the fill is
-   tinted, the native theme owns the ink */
+/* A row has no fill of its own and takes the chip shade under the pointer, its ends rounded like a
+   control. Padding only, never height or display (see 1 and 2). */
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody tr { background-color: transparent; }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td {
+  padding-top: 6px; padding-bottom: 6px; border: none; background-color: transparent;
+  transition: background-color var(--cc-motion-control-dur, 0s);
+}
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td:first-child { border-top-left-radius: var(--cc-radius-control); border-bottom-left-radius: var(--cc-radius-control); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td:last-child { border-top-right-radius: var(--cc-radius-control); border-bottom-right-radius: var(--cc-radius-control); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody tr:hover > td { background-color: var(--cc-chip); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer td[data] { font-variant-numeric: tabular-nums; }
+/* A name is the row's text in its own ink, and only the pointer gives it the accent; the parent
+   folder's link above the list stays quiet. A folder icon rests dim, a file's icon keeps the colour
+   the native sheet gives its type (see 3). */
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td > a[href] { color: var(--cc-text); font-weight: 600; text-decoration: none; }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody.tablesorter-infoOnly td > a[href] { color: var(--cc-text-dim); font-weight: 500; }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td > a[href]:hover { color: color-mix(in srgb, var(--cc-shr-accent, #FCC419) var(--cc-ink-mix, 100%), black); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody td > i:is(.fa-folder-o, .fa-folder-open-o) { color: var(--cc-text-dim); }
+/* The "N objects" summary is a quiet line under the rows. */
 html.cc-shares-on.cc-on-browse #displaybox table.indexer tfoot td {
-  background-color: rgba(128, 128, 128, .10); border: none;
-  font-size: var(--cc-text-meta); font-style: italic; opacity: .8;
+  background-color: transparent; border: none; color: var(--cc-text-dim); font-size: var(--cc-text-meta);
+  padding-top: 10px; padding-bottom: 6px;
 }
-/* The #displaybox id outranks Browse.css's table.tablesorter.indexer tbody tr:hover td. The tint
-   stays faint so it cannot be read as a selection. */
-html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody tr:hover td { background-color: rgba(255, 255, 255, .05); }
 
 /* Selection has to read loudly on a page whose buttons include delete and move. Unraid conveys it
    through a glyph swap on i#check_N (fa-square-o to fa-check-square-o) alone: no row class, no
-   checkbox, no aria state. So the glyph is pinned visible, the checked one takes the accent, and
-   the row is tinted off that same state class through :has(). Nothing here runs in JS, so it cannot
-   drift from what selectOne() and selectAll() did, and without :has() only the row tint is lost. */
+   checkbox, no aria state. The glyph becomes the selection mark of the Docker list, a grey circle
+   in every shape setting that fills with the accent and shows a tick, and the row is tinted off that same state class
+   through :has(). The font glyph goes to size 0 while the mark keeps its own width and height, so
+   jQuery's :visible still counts it (see 1). Nothing here runs in JS, so it cannot drift from what
+   selectOne() and selectAll() did, and without :has() only the row tint is lost. */
 html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="check_"] {
-  display: inline-block !important;      /* jQuery :visible reads offsetWidth and offsetHeight, which must stay non-zero (see 1) */
-  visibility: visible !important; opacity: 1 !important; font-size: 1.8rem;
+  display: inline-flex !important; align-items: center; justify-content: center; vertical-align: middle;
+  width: 18px; height: 18px; box-sizing: border-box; visibility: visible !important; opacity: 1 !important;
+  font-size: 0; border-radius: 50%; background: var(--cc-chip); cursor: pointer;
+  transition: background-color var(--cc-motion-control-dur, 0s);
 }
-html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="check_"].fa-check-square-o {
-  color: color-mix(in srgb, var(--cc-shr-accent, #FCC419) var(--cc-ink-mix, 100%), black) !important;   /* checked pops against the unchecked grey */
-}
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="check_"]:hover { background: var(--cc-chip-hover); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="check_"].fa-check-square-o { background: var(--cc-shr-accent, #FCC419); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="check_"].fa-check-square-o:hover { background: color-mix(in srgb, var(--cc-shr-accent, #FCC419) 85%, var(--cc-text)); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="check_"].fa-check-square-o::before { content: "\f00c"; font-size: var(--cc-text-meta); color: var(--cc-shr-accent-text, #161616); }
 html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody tr:has(i[id^="check_"].fa-check-square-o) > td {
-  background-color: rgba(252, 196, 25, .22);                                          /* fallback */
   background-color: color-mix(in srgb, var(--cc-shr-accent, #FCC419) 22%, transparent);
 }
-html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody tr:has(i[id^="check_"].fa-check-square-o) > td:first-child {
-  box-shadow: inset 3px 0 0 0 var(--cc-shr-accent, #FCC419);   /* a leading accent bar as a fill, not a border line */
-}
-/* a hovered selected row still has to read as selected, so the faint hover tint must not win */
+/* a hovered selected row still has to read as selected, so the hover shade must not win */
 html.cc-shares-on.cc-on-browse #displaybox table.indexer tbody tr:has(i[id^="check_"].fa-check-square-o):hover > td {
-  background-color: rgba(252, 196, 25, .30);                                          /* fallback */
   background-color: color-mix(in srgb, var(--cc-shr-accent, #FCC419) 30%, transparent);
 }
 
-/* The breadcrumb bar's type filter. input.dfm_filter is styled by the globally loaded
-   BrowseButton.css, which reserves padding-left for its absolutely positioned icon, so the fill is
-   flattened to match CC while padding-left stays: the detail page's input[type=text]{padding:6px
-   10px} would slide the text under the glyph. That rule is gated on .cc-on-share-detail and does
-   not reach here. */
-html.cc-shares-on.cc-on-browse #displaybox .title input.dfm_filter {
-  background-color: rgba(128, 128, 128, .12) !important; border: none !important;
-  border-radius: var(--cc-radius-control) !important;   /* no `color`: the field sits on the native theme backdrop, which owns the ink */
+/* The row's action opens Unraid's context menu, so it is the Mehr badge of the Docker and VM rows:
+   an icon badge with three dots, shown with the row's hover and always on a touch screen. Only the
+   glyph changes; the element, its id and its handlers stay as they are. */
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="row_"] {
+  display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+  width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); box-sizing: border-box;
+  font-size: 0; border-radius: var(--cc-radius-pill); background: var(--cc-chip); color: var(--cc-text); cursor: pointer;
+  opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s), background-color var(--cc-motion-control-dur, 0s);
 }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="row_"]::before { content: "\f141"; font-size: var(--cc-text-body); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer tr:hover i[id^="row_"] { opacity: 1; }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="row_"]:hover { background: var(--cc-shr-accent, #FCC419); color: var(--cc-shr-accent-text, #161616); }
+@media (hover: none) {
+  html.cc-shares-on.cc-on-browse #displaybox table.indexer i[id^="row_"] { opacity: 1; }
+}
+
+/* The breadcrumb is a row of badges: each folder on the way a quiet chip that takes the accent
+   under the pointer, the folder on screen the filled badge. The native bar around it goes, and the
+   type filter and the time switch stand at its end as a field and an icon badge. */
+html.cc-shares-on.cc-on-browse #displaybox div.title:has(> span.left > a[href*="Browse?dir="]) {
+  display: flex; align-items: center; gap: 12px; min-height: 0; height: auto; margin: 0 0 14px; padding: 0 !important;
+  background: none !important; border: none !important; box-shadow: none !important;
+}
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.left { flex-wrap: wrap; gap: 6px; }
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.left > a {
+  display: inline-flex; align-items: center; gap: 6px; height: var(--cc-subnav-h, 26px); padding: 0 12px; box-sizing: border-box;
+  border-radius: var(--cc-radius-pill); background: var(--cc-chip); color: var(--cc-text);
+  font-size: var(--cc-text-subline); font-weight: 600; letter-spacing: normal; text-transform: none; text-decoration: none;
+  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+}
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.left > a > i { color: inherit !important; margin: 0; }
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.left > a:is(:hover, :last-of-type) {
+  background: var(--cc-shr-accent, #FCC419); color: var(--cc-shr-accent-text, #161616);
+}
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.left > a:last-of-type:hover { background: color-mix(in srgb, var(--cc-shr-accent, #FCC419) 85%, var(--cc-text)); }
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.left > i.fa-chevron-right { color: var(--cc-text-dim) !important; font-size: var(--cc-text-meta); margin: 0; }
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.right { margin-left: auto; gap: 8px; }
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.right > i[onclick] {
+  display: inline-flex; align-items: center; justify-content: center; width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px);
+  border-radius: var(--cc-radius-pill); background: var(--cc-chip); color: var(--cc-text); font-size: var(--cc-text-body);
+}
+html.cc-shares-on.cc-on-browse #displaybox div.title > span.right > i[onclick]:hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash); }
+
+/* The breadcrumb bar's type filter. input.dfm_filter is styled by the globally loaded
+   BrowseButton.css, which reserves padding-left for its absolutely positioned icon, so the field is
+   filled to match CC while padding-left stays. */
+html.cc-shares-on.cc-on-browse #displaybox .title input.dfm_filter {
+  height: var(--cc-subnav-h, 26px) !important; box-sizing: border-box !important;
+  background-color: var(--cc-surface-3) !important; color: var(--cc-text) !important; border: none !important;
+  border-radius: var(--cc-radius-control) !important;
+}
+html.cc-shares-on.cc-on-browse #displaybox .title input.dfm_filter::placeholder { color: var(--cc-text-hint); }
+html.cc-shares-on.cc-on-browse #displaybox .title i.dfm_filter { color: var(--cc-text-dim) !important; }
 
 /* The action buttons are input[type=button], as on the share-detail page, but they share no class
    CC already styles: they carry .dfm_control plus .jobs, .basic, .extra, .rename or .common, and
@@ -1509,44 +1576,38 @@ html.cc-shares-on.cc-on-browse #displaybox .title input.dfm_filter {
              it stays disabled
      .common (Create, Upload) unless there is no dir, or it is a share root
      .jobs   (Jobs) only while jobs exist
-   See 4 above about `display`. */
+   None of them is the page's one forward action, so they all rest neutral and take the accent under
+   the pointer (GlimStone rule 3). See 4 above about `display`. */
 html.cc-shares-on.cc-on-browse #displaybox #buttons input[type="button"] {
-  border: none !important; box-shadow: none !important;
+  border: none !important; box-shadow: none !important; margin: 12px 6px 0 0 !important;
   padding: var(--cc-md-btnpad, 0 14px) !important; height: var(--cc-md-h, 30px) !important; box-sizing: border-box !important;
   min-width: 0 !important;   /* beats the native min-width:86px so the pill hugs its text */
   font-size: var(--cc-md-fs) !important; font-weight: 600 !important;
   text-transform: none !important; letter-spacing: normal !important; font-family: inherit !important;
-  border-radius: var(--cc-radius-pill) !important;
-  cursor: pointer; transition: filter .12s, opacity .12s;
-  background: var(--cc-shr-accent, #FCC419) !important; color: var(--cc-shr-accent-text, #161616) !important;
+  border-radius: var(--cc-radius-pill) !important; cursor: pointer;
+  background: var(--cc-surface-3) !important; color: var(--cc-text) !important;
+  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
 }
-/* Done navigates rather than acting, so it stays a neutral secondary; it is the one classless input
-   in #buttons. */
-html.cc-shares-on.cc-on-browse #displaybox #buttons input[type="button"]:not(.dfm_control) {
-  background: #4a4a4a !important; color: #f0f0f0 !important;
-}
-html.cc-shares-on.cc-on-browse #displaybox #buttons input[type="button"]:hover:not(:disabled) { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
-/* A disabled button has to be unmistakable here. The detail page's opacity and grayscale leave the
-   background, and a dimmed red still reads as armed, so the fill is flattened outright. No
-   pointer-events:none: the disabled property blocks the click already, and pointer events keep the
-   not-allowed cursor as feedback. */
+html.cc-shares-on.cc-on-browse #displaybox #buttons input[type="button"]:hover:not(:disabled) { background: var(--cc-shr-accent, #FCC419) !important; color: var(--cc-shr-accent-text, #161616) !important; }
+/* A disabled button has to be unmistakable here, so it loses its fill and keeps the not-allowed
+   cursor as feedback; the disabled property blocks the click already. */
 html.cc-shares-on.cc-on-browse #displaybox #buttons input[type="button"]:disabled,
 html.cc-shares-on.cc-on-browse #displaybox #buttons input[type="button"]:disabled:hover {
-  background: #3a3a3a !important; color: #8a8a8a !important;
-  opacity: .55 !important; filter: none !important; cursor: not-allowed !important;
+  background: transparent !important; color: var(--cc-text-dim2) !important;
+  opacity: 1 !important; filter: none !important; cursor: not-allowed !important;
 }
 
-/* The owner, permission and size values become badges; shares.js enhanceBrowse wraps the text node
-   of those three cells in span.cc-fmb and leaves the check glyph, name, Location icon and actions
-   cell alone. They stay quiet grey so a long listing keeps reading, and the permission pill is
-   monospaced so drwxr-xr-x lines up. */
+/* The owner, permission and size values become quiet chips; shares.js enhanceBrowse wraps the text
+   of those cells in span.cc-fmb and leaves the check glyph, name, Location icon and actions cell
+   alone. The permission chip is monospaced so drwxr-xr-x lines up, and a folder's size, which
+   Unraid writes as a marker, stays plain dim text. */
 html.cc-shares-on.cc-on-browse #displaybox table.indexer span.cc-fmb {
   display: inline-flex; align-items: center; border-radius: var(--cc-radius-pill);
-  background: rgba(128, 128, 128, .16); color: inherit;
+  background: var(--cc-chip); color: var(--cc-text-chip);
   padding: var(--cc-sm-pad, 3px 11px); font-size: var(--cc-sm-fs); font-weight: 600; line-height: 1.5; white-space: nowrap;
 }
 html.cc-shares-on.cc-on-browse #displaybox table.indexer span.cc-fmb.cc-b-perm { font-family: ui-monospace, "Bitstream Vera Sans Mono", monospace; letter-spacing: .3px; }
-html.cc-shares-on.cc-on-browse #displaybox table.indexer span.cc-fmb.cc-b-owner { background: color-mix(in srgb, var(--cc-shr-accent, #FCC419) 20%, transparent); }
+html.cc-shares-on.cc-on-browse #displaybox table.indexer span.cc-fmb.cc-b-dir { background: none; padding-inline: 0; color: var(--cc-text-dim); font-weight: 500; }
 html.cc-shares-on.cc-on-browse #displaybox table.indexer td.cc-bcell { padding-top: 4px; padding-bottom: 4px; }
 
 /* Browse stays accent-only, like the semantic status pill and the section badges. Files and folders
@@ -1702,25 +1763,51 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:hover,
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:focus-within { background: var(--cc-sht-card-hover); }
 html.cc-shares-on.cc-sht-on #displaybox :is(.cc-sht-card, .cc-sht-ib, .cc-sht-cb):focus-visible { outline: none !important; box-shadow: 0 0 0 3px var(--cc-sht-c, var(--cc-shr-accent, #FCC419)) !important; filter: none; }
 
-/* The size text follows the name on its line and drops below it only when the card is too narrow,
-   so the actions keep the top corner. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-head { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; min-height: 28px; }
+/* The folder stands in a tile the size of the Docker and Plugins logo tiles, on the dark well the
+   disk drawings stand on, in the card's colour. The shield sits on the tile's corner like a state
+   badge, on the card's own surface, so it reads as cut out of the tile. */
+html.cc-shares-on.cc-sht-on {
+  --cc-sht-paper: #d4d4d4;
+}
+html.cc-shares-on.cc-sht-on:is(.Theme--white, .Theme--azure) { --cc-sht-paper: #ffffff; }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic {
+  --cc-sht-fold: var(--cc-sht-c, var(--cc-shr-accent, #FCC419));
+  position: relative; display: flex; flex: none; align-items: center; justify-content: center;
+  width: var(--cc-logo-box, 78px); height: var(--cc-logo-box, 78px); border-radius: var(--cc-radius-control); background: var(--cc-sht-inset);
+}
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder { display: block; width: var(--cc-logo-img, 62px); height: var(--cc-logo-img, 62px); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder rect { rx: var(--cc-pic-corner, 6px); transition: fill var(--cc-motion-control-dur, 0s); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-ffront { fill: var(--cc-sht-fold); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fback { fill: color-mix(in srgb, var(--cc-sht-fold) 70%, #000); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fsheet { fill: var(--cc-sht-paper); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic > .cc-shield {
+  position: absolute; right: -6px; bottom: -6px; justify-content: center; margin: 0;
+  width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); border-radius: var(--cc-radius-pill); background: var(--cc-sht-card);
+  transition: background-color var(--cc-motion-control-dur, 0s);
+}
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:is(:hover, :focus-within) .cc-sht-pic > .cc-shield { background: var(--cc-sht-card-hover); }
+
+/* Beside the folder the name, with its size following on its line and dropping below it only when
+   the card is too narrow, and the comment under them. The actions keep the top corner. */
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-id { display: flex; flex: 1 1 auto; flex-direction: column; gap: 6px; min-width: 0; }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; min-height: 28px; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-nb {
   display: inline-flex; align-items: center; min-width: 0; max-width: 100%; height: 28px; padding: 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   border-radius: var(--cc-radius-pill); background: var(--cc-sht-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-sht-ct, var(--cc-shr-accent-text, #161616));
   font-size: var(--cc-text-body); font-weight: 700;
 }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title > .cc-shield { margin-right: 0; }   /* the title's gap spaces it */
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-size { display: inline-flex; gap: 10px; white-space: nowrap; font-size: var(--cc-text-meta); color: var(--cc-text-hint); font-variant-numeric: tabular-nums; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-size b { color: var(--cc-text); font-weight: 600; }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-cmt { margin-top: -4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cc-text-subline); color: var(--cc-text-dim); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-cmt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cc-text-subline); color: var(--cc-text-dim); }
 
-/* The footer sits at the bottom of a card stretched to its row, so Compute lands in the corner. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-foot { display: flex; align-items: center; justify-content: flex-end; margin-top: auto; min-height: var(--cc-icon-badge, 26px); }
+/* The footer sits at the bottom of a card stretched to its row: the storage and export chips, and
+   Compute at the right end, which keeps the corner when it has to take a line of its own. */
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: auto; min-height: var(--cc-icon-badge, 26px); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-foot > :is(.cc-sht-cb, .cc-sht-busy) { margin-left: auto; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-busy { font-size: var(--cc-text-meta); color: var(--cc-text-hint); }
 /* The actions show on hover and keyboard focus, and always on a touch screen. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-acts { display: flex; flex: none; align-items: center; gap: 5px; height: 28px; opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-acts { display: flex; flex: none; align-self: flex-start; align-items: center; gap: 5px; height: 28px; opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s); }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:hover .cc-sht-acts,
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:focus-within .cc-sht-acts { opacity: 1; }
 @media (hover: none) {
@@ -1763,3 +1850,4 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-empty b { color: var(--cc-text-h
 
 /* Reactive mode: a card rests grey and takes its colour while it is hovered or focused. */
 html.cc-shares-on.cc-sht-on.cc-shares-rbneutral #displaybox .cc-sht-card:not(:hover):not(:focus-within) :is(.cc-sht-nb, .cc-sht-ib) { background: var(--cc-chip); color: var(--cc-text); }
+html.cc-shares-on.cc-sht-on.cc-shares-rbneutral #displaybox .cc-sht-card:not(:hover):not(:focus-within) .cc-sht-pic { --cc-sht-fold: var(--cc-text-dim); }
