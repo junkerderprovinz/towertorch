@@ -221,16 +221,19 @@
   }
 
   // GlimStone draws a chart in the one accent with no grid. The CPU line and the inbound traffic
-  // take the accent with a faint fill; outbound keeps the accent as a thinner line without fill, so
-  // the two stay apart without a second hue. The originals are kept for turning the area off.
+  // take the accent with a faint fill; outbound is a line in the text colour without fill, since a
+  // fainter accent could not be told apart from inbound. The originals are kept for turning the
+  // area off.
   var CHARTS = ["cpuchart", "netchart"];
   function alpha(hex, a) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "transparent"; var n = parseInt(m[1], 16); return "rgba(" + (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255) + "," + a + ")"; }
   function paintCharts(on) {
     var acc = "";
     try { acc = getComputedStyle(document.documentElement).getPropertyValue("--cc-accent").trim(); } catch (e) {}
     if (!/^#[0-9a-f]{6}$/i.test(acc)) acc = "#FCC419";
-    var text = "";
+    var text = "", ink = "";
     try { text = getComputedStyle(document.documentElement).getPropertyValue("--cc-text-dim").trim(); } catch (e) {}
+    try { ink = getComputedStyle(document.documentElement).getPropertyValue("--cc-text").trim(); } catch (e) {}
+    if (!/^#[0-9a-f]{6}$/i.test(ink)) ink = "#e6e6e6";
     CHARTS.forEach(function (name) {
       var c = window[name];
       if (!c || !c.options || !c.seriesSet) return;
@@ -240,9 +243,9 @@
         c.options.grid.strokeStyle = "transparent"; c.options.grid.verticalSections = 0; c.options.grid.borderVisible = false;
         if (text) c.options.labels.fillStyle = text;
         c.seriesSet.forEach(function (s, i) {
-          s.options.strokeStyle = i === 0 ? acc : alpha(acc, 0.7);
+          s.options.strokeStyle = i === 0 ? acc : ink;
           s.options.fillStyle = i === 0 ? alpha(acc, 0.16) : undefined;
-          s.options.lineWidth = i === 0 ? 1.5 : 1;
+          s.options.lineWidth = 1.5;
         });
       } else {
         c.options.grid = JSON.parse(JSON.stringify(o.grid)); c.options.labels.fillStyle = o.label;

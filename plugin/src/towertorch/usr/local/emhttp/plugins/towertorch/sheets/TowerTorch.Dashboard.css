@@ -158,11 +158,11 @@ html.cc-dash-on table.dashboard .cc-thr .load { float: none; width: auto; margin
 html.cc-dash-on table.dashboard .cc-thr .usage-disk { grid-column: 1 / -1; float: none; width: auto; height: 4px; margin: 0; overflow: hidden; border-radius: var(--cc-radius-pill); background: var(--cc-surface-2, #222222); }
 html.cc-dash-on table.dashboard .cc-thr .usage-disk > span:first-child { top: 0; height: 100%; border-radius: inherit; }
 
-/* The interface legend reads in the accent, inbound full and outbound fainter, matching the chart
-   dashboard.js draws in the one accent without a grid. */
+/* The interface legend matches the chart dashboard.js draws: inbound in the accent, outbound in
+   the text colour. */
 html.cc-dash-on table.dashboard .view4.red-text,
 html.cc-dash-on table.dashboard .view4.orange-text { color: var(--cc-accent-ink, #FCC419); font-style: normal; }
-html.cc-dash-on table.dashboard .view4.orange-text { opacity: .7; }
+html.cc-dash-on table.dashboard .view4.orange-text { color: var(--cc-text, #e6e6e6); }
 
 /* A tile's switches (Alle Apps, Alle VMs) take the CC toggle shape */
 html.cc-dash-on table.dashboard .switch-button-background {
