@@ -2322,7 +2322,9 @@
         // stand where the pointer no longer is until the focus moves on.
         if (e.type === "focusin" && !ccTipKeys) return;
         var t = e.target && e.target.closest ? e.target.closest("[data-cc-tip], [data-tip], [title]") : null;
-        if (!t) return;
+        // A Dashboard tile's title is its key: Unraid hashes it into the saved layout when the page
+        // starts, and a pointer resting on a tile before then would take it away.
+        if (!t || t.tagName === "TBODY") return;
         // A raw title anywhere, on a native control or an icon no script converted, becomes a
         // bubble here and the OS balloon is suppressed, so every hover text reads the same.
         if (!t.getAttribute("data-cc-tip") && !t.getAttribute("data-tip")) {

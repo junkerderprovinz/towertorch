@@ -101,6 +101,12 @@ console.log('\nThe bubble stays with its anchor');
   ok('so does one that is hidden in place', !open());
 }
 
+console.log('\nA Dashboard tile keeps its title');
+{
+  const js = read('scripts/header.js');
+  ok('the hover bubble leaves a tbody title alone, Unraid keys the tile by it', /e\.target\.closest\("\[data-cc-tip\], \[data-tip\], \[title\]"\) : null;[\s\S]{0,300}if \(!t \|\| t\.tagName === "TBODY"\) return;/.test(js));
+}
+
 console.log('\nThe sheet');
 {
   const css = read('sheets/TowerTorch.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
