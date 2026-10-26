@@ -527,6 +527,61 @@
     });
   } catch (e) {}
 
+  // Unraid's Read on the add page fills the hidden fields and submits through #cmdEditShare, which
+  // only an existing share's Apply carries, so there it stops with an error and nothing is added.
+  // On that page Read fills the visible fields instead and leaves the name and Add Share, with
+  // Unraid's own checks, to the user.
+  function ccReadIntoNew() {
+    var f = document.forms.share_edit, read = document.getElementById("readshare");
+    if (!f || !read || f.shareNameOrig.value || document.getElementById("cmdEditShare") || read.hasAttribute("data-cc-read")) return;
+    read.setAttribute("data-cc-read", "1");
+    read.onclick = function () {
+      var from = document.querySelector('select[name="readshare"]');
+      if (!from.value) return;
+      window.jQuery.get("/webGui/include/ShareData.php", { name: from.value }, function (json) {
+        var d = JSON.parse(json);
+        if (d) ccFillShare(f, d);
+      });
+    };
+  }
+  // A floor comes in kilobytes and goes in as a size with a decimal dot, the one form Unraid's
+  // parseDiskSize reads in every locale.
+  function ccFloor(kb) {
+    var units = ["KB", "MB", "GB", "TB", "PB"], i = 0;
+    while (kb >= 1000 && i < units.length - 1) { kb /= 1000; i++; }
+    return Math.round(kb * 10) / 10 + " " + units[i];
+  }
+  // Writes a share's settings, as ShareData.php returns them, into the add form. The disk lists come
+  // first, since Unraid rebuilds their checklists; then the storage selects in the order a person
+  // would set them, each with the change event its own handler lays the form out on, which also arms
+  // Add Share.
+  function ccFillShare(f, d) {
+    function pick(sel, v) {
+      for (var i = 0; i < sel.options.length; i++) if (sel.options[i].value === v && !sel.options[i].disabled) { sel.selectedIndex = i; break; }
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function pickAll(sel, list) {
+      var want = String(list || "").split(",");
+      for (var i = 0; i < sel.options.length; i++) sel.options[i].selected = want.indexOf(sel.options[i].value) >= 0;
+    }
+    var use = d.useCache || "no", moves = use === "yes" || use === "prefer";
+    ["1", "2"].forEach(function (n) {
+      pickAll(f["shareInclude" + n], d.include);
+      pickAll(f["shareExclude" + n], d.exclude);
+      pick(f["shareAllocator" + n], d.allocator || "highwater");
+      pick(f["shareSplitLevel" + n], d.splitLevel || "");
+    });
+    window.initDropdown(true);
+    pick(f.shareCachePool, use === "no" ? "" : d.cachePool || "");
+    pick(document.getElementById("secondary"), moves ? d.cachePool2 || "1" : "0");
+    var dir = document.getElementById("direction");
+    if (moves) { dir.selectedIndex = use === "prefer" ? 1 : 0; dir.dispatchEvent(new Event("change", { bubbles: true })); }
+    pick(f.shareCOW, d.cow || "auto");
+    if (+d.floor > 0) f.shareFloor.value = ccFloor(+d.floor);
+    ccSyncGroup(f);
+    if (!f.shareName.value) f.shareName.focus();
+  }
+
   // Moves the "Read/Write settings from" clone block into a side card beside the settings form.
   // Unraid renders three variants, all normalised by turning the enclosing .relative into the flex
   // row with a .cc-main-col and a .cc-side-card:
@@ -676,6 +731,7 @@
       // With the native sub-tabs the copy-settings block still becomes its own card beside the form.
       if (g("cc.sections.shares", "0") !== "0") cardPanels(box); else { headsTeardown(); ccCards(box); }
       ccSelects(box);
+      ccReadIntoNew();
     } catch (e) {}
   }
   // /Main has its own row code: table.unraid.disk_status has ten mixed columns, is refilled by
