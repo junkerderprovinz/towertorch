@@ -1702,25 +1702,51 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:hover,
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:focus-within { background: var(--cc-sht-card-hover); }
 html.cc-shares-on.cc-sht-on #displaybox :is(.cc-sht-card, .cc-sht-ib, .cc-sht-cb):focus-visible { outline: none !important; box-shadow: 0 0 0 3px var(--cc-sht-c, var(--cc-shr-accent, #FCC419)) !important; filter: none; }
 
-/* The size text follows the name on its line and drops below it only when the card is too narrow,
-   so the actions keep the top corner. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-head { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; min-height: 28px; }
+/* The folder stands in a tile the size of the Docker and Plugins logo tiles, on the dark well the
+   disk drawings stand on, in the card's colour. The shield sits on the tile's corner like a state
+   badge, on the card's own surface, so it reads as cut out of the tile. */
+html.cc-shares-on.cc-sht-on {
+  --cc-sht-paper: #d4d4d4;
+}
+html.cc-shares-on.cc-sht-on:is(.Theme--white, .Theme--azure) { --cc-sht-paper: #ffffff; }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic {
+  --cc-sht-fold: var(--cc-sht-c, var(--cc-shr-accent, #FCC419));
+  position: relative; display: flex; flex: none; align-items: center; justify-content: center;
+  width: var(--cc-logo-box, 78px); height: var(--cc-logo-box, 78px); border-radius: var(--cc-radius-control); background: var(--cc-sht-inset);
+}
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder { display: block; width: var(--cc-logo-img, 62px); height: var(--cc-logo-img, 62px); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-folder rect { rx: var(--cc-pic-corner, 6px); transition: fill var(--cc-motion-control-dur, 0s); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-ffront { fill: var(--cc-sht-fold); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fback { fill: color-mix(in srgb, var(--cc-sht-fold) 70%, #000); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-fsheet { fill: var(--cc-sht-paper); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-pic > .cc-shield {
+  position: absolute; right: -6px; bottom: -6px; justify-content: center; margin: 0;
+  width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); border-radius: var(--cc-radius-pill); background: var(--cc-sht-card);
+  transition: background-color var(--cc-motion-control-dur, 0s);
+}
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:is(:hover, :focus-within) .cc-sht-pic > .cc-shield { background: var(--cc-sht-card-hover); }
+
+/* Beside the folder the name, with its size following on its line and dropping below it only when
+   the card is too narrow, and the comment under them. The actions keep the top corner. */
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-id { display: flex; flex: 1 1 auto; flex-direction: column; gap: 6px; min-width: 0; }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; min-height: 28px; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-nb {
   display: inline-flex; align-items: center; min-width: 0; max-width: 100%; height: 28px; padding: 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   border-radius: var(--cc-radius-pill); background: var(--cc-sht-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-sht-ct, var(--cc-shr-accent-text, #161616));
   font-size: var(--cc-text-body); font-weight: 700;
 }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-title > .cc-shield { margin-right: 0; }   /* the title's gap spaces it */
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-size { display: inline-flex; gap: 10px; white-space: nowrap; font-size: var(--cc-text-meta); color: var(--cc-text-hint); font-variant-numeric: tabular-nums; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-size b { color: var(--cc-text); font-weight: 600; }
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-cmt { margin-top: -4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cc-text-subline); color: var(--cc-text-dim); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-cmt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cc-text-subline); color: var(--cc-text-dim); }
 
-/* The footer sits at the bottom of a card stretched to its row, so Compute lands in the corner. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-foot { display: flex; align-items: center; justify-content: flex-end; margin-top: auto; min-height: var(--cc-icon-badge, 26px); }
+/* The footer sits at the bottom of a card stretched to its row: the storage and export chips, and
+   Compute at the right end, which keeps the corner when it has to take a line of its own. */
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: auto; min-height: var(--cc-icon-badge, 26px); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-foot > :is(.cc-sht-cb, .cc-sht-busy) { margin-left: auto; }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-busy { font-size: var(--cc-text-meta); color: var(--cc-text-hint); }
 /* The actions show on hover and keyboard focus, and always on a touch screen. */
-html.cc-shares-on.cc-sht-on #displaybox .cc-sht-acts { display: flex; flex: none; align-items: center; gap: 5px; height: 28px; opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s); }
+html.cc-shares-on.cc-sht-on #displaybox .cc-sht-acts { display: flex; flex: none; align-self: flex-start; align-items: center; gap: 5px; height: 28px; opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s); }
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:hover .cc-sht-acts,
 html.cc-shares-on.cc-sht-on #displaybox .cc-sht-card:focus-within .cc-sht-acts { opacity: 1; }
 @media (hover: none) {
@@ -1763,3 +1789,4 @@ html.cc-shares-on.cc-sht-on #displaybox .cc-sht-empty b { color: var(--cc-text-h
 
 /* Reactive mode: a card rests grey and takes its colour while it is hovered or focused. */
 html.cc-shares-on.cc-sht-on.cc-shares-rbneutral #displaybox .cc-sht-card:not(:hover):not(:focus-within) :is(.cc-sht-nb, .cc-sht-ib) { background: var(--cc-chip); color: var(--cc-text); }
+html.cc-shares-on.cc-sht-on.cc-shares-rbneutral #displaybox .cc-sht-card:not(:hover):not(:focus-within) .cc-sht-pic { --cc-sht-fold: var(--cc-text-dim); }

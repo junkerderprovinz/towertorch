@@ -124,38 +124,54 @@ console.log('\nThe readers follow Unraid\'s rows');
   ok('no shares: Unraid\'s own notice is kept', none.shares.length === 0 && none.notice === 'Es existieren keine zu exportierenden Datenträgerfreigaben');
 }
 
-console.log('\nA card reads name, size and actions, comment, storage and exports, split, Compute');
+console.log('\nA card reads like a plugin card: the folder, name, size and actions, the split, then storage, exports and Compute');
 {
   const txt = js.slice(js.indexOf('var TXT = {'), js.indexOf('};', js.indexOf('var TXT = {')) + 2);
-  const fns = ['kids', 'tag', 'attr', 'hasCls', 'find', 'text', 'clean', 'esc', 'bytes', 'cells', 'computeLink', 'waiting', 'storage', 'readRow', 'readList', 'usage', 't', 'glyph', 'lvl', 'act', 'shield', 'cornerBtn', 'exportChip', 'cardHtml'];
-  const src = ['var LANG = "de";', txt, grabVar(js, 'POW')].concat(fns.map((n) => grabFn(js, n))).join('\n') + '\nreturn { readList, cardHtml };';
+  const folder = js.slice(js.indexOf('var FOLDER = '), js.indexOf("</svg>';", js.indexOf('var FOLDER = ')) + 8);
+  const fns = ['kids', 'tag', 'attr', 'hasCls', 'find', 'text', 'clean', 'esc', 'bytes', 'cells', 'computeLink', 'waiting', 'storage', 'readRow', 'readList', 'usage', 't', 'glyph', 'lvl', 'act', 'shield', 'cornerBtn', 'exportChip', 'picture', 'cardHtml'];
+  const src = ['var LANG = "de";', txt, grabVar(js, 'POW'), folder].concat(fns.map((n) => grabFn(js, n))).join('\n') + '\nreturn { readList, cardHtml };';
   const C = new Function('window', src)({});
   const html = (rows, disk) => C.cardHtml(C.readList(tbody(rows)).shares[0], disk);
   const card = (rows, disk) => parse('<div>' + html(rows, disk) + '</div>').children[0];
   const cls = (n) => (n && n.attrs.class) || '';
   const order = (n) => n.children.map(cls).join(' ');
-  const acts = (n) => n.children[0].children[1].children.map((b) => b.attrs['data-act']).join(' ');
+  const acts = (n) => n.children[0].children[2].children.map((b) => b.attrs['data-act']).join(' ');
+  const last = (n) => n.children[n.children.length - 1];
   const media = card(MEDIA, false);
-  ok('media: head, comment, chips and footer in that order', order(media) === 'cc-sht-head cc-sht-cmt cc-sht-chips cc-sht-foot', order(media));
-  ok('the head holds the title and, after it, the actions for the top corner', order(media.children[0]) === 'cc-sht-title cc-sht-acts');
-  ok('the free space stands on the name\'s line, right after the name badge', order(media.children[0].children[0]) === 'cc-shield cc-shield-ok cc-sht-nb cc-sht-size' && html(MEDIA, false).includes('<b>9.09 TB</b> frei'));
+  ok('media: the head and the footer', order(media) === 'cc-sht-head cc-sht-foot', order(media));
+  const head = media.children[0];
+  ok('the head holds the folder, the name with the comment, and the actions for the top corner', order(head) === 'cc-sht-pic cc-sht-id cc-sht-acts', order(head));
+  ok('the folder is drawn, not loaded, and carries the shield', order(head.children[0]) === 'cc-sht-folder cc-shield cc-shield-ok' && head.children[0].children[0].tagName === 'SVG');
+  ok('the folder is back, sheet and front, in that order', head.children[0].children[0].children.length > 0 && /cc-sht-fback[\s\S]*cc-sht-fback[\s\S]*cc-sht-fsheet[\s\S]*cc-sht-ffront/.test(html(MEDIA, false)));
+  ok('the name stands over the comment', order(head.children[1]) === 'cc-sht-title cc-sht-cmt');
+  ok('the free space stands on the name\'s line, right after the name badge', order(head.children[1].children[0]) === 'cc-sht-nb cc-sht-size' && html(MEDIA, false).includes('<b>9.09 TB</b> frei'));
   ok('the top corner holds Durchsuchen and Einstellungen', acts(media) === 'browse open');
-  ok('the storage badge leads, SMB and NFS follow on its row', order(media.children[2]) === 'cc-sht-chip cc-sht-store cc-sht-chip cc-sht-chip cc-sht-off');
-  const foot = media.children[3];
-  ok('the footer holds Berechnen and nothing else', order(foot) === 'cc-sht-cb' && foot.children[0].attrs['data-act'] === 'compute');
+  const foot = last(media);
+  ok('the footer holds the chips and then Berechnen', order(foot) === 'cc-sht-chips cc-sht-cb' && foot.children[1].attrs['data-act'] === 'compute', order(foot));
+  ok('the storage badge leads, SMB and NFS follow on its row', order(foot.children[0]) === 'cc-sht-chip cc-sht-store cc-sht-chip cc-sht-chip cc-sht-off');
   const backup = card(BACKUP, false);
-  ok('backup: used and free together in the head, the split before the footer', backup.children[0].children[0].children[2].children.length === 2 && order(backup) === 'cc-sht-head cc-sht-chips cc-sht-parts cc-sht-foot', order(backup));
-  ok('a computed share offers Neu berechnen in the same corner and not among the actions', order(backup.children[3]) === 'cc-sht-cb' && backup.children[3].children[0].attrs['data-act'] === 'again' && acts(backup) === 'browse open');
+  ok('backup: used and free together in the head, the split before the footer', backup.children[0].children[1].children[0].children[1].children.length === 2 && order(backup) === 'cc-sht-head cc-sht-parts cc-sht-foot', order(backup));
+  ok('a share without an orb has no shield on its folder', order(card(BACKUP.replace(/<a class='info nohand'[^]*?<\/a>(?=<a href="\/Shares\/Share)/, ''), false).children[0].children[0]) === 'cc-sht-folder');
+  ok('a computed share offers Neu berechnen in the same corner and not among the actions', order(last(backup)) === 'cc-sht-chips cc-sht-cb' && last(backup).children[1].attrs['data-act'] === 'again' && acts(backup) === 'browse open');
   const disk = card(DISK1, true);
-  ok('a computed disk share keeps its bar between the chips and the split', order(disk) === 'cc-sht-head cc-sht-chips cc-sht-track cc-sht-parts cc-sht-foot', order(disk));
+  ok('a computed disk share keeps its bar before the split', order(disk) === 'cc-sht-head cc-sht-track cc-sht-parts cc-sht-foot', order(disk));
   const running = card(MEDIA.replace(/<a href='#' onclick="computeShare\('media',\$\(this\)\)">Berechnen\.\.\.<\/a>/, "<i class='fa fa-circle-o-notch fa-spin'></i> Bitte warten..."), false);
-  ok('while Compute runs its note takes the corner', order(running.children[3]) === 'cc-sht-busy');
+  ok('while Compute runs its note takes the corner', order(last(running)) === 'cc-sht-chips cc-sht-busy');
   const again = card(BACKUP.replace(`<a class='view'></a><a href='#' title='Neu berechnen...' onclick="computeShare('backup',$(this).parent())"><i class='fa fa-refresh icon'></i></a>&nbsp;Datenträger 1`, "<i class='fa fa-circle-o-notch fa-spin'></i> Bitte warten..."), false);
-  ok('while Neu berechnen runs its note takes the corner as well', order(again.children[3]) === 'cc-sht-busy' && again.children[2].children.length === 1);
+  ok('while Neu berechnen runs its note takes the corner as well', order(last(again)) === 'cc-sht-chips cc-sht-busy' && again.children[1].children.length === 1);
   const bare = parse('<div>' + C.cardHtml(Object.assign(C.readList(tbody(BACKUP)).shares[0], { parts: [] }), false) + '</div>').children[0];
-  ok('a card with nothing for the corner has no footer', order(bare) === 'cc-sht-head cc-sht-chips', order(bare));
-  ok('the footer sits at the bottom and puts its button in the corner', /\.cc-sht-foot \{[^}]*justify-content: flex-end; margin-top: auto;/.test(css));
-  ok('the title wraps the size below the name, the actions keep their place', /\.cc-sht-title \{[^}]*flex: 1 1 auto; flex-wrap: wrap;/.test(css) && /\.cc-sht-acts \{[^}]*flex: none;/.test(css));
+  ok('a card with nothing for the corner has only its chips in the footer', order(bare) === 'cc-sht-head cc-sht-foot' && order(last(bare)) === 'cc-sht-chips', order(bare));
+  ok('the footer sits at the bottom and puts Compute at its right end', /\.cc-sht-foot \{[^}]*flex-wrap: wrap;[^}]*margin-top: auto;/.test(css) && /\.cc-sht-foot > :is\(\.cc-sht-cb, \.cc-sht-busy\) \{ margin-left: auto; \}/.test(css));
+  ok('the name column takes the room, the actions keep their place', /\.cc-sht-id \{[^}]*flex: 1 1 auto;/.test(css) && /\.cc-sht-title \{[^}]*flex-wrap: wrap;/.test(css) && /\.cc-sht-acts \{[^}]*flex: none;/.test(css));
+}
+
+console.log('\nThe folder looks like the logo tiles of Docker and Plugins');
+{
+  ok('the tile is the logo box, the drawing the logo size', /\.cc-sht-pic \{[^}]*width: var\(--cc-logo-box, 78px\); height: var\(--cc-logo-box, 78px\);/.test(css) && /\.cc-sht-folder \{[^}]*width: var\(--cc-logo-img, 62px\); height: var\(--cc-logo-img, 62px\);/.test(css));
+  ok('the tile size follows cc.sgsize like the other areas', /function logoSizes\(\) \{ return \(\{ s: \["48px", "62px"\], m: \["62px", "78px"\], l: \["76px", "94px"\] \}\)\[g\("cc\.sgsize", "m"\)\]/.test(js));
+  ok('the folder takes the card\'s colour and rests grey in the reactive mode', /--cc-sht-fold: var\(--cc-sht-c, var\(--cc-shr-accent, #FCC419\)\);/.test(css) && /\.cc-shares-rbneutral #displaybox \.cc-sht-card:not\(:hover\):not\(:focus-within\) \.cc-sht-pic \{ --cc-sht-fold: var\(--cc-text-dim\); \}/.test(css));
+  ok('its corners follow the shape setting', /\.cc-sht-folder rect \{ rx: var\(--cc-pic-corner, 6px\);/.test(css));
+  ok('the shield sits on the tile\'s corner as an icon badge', /\.cc-sht-pic > \.cc-shield \{[^}]*position: absolute;[^}]*width: var\(--cc-icon-badge, 26px\); height: var\(--cc-icon-badge, 26px\);/.test(css));
 }
 
 console.log('\nThe actions click the row\'s own controls');
