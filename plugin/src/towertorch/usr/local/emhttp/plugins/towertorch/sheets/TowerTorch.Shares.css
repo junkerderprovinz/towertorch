@@ -1088,6 +1088,9 @@ html.cc-shares-on.cc-on-share-detail #displaybox .cc-del-wrap:has(.cc-cb-del:che
 html.cc-shares-on.cc-on-share-detail #displaybox .cc-del-wrap:has(.cc-cb-del:checked) .cc-b-del:hover {
   background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-shr-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-shr-accent-text, #161616))) !important;
 }
+/* The switch also turns Unraid's Apply into a second Delete (chkDelete), so that one steps aside
+   while the switch is on. The badge still submits through it, hidden or not. */
+html.cc-shares-on.cc-on-share-detail #displaybox dl:has(> .cc-del-wrap > .cc-cb-del:checked) #cmdEditShare { display: none !important; }
 
 /* The disk Include/Exclude controls are jQuery-UI dropdownchecklist widgets rather than <select>,
    so CC's select rules never reached them; their line and caret live on .ui-dropdownchecklist*.
