@@ -191,12 +191,15 @@ console.log('\nThe glyph wears the highest level\'s colour');
   ok('a notice in the ink shade, so it still reads on the light header', /color-mix\(in srgb, [^;]*var\(--cc-ink-mix\b[^;]*black\)/.test(lvl('notice')), lvl('notice'));
   const sels = hcss.filter((x) => /color:\s*var\(--cc-bell-c\)\s*!important/.test(x.body)).flatMap((x) => x.sel.split(/,\s*(?![^()]*\))/).map((s) => s.trim()));
   ok('the colour goes on the glyph and nowhere else', sels.length > 0 && sels.every((s) => /\[data-cc-trig="bell"\]/.test(s) && s.endsWith('svg:not([class*="absolute"])')), sels.join(' | '));
-  ok('alert and warning on every box', sels.some((s) => s.startsWith('html.cc-header-on [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]) ')));
-  ok('a notice on the grey box while the pointer is away, since on the accent it would vanish', sels.some((s) => s.startsWith('html.cc-header-on.cc-header-rbneutral [data-cc-trig="bell"][data-cc-bell="notice"]:not(:hover) ')) && !sels.some((s) => /notice/.test(s) && !/cc-header-rbneutral/.test(s)));
+  ok('alert and warning on the filled box', sels.some((s) => s.startsWith('html.cc-header-on:not(.cc-header-rbneutral) [data-cc-trig="bell"]:is([data-cc-bell="alert"], [data-cc-bell="warning"]) ')));
+  ok('every level on the grey box while the pointer is away', sels.some((s) => s.startsWith('html.cc-header-on.cc-header-rbneutral [data-cc-trig="bell"][data-cc-bell]:not(:hover) ')));
+  ok('a notice never on the filled box, where it would vanish', !sels.some((s) => /notice/.test(s) && !/cc-header-rbneutral/.test(s)));
+  ok('under the pointer the grey box fills and the glyph takes its ink like every other header button', sels.every((s) => /:not\(\.cc-header-rbneutral\)/.test(s) || /:not\(:hover\)/.test(s)), sels.join(' | '));
   const base = hcss.find((x) => x.sel === 'html.cc-header-on [data-cc-trig] svg');
   ok('over the rule that gives every header glyph the box\'s ink', !!base && /!important/.test(base.body) && sels.every((s) => cmp(specificity(s), specificity(base.sel)) > 0));
   const rim = hcss.find((x) => /stroke:/.test(x.body) && /data-cc-bell/.test(x.sel));
-  ok('on a filled box red and orange keep a rim in the box\'s ink', !!rim && /:not\(\.cc-header-rbneutral\)/.test(rim.sel) && /:hover/.test(rim.sel) && /stroke:\s*var\(--cc-rb-ct, var\(--cc-hdr-accent-text\b/.test(rim.body) && /paint-order:\s*stroke/.test(rim.body), rim && rim.sel);
+  ok('on a filled box red and orange keep a rim in the box\'s ink', !!rim && /:not\(\.cc-header-rbneutral\)/.test(rim.sel) && /stroke:\s*var\(--cc-rb-ct, var\(--cc-hdr-accent-text\b/.test(rim.body) && /paint-order:\s*stroke/.test(rim.body), rim && rim.sel);
+  ok('a hovered bell draws no rim', !hcss.some((x) => /stroke:/.test(x.body) && /data-cc-bell/.test(x.sel) && /:hover/.test(x.sel)));
 }
 
 console.log('\nWithout motion the colour is the sign');
