@@ -21,6 +21,12 @@ html.cc-dash-on table.dashboard > tbody > tr > td { display: flow-root; border: 
 /* a cell narrowed to max-width 0 for the table ellipsis trick (the BombVault log) would collapse as
    a block, so it takes the card width */
 html.cc-dash-on table.dashboard > tbody > tr > td[class] { max-width: none; }
+/* Unraid animates every load bar's width with jQuery, one frame at a time for each core on every
+   message, and reads the width back before each step. Firefox lays out a changed bar's ancestors
+   again, and here those are block rows and the core grids, so every frame relaid the whole column
+   and the feed fell behind. Every bar has a fixed height and takes its width from outside, so size
+   and layout containment keep a frame's change inside the bar. */
+html.cc-dash-on table.dashboard .usage-disk { contain: size layout; }
 /* the head row leaves room under the title badge, which straddles the card's top edge */
 html.cc-dash-on table.dashboard > tbody > tr:first-child > td { padding-top: 20px; }
 /* while a tile is dragged, the sortable's placeholder shows where it will land as an empty slot */
