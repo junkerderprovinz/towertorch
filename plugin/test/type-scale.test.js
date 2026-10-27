@@ -3,7 +3,7 @@
 // stages name a role rather than a number, so a stage and the scale cannot drift apart.
 //
 // Picture sizes stay outside the scale on purpose: a logo or glyph tile sized with the
-// tile, an icon glyph larger than text, and the two brand wordmarks. They are listed
+// tile, an icon glyph larger than text, and the wordmarks. They are listed
 // here by selector, so a new literal size anywhere else fails.
 const fs = require('fs');
 const path = require('path');
@@ -32,6 +32,7 @@ const PICTURES = [
   /td\.ct-name \.outer > span\.hand i\.img \{/,                 // the container logo glyph, sized with its tile
   /var\(--cc-(logo-img|sg-glyph|fav-glyph|md-icon),/,           // logo and glyph tiles, the header icon size
   /#cc-brand( \.cc-brand-name)? \{/,                            // the header wordmark
+  /\.cc-hero-name\{/,                                           // the settings page's name beside its logo
   /\.cc-ud-ctrls\) a :is\(i, img, span\[class\*="icon"\]\) \{/, // Unassigned Devices' 20px control glyphs
   /table\.indexer i\[id\^="check_"\] \{/,                       // the file browser's checkbox glyph
   /width: 40px !important; height: 40px !important;/,           // a 40px icon button's glyph
