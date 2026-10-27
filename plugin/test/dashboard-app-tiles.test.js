@@ -58,7 +58,7 @@ function run(store) {
   const ctx = {
     window: { addEventListener() {} }, location: { pathname: '/Dashboard' },
     localStorage: { getItem: (k) => (k in store ? store[k] : null) },
-    setTimeout: () => 0,
+    setTimeout: () => 0, clearTimeout: () => {},
     getComputedStyle: () => ({ getPropertyValue: () => '' }),
     document: {
       readyState: 'complete',

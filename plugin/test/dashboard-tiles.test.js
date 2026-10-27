@@ -81,7 +81,7 @@ function run(store, dom = {}) {
   const ctx = {
     window: win, location: { pathname: '/Dashboard' },
     localStorage: { getItem: (k) => (k in store ? store[k] : null) },
-    setTimeout: () => 0,
+    setTimeout: () => 0, clearTimeout: () => {},
     getComputedStyle: () => ({ getPropertyValue: (p) => (p === '--cc-accent' ? ' #1f9d55' : p === '--cc-text-dim' ? '#8a8a8a' : p === '--cc-text' ? '#e6e6e6' : '') }),
     document: {
       readyState: 'complete',

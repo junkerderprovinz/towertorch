@@ -214,6 +214,12 @@ html.cc-dash-on table.dashboard .cc-thr .usage-disk > span:first-child { top: 0;
 html.cc-dash-on table.dashboard .view4.red-text,
 html.cc-dash-on table.dashboard .view4.orange-text { color: var(--cc-accent-ink, #FCC419); font-style: normal; }
 html.cc-dash-on table.dashboard .view4.orange-text { color: var(--cc-text, #e6e6e6); }
+/* Without the grid an empty stretch of a chart, or a quiet network whose zero lies on the canvas
+   edge, would show nothing at all. A hairline at the foot says the chart is there and waiting; the
+   lines draw over it. */
+html.cc-dash-on table.dashboard :is(#cpuchart, #netchart) {
+  background: linear-gradient(color-mix(in srgb, var(--cc-text-dim, #8a8a8a) 45%, transparent) 0 0) left bottom / 100% 1px no-repeat;
+}
 
 /* A tile's switches (Alle Apps, Alle VMs) take the CC toggle shape */
 html.cc-dash-on table.dashboard .switch-button-background {

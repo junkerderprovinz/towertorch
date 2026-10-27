@@ -3,9 +3,10 @@
  * Loaded on every page through TowerTorch.Dashboard.page and gated to /Dashboard. It toggles
  * html.cc-dash-on while the header area and master theming are on, puts a filled glyph into each
  * tile title so TowerTorch.Dashboard.css can draw the title as a section badge, paints those
- * badges in the colour mode and redraws the two live charts in the accent. Unraid renders the
- * tiles once and only refreshes their values, so one pass after the page settles is enough; the
- * badge colours follow a tile that is dragged to another place through the sortable's own event.
+ * badges in the colour mode and redraws the two live charts in the accent, filled on load from the
+ * points this browser kept. Unraid renders the tiles once and only refreshes their values, so one
+ * pass after the page settles is enough; the badge colours follow a tile that is dragged to another
+ * place through the sortable's own event.
  * The disk rows are the exception: Unraid rebuilds them on every message of its dashboard feed, so
  * their fixes run again from a listener on that same feed.
  */
@@ -237,21 +238,121 @@
     CHARTS.forEach(function (name) {
       var c = window[name];
       if (!c || !c.options || !c.seriesSet) return;
-      if (!c.__ccOrig) c.__ccOrig = { grid: JSON.parse(JSON.stringify(c.options.grid)), label: c.options.labels.fillStyle, series: c.seriesSet.map(function (s) { return { stroke: s.options.strokeStyle, fill: s.options.fillStyle, width: s.options.lineWidth }; }) };
+      // a restored run shares its twin's options, so it follows them
+      var set = c.seriesSet.filter(function (s) { return !s.ccPast; });
+      if (!c.__ccOrig) c.__ccOrig = { grid: JSON.parse(JSON.stringify(c.options.grid)), label: c.options.labels.fillStyle, series: set.map(function (s) { return { stroke: s.options.strokeStyle, fill: s.options.fillStyle, width: s.options.lineWidth }; }) };
       var o = c.__ccOrig;
       if (on) {
         c.options.grid.strokeStyle = "transparent"; c.options.grid.verticalSections = 0; c.options.grid.borderVisible = false;
         if (text) c.options.labels.fillStyle = text;
-        c.seriesSet.forEach(function (s, i) {
+        set.forEach(function (s, i) {
           s.options.strokeStyle = i === 0 ? acc : ink;
           s.options.fillStyle = i === 0 ? alpha(acc, 0.16) : undefined;
           s.options.lineWidth = 1.5;
         });
       } else {
         c.options.grid = JSON.parse(JSON.stringify(o.grid)); c.options.labels.fillStyle = o.label;
-        c.seriesSet.forEach(function (s, i) { var v = o.series[i] || {}; s.options.strokeStyle = v.stroke; s.options.fillStyle = v.fill; s.options.lineWidth = v.width; });
+        set.forEach(function (s, i) { var v = o.series[i] || {}; s.options.strokeStyle = v.stroke; s.options.fillStyle = v.fill; s.options.lineWidth = v.width; });
       }
     });
+  }
+
+  // Smoothie starts both charts empty on every load and fills them from the right, which without
+  // a grid looks like no chart at all, for minutes with a long time frame. The recent points of the
+  // three series stay in this browser under tt.charts, which the engine does not mirror, and go
+  // back into the series when the Dashboard loads.
+  var KEEP = { cpu: ["cpuchart", "cpuTimeSeries", "cpuline"], rx: ["netchart", "rxTimeSeries", "netline"], tx: ["netchart", "txTimeSeries", "netline"] };
+  var KEEP_MS = 300000, KEEP_MAX = 400, GAP_MS = 5000; // Unraid's longest frame is five minutes, at one point a second
+  var kept = {}, keeping = false, saveT = 0, PAST = [];
+  function frameMs(line) { return (parseInt(window[line], 10) || 30) * 1000; }
+
+  // Each series is stored flat as time and value pairs, the first time whole and every later one as
+  // the step from the one before.
+  function readKept() {
+    var all = {};
+    try { all = JSON.parse(g("tt.charts", "{}")) || {}; } catch (e) {}
+    Object.keys(KEEP).forEach(function (k) {
+      var flat = Array.isArray(all[k]) ? all[k] : [], pts = [], at = 0;
+      for (var i = 0; i + 1 < flat.length; i += 2) { at += +flat[i]; pts.push([at, +flat[i + 1]]); }
+      kept[k] = pts;
+    });
+  }
+  function saveKept() {
+    clearTimeout(saveT); saveT = 0;
+    if (!keeping) return;
+    var all = {}, from = Date.now() - KEEP_MS;
+    Object.keys(kept).forEach(function (k) {
+      var flat = [], at = 0;
+      kept[k].forEach(function (p) { if (p[0] > from) { flat.push(p[0] - at, p[1]); at = p[0]; } });
+      all[k] = flat;
+    });
+    try { localStorage.setItem("tt.charts", JSON.stringify(all)); } catch (e) {}
+  }
+  function note(k, at, v) {
+    var pts = kept[k], last = pts[pts.length - 1];
+    if (last && at <= last[0]) return;
+    pts.push([at, Math.round(v)]);
+    while (pts.length > KEEP_MAX || pts[0][0] < at - KEEP_MS) pts.shift();
+    if (!saveT) saveT = setTimeout(saveKept, 5000);
+  }
+
+  // Smoothie has no gap marker and joins any two points with a line, so a run that ends where the
+  // page was closed goes into a series of its own that draws with its twin's options, and leaves
+  // the chart once it has scrolled out.
+  function pastFor(chart, ts, line) {
+    var twin = chart.seriesSet.filter(function (s) { return s.timeSeries === ts; })[0];
+    var p = new window.TimeSeries();
+    chart.addTimeSeries(p);
+    var s = chart.seriesSet[chart.seriesSet.length - 1];
+    s.options = twin.options; s.ccPast = true;
+    PAST.push({ chart: chart, ts: p, line: line });
+    return p;
+  }
+  function prunePast(all) {
+    PAST = PAST.filter(function (p) {
+      var d = p.ts.data, gone = all || !d.length || d[d.length - 1][0] < Date.now() - frameMs(p.line);
+      if (gone) p.chart.removeTimeSeries(p.ts);
+      return !gone;
+    });
+  }
+
+  // Only points inside the frame on screen come back, ahead of anything Unraid has appended.
+  function restore(k, chart, ts) {
+    var end = ts.data.length ? ts.data[0][0] : Date.now(), from = end - frameMs(KEEP[k][2]), runs = [], prev = -Infinity;
+    kept[k].forEach(function (p) {
+      if (p[0] <= from || p[0] >= end) return;
+      if (p[0] - prev > GAP_MS) runs.push([]);
+      runs[runs.length - 1].push(p); prev = p[0];
+    });
+    runs.forEach(function (run, i) {
+      var into = i < runs.length - 1 || end - prev > GAP_MS ? pastFor(chart, ts, KEEP[k][2]) : ts;
+      run.forEach(function (p) { into.append(p[0], p[1]); });
+    });
+  }
+
+  function keepCharts() {
+    if (keeping) return;
+    var ks = Object.keys(KEEP);
+    if (!ks.every(function (k) { var c = window[KEEP[k][0]], ts = window[KEEP[k][1]]; return c && c.seriesSet && ts && ts.data && typeof ts.append === "function"; })) return;
+    keeping = true;
+    readKept();
+    ks.forEach(function (k) {
+      var ts = window[KEEP[k][1]];
+      restore(k, window[KEEP[k][0]], ts);
+      if (ts.ccKept) return;
+      var append = ts.append;
+      ts.ccKept = true;
+      ts.append = function (at, v, sum) {
+        append.call(this, at, v, sum);
+        if (keeping) { note(k, at, v); prunePast(false); }
+      };
+    });
+  }
+  function dropCharts() {
+    keeping = false; kept = {};
+    clearTimeout(saveT); saveT = 0;
+    prunePast(true);
+    try { localStorage.removeItem("tt.charts"); } catch (e) {}
   }
 
   function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
@@ -470,14 +571,19 @@
   function apply() {
     var live = isLive();
     document.documentElement.classList.toggle("cc-dash-on", live);
-    if (live) { decorate(); badgeControls(); paint(); paintCharts(true); buildCores(); fixCards(); hideModel(); hideDupName(); tintCase(); fixRows(); hookFeed(); }
-    else if (wasLive) { strip(); unbadgeControls(); paintCharts(false); unbuildCores(); unswap(); showModel(); showDupName(); unfixRows(); unmarkIcons(); }
+    if (live) { decorate(); badgeControls(); paint(); keepCharts(); paintCharts(true); buildCores(); fixCards(); hideModel(); hideDupName(); tintCase(); fixRows(); hookFeed(); }
+    else {
+      if (wasLive) { strip(); unbadgeControls(); paintCharts(false); unbuildCores(); unswap(); showModel(); showDupName(); unfixRows(); unmarkIcons(); }
+      dropCharts();
+    }
     wasLive = live;
   }
 
   function boot() {
     if (!onDash()) return;
     document.addEventListener("error", iconMissing, true);
+    // Writes wait up to five seconds; the last ones go out as the page goes, so a reload finds no gap.
+    window.addEventListener("pagehide", saveKept);
     apply();
     // dynamix fills in plugin tiles and starts the charts after its own load handlers, so the pass
     // runs again once that has happened.
