@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.2.3">
+  <!ENTITY version   "1.3.0">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "e653ef9eee852b4a2d6c49c284128040e39d24e4f131f7c78c45cd7a0558de3f">
+  <!ENTITY sha256    "6a0934877aff7b77f35fcd996e33f7bfaface132dd530195ca81600aaccee865">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,35 +28,40 @@
 </ICON>
 
 <CHANGES>
-### 1.2.3
-Dropdowns follow GlimStone again, and a few things on the settings page sit where they belong.
+### 1.3.0
+TowerTorch now covers Unraid's login page too, puts glyphs on Unraid's own buttons and shows the Dashboard's containers and VMs as tiles. The settings page opens with a banner, and the coffee, PayPal and crypto buttons open their windows right in the page.
+
+**✨ Added**
+- **The login page in the same look.** Unraid's login and set-password pages use your accent colour, shape and colour mode and follow Unraid's light or dark theme. The server name is set in the header's font. The look comes from the settings TowerTorch keeps on the server, so a browser that clears its storage still sees it.
+- **Your logo on the login page and in the header.** The "Logo" row in the settings takes a PNG, JPEG, WebP or SVG up to 1 MB. Without one, the TowerTorch mark is shown. "Show logo" under Server name puts it left of the server name in the header.
+- **An off switch in the address bar.** Add `?towertorch=off` to any Unraid address and this browser shows the stock interface, login page included. `?towertorch=on` brings TowerTorch back.
+- **custom.css and custom.js.** Put either file in `/boot/config/plugins/towertorch/` and it loads after everything TowerTorch brings. Updates never touch them.
+- **Dark mode switch.** The settings switch Unraid's colour theme between dark and light without reloading the page.
+- **A size of your own for the server name.** The "Size" list under Server name ends with "Custom", which opens a field for any value from 10 to 120 px.
+- **Glyphs on Unraid's buttons.** Apply, Delete, Add, Start and the other common buttons get a glyph. A setting next to the main tab switches picks text, text and glyph, glyph only, or reactive, where the caption opens under the pointer.
+- **Containers and VMs as tiles on the Dashboard**, running ones first. A container without an icon gets the Docker glyph.
+- **Charts that start full.** The CPU and network charts on the Dashboard come back with the last few minutes instead of starting empty.
+- **Coffee, PayPal and crypto windows in the page.** The giving buttons open a window inside the settings page instead of a new tab. Each coin's logo shows in its own colour.
 
 **🎨 Design**
-- **Dropdowns in one colour.** The options in every TowerTorch dropdown rest in a quiet grey. Only the one under the pointer and the chosen one take the dropdown's colour, in rainbow mode too.
-- **Your own value below the list.** For the server name's size and the temperature warning threshold, the list stays at the right end of its row. Pick "Custom" and the field for your value opens on a line below it.
-- **A smaller logo in the header.** The logo next to the server name is now 0.9 times the name's size instead of 1.2.
+- **A banner on the settings page** with the TowerTorch logo, its name and the claim. The big logo rests grey and takes its colours under the pointer.
+- **Share tiles** show a folder with the protection shield, the share name at the top and the shield as a badge in front of it. The folder opens on hover.
+- **The share settings page** has its card centred with the copy card beside it, and one Delete button instead of two.
+- **The file browser** follows the GlimStone look.
+- **Docker rows** wiggle in move mode and have a grip.
+- **Outbound traffic** is drawn in the text colour so it stands apart from inbound.
+- **The notification window** draws all its icons from the TowerTorch glyph set.
+- **Dropdowns in one colour.** Options rest in a quiet grey. Only the one under the pointer and the chosen one take the dropdown's colour.
+- **Less space above the settings.** Press "/" or use the command palette (Ctrl+K) to open the settings search.
+- The header logo is 0.9 times the server name's size, the bell takes the box's colours on hover, and the "ready" pill under a container's version is gone.
 
 **🐛 Fixed**
-- **Logo buttons.** "Choose logo" and "Remove" have the same size and shape as the other buttons in the settings.
-
-### 1.2.2
-The server name can now take a size of your own, and the settings start right below the main menu.
-
-**✨ Added**
-- **A size of your own for the server name.** Under Settings &gt; Utilities &gt; TowerTorch &gt; Header area &gt; Server name, the "Size" list ends with "Custom", which opens a field for any value from 10 to 120 px. The header and the login page follow as you type.
-
-**🎨 Design**
-- **Less space above the settings.** The settings search has no row of its own anymore, so the cards start right below the main menu. Press "/" or choose "Search the settings" in the command palette (Ctrl+K) to open it above the cards.
-
-### 1.2.1
-TowerTorch now covers Unraid's login page as well, in your accent and shape, light or dark, with your own logo if you want one. Three smaller switches come with it: a way to turn the theming off from the address bar, your own CSS and JavaScript on top, and Unraid's dark mode right in the settings.
-
-**✨ Added**
-- **The login page in the same look.** Unraid's login and set-password pages use your accent colour and shape and follow Unraid's light or dark theme. The server name is set in the header's font.
-- **Your logo on the login page and in the header.** The "Logo" row in the settings takes a PNG, JPEG, WebP or SVG up to 1 MB. Without one, the TowerTorch mark is shown. "Show logo" under Server name puts it left of the server name in the header, sized to match the name.
-- **An off switch in the address bar.** Add `?towertorch=off` to any Unraid address and this browser shows the stock interface, login page included. `?towertorch=on` brings TowerTorch back. Useful when a page stops rendering.
-- **custom.css and custom.js.** Put either file in `/boot/config/plugins/towertorch/` and it loads after everything TowerTorch brings. Updates never touch them.
-- **Dark mode switch.** The settings switch Unraid's colour theme between dark and light without reloading the page. A gray theme comes back as gray.
+- The Dashboard no longer stalls in Firefox, and its load bars keep up with the live values.
+- Settings sync between browsers works in Firefox too.
+- A pointer resting on a Dashboard tile while the page loads no longer breaks the saved tile layout.
+- "Read" on the Add Share page fills the form instead of stopping with an error.
+- In the notification window's Archive tab, "Delete all" no longer shows as loose text next to the button.
+- "Choose logo" and "Remove" have the same size and shape as the other buttons.
 
 ### 1.2.0
 CannonadeCommand is now TowerTorch. With the new name and logo comes a release that touches every page. Main, Shares, Plugins and VMs can show tiles, and the disks, the array, the mover and the start plan have small animated pictures. The settings page is laid out from scratch, Unraid's own forms are cards now, and the Docker tab stays quiet while nothing needs you.
