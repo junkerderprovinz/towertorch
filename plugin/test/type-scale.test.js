@@ -32,7 +32,7 @@ const PICTURES = [
   /td\.ct-name \.outer > span\.hand i\.img \{/,                 // the container logo glyph, sized with its tile
   /var\(--cc-(logo-img|sg-glyph|fav-glyph|md-icon),/,           // logo and glyph tiles, the header icon size
   /#cc-brand( \.cc-brand-name)? \{/,                            // the header wordmark
-  /\.cc-hero-name\{/,                                           // the settings page's name beside its logo
+  /\.cc-hero-name\{/,                                           // the settings banner's name beside its logo
   /\.cc-ud-ctrls\) a :is\(i, img, span\[class\*="icon"\]\) \{/, // Unassigned Devices' 20px control glyphs
   /table\.indexer i\[id\^="check_"\] \{/,                       // the file browser's checkbox glyph
   /width: 40px !important; height: 40px !important;/,           // a 40px icon button's glyph

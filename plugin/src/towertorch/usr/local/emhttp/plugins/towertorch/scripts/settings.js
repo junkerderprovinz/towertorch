@@ -89,14 +89,21 @@
       "#cc-settings .cc-set-prose{text-align:start}" +
       // One font with the rest of Unraid: the page takes the theme's face, as every other page does.
       "#cc-settings{font-family:inherit}" +
-      // The plugin's logo and name over the page, drawn alike on ShipLog's and FireSquire's settings
-      // pages. The start inset lines it up with the tiles of the tab column.
-      "#cc-settings .cc-hero{display:flex;align-items:center;gap:20px;min-width:0;margin:4px 0 16px 4px}" +
-      "#cc-settings .cc-hero-tile{flex:none;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:88px;height:88px;padding:10px;border-radius:var(--cc-radius-control);background:rgba(128,128,128,.18)}" +
-      "#cc-settings .cc-hero-tile img{display:block;width:100%;height:100%;object-fit:contain}" +
-      "#cc-settings .cc-hero-text{min-width:0}" +
-      "#cc-settings .cc-hero-name{margin:0;font-family:inherit;font-size:32px;font-weight:700;line-height:1.15;letter-spacing:normal;text-transform:none;color:var(--cc-text)}" +
-      "#cc-settings .cc-hero-sub{margin:4px 0 0;font-size:var(--cc-text-subline);line-height:1.45;text-align:start;color:var(--cc-text-dim)}" +
+      // The banner over the page, drawn alike on ShipLog's and FireSquire's settings pages: the logo
+      // and the name on a card surface, washed from the start with the first colour and ringed at the
+      // end by all three. It spans the tab column and the cards, its start inset on the tiles' edge.
+      // The colours are the accent, or three rainbow positions from paintSetTabs, resting grey in the
+      // reactive mode until the pointer reaches the banner.
+      "#cc-settings .cc-hero{--cc-hero-a:var(--cc-hero-1,var(--cc-accent));--cc-hero-b:var(--cc-hero-2,var(--cc-accent));--cc-hero-c:var(--cc-hero-3,var(--cc-accent));--cc-hero-wash:26%;--cc-hero-ring:22%;position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;gap:24px;max-width:1144px;height:136px;margin:4px 0 16px 4px;padding:0 32px;border-radius:var(--cc-radius-card);color:var(--cc-text);background:linear-gradient(100deg,color-mix(in srgb,var(--cc-hero-a) var(--cc-hero-wash),transparent),color-mix(in srgb,var(--cc-hero-a) calc(var(--cc-hero-wash) / 3),transparent) 42%,transparent 72%),var(--cc-fm-card,var(--cc-surface-2))}" +
+      "#cc-settings.cc-set-reactive .cc-hero:not(:hover){--cc-hero-a:var(--cc-text-dim);--cc-hero-b:var(--cc-text-dim);--cc-hero-c:var(--cc-text-dim)}" +
+      // A light colour washed over a white ground needs more of itself to show.
+      "html:is(.Theme--white,.Theme--azure) #cc-settings .cc-hero{--cc-hero-wash:40%;--cc-hero-ring:36%}" +
+      "#cc-settings .cc-hero-mark{position:absolute;z-index:-1;right:-72px;top:50%;translate:0 -50%;width:360px;height:360px;fill:none;stroke-width:18}" +
+      "#cc-settings .cc-hero-mark circle:nth-child(1){stroke:color-mix(in srgb,var(--cc-hero-c) calc(var(--cc-hero-ring) - 6%),transparent)}" +
+      "#cc-settings .cc-hero-mark circle:nth-child(2){stroke:color-mix(in srgb,var(--cc-hero-b) var(--cc-hero-ring),transparent)}" +
+      "#cc-settings .cc-hero-mark circle:nth-child(3){stroke:color-mix(in srgb,var(--cc-hero-a) calc(var(--cc-hero-ring) + 6%),transparent)}" +
+      "#cc-settings .cc-hero-logo{flex:none;display:block;width:88px;height:88px;object-fit:contain}" +
+      "#cc-settings .cc-hero-name{min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:inherit;font-size:32px;font-weight:700;line-height:1.15;letter-spacing:normal;text-transform:none;color:inherit}" +
       "#cc-settings .cc-set-cname .cc-info{margin-left:6px;vertical-align:-2px}" +
       // A selector sits at the end of its row in a groove, its segments one width, and only the chosen one is a badge.
       "#cc-settings .cc-seg.cc-set-mode{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;box-sizing:border-box;background:var(--cc-surface-base,#161616)}" +
@@ -177,7 +184,9 @@
       // and keeps the row's end (GlimStone, "Narrow windows"). A selector or a group of buttons
       // still wider than the card breaks into even rows rather than pushing the page sideways.
       "@media (max-width:1023px){" +
-        "#cc-settings .cc-hero-tile{width:72px;height:72px;padding:8px}" +
+        "#cc-settings .cc-hero{gap:16px;height:104px;padding:0 20px}" +
+        "#cc-settings .cc-hero-mark{right:-64px;width:280px;height:280px}" +
+        "#cc-settings .cc-hero-logo{width:64px;height:64px}" +
         "#cc-settings .cc-hero-name{font-size:26px}" +
         "#cc-settings .cc-set-row.cc-set-inline{flex-wrap:wrap;row-gap:8px}" +
         "#cc-settings .cc-set-row.cc-set-inline > :last-child{margin-left:auto;max-width:100%}" +
@@ -1281,14 +1290,17 @@
       if (first) try { first.focus({ preventScroll: true }); } catch (e) {}
     };
     // GlimStone's tab-strip colour rule: every tab owns a rainbow position, which its glyph shows
-    // at rest and its fill once chosen. The sheet does the painting from these vars; reactive mode
-    // rests the idle glyphs grey through the class on the root.
+    // at rest and its fill once chosen, and the banner takes the first three. The sheet does the
+    // painting from these vars; reactive mode rests the idle glyphs grey through the class on the root.
     function paintSetTabs() {
       var rb = get("cc.rainbow", "0") === "1", rbC = (window.CCTheme && window.CCTheme.rbColor) || function (i, a) { return a; };
       root.classList.toggle("cc-set-reactive", get("cc.rbmode", "all") === "active");
       tabBtns.forEach(function (b, i) {
         if (rb) { var c = rbC(i, accent); b.style.setProperty("--cc-rb-c", c); b.style.setProperty("--cc-rb-ct", idealText(c)); }
         else { b.style.removeProperty("--cc-rb-c"); b.style.removeProperty("--cc-rb-ct"); }
+      });
+      [1, 2, 3].forEach(function (n) {
+        if (rb) hero.style.setProperty("--cc-hero-" + n, rbC(n - 1, accent)); else hero.style.removeProperty("--cc-hero-" + n);
       });
     }
     // A switched-off area loses its tile at once, and if its tab was open, Allgemein opens.
@@ -1335,12 +1347,11 @@
       var onNarrow = function () { window.__ccSetTabTips(); };
       if (narrowMq.addEventListener) narrowMq.addEventListener("change", onNarrow); else narrowMq.addListener(onNarrow);
     }
-    var hero = el("div", "cc-hero"), heroTile = el("span", "cc-hero-tile"), heroLogo = el("img"), heroText = el("div", "cc-hero-text");
+    var hero = el("div", "cc-hero"), heroLogo = el("img", "cc-hero-logo");
+    hero.innerHTML = '<svg class="cc-hero-mark" viewBox="0 0 400 400" aria-hidden="true" focusable="false"><circle cx="200" cy="200" r="188"/><circle cx="200" cy="200" r="138"/><circle cx="200" cy="200" r="88"/></svg>';
     heroLogo.src = "/plugins/towertorch/images/towertorch.png"; heroLogo.alt = "";
-    heroTile.appendChild(heroLogo);
-    heroText.appendChild(el("h1", "cc-hero-name", "TowerTorch"));
-    heroText.appendChild(el("p", "cc-hero-sub", T("Eine runderneuerte, moderne Oberfläche für deinen ganzen Unraid-Server, ohne eine einzige Seite zu ersetzen.", "A revamped, modern interface for your whole Unraid server, without replacing a single page.")));
-    hero.appendChild(heroTile); hero.appendChild(heroText);
+    hero.appendChild(heroLogo);
+    hero.appendChild(el("h1", "cc-hero-name", "TowerTorch"));
     root.appendChild(hero);
     var body = el("div", "cc-set-body"), main = el("div", "cc-set-main");
     body.appendChild(tabRow); body.appendChild(main);
