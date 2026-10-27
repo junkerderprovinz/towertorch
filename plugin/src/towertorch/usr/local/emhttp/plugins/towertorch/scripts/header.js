@@ -589,23 +589,32 @@
       var x = host.querySelector(":scope > span.absolute > [role=\"button\"]");
       if (x) x.classList.add("cc-notif-x");
       if (x && !x.getAttribute("data-cc-tip")) { x.setAttribute("data-cc-tip", T("Schließen", "Close")); if (!x.getAttribute("aria-label")) x.setAttribute("aria-label", T("Schließen", "Close")); }
+      var ICON_ARCH = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="none" aria-hidden="true"><path d="M2 5a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z" /><path d="M19 9c.513 0 .936 .463 .993 1.06l.007 .14v7.2c0 1.917 -1.249 3.484 -2.824 3.594l-.176 .006h-10c-1.598 0 -2.904 -1.499 -2.995 -3.388l-.005 -.212v-7.2c0 -.663 .448 -1.2 1 -1.2h14zm-5 2h-4l-.117 .007a1 1 0 0 0 0 1.986l.117 .007h4l.117 -.007a1 1 0 0 0 0 -1.986l-.117 -.007z" /></svg>';   // tabler filled/archive
+      var glyph = (window.CCTheme && window.CCTheme.glyph) || function () { return ""; };
       // A button says what it does, and the German pack names the card action with a noun. Looked
       // at on every call, since Vue rebuilds the cards as they arrive.
-      var cardBtns = host.querySelectorAll('[class~="group/item"] span[class*="rounded-md"][class*="inline-flex"]');
+      var cardBtns = host.querySelectorAll('[class~="group/item"] :is(span, a)[class*="inline-flex"]:has(> svg)');
       for (var cb = 0; cb < cardBtns.length; cb++) {
         var cbt = ccLabelText(cardBtns[cb]);
         if (cbt && cbt.nodeValue.trim() === "Archiv") cbt.nodeValue = cbt.nodeValue.replace("Archiv", "Archivieren");
+        var cap = cbt ? cbt.nodeValue.trim().toLowerCase() : "";
+        ccNotifGlyph(cardBtns[cb].querySelector("svg"), /^(archivieren|archive)$/.test(cap) ? ICON_ARCH
+          : /^(löschen|delete)$/.test(cap) ? glyph("Trash") : /^(anzeigen|view)$/.test(cap) ? glyph("Eye") : "");
       }
+      // The sheet's own icons are Lucide outlines; next to TowerTorch's filled badges they take the
+      // same glyph set, so one window does not mix two trash cans.
+      if (x) ccNotifGlyph(x.querySelector("svg"), glyph("Close"));
+      var gear = null, glinks = host.querySelectorAll('a[href*="Notification"]');
+      for (var gi = 0; gi < glinks.length; gi++) { if (glinks[gi].querySelector("svg") && !(glinks[gi].textContent || "").trim()) { gear = glinks[gi]; break; } }
+      if (gear) ccNotifGlyph(gear.querySelector("svg"), glyph("Gear"));
+      if (host.querySelector(".cc-notif-del")) ccNotifHideNative(host);
       if (host.querySelector(".cc-notif-badge")) return;
       var arch = null, sp = host.querySelectorAll("span, button, a");
       for (var i = 0; i < sp.length; i++) { if (/^\s*(Alle archivieren|Archive all)\s*$/i.test(sp[i].textContent || "")) { arch = sp[i]; break; } }
       if (!arch || !arch.parentElement) return;                                     // the empty state and the archive tab have no link to attach to
       arch.parentElement.classList.add("cc-notif-actions");                         // the CSS turns the column into a badge row
       // The two bulk actions become icon-only badges docked left of the type-filter gear.
-      var gear = null, glinks = host.querySelectorAll('a[href*="Notification"]');
-      for (var gi = 0; gi < glinks.length; gi++) { if (glinks[gi].querySelector("svg") && !(glinks[gi].textContent || "").trim()) { gear = glinks[gi]; break; } }
       if (gear && !gear.getAttribute("data-cc-tip")) { gear.setAttribute("data-cc-tip", T("Benachrichtigungs-Einstellungen", "Notification settings")); gear.removeAttribute("title"); }  // the same frameless bubble the two bulk icons get
-      var ICON_ARCH = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="none" aria-hidden="true"><path d="M2 5a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z" /><path d="M19 9c.513 0 .936 .463 .993 1.06l.007 .14v7.2c0 1.917 -1.249 3.484 -2.824 3.594l-.176 .006h-10c-1.598 0 -2.904 -1.499 -2.995 -3.388l-.005 -.212v-7.2c0 -.663 .448 -1.2 1 -1.2h14zm-5 2h-4l-.117 .007a1 1 0 0 0 0 1.986l.117 .007h4l.117 -.007a1 1 0 0 0 0 -1.986l-.117 -.007z" /></svg>';   // tabler filled/archive
       var ICON_DEL = (window.CCTheme && window.CCTheme.CC_TRASH_SVG) || "";   // the one trash can, from cc-theme.js
       function badge(icon, label, cls, onAct) {
         var b = arch.cloneNode(true);                                              // the native look without its Vue handler
@@ -626,8 +635,25 @@
         arch.parentNode.insertBefore(arB, arch.nextSibling);
         arB.parentNode.insertBefore(del, arB.nextSibling);
       }
-      for (var k = 0; k < sp.length; k++) { if (sp[k] !== del && /^\s*(Alle löschen|Delete all)\s*$/i.test(sp[k].textContent || "")) sp[k].style.display = "none"; }  // the archive tab has a native delete-all too
+      ccNotifHideNative(host);
     } catch (e) {}
+  }
+  // The archive tab brings its own native delete-all each time Vue renders it, beside the badge.
+  function ccNotifHideNative(host) {
+    var sp = host.querySelectorAll("span, button, a");
+    for (var k = 0; k < sp.length; k++) {
+      if (!sp[k].closest(".cc-notif-badge") && /^\s*(Alle löschen|Delete all)\s*$/i.test(sp[k].textContent || "")) sp[k].style.display = "none";
+    }
+  }
+  // Vue keeps the svg element, so only its drawing is swapped and the node stays where Vue left it.
+  function ccNotifGlyph(svg, markup) {
+    if (!svg || !markup || svg.getAttribute("data-cc-g")) return;
+    var t = document.createElement("div"); t.innerHTML = markup;
+    var s = t.querySelector("svg");
+    svg.setAttribute("viewBox", s.getAttribute("viewBox"));
+    svg.setAttribute("fill", "currentColor"); svg.setAttribute("stroke", "none");
+    svg.innerHTML = s.innerHTML;
+    svg.setAttribute("data-cc-g", "1");
   }
   // Every CC area lines its left edge up with the main menu bar. The offset is measured rather than
   // guessed with a constant, which drifts: the first menu item's real left edge minus #displaybox's
@@ -4062,11 +4088,11 @@
     // skipped because docker.js rewrites it every 9s.
     try { window.addEventListener("storage", function (e) { if (e && e.key && e.key !== "cc.stateCache" && /^cc[a-z]*\./.test(e.key)) apply(); }); } catch (e) {}
     // The notification sheet mounts inside the Connect root rather than as a body child, so the
-    // body observer can miss it; a few passes after a click on the bell land the bulk buttons as
-    // soon as it appears.
+    // body observer can miss it; a few passes after a click on the bell, or on a tab inside the
+    // sheet, land the bulk buttons and glyphs as soon as Vue has drawn them.
     try {
       document.addEventListener("click", function (e) {
-        try { if (e.target && e.target.closest && e.target.closest("#UserProfile, [data-cc-trig]")) { var n = 0, t = setInterval(function () { ccNotifActions(); try { ccPopoverDim(); } catch (ed) {} try { ccPaintRotate(); } catch (ep) {} try { ccAcctMenu(); } catch (ea) {} if (++n >= 8) clearInterval(t); }, 180); } } catch (err) {}
+        try { if (e.target && e.target.closest && e.target.closest("#UserProfile, [data-cc-trig], .unapi div.fixed.z-50.bg-background")) { var n = 0, t = setInterval(function () { ccNotifActions(); try { ccPopoverDim(); } catch (ed) {} try { ccPaintRotate(); } catch (ep) {} try { ccAcctMenu(); } catch (ea) {} if (++n >= 8) clearInterval(t); }, 180); } } catch (err) {}
       }, true);
     } catch (e) {}
     // For the same reason the body observer misses that sheet opening and closing, so the backdrop
