@@ -59,6 +59,8 @@ console.log('\nThe crypto window');
   ok('a new coin starts on its own first network', /coin = c; net = c\.networks\[0\]; show\(\);/.test(give));
   ok('the address is shown whole', /addr\.textContent = net\.address;/.test(give) && !/address\.slice|address\.substr/.test(give));
   ok('XRP says no tag is needed', /address: XRP, notag: true/.test(give) && /note\.hidden = !net\.notag;/.test(give));
+  ok('a coin mark wears its coin colour at rest and the tile ink when lit or picked', /b\.style\.setProperty\("--cc-give-mark", c\.rest \|\| c\.tile\[0\]\);/.test(give) && /\.cc-give-coinmark \{[^}]*color: var\(--cc-give-mark\);/.test(css) && /\.cc-give-coin:is\(:hover, :focus-visible, \[aria-selected="true"\]\) \.cc-give-coinmark \{ color: inherit; \}/.test(css));
+  ok('XRP rests in white, since its near-black vanishes on the dark tile', /id: "xrp"[^}]*rest: "#ffffff"/.test(give));
   ok('the coin tiles follow the label mode', /win\.setAttribute\("data-cc-give-labels", labelMode\(\)\);/.test(give) && /\[data-cc-give-labels="glyph"\] \.cc-give-tick \{ display: none; \}/.test(css));
 }
 

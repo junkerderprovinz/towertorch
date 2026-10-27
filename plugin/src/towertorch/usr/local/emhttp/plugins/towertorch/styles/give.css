@@ -58,8 +58,9 @@ html .cc-win .cc-give-addr {
 html .cc-win .cc-give-note { margin: 0; color: var(--cc-warn-ink); font-size: var(--cc-text-meta); text-align: center; }
 .cc-give-copysrc { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; }
 
-/* The coins as square tiles, the mark half the tile. A tile lights up in its coin's colour under
-   the pointer; the picked one keeps the page's colour. */
+/* The coins as square tiles, the mark half the tile. At rest each mark wears its coin's colour; under
+   the pointer the tile lights up in that colour and the mark turns its ink, and the picked one keeps
+   the page's colour. */
 .cc-give-coins { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .cc-give-coin {
   aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
@@ -67,10 +68,11 @@ html .cc-win .cc-give-note { margin: 0; color: var(--cc-warn-ink); font-size: va
   font-size: var(--cc-text-meta); font-weight: 500; line-height: 1.4; cursor: pointer; user-select: none;
   transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
 }
-.cc-give-coinmark { flex: none; display: flex; align-items: center; justify-content: center; height: 50%; }
+.cc-give-coinmark { flex: none; display: flex; align-items: center; justify-content: center; height: 50%; color: var(--cc-give-mark); }
 .cc-give-coinmark svg { display: block; width: auto; height: 100%; }
 .cc-give-tick { max-height: 1.4em; overflow: hidden; }
 .cc-give-coin:is(:hover, :focus-visible):not([aria-selected="true"]) { background: var(--cc-give-tile); color: var(--cc-give-tile-ink); }
+.cc-give-coin:is(:hover, :focus-visible, [aria-selected="true"]) .cc-give-coinmark { color: inherit; }
 /* A picked option, network or coin wears the accent, or its own rainbow position. */
 .cc-give :is(.cc-give-opt[aria-checked="true"], .cc-give-net[aria-selected="true"], .cc-give-coin[aria-selected="true"]) {
   background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
