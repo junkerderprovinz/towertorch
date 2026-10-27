@@ -2392,11 +2392,12 @@
       var cAbout = card(T("Über", "About"));
       cAbout.appendChild(el("p", "cc-set-prose", T("TowerTorch ist ein kostenloses Plugin für Unraids Docker-, Plugin- und VM-Tabs, gebaut von einem einzelnen Ritter an Abenden und Wochenenden, ohne Konto, ohne Telemetrie und ohne Werbung.", "TowerTorch is a free plugin for Unraid's Docker, Plugins and VM tabs, built by one knight on evenings and weekends, with no accounts, no telemetry and no ads.")));
       cAbout.appendChild(el("p", "cc-set-prose", T("Wenn es sich einen Platz auf deinem Server verdient hat, wirf deinem Ritter eine Münze zu: Das hilft bei den Kosten und hält das Projekt am Leben.", "If it has earned a place on your server, toss a coin to your knight: it helps cover the costs and keeps the project alive.")));
-      // The give row in its house form: hosted pages first, the wallet last.
-      var give = el("div", "cc-rbtn-rows cc-set-give");
-      give.appendChild(readmeBtn({ brand: "coffee", name: "Buy me a coffee", art: BRAND_MARKS.coffee, href: "https://buymeacoffee.com/junkerderprovinz" }));
-      give.appendChild(readmeBtn({ brand: "paypal", name: "PayPal", mark: BRAND_MARKS.paypal, href: "https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS" }));
-      give.appendChild(readmeBtn({ brand: "bitcoin", name: T("Krypto", "Crypto"), mark: BRAND_MARKS.bitcoin, href: "https://junkerderprovinz.github.io/junkerderprovinz/" }));
+      // The give row in its house form: hosted pages first, the wallet last. Each opens its window
+      // in the page (give.js) and keeps its address for a middle click.
+      var give = el("div", "cc-rbtn-rows cc-set-give"), G = window.CCGive || {};
+      give.appendChild(readmeBtn({ brand: "coffee", name: "Buy me a coffee", art: BRAND_MARKS.coffee, href: "https://buymeacoffee.com/junkerderprovinz", open: G.coffee }));
+      give.appendChild(readmeBtn({ brand: "paypal", name: "PayPal", mark: BRAND_MARKS.paypal, href: "https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS", open: G.paypal }));
+      give.appendChild(readmeBtn({ brand: "bitcoin", name: T("Krypto", "Crypto"), mark: BRAND_MARKS.bitcoin, href: "https://junkerderprovinz.github.io/junkerderprovinz/", open: G.crypto }));
       cAbout.appendChild(give);
       wrapInfo.appendChild(cAbout);
     })();
@@ -2511,6 +2512,16 @@
       b = el("a", "cc-rbtn");
       b.href = o.href;
       if (!/^mailto:/.test(o.href)) { b.target = "_blank"; b.rel = "noopener noreferrer"; }
+      if (o.open) {
+        b.setAttribute("aria-haspopup", "dialog");
+        b.addEventListener("click", function (e) {
+          if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+          // The window keeps the donor on the page, so Unraid's warning about leaving for an
+          // outside site, delegated from <body>, has nothing to say.
+          e.preventDefault(); e.stopPropagation();
+          o.open(b);
+        });
+      }
     } else {
       b = actionBtn("", "cc-rbtn", o.run);
     }

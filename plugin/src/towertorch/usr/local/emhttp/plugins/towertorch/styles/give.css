@@ -1,0 +1,86 @@
+/* The windows the Info tab's give buttons open (scripts/give.js). They are TowerTorch windows, so
+   the surface, the title, the close badge and the buttons come from Tokens.css; this sheet adds
+   their content. They live in <body>, outside #cc-settings, and stay dark on every theme. */
+
+.cc-dlg.cc-give { width: min(440px, calc(100vw - 32px)); }
+.cc-dlg.cc-give-paypal { width: min(460px, calc(100vw - 32px)); }
+/* As tall as the screen allows less a margin: Buy Me a Coffee's payment step runs to about 1200px,
+   and every pixel here is scrolling a donor is spared. */
+.cc-dlg.cc-give-coffee { width: min(512px, calc(100vw - 32px)); height: calc(100vh - 112px); }
+.cc-give [hidden] { display: none !important; }
+.cc-give-body { display: flex; flex-direction: column; gap: 14px; font-size: var(--cc-text-body); }
+.cc-give-coffee .cc-give-body { overflow: hidden; }
+/* Unraid justifies every paragraph. */
+html .cc-win.cc-give p { text-align: start; }
+html .cc-win .cc-give-sub { color: var(--cc-text-dim); }
+
+.cc-give-frame { flex: 1 1 auto; min-height: 0; display: flex; padding: 8px; border-radius: var(--cc-radius-card); background: var(--cc-surface-2); }
+/* White behind the frame, so its first paint is not a dark hole; the widget is light either way. */
+.cc-give-frame iframe { flex: 1 1 auto; width: 100%; min-height: 0; border: 0; border-radius: var(--cc-radius-control); background: #fff; }
+
+.cc-give-group { display: flex; flex-direction: column; gap: 6px; }
+.cc-give-lbl { color: var(--cc-text-dim); font-size: var(--cc-text-meta); }
+.cc-give-seg { display: flex; gap: 4px; width: 100%; box-sizing: border-box; padding: 4px; border-radius: var(--cc-radius-control); background: var(--cc-surface-base); }
+.cc-give-opt {
+  flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px;
+  border-radius: var(--cc-radius-control); color: var(--cc-text); font-size: var(--cc-text-subline); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; user-select: none;
+  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+}
+.cc-give-opt:hover { background: var(--cc-surface-3); }
+.cc-give :is(.cc-give-opt, .cc-give-coin, .cc-give-net):focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent); }
+.cc-give-amounts { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+html .cc-win .cc-win-in.cc-give-amount { width: 144px !important; max-width: 100% !important; height: 32px !important; margin: 0 !important; }
+html .cc-win .cc-win-in.cc-give-amount-ok { box-shadow: inset 0 0 0 1px var(--cc-accent, #FCC419) !important; }
+/* PayPal draws its frames light, and inside a dark color-scheme the browser paints them an opaque
+   white strip, so the box declares light. */
+.cc-give-pp { color-scheme: light; margin-top: 8px; }
+html .cc-win .cc-give-state { margin: 0; color: var(--cc-text-dim); font-size: var(--cc-text-meta); text-align: center; }
+html .cc-win .cc-give-state:empty { display: none; }
+html .cc-win .cc-give-state.cc-give-ok { color: var(--cc-ok-ink); font-size: var(--cc-text-body); }
+html .cc-win .cc-give-state.cc-give-err { color: var(--cc-err-ink); font-size: var(--cc-text-body); }
+
+.cc-give-well { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; border-radius: var(--cc-radius-card); background: var(--cc-surface-2); }
+/* The code's white plate takes the card radius; the quiet zone keeps the rounded corners white by
+   the standard. */
+.cc-give-qr { flex: none; box-sizing: border-box; width: 192px; height: 192px; padding: 12px; border-radius: var(--cc-radius-card); background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); }
+.cc-give-qr svg { display: block; width: 100%; height: 100%; }
+html .cc-win .cc-give-addr {
+  width: 100%; margin: 0; text-align: center; overflow-wrap: anywhere; word-break: break-all;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: var(--cc-text-meta); font-variant-numeric: tabular-nums;
+}
+.cc-give-nets { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.cc-give-net {
+  padding: 4px 12px; border-radius: var(--cc-radius-pill); background: var(--cc-surface-3); color: var(--cc-text-dim);
+  font-size: var(--cc-text-meta); font-weight: 500; line-height: 1.4; cursor: pointer; user-select: none;
+}
+.cc-give-net:hover { color: var(--cc-text); }
+html .cc-win .cc-give-note { margin: 0; color: var(--cc-warn-ink); font-size: var(--cc-text-meta); text-align: center; }
+.cc-give-copysrc { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; }
+
+/* The coins as square tiles, the mark half the tile. A tile lights up in its coin's colour under
+   the pointer; the picked one keeps the page's colour. */
+.cc-give-coins { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.cc-give-coin {
+  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-width: 0; padding: 0 8px; border-radius: var(--cc-radius-control); background: var(--cc-surface-2); color: var(--cc-text-dim);
+  font-size: var(--cc-text-meta); font-weight: 500; line-height: 1.4; cursor: pointer; user-select: none;
+  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+}
+.cc-give-coinmark { flex: none; display: flex; align-items: center; justify-content: center; height: 50%; }
+.cc-give-coinmark svg { display: block; width: auto; height: 100%; }
+.cc-give-tick { max-height: 1.4em; overflow: hidden; }
+.cc-give-coin:is(:hover, :focus-visible):not([aria-selected="true"]) { background: var(--cc-give-tile); color: var(--cc-give-tile-ink); }
+/* A picked option, network or coin wears the accent, or its own rainbow position. */
+.cc-give :is(.cc-give-opt[aria-checked="true"], .cc-give-net[aria-selected="true"], .cc-give-coin[aria-selected="true"]) {
+  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
+  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616)));
+}
+/* The tiles follow TowerTorch's label mode: the ticker alone, the mark alone, or the mark with the
+   ticker opening under the pointer; a picked coin keeps its word. */
+.cc-give[data-cc-give-labels="text"] .cc-give-coinmark { display: none; }
+.cc-give[data-cc-give-labels="glyph"] .cc-give-tick { display: none; }
+.cc-give[data-cc-give-labels="reactive"] .cc-give-coin:not([aria-selected="true"]):not(:hover):not(:focus-visible) .cc-give-tick { max-height: 0; opacity: 0; }
+.cc-give[data-cc-give-labels="reactive"] .cc-give-tick {
+  transition: max-height var(--cc-motion-label-dur, 0s) var(--cc-motion-label-ease, ease-out), opacity var(--cc-motion-label-dur, 0s) ease-out;
+}

@@ -9,6 +9,8 @@ Icon="towertorch.png"
    survives an uninstall like the start plan. */
 ?>
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/give.css')?>">
 <div id="cc-settings" class="cc-root"></div>
 <script defer src="<?autov('/plugins/towertorch/scripts/flags.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/give.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/settings.js')?>"></script>
