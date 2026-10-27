@@ -262,9 +262,13 @@
   var uiSending = {}, uiPushing = false, uiQueued = false;
   (function () {
     try {
-      var orig = localStorage.setItem.bind(localStorage);
+      var protoSet = window.__ccNativeSet || (window.__ccNativeSet = Storage.prototype.setItem);
+      var orig = function (k, v) { protoSet.call(localStorage, k, v); };
       window.__ccLS = orig;
-      localStorage.setItem = function (k, v) {
+      // Firefox keeps an assignment to localStorage.setItem as an item named "setItem" and never
+      // calls it, so the hook sits on the prototype and lets sessionStorage through.
+      Storage.prototype.setItem = function (k, v) {
+        if (this !== localStorage) return protoSet.call(this, k, v);
         // Writing the value already stored gives the engine nothing to hear, and the pages rewrite
         // some keys unchanged on every render, the settings tab among them.
         var same = false; try { same = localStorage.getItem(k) === String(v); } catch (e) {}
@@ -277,9 +281,11 @@
     // come back through adoptUISettings() on the next reload. pushUISettings() already deletes a
     // server key whose local value is null.
     try {
-      var origRm = localStorage.removeItem.bind(localStorage);
+      var protoRm = window.__ccNativeRemove || (window.__ccNativeRemove = Storage.prototype.removeItem);
+      var origRm = function (k) { protoRm.call(localStorage, k); };
       window.__ccLSRemove = origRm;
-      localStorage.removeItem = function (k) {
+      Storage.prototype.removeItem = function (k) {
+        if (this !== localStorage) return protoRm.call(this, k);
         origRm(k);
         try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
       };

@@ -18,9 +18,18 @@ function grabFn(src, name) {
   for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } }
   return null;
 }
+// The methods sit on a prototype, as in a browser, since the mirrors hook Storage.prototype.
 function store(init) {
   const m = Object.assign({}, init);
-  return { getItem: (k) => (k in m ? m[k] : null), setItem(k, v) { m[k] = String(v); }, removeItem(k) { delete m[k]; }, get length() { return Object.keys(m).length; }, key: (i) => Object.keys(m)[i], m };
+  function Storage() {}
+  Storage.prototype.getItem = function (k) { return k in m ? m[k] : null; };
+  Storage.prototype.setItem = function (k, v) { m[k] = String(v); };
+  Storage.prototype.removeItem = function (k) { delete m[k]; };
+  Storage.prototype.key = function (i) { return Object.keys(m)[i]; };
+  Object.defineProperty(Storage.prototype, 'length', { get() { return Object.keys(m).length; } });
+  const ls = new Storage();
+  ls.m = m;
+  return ls;
 }
 
 const header = read('header.js');
@@ -55,10 +64,10 @@ for (const [file, src, start, adoptName] of MIRRORS) {
   const on = {}, sent = [];
   const win = { __ccLSEarly: { 'cc.lastver': 1, 'cc.badgeshape': 1 }, addEventListener: (t, f) => { on[t] = f; } };
   const timers = [];
-  const run = new Function('window', 'localStorage', 'setTimeout', 'clearTimeout', 'api', 'apiGet', 'apiPut', 'withConfigLock', 'PROXY', 'csrfToken', 'fetch',
+  const run = new Function('window', 'localStorage', 'Storage', 'setTimeout', 'clearTimeout', 'api', 'apiGet', 'apiPut', 'withConfigLock', 'PROXY', 'csrfToken', 'fetch',
     body + '\nreturn ' + adoptName + ';');
   const never = () => new Promise(() => {});
-  const adopt = run(win, ls, (f, ms) => { timers.push(ms); return timers.length; }, () => {}, never, never, never, never,
+  const adopt = run(win, ls, ls.constructor, (f, ms) => { timers.push(ms); return timers.length; }, () => {}, never, never, never, never,
     '/ccapi.php', () => 'tok', (url, opts) => { sent.push({ url, opts }); return never(); });
   ok('a push is queued for them', timers.length === 1, String(timers));
   ok('the list is cleared', !('__ccLSEarly' in win));

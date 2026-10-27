@@ -1309,9 +1309,13 @@
     var pending = {}, syncT = null;
     try {
       if (!window.__ccLS) {
-        var orig = localStorage.setItem.bind(localStorage);
+        var protoSet = window.__ccNativeSet || (window.__ccNativeSet = Storage.prototype.setItem);
+        var orig = function (k, v) { protoSet.call(localStorage, k, v); };
         window.__ccLS = orig;
-        localStorage.setItem = function (k, v) {
+        // Firefox keeps an assignment to localStorage.setItem as an item named "setItem" and never
+        // calls it, so the hook sits on the prototype and lets sessionStorage through.
+        Storage.prototype.setItem = function (k, v) {
+          if (this !== localStorage) return protoSet.call(this, k, v);
           // Writing the value already stored gives the engine nothing to hear, and the pages rewrite
           // some keys unchanged on every render, the settings tab among them.
           var same = false; try { same = localStorage.getItem(k) === String(v); } catch (e) {}
@@ -1324,14 +1328,19 @@
     // adopt() would bring the old value back.
     try {
       if (!window.__ccLSRemove) {
-        var origRm = localStorage.removeItem.bind(localStorage);
+        var protoRm = window.__ccNativeRemove || (window.__ccNativeRemove = Storage.prototype.removeItem);
+        var origRm = function (k) { protoRm.call(localStorage, k); };
         window.__ccLSRemove = origRm;
-        localStorage.removeItem = function (k) {
+        Storage.prototype.removeItem = function (k) {
+          if (this !== localStorage) return protoRm.call(this, k);
           origRm(k);
           try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !(String(k) === "cc.theming" && localStorage.getItem("tt.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
         };
       }
     } catch (e) {}
+    // In Firefox a function assigned to localStorage.setItem or removeItem lands as an item of that
+    // name, and such an item is never a setting.
+    try { ["setItem", "removeItem"].forEach(function (k) { if (localStorage.getItem(k) !== null && window.__ccNativeRemove) window.__ccNativeRemove.call(localStorage, k); }); } catch (e) {}
     // the writes header.js made before this wrapper existed, see syncedSet() there
     var early = Object.keys(window.__ccLSEarly || {});
     early.forEach(function (k) { pending[k] = 1; });

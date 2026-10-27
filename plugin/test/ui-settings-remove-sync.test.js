@@ -30,15 +30,17 @@ function grabBetween(src, startMarker, endMarker) {
   return src.slice(s, e);
 }
 
+// A Storage with its methods on the prototype, as in a browser, since the hooks wrap the
+// prototype rather than the instance.
 function makeStorage() {
   const store = {};
-  const localStorage = {
-    getItem: k => (k in store ? store[k] : null),
-    setItem: (k, v) => { store[k] = String(v); },
-    removeItem: k => { delete store[k]; },
-    key: i => Object.keys(store)[i], get length() { return Object.keys(store).length; }
-  };
-  return { store, localStorage };
+  function Storage() {}
+  Storage.prototype.getItem = function (k) { return k in store ? store[k] : null; };
+  Storage.prototype.setItem = function (k, v) { store[k] = String(v); };
+  Storage.prototype.removeItem = function (k) { delete store[k]; };
+  Storage.prototype.key = function (i) { return Object.keys(store)[i]; };
+  Object.defineProperty(Storage.prototype, 'length', { get() { return Object.keys(store).length; } });
+  return { store, localStorage: new Storage(), Storage };
 }
 
 // docker.js patches unconditionally, since it only loads on /Docker.
@@ -47,11 +49,11 @@ function makeStorage() {
   const code = grabBetween(src,
     'var uiSyncT = null, uiSeeded = false, uiPending = {};',
     'function collectUISettings()');
-  const { store, localStorage } = makeStorage();
+  const { store, localStorage, Storage } = makeStorage();
   const win = {};
-  const run = new Function('window', 'localStorage', 'pushUISettings', 'setTimeout', 'clearTimeout',
+  const run = new Function('window', 'localStorage', 'Storage', 'pushUISettings', 'setTimeout', 'clearTimeout',
     code + '\nreturn { uiPending: uiPending };');
-  const state = run(win, localStorage, () => {}, setTimeout, clearTimeout);
+  const state = run(win, localStorage, Storage, () => {}, setTimeout, clearTimeout);
 
   console.log('\ndocker.js: cc.* setItem and removeItem both reach uiPending');
   localStorage.setItem('cc.iconcolor', '#ff0000');
@@ -77,11 +79,11 @@ function makeStorage() {
   const code = grabBetween(src,
     'var uiSyncT = null, uiPending = {};',
     'function collectUISettings()');
-  const { store, localStorage } = makeStorage();
+  const { store, localStorage, Storage } = makeStorage();
   const win = {};
-  const run = new Function('window', 'localStorage', 'pushUISettings', 'setTimeout', 'clearTimeout',
+  const run = new Function('window', 'localStorage', 'Storage', 'pushUISettings', 'setTimeout', 'clearTimeout',
     code + '\nreturn { uiPending: uiPending };');
-  const state = run(win, localStorage, () => {}, setTimeout, clearTimeout);
+  const state = run(win, localStorage, Storage, () => {}, setTimeout, clearTimeout);
 
   console.log('\nsettings.js: cc.* setItem and removeItem both reach uiPending');
   localStorage.setItem('cc.accent', '#2f6feb');
@@ -101,11 +103,11 @@ function makeStorage() {
 
   console.log('\ncc-theme.js: the same on every other page, such as Plugins, VMs or Shares');
   {
-    const { store, localStorage } = makeStorage();
+    const { store, localStorage, Storage } = makeStorage();
     const win = {};
-    const run = new Function('window', 'localStorage', 'location', 'push', 'setTimeout', 'clearTimeout',
+    const run = new Function('window', 'localStorage', 'Storage', 'location', 'push', 'setTimeout', 'clearTimeout',
       code + '\nreturn { pending: pending };');
-    const state = run(win, localStorage, { pathname: '/Plugins' }, () => {}, setTimeout, clearTimeout);
+    const state = run(win, localStorage, Storage, { pathname: '/Plugins' }, () => {}, setTimeout, clearTimeout);
     localStorage.setItem('cc.rainbow', '1');
     ok('on /Plugins: setItem queues the key', state.pending['cc.rainbow'] === 1);
     clearMap(state.pending);
@@ -117,10 +119,10 @@ function makeStorage() {
     // The pathname guard is a bare return at the top of the block, ahead of both
     // patches, so on /Docker localStorage comes out of this untouched and
     // docker.js's copy is the only one that owns it.
-    const { localStorage } = makeStorage();
+    const { localStorage, Storage } = makeStorage();
     const win = {};
     const origSet = localStorage.setItem, origRemove = localStorage.removeItem;
-    const run = new Function('window', 'localStorage', 'location', 'push', 'setTimeout', 'clearTimeout', code);
+    const run = new Function('window', 'localStorage', 'Storage', 'location', 'push', 'setTimeout', 'clearTimeout', code);
     run(win, localStorage, { pathname: '/Docker' }, () => {}, setTimeout, clearTimeout);
     ok('on /Docker: cc-theme.js leaves localStorage.setItem alone', localStorage.setItem === origSet);
     ok('on /Docker: cc-theme.js leaves localStorage.removeItem alone', localStorage.removeItem === origRemove);

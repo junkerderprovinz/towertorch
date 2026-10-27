@@ -8,9 +8,9 @@ const { DIR } = require('./cascade');
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
-// The wrapper's own source: from "localStorage.setItem = function (k, v) {" to its closing "};".
+// The hook's own source: from "Storage.prototype.setItem = function (k, v) {" to its closing "};".
 function wrapperOf(src) {
-  const i = src.indexOf('localStorage.setItem = function (k, v) {');
+  const i = src.indexOf('Storage.prototype.setItem = function (k, v) {');
   if (i < 0) return null;
   let d = 0;
   for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } }
@@ -25,8 +25,8 @@ for (const [file, pend, timer, fn] of [['scripts/settings.js', 'uiPending', 'uiS
   const store = { 'cc.settab': 'docker' };
   const ls = { getItem: (k) => (k in store ? store[k] : null) };
   const orig = (k, v) => { store[k] = String(v); };
-  const env = new Function('localStorage', 'orig', 'setTimeout', 'clearTimeout',
-    `var ${pend} = {}, ${timer} = null; function ${fn}() {}\n${w.replace(/^localStorage\.setItem = /, 'var set = ')};\nreturn { set: set, pending: ${pend} };`)(ls, orig, () => 1, () => {});
+  const env = new Function('localStorage', 'orig', 'protoSet', 'setTimeout', 'clearTimeout',
+    `var ${pend} = {}, ${timer} = null; function ${fn}() {}\n${w.replace(/^Storage\.prototype\.setItem = /, 'var hook = ')};\nreturn { set: function (k, v) { return hook.call(localStorage, k, v); }, pending: ${pend} };`)(ls, orig, orig, () => 1, () => {});
   env.set('cc.settab', 'docker');
   ok('a write of the stored value queues nothing', !('cc.settab' in env.pending), Object.keys(env.pending).join(' '));
   env.set('cc.settab', 'vms');
@@ -34,6 +34,12 @@ for (const [file, pend, timer, fn] of [['scripts/settings.js', 'uiPending', 'uiS
   ok('and stored', store['cc.settab'] === 'vms');
   env.set('cc.newkey', '1');
   ok('a key stored for the first time is queued', 'cc.newkey' in env.pending);
+}
+
+console.log('\nThe hooks reach Firefox');
+for (const file of fs.readdirSync(path.join(DIR, 'scripts')).filter((f) => f.endsWith('.js'))) {
+  const src = fs.readFileSync(path.join(DIR, 'scripts', file), 'utf8');
+  ok(file + ' assigns nothing to localStorage.setItem or removeItem, which Firefox keeps as an item', !/localStorage\.(setItem|removeItem)\s*=[^=]/.test(src));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
