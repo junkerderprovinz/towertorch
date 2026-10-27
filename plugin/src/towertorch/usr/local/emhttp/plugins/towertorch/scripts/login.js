@@ -1,10 +1,15 @@
 /* TowerTorch: the login page. include/login-head.php writes this into Unraid's login page next to
- * styles/login.css. It reads the accent and the shape from the same localStorage keys the
- * interface uses, puts the logo above the server name, and leaves the stock page alone when
- * theming is switched off. */
+ * styles/login.css, together with the cc.* settings the engine keeps for every browser. Those come
+ * first, since a browser that clears its storage would otherwise meet the defaults here; the
+ * browser's own keys fill what the engine does not have. It puts the logo above the server name
+ * and leaves the stock page alone when theming is switched off. */
 (function () {
   "use strict";
-  function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
+  var server = window.TT_LOGIN_UI || {};
+  function g(k, d) {
+    if (typeof server[k] === "string") return server[k];
+    try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; }
+  }
 
   if (g("cc.theming", "1") === "0") {
     var sheet = document.getElementById("towertorch-login");
@@ -25,6 +30,8 @@
   root.style.setProperty("--tt-accent-ink", idealText(accent));
   var shape = g("cc.badgeshape", "round");
   root.setAttribute("data-cc-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
+  // The reactive colour mode (stored as "active") rests the button grey until it has the pointer.
+  root.classList.toggle("tt-reactive", g("cc.rbmode", "all") === "active");
 
   document.addEventListener("DOMContentLoaded", function () {
     var content = document.querySelector("#login .content");

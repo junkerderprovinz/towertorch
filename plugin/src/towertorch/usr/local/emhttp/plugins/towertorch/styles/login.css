@@ -144,6 +144,8 @@ html body #login .button:active,
 html body #login .form button:active { transform: scale(.98); }
 html body #login .button:focus-visible,
 html body #login .form button:focus-visible { outline: 2px solid var(--tt-text); outline-offset: 2px; }
+html.tt-reactive body #login .button:not(:hover):not(:focus-visible),
+html.tt-reactive body #login .form button:not(:hover):not(:focus-visible) { background: var(--tt-field); color: var(--tt-text); }
 
 html body #login .error {
   margin: 12px 0 0;
