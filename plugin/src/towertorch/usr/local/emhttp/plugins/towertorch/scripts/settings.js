@@ -89,6 +89,14 @@
       "#cc-settings .cc-set-prose{text-align:start}" +
       // One font with the rest of Unraid: the page takes the theme's face, as every other page does.
       "#cc-settings{font-family:inherit}" +
+      // The plugin's logo and name over the page, drawn alike on ShipLog's and FireSquire's settings
+      // pages. The start inset lines it up with the tiles of the tab column.
+      "#cc-settings .cc-hero{display:flex;align-items:center;gap:20px;min-width:0;margin:4px 0 16px 4px}" +
+      "#cc-settings .cc-hero-tile{flex:none;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:88px;height:88px;padding:10px;border-radius:var(--cc-radius-control);background:rgba(128,128,128,.18)}" +
+      "#cc-settings .cc-hero-tile img{display:block;width:100%;height:100%;object-fit:contain}" +
+      "#cc-settings .cc-hero-text{min-width:0}" +
+      "#cc-settings .cc-hero-name{margin:0;font-family:inherit;font-size:32px;font-weight:700;line-height:1.15;letter-spacing:normal;text-transform:none;color:var(--cc-text)}" +
+      "#cc-settings .cc-hero-sub{margin:4px 0 0;font-size:var(--cc-text-subline);line-height:1.45;text-align:start;color:var(--cc-text-dim)}" +
       "#cc-settings .cc-set-cname .cc-info{margin-left:6px;vertical-align:-2px}" +
       // A selector sits at the end of its row in a groove, its segments one width, and only the chosen one is a badge.
       "#cc-settings .cc-seg.cc-set-mode{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;box-sizing:border-box;background:var(--cc-surface-base,#161616)}" +
@@ -169,6 +177,8 @@
       // and keeps the row's end (GlimStone, "Narrow windows"). A selector or a group of buttons
       // still wider than the card breaks into even rows rather than pushing the page sideways.
       "@media (max-width:1023px){" +
+        "#cc-settings .cc-hero-tile{width:72px;height:72px;padding:8px}" +
+        "#cc-settings .cc-hero-name{font-size:26px}" +
         "#cc-settings .cc-set-row.cc-set-inline{flex-wrap:wrap;row-gap:8px}" +
         "#cc-settings .cc-set-row.cc-set-inline > :last-child{margin-left:auto;max-width:100%}" +
         "#cc-settings .cc-set-colend{flex-wrap:wrap;justify-content:flex-end;row-gap:8px;min-width:0}" +
@@ -940,10 +950,8 @@
     root.style.setProperty("--cc-accent", accent);
     root.style.setProperty("--cc-accent-text", idealText(accent));
 
-    // The page has no heading (GlimStone rule 30): the tile column already says where this is, so
-    // the cards start right below the main menu. The settings search, which filters cards and rows
-    // across every tab, opens with "/" or from the command palette and shows above the cards only
-    // while it is open.
+    // The settings search, which filters cards and rows across every tab, opens with "/" or from the
+    // command palette and shows above the cards only while it is open.
     var setSearch = el("input", "cc-set-search"); setSearch.type = "search"; setSearch.placeholder = T("Einstellungen durchsuchen …", "Search settings …"); setSearch.spellcheck = false;
     var searchBadge = el("div", "cc-set-searchbadge");
     var searchIcon = el("span", "cc-set-searchicon"); searchIcon.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14 3.072a8 8 0 0 1 2.32 11.834l5.387 5.387a1 1 0 0 1 -1.414 1.414l-5.388 -5.387a8 8 0 1 1 -.905 -13.249" /></svg>';   // tabler filled/search
@@ -979,7 +987,7 @@
       });
     }
 
-    // the Unraid title strip between the main menu and our tiles is redundant here
+    // the header names the page, so Unraid's title strip would say it twice
     try { Array.prototype.slice.call(document.querySelectorAll("div.title")).forEach(function (tt) { tt.style.setProperty("display", "none", "important"); }); } catch (e9) {}
     // three sections: Docker Tab | Plugin Tab | VM Tab (minimal tab row)
     var tabRow = el("div", "cc-set-tabs");
@@ -1327,6 +1335,13 @@
       var onNarrow = function () { window.__ccSetTabTips(); };
       if (narrowMq.addEventListener) narrowMq.addEventListener("change", onNarrow); else narrowMq.addListener(onNarrow);
     }
+    var hero = el("div", "cc-hero"), heroTile = el("span", "cc-hero-tile"), heroLogo = el("img"), heroText = el("div", "cc-hero-text");
+    heroLogo.src = "/plugins/towertorch/images/towertorch.png"; heroLogo.alt = "";
+    heroTile.appendChild(heroLogo);
+    heroText.appendChild(el("h1", "cc-hero-name", "TowerTorch"));
+    heroText.appendChild(el("p", "cc-hero-sub", T("Eine runderneuerte, moderne Oberfläche für deinen ganzen Unraid-Server, ohne eine einzige Seite zu ersetzen.", "A revamped, modern interface for your whole Unraid server, without replacing a single page.")));
+    hero.appendChild(heroTile); hero.appendChild(heroText);
+    root.appendChild(hero);
     var body = el("div", "cc-set-body"), main = el("div", "cc-set-main");
     body.appendChild(tabRow); body.appendChild(main);
     root.appendChild(body);
