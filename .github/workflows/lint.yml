@@ -33,7 +33,7 @@ jobs:
       # check plus the DOM-shim tests that replay Unraid's markup.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          node-version: "24"
+          node-version: "26"
       - name: js syntax
         run: find plugin/src -name '*.js' -print0 | xargs -0 -r -n1 node --check
       - name: js dom tests
