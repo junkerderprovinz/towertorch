@@ -278,7 +278,7 @@ console.log('\nPart 5: the previews read the row fragment, never the page shell'
   const DOMParserShim = function () {
     this.parseFromString = html => { const r = parseHTML(html); return { querySelector: s => r.querySelector(s), querySelectorAll: s => r.querySelectorAll(s) }; };
   };
-  const mod = new Function('fetch', 'DOMParser', srcIconSrc.replace(/^var ICON_SRC = /, 'var ICON_SRC = ') + ';\n' + srcRowIcons + '\nreturn { ICON_SRC: ICON_SRC, rowIcons: rowIcons };')(fetchShim, DOMParserShim);
+  const mod = new Function('fetch', 'DOMParser', srcIconSrc + ';\n' + srcRowIcons + '\nreturn { ICON_SRC: ICON_SRC, rowIcons: rowIcons };')(fetchShim, DOMParserShim);
   const run = (kind, markup, max) => { body = markup; return mod.rowIcons(kind, max); };
 
   const results = {};
