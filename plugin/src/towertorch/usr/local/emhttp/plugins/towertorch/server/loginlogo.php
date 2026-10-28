@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET['img'])) {
     header('Content-Type: ' . (TYPES[pathinfo($file, PATHINFO_EXTENSION)] ?? 'image/png'));
     header('Cache-Control: private, max-age=31536000, immutable');
     header('X-Content-Type-Options: nosniff');
+    header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox");
     readfile($file);
     exit;
 }
