@@ -18,6 +18,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"html"
 	"io"
 	"net/http"
 	"os"
@@ -196,7 +197,8 @@ func (r *Resolver) enqueue(key string) {
 	}
 }
 
-// SVG returns the cached artwork for a name, if any.
+// SVG returns the cached artwork for a name, if any. The script check runs here
+// as well, because a cache written by an older version was never filtered.
 func (r *Resolver) SVG(name string) ([]byte, string, bool) {
 	key := normalise(name)
 	r.mu.Lock()
@@ -206,7 +208,7 @@ func (r *Resolver) SVG(name string) ([]byte, string, bool) {
 		return nil, "", false
 	}
 	b, err := os.ReadFile(filepath.Join(r.dir, e.File))
-	if err != nil {
+	if err != nil || scriptable(b) {
 		return nil, "", false
 	}
 	return b, e.Kind, true
@@ -274,7 +276,7 @@ func (r *Resolver) lookup(key string) {
 			if status == http.StatusNotFound {
 				return entry{}, false // the mirror would say the same
 			}
-			if status != http.StatusOK || !looksLikeSVG(body) {
+			if status != http.StatusOK || !looksLikeSVG(body) || scriptable(body) {
 				continue
 			}
 			file, werr := r.store(body)
@@ -476,4 +478,21 @@ func looksLikeSVG(b []byte) bool {
 		return strings.Contains(head, "<svg")
 	}
 	return strings.HasPrefix(head, "<svg")
+}
+
+// activeContent matches what could run in an SVG opened as a page: a script in
+// any namespace, an event handler attribute, a foreignObject carrying HTML, and
+// an entity declaration, which could assemble any of these out of sight.
+var activeContent = regexp.MustCompile(`<([a-z0-9_.-]+:)?(script|foreignobject)\b|[\s"'/]on[a-z]+\s*=|<!entity`)
+
+// urlBreaks are the characters a browser drops from a URL before it reads the
+// scheme, which turns java&#9;script: into javascript:.
+var urlBreaks = strings.NewReplacer("\t", "", "\n", "", "\r", "")
+
+// scriptable reports whether an icon could run script. The set follows the
+// icon projects' default branches, so a single bad commit upstream would
+// otherwise reach the WebGUI and run in the admin's session.
+func scriptable(b []byte) bool {
+	s := strings.ToLower(html.UnescapeString(string(b)))
+	return activeContent.MatchString(s) || strings.Contains(urlBreaks.Replace(s), "javascript:")
 }

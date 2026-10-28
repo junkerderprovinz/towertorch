@@ -199,6 +199,10 @@ func (s *Server) handleIconSVG(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "image/svg+xml")
 	w.Header().Set("Cache-Control", "public, max-age=86400")
+	// The artwork comes from a CDN but sits on the WebGUI's origin, so opening
+	// it as a page must not run anything in it.
+	w.Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
 	_, _ = w.Write(body)
 }
 

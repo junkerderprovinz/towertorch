@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/junkerderprovinz/towertorch/internal/hostcpu"
+	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
 	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
@@ -548,5 +549,32 @@ func TestBugReportIsARedactedDownload(t *testing.T) {
 	}
 	if !strings.Contains(body, "Engine:  v1.2.0") || !strings.Contains(body, `"name": "db"`) {
 		t.Errorf("the report lacks the version or the plan:\n%s", body)
+	}
+}
+
+type fakeIcons struct{ svg []byte }
+
+func (f fakeIcons) Resolve([]string) map[string]iconsrc.Result { return nil }
+func (f fakeIcons) SVG(string) ([]byte, string, bool)          { return f.svg, iconsrc.KindGlyph, true }
+
+// An icon comes from a third-party CDN and is served on the WebGUI's origin, so
+// opening its URL directly must not run anything inside it.
+func TestIconSVGIsSandboxed(t *testing.T) {
+	s, h := newServer()
+	s.Icons = fakeIcons{svg: []byte(`<svg xmlns="http://www.w3.org/2000/svg"/>`)}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("GET", "/api/iconsvg?name=plex", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("code = %d", rec.Code)
+	}
+	want := map[string]string{
+		"Content-Type":            "image/svg+xml",
+		"Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+		"X-Content-Type-Options":  "nosniff",
+	}
+	for k, v := range want {
+		if got := rec.Header().Get(k); got != v {
+			t.Errorf("%s = %q, want %q", k, got, v)
+		}
 	}
 }

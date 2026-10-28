@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -214,6 +215,83 @@ func TestOversizedAndNonSVGBodiesAreRejected(t *testing.T) {
 		if _, _, ok := r.SVG(name); ok {
 			t.Fatalf("%s: a rejected body must not be cached as artwork", name)
 		}
+	}
+}
+
+func TestScriptable(t *testing.T) {
+	benign := map[string]string{
+		"simple-icons glyph":     glyphSVG,
+		"dashboard-icons colour": colorSVG,
+		"gradient and use": `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 256">
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdd835"/><stop offset="1" stop-color="#f57f17"/></linearGradient>
+<path id="b" d="M128 16 240 128 128 240 16 128z"/></defs>
+<use xlink:href="#b" fill="url(#a)" opacity=".9"/></svg>`,
+		"style element": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>.cls-1{fill:#2496ed}.cls-2{fill:none;stroke:#fff}</style><circle class="cls-1" cx="32" cy="32" r="30"/></svg>`,
+		"doctype from an editor": `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 100 100" xml:space="preserve"><polygon points="50,5 95,95 5,95"/></svg>`,
+		"names that start with on": `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>ONLYOFFICE</title><path d="M0 0h24v24H0z"/></svg>`,
+		"javascript as a title":    `<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>JavaScript</title><path d="M0 0h24v24H0z"/></svg>`,
+	}
+	for name, svg := range benign {
+		if scriptable([]byte(svg)) {
+			t.Errorf("%s: rejected a plain icon", name)
+		}
+	}
+
+	hostile := map[string]string{
+		"script element":          `<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>`,
+		"upper-case script":       `<SVG xmlns="http://www.w3.org/2000/svg"><SCRIPT>alert(1)</SCRIPT></SVG>`,
+		"prefixed script":         `<svg xmlns:h="http://www.w3.org/1999/xhtml"><h:script>alert(1)</h:script></svg>`,
+		"onload on the root":      `<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>`,
+		"handler after a slash":   `<svg/onload=alert(1)>`,
+		"spaced mixed-case event": `<svg xmlns="http://www.w3.org/2000/svg"><rect ONClick = "alert(1)"/></svg>`,
+		"javascript link":         `<svg xmlns="http://www.w3.org/2000/svg"><a href="javascript:alert(1)"><rect/></a></svg>`,
+		"xlink javascript":        `<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="JaVaScRiPt:alert(1)"><rect/></a></svg>`,
+		"entity-encoded scheme":   `<svg><a href="&#106;avascript:alert(1)"><rect/></a></svg>`,
+		"tab inside the scheme":   `<svg><a href="java&#9;script:alert(1)"><rect/></a></svg>`,
+		"animated href":           `<svg><a><set attributeName="href" to="javascript:alert(1)"/><rect/></a></svg>`,
+		"foreignObject":           `<svg><foreignObject><iframe xmlns="http://www.w3.org/1999/xhtml" src="x"/></foreignObject></svg>`,
+		"entity declaration":      `<!DOCTYPE svg [<!ENTITY s "&#60;script>alert(1)&#60;/script>">]><svg>&s;</svg>`,
+	}
+	for name, svg := range hostile {
+		if !scriptable([]byte(svg)) {
+			t.Errorf("%s: let a scriptable SVG through", name)
+		}
+	}
+}
+
+func TestScriptableIconIsNeverServed(t *testing.T) {
+	const evil = `<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"><path d="M0 0h24v24H0z"/></svg>`
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(evil))
+	}))
+	defer srv.Close()
+	r := newTest(t, srv.URL+"/simple/", srv.URL+"/dash/")
+	r.Resolve([]string{"plex"})
+	waitFor(t, "plex", func() bool { return r.Resolve([]string{"plex"})["plex"].Kind == KindNone })
+	if _, _, ok := r.SVG("plex"); ok {
+		t.Fatal("a fetched SVG with an event handler was cached")
+	}
+
+	// A file cached before the check existed is refused when it is served.
+	dir := t.TempDir()
+	icons := filepath.Join(dir, "icons")
+	if err := os.MkdirAll(icons, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(icons, "evil.svg"), []byte(evil), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	index := `{"plex":{"kind":"glyph","source":"simple-icons","slug":"plex","file":"evil.svg","at":` + strconv.FormatInt(time.Now().Unix(), 10) + `}}`
+	if err := os.WriteFile(filepath.Join(icons, "index.json"), []byte(index), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	stale := New(dir)
+	defer stale.Close()
+	if _, _, ok := stale.SVG("plex"); ok {
+		t.Fatal("a scriptable SVG already in the cache was served")
 	}
 }
 

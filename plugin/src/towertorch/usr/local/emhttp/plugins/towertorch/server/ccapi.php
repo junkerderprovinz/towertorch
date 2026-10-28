@@ -27,10 +27,13 @@ $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '
 $method = $_SERVER['REQUEST_METHOD'];
 
 // iconsvg answers with SVG artwork, cached by the browser so each icon is fetched
-// once, and bugreport with plain text that is never cached.
+// once, and bugreport with plain text that is never cached. The artwork comes
+// from a CDN, so opening it as a page on this origin must not run anything in it.
 if ($path === 'iconsvg') {
     header('Content-Type: image/svg+xml');
     header('Cache-Control: public, max-age=86400');
+    header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox");
+    header('X-Content-Type-Options: nosniff');
 } elseif ($path === 'bugreport') {
     header('Content-Type: text/plain; charset=utf-8');
     header('Cache-Control: no-store');
