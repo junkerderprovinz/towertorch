@@ -264,9 +264,9 @@
     IconCornerSquare: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H14V14H0ZM2 2H12V12H2Z" />'],
     IconBadgeFlat: ["0.5 0.5 13 13", '<path fill-rule="evenodd" clip-rule="evenodd" d="M4 3.5H10A3.5 3.5 0 0 1 13.5 7V7A3.5 3.5 0 0 1 10 10.5H4A3.5 3.5 0 0 1 0.5 7V7A3.5 3.5 0 0 1 4 3.5Z" />'],
     IconBadgeGlass: ["0.5 0.5 13 13", '<path fill-rule="evenodd" clip-rule="evenodd" d="M4 3.5H10A3.5 3.5 0 0 1 13.5 7V7A3.5 3.5 0 0 1 10 10.5H4A3.5 3.5 0 0 1 0.5 7V7A3.5 3.5 0 0 1 4 3.5ZM5.4 4.9L3.2 9.1L4.9 9.1L7.1 4.9ZM8.3 4.9L6.1 9.1L7.2 9.1L9.4 4.9Z" />'],
-    IconDensityCompact: ["0.2 0.2 13.6 13.6", '<path d="M1 1.8L13 1.8A0.8 0.8 0 0 1 13 3.4L1 3.4A0.8 0.8 0 0 1 1 1.8ZM1 4.73L13 4.73A0.8 0.8 0 0 1 13 6.33L1 6.33A0.8 0.8 0 0 1 1 4.73ZM1 7.67L13 7.67A0.8 0.8 0 0 1 13 9.27L1 9.27A0.8 0.8 0 0 1 1 7.67ZM1 10.6L13 10.6A0.8 0.8 0 0 1 13 12.2L1 12.2A0.8 0.8 0 0 1 1 10.6Z" />'],
-    IconDensityNormal: ["0.1 0.1 13.8 13.8", '<path d="M1 2.1L13 2.1A0.9 0.9 0 0 1 13 3.9L1 3.9A0.9 0.9 0 0 1 1 2.1ZM1 6.1L13 6.1A0.9 0.9 0 0 1 13 7.9L1 7.9A0.9 0.9 0 0 1 1 6.1ZM1 10.1L13 10.1A0.9 0.9 0 0 1 13 11.9L1 11.9A0.9 0.9 0 0 1 1 10.1Z" />'],
-    IconDensityAiry: ["0.1 0.1 13.8 13.8", '<path d="M1 2.6L13 2.6A0.9 0.9 0 0 1 13 4.4L1 4.4A0.9 0.9 0 0 1 1 2.6ZM1 9.6L13 9.6A0.9 0.9 0 0 1 13 11.4L1 11.4A0.9 0.9 0 0 1 1 9.6Z" />'],
+    IconRowCompact: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M0 1.4A.9.9 0 0 1 .9.5H13.1A.9.9 0 0 1 13.1 2.3H.9A.9.9 0 0 1 0 1.4ZM0 5.13A.9.9 0 0 1 .9 4.23H13.1A.9.9 0 0 1 13.1 6.03H.9A.9.9 0 0 1 0 5.13ZM0 8.87A.9.9 0 0 1 .9 7.97H13.1A.9.9 0 0 1 13.1 9.77H.9A.9.9 0 0 1 0 8.87ZM0 12.6A.9.9 0 0 1 .9 11.7H13.1A.9.9 0 0 1 13.1 13.5H.9A.9.9 0 0 1 0 12.6Z" />'],
+    IconRowMedium: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M0 2A1 1 0 0 1 1 1H13A1 1 0 0 1 13 3H1A1 1 0 0 1 0 2ZM0 7A1 1 0 0 1 1 6H13A1 1 0 0 1 13 8H1A1 1 0 0 1 0 7ZM0 12A1 1 0 0 1 1 11H13A1 1 0 0 1 13 13H1A1 1 0 0 1 0 12Z" />'],
+    IconRowComfortable: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M0 3A1.2 1.2 0 0 1 1.2 1.8H12.8A1.2 1.2 0 0 1 12.8 4.2H1.2A1.2 1.2 0 0 1 0 3ZM0 11A1.2 1.2 0 0 1 1.2 9.8H12.8A1.2 1.2 0 0 1 12.8 12.2H1.2A1.2 1.2 0 0 1 0 11Z" />'],
     IconSizeSmall: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M5.4 4H8.6A1.4 1.4 0 0 1 10 5.4V8.6A1.4 1.4 0 0 1 8.6 10H5.4A1.4 1.4 0 0 1 4 8.6V5.4A1.4 1.4 0 0 1 5.4 4Z" />'],
     IconSizeMedium: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3 2.5H9.7A1.8 1.8 0 0 1 11.5 4.3V9.7A1.8 1.8 0 0 1 9.7 11.5H4.3A1.8 1.8 0 0 1 2.5 9.7V4.3A1.8 1.8 0 0 1 4.3 2.5Z" />'],
     IconSizeLarge: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M3.2 1H10.8A2.2 2.2 0 0 1 13 3.2V10.8A2.2 2.2 0 0 1 10.8 13H3.2A2.2 2.2 0 0 1 1 10.8V3.2A2.2 2.2 0 0 1 3.2 1Z" />'],
@@ -288,12 +288,10 @@
     IconWeightBold: ["0 0 14.001 14.001", '<path d="M8.482 2.204L4.082 13.004A1.6 1.6 0 0 1 1.118 11.796L5.518 0.996A1.6 1.6 0 0 1 8.482 2.204ZM8.482 0.996L12.882 11.796A1.6 1.6 0 0 1 9.918 13.004L5.518 2.204A1.6 1.6 0 0 1 8.482 0.996ZM3.944 7.5L10.056 7.5A1.6 1.6 0 0 1 10.056 10.7L3.944 10.7A1.6 1.6 0 0 1 3.944 7.5Z" />'],
     IconUpright: ["0.9 0.9 12.2 12.2", '<path d="M8.1 2L8.1 12A1.1 1.1 0 0 1 5.9 12L5.9 2A1.1 1.1 0 0 1 8.1 2ZM4 0.9L10 0.9A1.1 1.1 0 0 1 10 3.1L4 3.1A1.1 1.1 0 0 1 4 0.9ZM4 10.9L10 10.9A1.1 1.1 0 0 1 10 13.1L4 13.1A1.1 1.1 0 0 1 4 10.9Z" />'],
     IconItalic: ["0.899 0.9 12.2 12.2", '<path d="M9.648 2.335L6.448 12.335A1.1 1.1 0 0 1 4.352 11.665L7.552 1.665A1.1 1.1 0 0 1 9.648 2.335ZM5.6 0.9L11.6 0.9A1.1 1.1 0 0 1 11.6 3.1L5.6 3.1A1.1 1.1 0 0 1 5.6 0.9ZM2.4 10.9L8.4 10.9A1.1 1.1 0 0 1 8.4 13.1L2.4 13.1A1.1 1.1 0 0 1 2.4 10.9Z" />'],
-    // The label modes have no drawing in the set. These share one box, so the glyph and the lines
-    // keep their sizes against each other from choice to choice.
-    IconLabelText: ["0 0 14 14", '<path d="M1.9 4.6H12.1A0.9 0.9 0 0 1 12.1 6.4H1.9A0.9 0.9 0 0 1 1.9 4.6ZM1.9 7.6H8.1A0.9 0.9 0 0 1 8.1 9.4H1.9A0.9 0.9 0 0 1 1.9 7.6Z" />'],
-    IconLabelTextGlyph: ["0 0 14 14", '<path d="M1.7 4.5H4.3A1.2 1.2 0 0 1 5.5 5.7V8.3A1.2 1.2 0 0 1 4.3 9.5H1.7A1.2 1.2 0 0 1 0.5 8.3V5.7A1.2 1.2 0 0 1 1.7 4.5ZM7.9 4.6H12.6A0.9 0.9 0 0 1 12.6 6.4H7.9A0.9 0.9 0 0 1 7.9 4.6ZM7.9 7.6H10.6A0.9 0.9 0 0 1 10.6 9.4H7.9A0.9 0.9 0 0 1 7.9 7.6Z" />'],
-    IconLabelGlyph: ["0 0 14 14", '<path d="M5.1 3.5H8.9A1.6 1.6 0 0 1 10.5 5.1V8.9A1.6 1.6 0 0 1 8.9 10.5H5.1A1.6 1.6 0 0 1 3.5 8.9V5.1A1.6 1.6 0 0 1 5.1 3.5Z" />'],
-    IconLabelReactive: ["0 0 14 14", '<path d="M1.7 4.5H4.3A1.2 1.2 0 0 1 5.5 5.7V8.3A1.2 1.2 0 0 1 4.3 9.5H1.7A1.2 1.2 0 0 1 0.5 8.3V5.7A1.2 1.2 0 0 1 1.7 4.5ZM8 6.1A0.9 0.9 0 1 1 8 7.9A0.9 0.9 0 1 1 8 6.1ZM10.8 6.2A0.8 0.8 0 1 1 10.8 7.8A0.8 0.8 0 1 1 10.8 6.2ZM12.95 6.45A0.55 0.55 0 1 1 12.95 7.55A0.55 0.55 0 1 1 12.95 6.45Z" />']
+    IconLabelText: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M0 3.5A1 1 0 0 1 1 2.5H13A1 1 0 0 1 13 4.5H1A1 1 0 0 1 0 3.5ZM0 7A1 1 0 0 1 1 6H13A1 1 0 0 1 13 8H1A1 1 0 0 1 0 7ZM0 10.5A1 1 0 0 1 1 9.5H8A1 1 0 0 1 8 11.5H1A1 1 0 0 1 0 10.5Z" />'],
+    IconLabelTextGlyph: ["0 0 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M3 4A3 3 0 1 1 3 10 3 3 0 1 1 3 4ZM7 5A1 1 0 0 1 8 4H13A1 1 0 0 1 13 6H8A1 1 0 0 1 7 5ZM7 9A1 1 0 0 1 8 8H11A1 1 0 0 1 11 10H8A1 1 0 0 1 7 9Z" />'],
+    IconLabelGlyph: ["1.5 1.5 11 11", '<path fill-rule="evenodd" clip-rule="evenodd" d="M7 1.5A5.5 5.5 0 1 1 7 12.5 5.5 5.5 0 1 1 7 1.5Z" />'],
+    IconLabelReactive: ["0.25 0.5 14 14", '<path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 0.5A4 4 0 1 1 4.5 8.5 4 4 0 1 1 4.5 0.5ZM8.8 8.8 14 11 11.7 11.7 13.2 13.9 12.2 14.5 10.8 12.3 9.2 13.9Z" />']
   };
   function segGlyph(name) {
     var g = SEG_GLYPHS[name], svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -1610,7 +1608,7 @@
     paintExceptions();
     // Density and tile size are each one key every list reads, so they sit here with the other
     // global controls rather than being repeated per tab.
-    if (themingCard) themingCard.appendChild(segRow(T("Dichte", "Density"), [["compact", T("Kompakt", "Compact"), "IconDensityCompact"], ["normal", "Normal", "IconDensityNormal"], ["airy", T("Luftig", "Airy"), "IconDensityAiry"]], density, function (v) { density = v; set("cc.density", v); }, T("Gilt global für alle Listen: Docker, Start, Freigaben und VMs.", "Applies globally to every list: Docker, Start, Shares and VMs."), true));
+    if (themingCard) themingCard.appendChild(segRow(T("Dichte", "Density"), [["compact", T("Kompakt", "Compact"), "IconRowCompact"], ["normal", "Normal", "IconRowMedium"], ["airy", T("Luftig", "Airy"), "IconRowComfortable"]], density, function (v) { density = v; set("cc.density", v); }, T("Gilt global für alle Listen: Docker, Start, Freigaben und VMs.", "Applies globally to every list: Docker, Start, Shares and VMs."), true));
     if (themingCard) themingCard.appendChild(tileSizeRow());
     // The global logos card edits the shared icon keys every adopting tab resolves through eff().
     // It carries the same controls as a per-area card and the same preview: this is where the icon
