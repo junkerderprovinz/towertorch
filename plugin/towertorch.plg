@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.3.0">
+  <!ENTITY version   "1.3.1">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "6a0934877aff7b77f35fcd996e33f7bfaface132dd530195ca81600aaccee865">
+  <!ENTITY sha256    "4a2001ab893c8bf943c9f88e508ea406bf601ebb28f6123f39a332f8bc49dc78">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,11 @@
 </ICON>
 
 <CHANGES>
+### 1.3.1
+**🐛 Fixed**
+- Icons fetched for containers, VMs and plugins can no longer run script. The few upstream icons that contain script are refused, and those apps show their own icon instead.
+- An SVG uploaded as the login logo can no longer run script either.
+
 ### 1.3.0
 TowerTorch now covers Unraid's login page too, puts glyphs on Unraid's own buttons and shows the Dashboard's containers and VMs as tiles. The settings page opens with a banner, and the coffee, PayPal and crypto buttons open their windows right in the page.
 
