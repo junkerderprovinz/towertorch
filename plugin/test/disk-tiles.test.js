@@ -229,7 +229,7 @@ console.log('\nThe view: one switch and one key for the whole page');
   ok('its bubble points to the switch on the page', /Der Schalter oben im Tab Start stellt dasselbe um\./.test(row) && /The switch at the top of the Main tab changes the same setting\./.test(row));
   ok('it offers Liste and Kacheln with the view glyphs', /\[\["list", T\("Liste", "List"\), "IconViewList"\], \["tiles", T\("Kacheln", "Tiles"\), "IconViewGrid"\]\]/.test(row));
   ok('it has a bubble and a preview right under its selector', /, help\)\);/.test(row) && /viewPreview\(opts, diskSketch\)/.test(row) && /c\.appendChild\(slot\); c\.appendChild\(prev\.el\);/.test(row));
-  ok('a spun-down disk says "Ruht" once, where its temperature would be, never an active chip', /if \(d\.down\) return glyph\("Moon"\) \+ esc\(t\("resting"\)\);/.test(js) && (js.match(/t\("resting"\)/g) || []).length === 1 && !/Aktiv/.test(js));
+  ok('a spun-down disk says "Ruht" once, where its temperature would be, never an active chip', /if \(d\.down\) return glyph\("Sleep"\) \+ esc\(t\("resting"\)\);/.test(js) && (js.match(/t\("resting"\)/g) || []).length === 1 && !/Aktiv/.test(js));
 }
 
 console.log('\nThe tile view hides the table controls');

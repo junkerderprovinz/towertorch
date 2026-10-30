@@ -142,7 +142,7 @@
   // stay Unraid's own elements with Unraid's handlers and confirmations; each takes a glyph from the
   // set where the set has the meaning, a name for the bubble and for a screen reader, and Tab and
   // Enter. A control with no name of CC's own keeps Unraid's text.
-  var BTN_GLYPH = { "fa-stop-circle": "Stop", "fa-play-circle": "Play", "fa-moon-o": "Moon", "fa-refresh": "Power", "fa-power-off": "Power", "fa-cog": "Gear", "fa-info-circle": "Info" };
+  var BTN_GLYPH = { "fa-stop-circle": "Stop", "fa-play-circle": "Play", "fa-moon-o": "Sleep", "fa-refresh": "Power", "fa-power-off": "Power", "fa-cog": "Gear", "fa-info-circle": "Info" };
   function btnName(b) {
     var c = b.classList;
     if (c.contains("fa-stop-circle")) return t("stop");
@@ -522,7 +522,7 @@
       var n = cs[i].firstChild;
       if (!n || n.nodeType !== 3 || n.nodeValue.trim() !== "*") continue;
       var r = el("span", "cc-dash-rest");
-      r.innerHTML = (window.CCTheme && CCTheme.glyph ? CCTheme.glyph("Moon") : "") + t("resting");
+      r.innerHTML = (window.CCTheme && CCTheme.glyph ? CCTheme.glyph("Sleep") : "") + t("resting");
       cs[i].replaceChild(r, n);
     }
     if (LANG !== "de") return;

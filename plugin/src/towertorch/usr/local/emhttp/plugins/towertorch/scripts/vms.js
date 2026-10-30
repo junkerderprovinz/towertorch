@@ -822,7 +822,7 @@
       : actBtn("Play", de ? "Starten" : "Start", function () { vmDisp("domain-start", uuid); }));
     var extras = [];
     if (cx.vmrcurl && running) extras.push({ glyph: "VM", label: (de ? "VM-Konsole" : "VM Console") + (cx.proto ? " (" + cx.proto + ")" : ""), run: function () { window.open(cx.vmrcurl, "_blank", "scrollbars=yes,resizable=yes"); } });
-    if (running) extras.push({ glyph: "Moon", label: de ? "Ruhezustand" : "Hibernate", run: function () { vmDisp("domain-pmsuspend", uuid); } });
+    if (running) extras.push({ glyph: "Sleep", label: de ? "Ruhezustand" : "Hibernate", run: function () { vmDisp("domain-pmsuspend", uuid); } });
     if (running || paused) extras.push({ glyph: "Power", label: de ? "Stopp erzwingen" : "Force Stop", run: function () { vmDisp("domain-destroy", uuid); } });
     if ((running || shutoff) && typeof window.selectsnapshot === "function") extras.push({ glyph: "BackupNow", label: de ? "Snapshot erstellen" : "Create Snapshot", run: function () { window.selectsnapshot(uuid, name, "--generate", "create", false, st, cx.fstype); } });
     if (shutoff && typeof window.VMClone === "function") extras.push({ glyph: "Copy", label: de ? "Klonen" : "Clone", run: function () { window.VMClone(uuid, name); } });

@@ -56,7 +56,7 @@
     Resume: ["resume", "fortsetzen", "resume all", "alle fortsetzen"],
     Pause: ["pause", "pausieren", "pause all", "alle pausieren"],
     Stop: ["stop", "stopp", "stoppen", "stop all", "alle stoppen"],
-    Moon: ["spin down", "platten anhalten"],
+    Sleep: ["spin down", "platten anhalten"],
     Power: ["shutdown", "herunterfahren", "reboot", "neu starten"],
     Pencil: ["edit", "bearbeiten", "change", "ändern", "rename", "umbenennen"],
     Copy: ["copy", "kopieren"],
