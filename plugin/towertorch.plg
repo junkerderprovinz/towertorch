@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.3.1">
+  <!ENTITY version   "1.4.0">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "4a2001ab893c8bf943c9f88e508ea406bf601ebb28f6123f39a332f8bc49dc78">
+  <!ENTITY sha256    "294f1f5fe3088f25dc7a6a5ed67d123a679ee9d20ea76ef33915d20e7fe550ef">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,21 @@
 </ICON>
 
 <CHANGES>
+### 1.4.0
+TowerTorch moves to GlimStone 3.8.0. Its own buttons get glyphs, and Unraid's buttons wear the glyph that fits what they do.
+
+**🎨 Design**
+- **Glyphs on TowerTorch's own buttons.** Buttons that showed only words have a glyph as well: Copy in the coffee, PayPal and crypto windows, the buttons in TowerTorch's question windows, the Docker tab's bulk bar and the buttons on the settings page. They follow the Buttons row on the Labels card, and so do the view switches, New folder and the Settings link in the menu.
+- **Glyphs that match the action.** Reset and Default show the reset glyph, Refresh and Restart the retry glyph, Reboot and Shutdown the power glyph. Done, Apply, Install, Update, Read and Write have glyphs of their own, and Clear shows an emptying glyph instead of the bin. The log button uses GlimStone's log glyph, and a language pack you can install shows the install glyph.
+- **The sleep glyph** on Spin down, on a resting disk and on a VM's Hibernate.
+- **The login page's buttons** for signing in and setting the password show a glyph and follow the Buttons row.
+- **Selectors.** Density on the Theming card and Buttons on the Labels card show GlimStone's row height and label glyphs. On a phone, a selector with long labels puts its choices two to a row and wraps a label instead of cutting it off.
+- The sort reset badge shows the reset glyph, and the Docker allocations link the show glyph.
+- The Version card on the Info tab names GlimStone 3.8.0 and shows version numbers without the leading `v`.
+
+**⚡ Improved**
+- The Dashboard's live bars no longer make the browser lay out the whole page again with every new value.
+
 ### 1.3.1
 **🐛 Fixed**
 - Icons fetched for containers, VMs and plugins can no longer run script. The few upstream icons that contain script are refused, and those apps show their own icon instead.
