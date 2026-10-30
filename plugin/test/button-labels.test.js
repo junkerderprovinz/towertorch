@@ -62,7 +62,9 @@ console.log('\nClose meanings wear different glyphs');
   ok('Read and Write take settings in and out, Upload and Download move files', glyphFor('Read') === 'Import' && glyphFor('Schreiben') === 'Export' && glyphFor('Upload') === 'Upload' && glyphFor('Herunterladen') === 'Download');
   ok('Check tests, Done agrees, Apply takes over, Save saves', glyphFor('Prüfen') === 'Check' && glyphFor('OK') === 'Confirm' && glyphFor('Übernehmen') === 'Apply' && glyphFor('Speichern') === 'Save');
   ok('Install, Update and Restore each wear their own', glyphFor('Installieren') === 'Install' && glyphFor('Update All') === 'Update' && glyphFor('Restore') === 'Restore');
-  ok('emptying a list is not deleting it', glyphFor('Clear Log') === 'Empty' && glyphFor('Delete') === 'Trash');
+  ok('emptying a list is not deleting it', glyphFor('Clear Log') === 'Empty' && glyphFor('Delete') === 'Trash' && glyphFor('Erase') === 'Trash');
+  ok('a restart tries again, a reboot is the power button', glyphFor('Neustart') === 'Retry' && glyphFor('Reboot') === 'Power' && glyphFor('Neu starten') === 'Power');
+  ok('a rescan searches and a licence key stays a key', glyphFor('Rescan') === 'Search' && glyphFor('Lizenz installieren') === 'Key');
 }
 
 console.log('\nAn unknown caption keeps its text');

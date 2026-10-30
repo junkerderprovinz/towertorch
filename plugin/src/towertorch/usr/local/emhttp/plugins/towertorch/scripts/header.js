@@ -1879,7 +1879,7 @@
           chip.appendChild(flagWrap);
           ccLangFlagImg(flagWrap, p.code);
           chip.appendChild(ccMkEl("span", "cc-tsel-avail-name", p.local || p.name || p.code));
-          chip.appendChild(ccGlyphEl("Download", "cc-tsel-avail-dl"));
+          chip.appendChild(ccGlyphEl("Install", "cc-tsel-avail-dl"));
           chip.setAttribute("role", "option"); chip.setAttribute("tabindex", "-1");
           chip.title = LANG === "de" ? "Nicht installiert, klicken, um es in Community Applications zu finden" : "Not installed, click to find it in Community Applications";
           chip.addEventListener("click", function (ev) {
