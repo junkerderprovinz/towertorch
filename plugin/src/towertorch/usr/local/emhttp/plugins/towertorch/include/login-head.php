@@ -32,7 +32,7 @@
     echo '<script>' . "\n";
     $config = json_decode(@file_get_contents('/boot/config/plugins/towertorch/config.json') ?: '{}', true);
     $ui = array_filter($config['ui_settings'] ?? [], function ($v, $k) {
-        return is_string($v) && preg_match('/^cc\.(theming|accent|badgeshape|rbmode|brand\.[a-z]+)$/', $k);
+        return is_string($v) && preg_match('/^cc\.(theming|accent|badgeshape|rbmode|labels\.buttons|brand\.[a-z]+)$/', $k);
     }, ARRAY_FILTER_USE_BOTH);
     echo 'window.TT_LOGIN_LOGO = ' . json_encode($src) . ";\n";
     echo 'window.TT_LOGIN_UI = ' . json_encode((object) $ui, JSON_HEX_TAG | JSON_HEX_AMP) . ";\n";

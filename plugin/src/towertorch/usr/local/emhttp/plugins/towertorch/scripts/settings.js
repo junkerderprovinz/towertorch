@@ -198,6 +198,12 @@
         "#cc-settings .cc-set-fieldrow > .cc-set-pickrow{flex:1 1 100%}" +
         "#cc-settings .cc-set-swatches.cc-fill{flex-wrap:wrap}" +
         "#cc-settings .cc-set-swatches.cc-fill .cc-set-hexin{min-width:90px}" +
+      "}" +
+      // A selector with long labels sets its segments two to a row, each half the strip less half
+      // the gap, and a label that does not fit its half wraps instead of being cut off.
+      "@media (max-width:599px){" +
+        "#cc-settings .cc-seg.cc-set-mode.cc-set-pairs{flex:1 1 100%;align-items:stretch;--seg-basis:calc(50% - 1.5px)}" +
+        "#cc-settings .cc-set-pairs .cc-seg-btn{flex:1 0 var(--seg-basis, auto);box-sizing:border-box;min-width:0;white-space:normal;text-align:center}" +
       "}";
     document.head.appendChild(st);
   })();
@@ -206,7 +212,7 @@
   function T(d, e) { return de ? d : e; }
   var CC_VER = "@@CCVER@@"; if (CC_VER.indexOf("@@") === 0) CC_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "3.7.1";
+  var GLS_VER = "3.8.0";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
   var LATEST_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest";
@@ -570,9 +576,10 @@
   }
   // GlimStone's horizontal selector in its well styling, compact at the end of its row. An option
   // is [value, label, glyph, unavailable]. The arrows move the choice and the focus with it, as in
-  // a radio group; an unavailable choice stays in view and refuses the move.
-  function modeSelector(opts, cur, onPick) {
-    var box = el("div", "cc-seg cc-set-mode"); box.setAttribute("role", "radiogroup");
+  // a radio group; an unavailable choice stays in view and refuses the move. A selector whose labels
+  // run long takes pairs, and sets its segments two to a row on a phone.
+  function modeSelector(opts, cur, onPick, pairs) {
+    var box = el("div", "cc-seg cc-set-mode" + (pairs ? " cc-set-pairs" : "")); box.setAttribute("role", "radiogroup");
     var btns = opts.map(function (o) {
       var on = o[0] === cur, b = el("span", "cc-seg-btn" + (on ? " cc-seg-on" : ""));
       if (o[2]) b.appendChild(segGlyph(o[2]));
@@ -599,7 +606,7 @@
     return box;
   }
   // The selector for a setting that stays on the page: the pick moves the badge and runs onChange.
-  function segPicker(opts, cur, onChange) {
+  function segPicker(opts, cur, onChange, pairs) {
     var box = modeSelector(opts, cur, function (v) {
       Array.prototype.forEach.call(box.children, function (b, i) {
         var on = opts[i][0] === v;
@@ -608,7 +615,7 @@
       });
       paintToggles();
       onChange(v);
-    });
+    }, pairs);
     return box;
   }
   // The one shape of a setting row: its name and (i) at the start, its control at the end.
@@ -1653,7 +1660,7 @@
         get("cc.iconmode", "auto"),
         function (v) { set("cc.iconmode", v); gsync(); },
         T("Ein Logo ist entweder eine einzelne durchgehende Form oder ein kleines mehrfarbiges Bild. Eine Form kann man komplett in deiner Farbe nachzeichnen und sie bleibt erkennbar; ein Bild würde dabei zum Farbklecks, weil Hintergrund und Motiv dieselbe Farbe bekämen. Darum zwei Behandlungen:\n\nAutomatisch (empfohlen): TowerTorch sieht sich jedes Logo an. Formen werden nachgezeichnet, für bekannte Programme wird dafür sogar ein echtes Marken-Logo geholt; Bilder werden nur eingefärbt.\nNatives Icon: nichts einfärben. Für bekannte Programme nimmt TowerTorch dabei ein sauberes Marken-Logo in seinen eigenen Farben, sonst bleibt das Logo, wie es ist.\nNachzeichnen: alles nachzeichnen, auch Bilder.\nTönen: alles nur einfärben, auch Formen.\n\nDie Wahl wirkt, sobald „Icons einfärben“ an ist. Einzelne Container, VMs und Plugins kannst du in ihrem eigenen Fenster abweichend einstellen; diese Einzelwahl gewinnt immer gegen die Einstellung hier. Ganz unverändert bleibt ein Logo mit „Original-Logo“ im Startplan-Fenster des Containers.",
-          "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): TowerTorch looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app TowerTorch still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window leaves its logo completely untouched."));
+          "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): TowerTorch looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app TowerTorch still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window leaves its logo completely untouched."), true);
       cLI.appendChild(modeRow);
       cLI.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview")));
       // Three preview sections, each with that area's real icons, each running the same pipeline
@@ -2146,7 +2153,7 @@
         LM.indexOf(cur) < 0 ? "textGlyph" : cur,
         function (v) { set("cc.labels.buttons", v); try { window.ccLabelsApply && window.ccLabelsApply(); } catch (e) {} },
         T("Gilt für Unraids eigene Buttons, die TowerTorch als Badge zeichnet. Reaktiv zeigt nur das Symbol und blendet die Wörter ein, sobald du darauf zeigst oder sie mit der Tastatur erreichst. Ein Button ohne passendes Symbol behält seinen Text.",
-          "Applies to Unraid's own buttons that TowerTorch draws as badges. Reactive shows the symbol alone and slides the words in when you point at it or reach it with the keyboard. A button without a matching symbol keeps its text.")));
+          "Applies to Unraid's own buttons that TowerTorch draws as badges. Reactive shows the symbol alone and slides the words in when you point at it or reach it with the keyboard. A button without a matching symbol keeps its text."), true));
       wrapHeader.appendChild(cL);
     })();
     // The server name's look. header.js reads the cc.brand.* keys live and inlines them, so the
@@ -2893,19 +2900,19 @@
       help: T("Ab dieser Temperatur wird ein Wert in der Status-Insel orange, 15 °C darüber rot.", "From this temperature a reading in the status island turns orange, and red 15 °C above it.")
     }, onChange);
   }
-  function segRow(labelText, opts, cur, onChange, help) {
-    return dropRow(labelText, opts, cur, onChange, help);
+  function segRow(labelText, opts, cur, onChange, help, pairs) {
+    return dropRow(labelText, opts, cur, onChange, help, pairs);
   }
   // A setting with up to six choices is GlimStone's horizontal selector at the end of its row,
   // where an option is [value, label, glyph]. A longer list stays a dropdown, a native select
   // dressed as a CC control, where an option is [value, label, face] and the font list previews
   // each face.
   var SEG_MAX = 6;
-  function dropRow(labelText, opts, cur, onChange, help) {
+  function dropRow(labelText, opts, cur, onChange, help, pairs) {
     if (opts.length <= SEG_MAX) {
       var srow = el("div", "cc-set-row cc-set-inline"), lw = el("span", "cc-set-lblwrap");
       lw.appendChild(el("span", null, labelText)); if (help) lw.appendChild(infoIcon(help));
-      srow.appendChild(lw); srow.appendChild(segPicker(opts, cur, onChange));
+      srow.appendChild(lw); srow.appendChild(segPicker(opts, cur, onChange, pairs));
       return srow;
     }
     var row = el("div", "cc-set-row"); var rl = el("span", "cc-set-rl", labelText); if (help) rl.appendChild(infoIcon(help)); row.appendChild(rl);

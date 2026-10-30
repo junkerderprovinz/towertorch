@@ -58,7 +58,7 @@ console.log('\nThe last tab is Info, with three cards in GlimStone order');
 
 console.log('\nEvery version links to its release page');
 {
-  ok('GlimStone is 3.7.1', /var GLS_VER = "3\.7\.1";/.test(settings));
+  ok('GlimStone is 3.8.0', /var GLS_VER = "3\.8\.0";/.test(settings));
   const verLink = new Function('el', grabFn(settings, 'verLink') + '\nreturn verLink;')(el);
   const ui = verLink('1.2.3', 'https://github.com/junkerderprovinz/towertorch');
   ok('a release number is a link and shows without a v', ui.tag === 'a' && ui.textContent === '1.2.3');

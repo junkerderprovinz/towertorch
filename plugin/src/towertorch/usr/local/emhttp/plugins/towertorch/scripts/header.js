@@ -1198,7 +1198,7 @@
         var col = isNaN(n) ? "#8d8d8d" : n >= 95 ? "var(--cc-err, #ff8389)" : n >= 80 ? "var(--cc-warn, #ff832b)" : "var(--cc-ok, #6fdc8c)";
         var uch = document.createElement("span"); uch.className = "cc-isl-chip cc-isl-usage" + (cls ? " " + cls : "");
         if (lead) { var lb = document.createElement("span"); lb.className = "cc-isl-lead"; lb.textContent = lead; uch.appendChild(lb); }
-        var ubar = document.createElement("span"); ubar.className = "cc-isl-bar";
+        var ubar = document.createElement("span"); ubar.className = "cc-isl-bar cc-meter";
         var ufill = document.createElement("span"); ufill.className = "cc-isl-fill";
         ufill.style.width = w + "%"; ufill.style.background = col;
         ubar.appendChild(ufill); uch.appendChild(ubar); uch.appendChild(document.createTextNode(pctText));

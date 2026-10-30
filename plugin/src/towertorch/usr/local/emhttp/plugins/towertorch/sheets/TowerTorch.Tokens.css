@@ -496,6 +496,11 @@ html .cc-win .cc-win-in::placeholder { color: var(--cc-text-hint, #a3a3a3) !impo
 .cc-win.cc-win-reactive .cc-win-btn.cc-win-go:not(:hover) { background: var(--cc-surface-3); color: var(--cc-text); }
 /* A GlimStone glyph (CCTheme.glyph) is as tall as the text of what holds it and takes its ink. */
 .cc-glyph { display: inline-block; flex: none; width: 1em; height: 1em; vertical-align: -.125em; fill: currentColor; }
+/* GlimStone's .glim-meter, for a bar whose value changes all the time: a change inside it stays
+   inside it, so the page is not laid out again around it. The bar takes no height from its
+   content, so the class that draws it sets a real one. Paint containment would clip a label
+   drawn past its edge, so it stays out. */
+.cc-meter { contain: size layout; }
 /* The menu a row's More opens (CCTheme.menu), dark like the windows. An item has no fill of its own
    and takes the mode colour under the pointer or the keyboard focus, so it reads the same in every
    colour mode and the reactive one needs nothing extra. */

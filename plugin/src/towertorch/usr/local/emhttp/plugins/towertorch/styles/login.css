@@ -147,6 +147,21 @@ html body #login .form button:focus-visible { outline: 2px solid var(--tt-text);
 html.tt-reactive body #login .button:not(:hover):not(:focus-visible),
 html.tt-reactive body #login .form button:not(:hover):not(:focus-visible) { background: var(--tt-field); color: var(--tt-text); }
 
+/* The submit button's glyph before its words, shown as the label mode asks (scripts/login.js).
+   The words keep their place in the accessible tree and only lose their width. */
+html body #login button.tt-lb { display: flex; align-items: center; justify-content: center; }
+html body #login .tt-lb-g { display: inline-flex; flex: none; line-height: 0; margin-inline-end: .5em; }
+html body #login .tt-lb-g svg { width: 1.1em; height: 1.1em; }
+html body #login .tt-lb-l { white-space: nowrap; overflow: hidden; }
+html[data-tt-labels="text"] body #login .tt-lb-g { display: none; }
+html:is([data-tt-labels="glyph"], [data-tt-labels="reactive"]) body #login .tt-lb-g { margin-inline-end: 0; }
+html:is([data-tt-labels="glyph"], [data-tt-labels="reactive"]) body #login .tt-lb-l { max-width: 0; opacity: 0; }
+html[data-tt-labels="reactive"] body #login .tt-lb:is(:hover, :focus-visible) .tt-lb-g { margin-inline-end: .5em; }
+html[data-tt-labels="reactive"] body #login .tt-lb:is(:hover, :focus-visible) .tt-lb-l { max-width: 16em; opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-tt-labels="reactive"] body #login .tt-lb-l { transition: max-width .16s ease-out, opacity .1s ease-out; }
+}
+
 html body #login .error {
   margin: 12px 0 0;
   padding: 10px 14px;

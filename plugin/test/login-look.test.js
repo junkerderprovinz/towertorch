@@ -44,7 +44,10 @@ console.log('\nThe page carries the engine\'s settings');
   const php = read('include/login-head.php');
   ok('login-head.php reads ui_settings from config.json', /config\.json/.test(php) && /\['ui_settings'\]/.test(php));
   ok('and writes them as TT_LOGIN_UI before the script', php.indexOf('TT_LOGIN_UI') > 0 && php.indexOf('TT_LOGIN_UI') < php.indexOf('scripts/login.js'));
-  ok('only the look, no other setting', /cc\\\.\(theming\|accent\|badgeshape\|rbmode\|brand\\\.\[a-z\]\+\)/.test(php));
+  ok('only the look and the label mode, no other setting', /cc\\\.\(theming\|accent\|badgeshape\|rbmode\|labels\\\.buttons\|brand\\\.\[a-z\]\+\)/.test(php));
+  const js = read('scripts/login.js');
+  ok('signing in wears the sign-in glyph and setting the password the key', /"login": "SignIn"/.test(js) && /"anmelden": "SignIn"/.test(js) && /"set password": "Key"/.test(js) && /GLYPHS = \{ SignIn: \["0 0 14 14"/.test(js));
+  ok('the label mode decides what the button shows', /root\.setAttribute\("data-tt-labels"/.test(js) && /html\[data-tt-labels="text"\] body #login \.tt-lb-g \{ display: none; \}/.test(read('styles/login.css')));
   const css = read('styles/login.css');
   ok('the sheet rests the reactive button on the field colour', /html\.tt-reactive body #login \.form button:not\(:hover\):not\(:focus-visible\) \{ background: var\(--tt-field\); color: var\(--tt-text\); \}/.test(css));
 }
