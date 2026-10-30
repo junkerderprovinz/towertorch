@@ -59,3 +59,22 @@ html[data-cc-labels-buttons="glyph"] [data-cc-lbl] { --cc-lbl-bs: calc(var(--cc-
   }
   html[data-cc-labels-buttons] [data-cc-lbl-still] { transition: none !important; }
 }
+
+/* TowerTorch's own buttons (CCTheme.labelled) hold their glyph and their words as two spans. The
+   words keep their place in the accessible tree in every mode and only lose their width. With
+   theming off the buttons show their words alone, as text mode does. */
+html:not([data-cc-labels-buttons]) .cc-lb-g { display: none; }
+html[data-cc-labels-buttons] .cc-lb-g { display: inline-flex; flex: none; line-height: 0; vertical-align: -.125em; margin-inline-end: .45em; }
+html[data-cc-labels-buttons] .cc-lb-g .cc-glyph { vertical-align: 0; }
+html[data-cc-labels-buttons] .cc-lb-l { display: inline-block; white-space: nowrap; vertical-align: bottom; }
+html[data-cc-labels-buttons="text"] .cc-lb-g { display: none; }
+html:is([data-cc-labels-buttons="glyph"], [data-cc-labels-buttons="reactive"]) .cc-lb-g { margin-inline-end: 0; }
+html:is([data-cc-labels-buttons="glyph"], [data-cc-labels-buttons="reactive"]) .cc-lb-l { max-width: 0; opacity: 0; overflow: hidden; }
+html[data-cc-labels-buttons="reactive"] .cc-lb:is(:hover, :focus-visible) .cc-lb-g { margin-inline-end: .45em; }
+html[data-cc-labels-buttons="reactive"] .cc-lb:is(:hover, :focus-visible) .cc-lb-l { max-width: 16em; opacity: 1; }
+html[data-cc-labels-buttons="reactive"] .cc-lb-g {
+  transition: margin-inline-end var(--cc-motion-label-dur) var(--cc-motion-label-ease);
+}
+html[data-cc-labels-buttons="reactive"] .cc-lb-l {
+  transition: max-width var(--cc-motion-label-dur) var(--cc-motion-label-ease), opacity calc(var(--cc-motion-label-dur) * .6) ease-out;
+}

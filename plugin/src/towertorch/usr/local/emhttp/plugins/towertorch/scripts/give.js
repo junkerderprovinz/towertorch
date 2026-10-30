@@ -383,7 +383,7 @@
         nets.setAttribute("role", "listbox");
         nets.setAttribute("aria-label", T("Netzwerke", "Networks"));
         var note = el("p", "cc-give-note", T("Kein Destination Tag und kein Memo nötig.", "No destination tag and no memo needed."));
-        var copy = control("cc-win-btn cc-give-copy", copyLbl);
+        var copy = window.CCTheme.labelled(control("cc-win-btn cc-give-copy"), "Copy", copyLbl);
         [plate, addr, nets, note, copy].forEach(function (n) { well.appendChild(n); });
         var grid = el("div", "cc-give-coins");
         grid.setAttribute("role", "listbox");
@@ -410,15 +410,16 @@
 
         copy.addEventListener("click", function () {
           copyText(net.address, win).then(function () {
-            copy.textContent = T("Kopiert", "Copied");
+            // A copy that landed wears the tick of a passed test until it turns back.
+            window.CCTheme.labelled(copy, "Check", T("Kopiert", "Copied"));
             clearTimeout(copiedTimer);
-            copiedTimer = setTimeout(function () { copy.textContent = copyLbl; }, 1500);
+            copiedTimer = setTimeout(function () { window.CCTheme.labelled(copy, "Copy", copyLbl); }, 1500);
           }, function () { window.CCTheme.shake(copy); });
         });
 
         function show() {
           clearTimeout(copiedTimer);
-          copy.textContent = copyLbl;
+          window.CCTheme.labelled(copy, "Copy", copyLbl);
           // The address is never shortened: it is read back by eye before sending.
           addr.textContent = net.address;
           var shownFor = net.address;

@@ -493,6 +493,7 @@
 
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
   function glyph(name) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(name) : ""; }
+  function labelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
   var cardN = 0;
   function card(title, sub) {
     var c = el("div", "cc-set-card");
@@ -632,7 +633,7 @@
   function lockRow(label, by, jumpLabel, onJump, help) {
     var end = el("span", "cc-set-colend");
     end.appendChild(el("span", "cc-set-lockby", by));
-    end.appendChild(actionBtn(jumpLabel, "cc-btn cc-set-xbtn", onJump));
+    end.appendChild(labelled(actionBtn("", "cc-btn cc-set-xbtn", onJump), "Gear", jumpLabel));
     var row = inlineRow(label, help, end);
     row.classList.add("cc-set-locked");
     return row;
@@ -1033,8 +1034,8 @@
       var end = el("span", "cc-set-colend"), prev = el("img", "cc-set-loginlogo"), pick = el("input");
       prev.alt = ""; prev.hidden = true; prev.style.maxHeight = "36px"; prev.style.maxWidth = "72px";
       pick.type = "file"; pick.accept = "image/png,image/jpeg,image/webp,image/svg+xml"; pick.hidden = true;
-      var choose = el("button", "cc-btn cc-set-xbtn", T("Logo wählen", "Choose logo")); choose.type = "button";
-      var clear = el("button", "cc-btn cc-set-xbtn", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
+      var choose = labelled(el("button", "cc-btn cc-set-xbtn"), "Upload", T("Logo wählen", "Choose logo")); choose.type = "button";
+      var clear = labelled(el("button", "cc-btn cc-set-xbtn"), "Trash", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
       function show(info) {
         prev.hidden = !info || !info.has; clear.hidden = prev.hidden;
         if (info && info.has) prev.src = info.src;
@@ -1095,7 +1096,7 @@
         rl.appendChild(el("span", null, T("Native Anzeige-Seite", "Native display page")));
         rl.appendChild(infoIcon(T("Öffnet Unraids Anzeige-Einstellungen im TowerTorch-Stil. Dort liegen unter anderem die Kopfzeilen-Farben, das Banner und die Favoriten-Option.", "Opens Unraid's Display Settings in TowerTorch style, where the header colours, the banner and the favourites option live.")));
         r.appendChild(rl);
-        var b = el("button", "cc-btn", T("Öffnen", "Open")); b.type = "button";
+        var b = labelled(el("button", "cc-btn"), "Gear", T("Öffnen", "Open")); b.type = "button";
         b.style.marginLeft = "auto";   // flush right, like the switches in the rows around it
         b.addEventListener("click", function () { location.href = "/Settings/DisplaySettings"; });
         r.appendChild(b); cCard.appendChild(r);
@@ -1594,7 +1595,7 @@
         nm.appendChild(dot); nm.appendChild(el("span", null, a[2]));
         nm.appendChild(infoIcon(T("Dieser Bereich hat eine eigene Farbe, bis du „Globale Farbe nutzen“ wählst.", "This area has a colour of its own until you pick “Use the global colour”.")));
         row.appendChild(nm);
-        row.appendChild(actionBtn(T("Globale Farbe nutzen", "Use the global colour"), "cc-btn", function () { setOwnColour(a[0], false); }));
+        row.appendChild(labelled(actionBtn("", "cc-btn", function () { setOwnColour(a[0], false); }), "Refresh", T("Globale Farbe nutzen", "Use the global colour")));
         cExc.appendChild(row);
       });
       if (follow.length) {
@@ -1789,7 +1790,7 @@
           nm.appendChild(miss);
         }
         row.appendChild(nm);
-        row.appendChild(actionBtn(T("Entfernen", "Remove"), "cc-btn", function () { Ci.setOverride("docker", low, ""); paintOriginals(); tintPrev(); }));
+        row.appendChild(labelled(actionBtn("", "cc-btn", function () { Ci.setOverride("docker", low, ""); paintOriginals(); tintPrev(); }), "Trash", T("Entfernen", "Remove")));
         cOrig.appendChild(row);
       });
       var free = origNames.filter(function (n) { return pinned.indexOf(n.toLowerCase()) < 0; });
@@ -1873,7 +1874,7 @@
       function paint(own) {
         dot.style.background = own ? get(ADOPT_PREF[key] + "accent", "#FCC419") : get("cc.accent", "#FCC419");
         word.textContent = own ? T("Eigene Farbe", "Own colour") : T("Folgt Allgemein", "Follows General");
-        btn.textContent = own ? T("Globale Farbe nutzen", "Use the global colour") : T("Ausnahme hinzufügen", "Add an exception");
+        if (own) labelled(btn, "Refresh", T("Globale Farbe nutzen", "Use the global colour")); else labelled(btn, "Add", T("Ausnahme hinzufügen", "Add an exception"));
       }
       paint(localStorage.getItem(key) === "0");
       (areaSync[key] = areaSync[key] || []).push(paint);
@@ -2262,7 +2263,7 @@
       var lblw = el("span", "cc-set-lblwrap");
       lblw.appendChild(el("span", null, T("Sichern & Übertragen", "Backup & transfer")));
       lblw.appendChild(infoIcon(T("Exportiert alle TowerTorch-Einstellungen (cc.*-Schlüssel) als JSON-Datei. Der Import schreibt sie zurück und lädt die Seite neu.", "Exports every TowerTorch setting (cc.* keys) as a JSON file. Import writes them back and reloads the page.")));
-      var ex = el("span", "cc-btn cc-set-xbtn", T("Exportieren", "Export"));
+      var ex = labelled(el("span", "cc-btn cc-set-xbtn"), "Export", T("Exportieren", "Export"));
       ex.addEventListener("click", function () {
         try {
           // every cc-family key but cc.stateCache, the same set the engine mirrors
@@ -2272,7 +2273,7 @@
           setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
         } catch (e) { failed(ex, T("Export fehlgeschlagen: ", "Export failed: ") + ((e && e.message) || e)); }
       });
-      var im = el("span", "cc-btn cc-set-xbtn", T("Importieren", "Import"));
+      var im = labelled(el("span", "cc-btn cc-set-xbtn"), "Import", T("Importieren", "Import"));
       var fin = el("input"); fin.type = "file"; fin.accept = ".json,application/json"; fin.style.display = "none";
       fin.addEventListener("change", function () {
         var f = fin.files && fin.files[0]; fin.value = ""; if (!f) return;
@@ -2304,7 +2305,7 @@
       im.addEventListener("click", function () { fin.click(); });
       // Reset clears every cc.* key and the engine mirror and reloads, after a window has asked.
       // The start plan and the engine config outside ui_settings stay.
-      var rs = el("span", "cc-btn cc-set-xbtn", T("Alles zurücksetzen", "Reset all"));   // the colour of Export and Import beside it, never red
+      var rs = labelled(el("span", "cc-btn cc-set-xbtn"), "Refresh", T("Alles zurücksetzen", "Reset all"));   // the colour of Export and Import beside it, never red
       if (window.CCTheme) window.CCTheme.pressable(rs);   // focus comes back here when the window closes
       rs.addEventListener("click", function () {
         if (!window.CCTheme || !window.CCTheme.ask) return;
@@ -2312,7 +2313,7 @@
           title: T("Alle Einstellungen zurücksetzen?", "Reset all settings?"),
           text: T("Alles, was TowerTorch im Browser speichert, also Farben, Form und Bereiche, geht auf den Standard zurück, die Kopie in der Engine auch. Danach lädt die Seite neu. Startplan, Zeitpläne, Limits und Benachrichtigungen bleiben.",
             "Everything TowerTorch keeps in the browser, such as colours, shape and areas, goes back to its default, including the engine's copy, and the page reloads. The start plan, schedules, limits and notifications stay."),
-          ok: T("Zurücksetzen", "Reset"), cancel: T("Abbrechen", "Cancel"), danger: true, opener: rs, onOk: resetAll
+          ok: T("Zurücksetzen", "Reset"), glyph: "Refresh", cancel: T("Abbrechen", "Cancel"), danger: true, opener: rs, onOk: resetAll
         });
       });
       function resetAll() {
@@ -2372,8 +2373,8 @@
         else engine.textContent = T("unbekannt", "unknown");
       }).catch(function () { engine.textContent = T("nicht erreichbar", "not reachable"); engine.classList.add("cc-set-verbad"); });
       var crow = el("div", "cc-set-btnrow");
-      var notes = actionBtn(T("Versionshinweise", "Release notes"), "cc-btn cc-set-xbtn cc-set-notes", function () { openReleaseNotes(notes); });
-      var chk = actionBtn(T("Nach Updates suchen", "Check for updates"), "cc-btn cc-set-xbtn cc-set-check", function () { checkUpdates(chk); });
+      var notes = labelled(actionBtn("", "cc-btn cc-set-xbtn cc-set-notes", function () { openReleaseNotes(notes); }), "WhatsNew", T("Versionshinweise", "Release notes"));
+      var chk = labelled(actionBtn("", "cc-btn cc-set-xbtn cc-set-check", function () { checkUpdates(chk); }), "Update", T("Nach Updates suchen", "Check for updates"));
       crow.appendChild(notes); crow.appendChild(chk); cVer.appendChild(crow);
       wrapInfo.appendChild(cVer);
 
@@ -2487,7 +2488,7 @@
   function verLink(ver, repo) {
     var v = String(ver || "").replace(/^v/, "");
     if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(v)) return el("span", "cc-set-ver", v);
-    var a = el("a", "cc-btn cc-set-ver", "v" + v);
+    var a = el("a", "cc-btn cc-set-ver", v);
     a.href = repo + "/releases/tag/v" + v; a.target = "_blank"; a.rel = "noopener noreferrer";
     return a;
   }
@@ -2588,17 +2589,17 @@
   // release, orange with the newer number, red and shaken when the check fails.
   function checkUpdates(btn) {
     btn.classList.remove("cc-set-chk-ok", "cc-set-chk-new", "cc-set-chk-bad");
-    btn.textContent = T("Prüfe …", "Checking …");
+    labelled(btn, "Update", T("Prüfe …", "Checking …"));
     return fetch(LATEST_API, { headers: { Accept: "application/vnd.github+json" } })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (j) {
         var latest = String((j && j.tag_name) || "").replace(/^v/, "");
         if (!/^\d+\.\d+\.\d+$/.test(latest)) throw new Error(T("keine Versionsnummer in der Antwort", "no version number in the answer"));
-        if (verCmp(latest, CC_VER) > 0) { btn.classList.add("cc-set-chk-new"); btn.textContent = T("v" + latest + " verfügbar", "v" + latest + " available"); }
-        else { btn.classList.add("cc-set-chk-ok"); btn.textContent = T("Aktuell", "Up to date"); }
+        if (verCmp(latest, CC_VER) > 0) { btn.classList.add("cc-set-chk-new"); labelled(btn, "UpdateAvailable", T(latest + " verfügbar", latest + " available")); }
+        else { btn.classList.add("cc-set-chk-ok"); labelled(btn, "UpToDate", T("Aktuell", "Up to date")); }
       })
       .catch(function (e) {
-        btn.classList.add("cc-set-chk-bad"); btn.textContent = T("Prüfung fehlgeschlagen", "Check failed");
+        btn.classList.add("cc-set-chk-bad"); labelled(btn, "Warning", T("Prüfung fehlgeschlagen", "Check failed"));
         failed(btn, T("Die Update-Prüfung ist fehlgeschlagen: ", "The update check failed: ") + ((e && e.message) || e));
       });
   }
@@ -2618,7 +2619,7 @@
     card.setAttribute("tabindex", "0");   // long notes scroll, and the keyboard needs a way in
     card.appendChild(el("p", "cc-win-text", T("Lade Versionshinweise …", "Loading the release notes …")));
     var act = el("div", "cc-win-act");
-    var link = el("a", "cc-win-btn cc-win-link", T("Auf GitHub ansehen", "View on GitHub"));
+    var link = labelled(el("a", "cc-win-btn cc-win-link"), "Github", T("Auf GitHub ansehen", "View on GitHub"));
     link.href = src.page; link.target = "_blank"; link.rel = "noopener noreferrer";
     act.appendChild(link);
     win.appendChild(title); win.appendChild(card); win.appendChild(act);

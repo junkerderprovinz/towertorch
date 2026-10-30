@@ -2876,7 +2876,7 @@
       if (CC_VER === "dev") return;
       if (g("cc.theming", "1") === "0") return;
       var last = g("cc.lastver", "");
-      if (last && last !== CC_VER) { setTimeout(function () { ccToast(T("TowerTorch auf v" + CC_VER + " aktualisiert.", "TowerTorch updated to v" + CC_VER + ".")); }, 1400); }
+      if (last && last !== CC_VER) { setTimeout(function () { ccToast(T("TowerTorch auf " + CC_VER + " aktualisiert.", "TowerTorch updated to " + CC_VER + ".")); }, 1400); }
       if (last !== CC_VER) syncedSet("cc.lastver", CC_VER);
     } catch (e) {}
   }

@@ -85,8 +85,9 @@ function settingsList(cOrig, names, picks, removes, onRepaint, rowIcons) {
   const areaPicker = (label, items, onPick) => { const n = el('span', 'cc-dsel', label); n.items = items; n.pick = (i) => onPick(items[i]); picks.push(n); return n; };
   const actionBtn = (text, cls, run) => { const n = el('span', cls, text); n.run = run; removes.push(n); return n; };
   return new Function('cOrig', 'el', 'infoIcon', 'actionBtn', 'areaPicker', 'T', 'window', 'tintPrev', 'names', 'rowIcons',
-    'var origNames = names, origMissing = {}, origChecked = false;\n' + grabFn(settings, 'checkOriginals') + '\n' + grabFn(settings, 'paintOriginals') + '\nreturn paintOriginals;')(
-    cOrig, el, () => el('span', 'cc-info'), actionBtn, areaPicker, (de, en) => en, global.window, onRepaint, names, rowIcons);
+    'var origNames = names, origMissing = {}, origChecked = false;\n' + grabFn(settings, 'labelled') + '\n' + grabFn(settings, 'checkOriginals') + '\n' + grabFn(settings, 'paintOriginals') + '\nreturn paintOriginals;')(
+    // The stub nodes have no classList, so the buttons keep their words without the glyph.
+    cOrig, el, () => el('span', 'cc-info'), actionBtn, areaPicker, (de, en) => en, Object.assign({}, global.window, { CCTheme: Object.assign({}, global.window.CCTheme, { labelled: null }) }), onRepaint, names, rowIcons);
 }
 
 console.log('\nThe settings page lists the pinned containers');

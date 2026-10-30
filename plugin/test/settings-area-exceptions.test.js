@@ -40,7 +40,7 @@ function paint(init, enabled) {
   const SECS = ['header', 'main', 'shares', 'docker', 'plugins', 'vms', 'settings', 'tools', 'favorites'].map((id) => ({ id, key: 'cc.enable.' + id }));
   const cExc = new Node('div', 'cc-set-card');
   const env = {
-    localStorage: ls, SECS, cExc,
+    localStorage: ls, SECS, cExc, window: {},
     T: (d, e) => e,
     el: (t, c, x) => new Node(t, c, x),
     get: (k, d) => { const v = ls.getItem(k); return v == null ? d : v; },
@@ -51,7 +51,7 @@ function paint(init, enabled) {
     setOwnColour: (k, own) => backs.push([k, own]),
     render: () => {}, paintSelects: () => {}
   };
-  new Function('env', 'with (env) { ' + PREF + '\n' + AREAS + '\n' + grabFn(settings, 'paintExceptions') + '\npaintExceptions(); }')(env);
+  new Function('env', 'with (env) { ' + PREF + '\n' + AREAS + '\n' + grabFn(settings, 'labelled') + '\n' + grabFn(settings, 'paintExceptions') + '\npaintExceptions(); }')(env);
   return { rows: cExc.children, backs, ls };
 }
 

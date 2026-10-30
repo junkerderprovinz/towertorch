@@ -196,7 +196,7 @@ console.log('\nCompact rows with the gear on the logo');
   ok('the gear sits in the logo box', /var gear = iconGear\(nm\);\s*if \(gear\) icoWrap\.appendChild\(gear\);/.test(row));
   const gear = grabFn(plugins, 'iconGear');
   ok('it carries the CC tooltip "Icon-Färbung" and opens the shared popover', /"Icon-Färbung"/.test(gear) && /g\.setAttribute\("data-tip", tip\)/.test(gear) && /icons\.popover\(g, "plugin", name/.test(gear) && /pressable\(g\)/.test(gear));
-  ok('support and changelog are small links beside the name and the version', /el\("a", "cc-pluglink cc-plugsup"/.test(row) && /el\("span", "cc-pluglink cc-plugchg", "Changelog"\)/.test(row));
+  ok('support and changelog are small links beside the name and the version, with the Help and What\'s new glyphs', /labelled\(el\("a", "cc-pluglink cc-plugsup"\), "Help"/.test(row) && /labelled\(el\("span", "cc-pluglink cc-plugchg"\), "WhatsNew", "Changelog"\)/.test(row));
   ok('the gear shows on hover and focus, and always on a touch screen', /:is\(#plugin_list > tr, \.cc-plt-card\):is\(:hover, :focus-within\) \.cc-plugicm \{ opacity: 1; \}/.test(css) && /@media \(hover: none\) \{ html\.cc-on-plugins \.cc-plugicm \{ opacity: 1; \} \}/.test(css));
   ok('hidden by opacity, so Tab still reaches it', /\.cc-plugicm \{[^}]*opacity: 0;/.test(css) && !/\.cc-plugicm \{[^}]*(display: none|visibility: hidden)/.test(css));
   const docker = read('styles/docker.css');

@@ -47,7 +47,7 @@ console.log('\nThe header shows the display name, else the server name');
   ok('the logo URL carries the upload version, so a new logo is not served from the cache', /loginlogo\.php\?img=1&v=42$/.test(logo.children[0].src));
   const sheet = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8');
   ok('the logo is a little smaller than the name\'s font size', /\.cc-brand-logo \{[^}]*height: calc\(var\(--cc-brand-size, 30px\) \* \.9\);/.test(sheet));
-  ok('its buttons on the settings page are card buttons like the others', /el\("button", "cc-btn cc-set-xbtn", T\("Logo wählen", "Choose logo"\)\)/.test(settings) && /el\("button", "cc-btn cc-set-xbtn", T\("Entfernen", "Remove"\)\)/.test(settings));
+  ok('its buttons on the settings page are card buttons like the others', /labelled\(el\("button", "cc-btn cc-set-xbtn"\), "Upload", T\("Logo wählen", "Choose logo"\)\)/.test(settings) && /labelled\(el\("button", "cc-btn cc-set-xbtn"\), "Trash", T\("Entfernen", "Remove"\)\)/.test(settings));
 }
 
 console.log('\nThe field on the Kopfbereich tab');

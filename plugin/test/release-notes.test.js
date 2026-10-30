@@ -47,7 +47,7 @@ const consts = ['REPO', 'LATEST_API', 'RELEASES_API'].map((n) => {
   if (!m) throw new Error('const not found: ' + n);
   return m[0];
 }).join('\n');
-const fns = ['el', 'notesSource', 'openReleaseNotes', 'notesInline', 'notesDom'].map((n) => grabFn(settings, n)).join('\n');
+const fns = ['el', 'labelled', 'notesSource', 'openReleaseNotes', 'notesInline', 'notesDom'].map((n) => grabFn(settings, n)).join('\n');
 function load(ver, fetch, theme) {
   return new Function('document', 'window', 'fetch', 'CC_VER', 'T', consts + '\n' + fns + '\nreturn { notesSource: notesSource, open: openReleaseNotes, dom: notesDom };')(
     document, { CCTheme: theme }, fetch, ver, (d) => d);
@@ -57,7 +57,7 @@ const tick = () => new Promise((r) => setTimeout(r, 0));
 console.log('\nThe Version card offers the notes before the update check');
 {
   const block = settings.slice(settings.indexOf('// The Info tab in GlimStone'), settings.indexOf('var cHelp ='));
-  ok('a "Versionshinweise" button opens the window', /actionBtn\(T\("Versionshinweise", "Release notes"\), "cc-btn cc-set-xbtn cc-set-notes", function \(\) \{ openReleaseNotes\(notes\); \}\)/.test(block));
+  ok('a "Versionshinweise" button with the What\'s new glyph opens the window', /labelled\(actionBtn\("", "cc-btn cc-set-xbtn cc-set-notes", function \(\) \{ openReleaseNotes\(notes\); \}\), "WhatsNew", T\("Versionshinweise", "Release notes"\)\)/.test(block));
   ok('it stands before "Nach Updates suchen", which stays last', /crow\.appendChild\(notes\); crow\.appendChild\(chk\); cVer\.appendChild\(crow\);/.test(block));
   ok('no "New" button, since TowerTorch marks no changes', !/Neu ·|New ·/.test(settings));
 }

@@ -177,6 +177,7 @@
   }
   // The Plugins tab has no per-item settings window, so the icon pin is a small gear on the logo
   // that opens the shared popover from cc-theme.js.
+  function labelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
   function iconGear(name) {
     if (!window.CCTheme || !window.CCTheme.icons || !name) return null;
     var tip = LANG === "de" ? "Icon-Färbung" : "Icon colouring";
@@ -422,7 +423,7 @@
       var txt = el("div", "cc-plugtxt");
       txt.appendChild(el("div", "cc-plugtitle", nm));
       if (sup) {
-        var sb = el("a", "cc-pluglink cc-plugsup", LANG === "de" ? "Support-Thread" : "Support thread");
+        var sb = labelled(el("a", "cc-pluglink cc-plugsup"), "Help", LANG === "de" ? "Support-Thread" : "Support thread");
         sb.href = sup.href; sb.target = "_blank"; sb.rel = "noopener"; sb.setAttribute(MARK, "1");
         sup.remove();
         txt.appendChild(sb);
@@ -524,7 +525,7 @@
       if (vtxt) { var vb = badge("Version", vtxt, idx + 3); vb.classList.add("cc-verb"); col.appendChild(vb); }
       if (icon) {
         icon.style.setProperty("display", "none", "important");
-        var ib = el("span", "cc-pluglink cc-plugchg", "Changelog"); ib.setAttribute(MARK, "1");
+        var ib = labelled(el("span", "cc-pluglink cc-plugchg"), "WhatsNew", "Changelog"); ib.setAttribute(MARK, "1");
         if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(ib);
         ib.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); icon.click(); });
         col.appendChild(ib);

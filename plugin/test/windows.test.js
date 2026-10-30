@@ -110,7 +110,7 @@ const CCTheme = new Function('localStorage',
   grabVar(theme, 'RB') + grabVar(theme, 'LUM_FLOOR') + grabVar(theme, 'winStack') + grabVar(theme, 'FOCUSABLE') +
   'function glyph(name) { return "<svg>" + name + "</svg>"; }' +
   ['idealText', 'rbSeed', 'palette', 'lumOf', 'liftLight', 'lightTheme', 'surfacePalette', 'isRed', 'deleteSlot', 'shake',
-    'pressable', 'refind', 'focusables', 'onWinKey', 'german', 'closeBadge', 'modal', 'paintWin', 'ask'].map((n) => grabFn(theme, n)).join('\n') +
+    'pressable', 'labelled', 'labelTip', 'refind', 'focusables', 'onWinKey', 'german', 'closeBadge', 'modal', 'paintWin', 'ask'].map((n) => grabFn(theme, n)).join('\n') +
   '; return { RB: RB, isRed: isRed, modal: modal, ask: ask, paintWin: paintWin, pressable: pressable };')(store);
 
 function win(cls) {
@@ -320,7 +320,7 @@ console.log('\nThe windows that use it');
     ok(fn + ': no Close in the button row, the close badge stands in the corner', !/popCloseBtn|t\("close"\)/.test(body));
     ok(fn + ': no typed corner ✕', !/✕/.test(body));
   }
-  ok('the Startplan keeps its own Save', /bSave = el\("span", "cc-btn cc-btn-primary", t\("saveShort"\)\)/.test(grabFn(docker, 'openEditor')));
+  ok('the Startplan keeps its own Save', /bSave = ccLabelled\(el\("span", "cc-btn cc-btn-primary"\), "Save", t\("saveShort"\)\)/.test(grabFn(docker, 'openEditor')));
   const place = grabFn(docker, 'placePop'), close = grabFn(docker, 'closePop');
   ok('placePop makes every editor modal, focus returning to its badge', /CCTheme\.modal\(pop, \{ opener: anchor, onDismiss: dismissPop \}\)/.test(place));
   ok('closePop, the funnel of every dismiss, closes the modal', /popModal = null; m\.close\(\)/.test(close));

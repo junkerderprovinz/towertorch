@@ -81,7 +81,7 @@ console.log('\nOne filled accent button per view');
 {
   const badge = (/"#cc-settings \.cc-set-searchbadge\{([^}]*)\}"/.exec(settings) || [])[1] || '';
   ok('the search rests grey', /background:#2e2e2e/.test(badge), badge);
-  ok('"Open" is a plain secondary button', /el\("button", "cc-btn", T\("Öffnen", "Open"\)\)/.test(settings) && !/cc-btn-accent/.test(settings));
+  ok('"Open" is a plain secondary button with the settings glyph', /labelled\(el\("button", "cc-btn"\), "Gear", T\("Öffnen", "Open"\)\)/.test(settings) && !/cc-btn-accent/.test(settings));
 }
 
 // Ctrl+K belongs to the command palette on every page. On the settings page the palette leads

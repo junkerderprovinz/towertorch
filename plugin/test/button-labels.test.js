@@ -117,7 +117,8 @@ console.log('\nThe four modes');
   ok('glyph and text is the default, in the engine and on the settings page', /var v = get\(KEY, "textGlyph"\)/.test(js) && /get\("cc\.labels\.buttons", "textGlyph"\)/.test(settings));
   ok('the choice is a cc.* key, so the engine syncs it with the other settings', /var KEY = "cc\.labels\.buttons"/.test(js) && /\/\^cc\[a-z\]\*\\\.\//.test(theme));
   ok('a change redraws at once on this page and on every other open tab', /set\("cc\.labels\.buttons", v\); try \{ window\.ccLabelsApply && window\.ccLabelsApply\(\); \}/.test(settings) && /addEventListener\("storage"/.test(js));
-  ok('text: nothing is stamped, so the buttons stay as the area sheets draw them', !/\[data-cc-labels-buttons="text"\]/.test(css) && /m === "text" \? ""/.test(js));
+  ok('text: nothing is stamped, so the buttons stay as the area sheets draw them', !/\[data-cc-labels-buttons="text"\][^{]*\[data-cc-lbl/.test(css) && /m === "text" \? ""/.test(js));
+  ok('text: TowerTorch\'s own buttons drop their glyph', /html\[data-cc-labels-buttons="text"\] \.cc-lb-g \{ display: none; \}/.test(css));
   ok('glyph and text: the caption moves over by the glyph and the gap',
     /--cc-lbl-ps: calc\(var\(--cc-lbl-pl\) \+ var\(--cc-lbl-gs\) \+ var\(--cc-lbl-gap\)\);/.test(css) && /--cc-lbl-bp: calc\(50% \+ \(var\(--cc-lbl-pl\) - var\(--cc-lbl-pr\) - var\(--cc-lbl-gap\) - var\(--cc-lbl-tw\)\) \/ 2\) center;/.test(css));
   ok('glyph: a square on the button\'s own height with the glyph at half of it',
@@ -137,6 +138,7 @@ console.log('\nThe off switch');
   for (const r of parseRules(css)) for (const s of r.selector.split(/,(?![^(]*\))/)) {
     const sel = s.trim();
     if (/^html(\[data-cc-motion="(subtle|off)"\])?$/.test(sel)) continue;   // the motion tokens, which draw nothing
+    if (sel === 'html:not([data-cc-labels-buttons]) .cc-lb-g') continue;   // hides the own buttons' glyphs while theming is off
     if (!/^html(\[data-cc-labels-buttons[^\]]*\]|:is\(\[data-cc-labels-buttons)/.test(sel)) loose.push(sel);
   }
   ok('every rule that draws starts at html[data-cc-labels-buttons]', loose.length === 0, loose.join(' | '));

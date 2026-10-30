@@ -61,7 +61,7 @@ function bar(lang, values) {
   };
   const fold = new Function('document', 'window', 'T', 'El',
     'var MARK = "data-cc"; function t(k) { return T[k]; } function el(tag, cls, txt) { var e = new El(tag, cls); if (txt) e.textContent = txt; return e; }\n' +
-    grabVar('BAR_LABELS') + '\n' + grabVar('BAR_FOLD') + '\n' + grab('barNative') + '\n' + grab('foldBar') + '\nreturn foldBar;')(env.document, env.window, T, El);
+    grabVar('BAR_LABELS') + '\n' + grabVar('BAR_FOLD') + '\n' + grab('barNative') + '\n' + grab('ccLabelled') + '\n' + grab('foldBar') + '\nreturn foldBar;')(env.document, env.window, T, El);
   return { b, fold, menus };
 }
 const UNRAID_DE = [['addContainer', 'Container hinzufügen'], ['startAll', 'Alle starten'], ['stopAll', 'Alle stoppen'], ['pauseAll', 'Alle pausieren'], ['resumeAll', 'Alle fortsetzen'], ['checkAll', 'Nach Aktualisierungen suchen'], ['updateAll', 'Alle Aktualisieren'], ['contSizes', 'Containergröße']];

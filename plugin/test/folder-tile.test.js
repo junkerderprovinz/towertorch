@@ -66,7 +66,7 @@ const scope = new Proxy(env, {
   set: (o, k, v) => { env[k] = v; return true; },
 });
 const api = new Function('scope', 'with (scope) {\n' +
-  ['el', 'norm', 't', 'stateLabel', 'humanBytes', 'gauge', 'actBtn', 'actBtnOff', 'cardIcon', 'folderTile', 'updateReady'].map(grabFn).join('\n') +
+  ['el', 'norm', 't', 'stateLabel', 'humanBytes', 'gauge', 'ccLabelled', 'actBtn', 'actBtnOff', 'cardIcon', 'folderTile', 'updateReady'].map(grabFn).join('\n') +
   '\nreturn { folderTile: folderTile, updateReady: updateReady }; }')(scope);
 env.ctxFor = (name) => Object.assign({ webui: '', links: [] }, env.ctx[name] || {});
 env.doAction = (name, action) => calls.push([action, name]);

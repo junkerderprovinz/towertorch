@@ -253,6 +253,8 @@
   function sweep() {
     var m = enabled() ? mode() : null;
     if (m) { if (root.getAttribute(ATTR) !== m) root.setAttribute(ATTR, m); } else root.removeAttribute(ATTR);
+    // TowerTorch's own buttons draw their glyph themselves and only take the bubble from here.
+    if (window.CCTheme && window.CCTheme.labelTip) document.querySelectorAll(".cc-lb").forEach(window.CCTheme.labelTip);
     var keep = [];
     if (m) {
       var els = document.querySelectorAll(IN_SCOPE);

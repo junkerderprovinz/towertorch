@@ -65,7 +65,7 @@ const jumps = [];
 const build = new Function('document', 'window', 'jumpTo',
   'var de = false;\n' +   // the English labels, so the assertions can search for ASCII text
   grabFn('el') + '\n' + grabFn('T') + '\n' + grabFn('infoIcon') + '\n' + grabFn('normHex') + '\n' + grabFn('toggle') + '\n' +
-  grabFn('actionBtn') + '\n' + grabFn('inlineRow') + '\n' + grabFn('lockRow') + '\n' + grabFn('fieldRow') + '\n' +
+  grabFn('actionBtn') + '\n' + grabFn('labelled') + '\n' + grabFn('inlineRow') + '\n' + grabFn('lockRow') + '\n' + grabFn('fieldRow') + '\n' +
   ['hexToHsv', 'hsvToHex', 'div', 'german', 'pressable', 'inlinePicker', 'swTick', 'swMark', 'swMarkRow', 'idealText', 'colorPicker'].map(grabTheme).join('\n') + '\n' +
   'var PRESETS = ["#FCC419", "#1D99F3"], colourField = colorPicker;\n' + grabFn('logoToggles') + '\n' +
   'return { logoToggles: logoToggles };'

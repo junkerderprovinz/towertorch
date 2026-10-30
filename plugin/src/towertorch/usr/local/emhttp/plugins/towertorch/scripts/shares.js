@@ -68,6 +68,12 @@
   var T = { de: { browse: "Durchsuchen", protected: "Geschützt", partly: "Nicht alles geschützt", unknown: "Schutz unbekannt", protection: "Schutz", copy: "Einstellungen kopieren" }, en: { browse: "Browse", protected: "Protected", partly: "Not fully protected", unknown: "Protection unknown", protection: "Protection", copy: "Copy settings" } };
   function t(k) { return (T[LANG] || T.en)[k] || T.en[k]; }
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
+  // The browse badge wears the glyph Unraid's Browse captions wear, after the label mode.
+  function browseLabel(view) {
+    if (view.querySelector(".cc-b-lab")) return;
+    if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(view, "Search", t("browse")).querySelector(".cc-lb-l").classList.add("cc-b-lab");
+    else view.appendChild(el("span", "cc-b-lab", t("browse")));
+  }
   // File manager: badges the owner, permission, size and date values. The page deletes and moves
   // files, so only those plain text cells are touched, never the check glyph, name, Location (its
   // icon colour encodes encryption) or actions cells; columns and tablesorter's data attributes
@@ -237,7 +243,7 @@
     if (view && view.getAttribute("href")) { // real browse link (disk sub-rows carry an empty a.view)
       view.classList.add("cc-b-browse");
       var ic = view.querySelector("i"); if (ic) ic.parentNode.removeChild(ic);
-      if (!view.querySelector(".cc-b-lab")) view.appendChild(el("span", "cc-b-lab", t("browse")));
+      browseLabel(view);
       bt.appendChild(view); // moved, so href and onclick stay intact
     }
     name.parentNode.insertBefore(bt, name.nextSibling);
@@ -824,7 +830,7 @@
         if (pview && pview.getAttribute("href") && pbt && pbt.classList.contains("cc-browse-col") && !pbt.firstChild) {
           pview.classList.add("cc-b-browse");
           var pic = pview.querySelector("i"); if (pic) pic.parentNode.removeChild(pic);
-          if (!pview.querySelector(".cc-b-lab")) pview.appendChild(el("span", "cc-b-lab", t("browse")));
+          browseLabel(pview);
           pbt.appendChild(pview);
         }
         var pc = tr.children;
@@ -837,7 +843,7 @@
     if (view && view.getAttribute("href")) {
       view.classList.add("cc-b-browse");
       var ic = view.querySelector("i"); if (ic) ic.parentNode.removeChild(ic);
-      if (!view.querySelector(".cc-b-lab")) view.appendChild(el("span", "cc-b-lab", t("browse")));
+      browseLabel(view);
       bt.appendChild(view);
     }
     first.parentNode.insertBefore(bt, first.nextSibling);

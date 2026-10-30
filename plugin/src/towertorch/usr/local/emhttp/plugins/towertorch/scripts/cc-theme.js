@@ -320,7 +320,7 @@
   // exclamation mark cut out where IconShieldOn has its check, Grip, the two columns of dots a
   // draggable row wears, and Compute, a calculator. Move is
   // IconMoveUp turned to point right. Star is Tabler's filled star, which the Favorites tab already
-  // wears, and Containers is the Simple Icons whale (CC0).
+  // wears, and Containers and Github are the Simple Icons whale and mark (CC0).
   var GLYPHS = {
     "ExternalLink": ["0 0 14 14", '<path fill-rule="evenodd" d="M7 2 2.5 2a0.5 0.5 0 0 0 -0.5 0.5l0 9a0.5 0.5 0 0 0 0.5 0.5l9 0a0.5 0.5 0 0 0 0.5 -0.5L12 7a1 1 0 1 1 2 0l0 4.5a2.5 2.5 0 0 1 -2.5 2.5l-9 0A2.5 2.5 0 0 1 0 11.5l0 -9A2.5 2.5 0 0 1 2.5 0L7 0a1 1 0 0 1 0 2ZM9.538 0.309A0.5 0.5 0 0 1 10 0l3.5 0a0.5 0.5 0 0 1 0.5 0.5L14 4a0.5 0.5 0 0 1 -0.854 0.354L12.104 3.31 7.707 7.707a1 1 0 0 1 -1.414 -1.414l4.396 -4.397L9.646 0.854a0.5 0.5 0 0 1 -0.108 -0.545Z"/>'],
     "Gear": ["-0.001 0 14 14", '<path fill-rule="evenodd" d="m5.557 0.69 -0.463 1.195 -1.594 0.904 -1.27 -0.194a1.077 1.077 0 0 0 -1.078 0.528l-0.43 0.754a1.077 1.077 0 0 0 0.086 1.217l0.807 1.001v1.81L0.83 8.906a1.077 1.077 0 0 0 -0.086 1.217l0.43 0.754a1.077 1.077 0 0 0 1.078 0.528l1.27 -0.194 1.573 0.904 0.463 1.196a1.076 1.076 0 0 0 1 0.689h0.905a1.076 1.076 0 0 0 1.002 -0.69l0.463 -1.195 1.572 -0.904 1.27 0.194a1.077 1.077 0 0 0 1.078 -0.528l0.43 -0.754a1.077 1.077 0 0 0 -0.086 -1.217l-0.807 -1.001v-1.81l0.786 -1.001a1.077 1.077 0 0 0 0.086 -1.217l-0.43 -0.754a1.076 1.076 0 0 0 -1.078 -0.528l-1.27 0.194 -1.573 -0.904L8.443 0.689A1.077 1.077 0 0 0 7.442 0h-0.884a1.077 1.077 0 0 0 -1.001 0.69ZM7 9.25a2.25 2.25 0 1 0 0 -4.5 2.25 2.25 0 0 0 0 4.5Z"/>'],
@@ -380,7 +380,12 @@
     "Update": ["0.013 0.013 13.974 13.974", '<path fill-rule="evenodd" d="M7.88332 0.0461506c-0.99185 -0.1202249 -1.99495 0.1032134 -2.842 0.6330544C4.253 1.17231 3.64418 1.90305 3.30086 2.76333c-0.42873 0.0473 -0.84627 0.1694 -1.23354 0.36115 -0.43457 0.21516 -0.8225 0.51382 -1.141648 0.87891 -0.644549 0.73733 -0.9697938 1.70051 -0.904186 2.67764 0.0656077 0.97714 0.516694 1.88819 1.254024 2.53274 0.38065 0.33275 0.8215 0.5804 1.29338 0.73311C2.94178 7.83768 4.78379 6.2356 7 6.2356c0.8376 0 1.62279 0.22956 2.29462 0.62841 0.65599 -0.24741 1.40648 -0.13529 1.96588 0.31874 0.6634 0.53852 0.9115 1.43908 0.6173 2.24137l-0.2064 0.56274c0.4578 -0.1352 0.8836 -0.37126 1.2443 -0.69532 0.588 -0.52837 0.9618 -1.254 1.0507 -2.03949 0.0889 -0.7855 -0.1133 -1.57633 -0.5684 -2.22274 -0.4174 -0.593 -1.021 -1.02671 -1.7119 -1.23428 -0.1253 -0.92329 -0.543 -1.78423 -1.1943 -2.45516C9.79584 0.622997 8.87518 0.166376 7.88332 0.0461506ZM7 8.9856c-0.9665 0 -1.75 0.7835 -1.75 1.75s0.7835 1.75 1.75 1.75c0.43241 0 0.82649 -0.1559 1.13202 -0.4154 0.3157 -0.2681 0.78901 -0.2296 1.05717 0.0861 0.26815 0.3157 0.22961 0.789 -0.08609 1.0572 -0.56647 0.4811 -1.30177 0.7721 -2.1031 0.7721 -1.79493 0 -3.25 -1.4551 -3.25 -3.25 0 -1.79493 1.45507 -3.25 3.25 -3.25 0.85134 0 1.62578 0.32711 2.20498 0.86245l0.39752 -0.24845c0.27174 -0.16984 0.6214 -0.14827 0.8702 0.05368 0.2488 0.20194 0.3418 0.53965 0.2315 0.84051l-0.5455 1.48751c-0.01 0.0289 -0.0218 0.057 -0.0352 0.0843 -0.0357 0.073 -0.0823 0.1383 -0.13726 0.1944 -0.0849 0.087 -0.19164 0.1542 -0.31391 0.1919 -0.05606 0.0175 -0.11447 0.0284 -0.17414 0.0322 -0.06555 0.0043 -0.13016 -0.0001 -0.19252 -0.0123l-1.4331 -0.2471c-0.30649 -0.0529 -0.54857 -0.2894 -0.60851 -0.5946 -0.05994 -0.30515 0.0747 -0.61567 0.33844 -0.7805l0.23845 -0.14903C7.59128 9.06353 7.30463 8.9856 7 8.9856Z" clip-rule="evenodd"/>'],
     "Empty": ["0 0 14 14", '<path fill-rule="evenodd" d="M5.5 0c-0.55228 0 -1 0.447716 -1 1v0.5c0 0.55229 0.44772 1 1 1h3c0.55229 0 1 -0.44771 1 -1V1c0 -0.552285 -0.44771 -1 -1 -1h-3ZM3.24997 1H2.75c-0.82843 0 -1.5 0.67157 -1.5 1.5v10c0 0.8284 0.67157 1.5 1.5 1.5h8.5c0.8284 0 1.5 -0.6716 1.5 -1.5v-10c0 -0.82843 -0.6716 -1.5 -1.5 -1.5h-0.5v0.5c0 1.24264 -1.00739 2.25 -2.25003 2.25h-3c-1.24264 0 -2.25 -1.00736 -2.25 -2.25V1Zm0.5 7.5c0 -0.41421 0.33579 -0.75 0.75 -0.75h5c0.41421 0 0.75003 0.33579 0.75003 0.75s-0.33582 0.75 -0.75003 0.75h-5c-0.41421 0 -0.75 -0.33579 -0.75 -0.75Z" clip-rule="evenodd"/>'],
     "Import": ["0 0 14 14", '<path fill-rule="evenodd" d="M1.44 0.44A1.5 1.5 0 0 1 2.5 0h6a0.5 0.5 0 0 1 0.354 0.146l4 4A0.5 0.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1 -1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0 -0.398 0.158 -0.78 0.44 -1.06Zm5.747 2.993 0.104 0.104c0.116 0.076 0.216 0.176 0.292 0.292l1.854 1.854a0.625 0.625 0 0 1 -0.442 1.067h-1.25v3.625a1 1 0 1 1 -2 0V6.75h-1.25a0.625 0.625 0 0 1 -0.442 -1.067L5.907 3.83c0.076 -0.116 0.176 -0.216 0.292 -0.292l0.104 -0.104a0.625 0.625 0 0 1 0.884 0Z" clip-rule="evenodd"/>'],
-    "Export": ["0 0 14 14", '<path fill-rule="evenodd" d="M1.44 0.44A1.5 1.5 0 0 1 2.5 0h6a0.5 0.5 0 0 1 0.354 0.146l4 4A0.5 0.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1 -1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0 -0.398 0.158 -0.78 0.44 -1.06Zm5.747 10.502 0.104 -0.104c0.116 -0.076 0.216 -0.176 0.292 -0.292l1.854 -1.854a0.625 0.625 0 0 0 -0.442 -1.067h-1.25V4a1 1 0 0 0 -2 0v3.625h-1.25a0.625 0.625 0 0 0 -0.442 1.067l1.854 1.854c0.076 0.116 0.176 0.216 0.292 0.292l0.104 0.104a0.625 0.625 0 0 0 0.884 0Z" clip-rule="evenodd"/>']
+    "Export": ["0 0 14 14", '<path fill-rule="evenodd" d="M1.44 0.44A1.5 1.5 0 0 1 2.5 0h6a0.5 0.5 0 0 1 0.354 0.146l4 4A0.5 0.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1 -1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0 -0.398 0.158 -0.78 0.44 -1.06Zm5.747 10.502 0.104 -0.104c0.116 -0.076 0.216 -0.176 0.292 -0.292l1.854 -1.854a0.625 0.625 0 0 0 -0.442 -1.067h-1.25V4a1 1 0 0 0 -2 0v3.625h-1.25a0.625 0.625 0 0 0 -0.442 1.067l1.854 1.854c0.076 0.116 0.176 0.216 0.292 0.292l0.104 0.104a0.625 0.625 0 0 0 0.884 0Z" clip-rule="evenodd"/>'],
+    "Github": ["0 0 24 24", '<path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />'],
+    "Expand": ["3.6 2.95 12.8 12.8", '<path d="M10 13.4 3.6 7l1.7-1.7L10 10l4.7-4.7L16.4 7 10 13.4Z" />'],
+    "UpToDate": ["0.013 -0.306 13.974 13.974", '<path fill-rule="evenodd" d="M7.88332 0.11451c-0.99185 -0.12022494 -1.99495 0.103213 -2.842 0.633054C4.253 1.24066 3.64418 1.97141 3.30086 2.83169c-0.42873 0.0473 -0.84627 0.1694 -1.23354 0.36115 -0.43457 0.21516 -0.8225 0.51382 -1.141648 0.87891 -0.644549 0.73733 -0.9697938 1.7005 -0.904186 2.67764 0.0656077 0.97714 0.516694 1.88819 1.254024 2.53274 0.31549 0.27578 0.67232 0.49311 1.0539 0.64638 0.02237 -0.03391 0.04589 -0.06735 0.07059 -0.10028 0.66274 -0.88366 1.91634 -1.06274 2.8 -0.4l0.52779 0.39584L8.50518 6.6995c0.73384 -0.82556 1.99802 -0.89993 2.82352 -0.16609 0.8256 0.73384 0.9 1.99798 0.1661 2.82355l-0.7382 0.83044h0.0163l0.003 0c0.7905 -0.0047 1.5518 -0.29913 2.1398 -0.8275 0.588 -0.52837 0.9618 -1.254 1.0507 -2.03949 0.0889 -0.7855 -0.1133 -1.57633 -0.5684 -2.22274 -0.4174 -0.59301 -1.021 -1.02671 -1.7119 -1.23428 -0.1253 -0.92329 -0.543 -1.78423 -1.1943 -2.45516C9.79584 0.691356 8.87518 0.234735 7.88332 0.11451ZM10.5606 8.5265c0.2751 -0.30959 0.2473 -0.78364 -0.0623 -1.05883 -0.3096 -0.27519 -0.78367 -0.2473 -1.05886 0.06229L5.89792 11.5142 4.45 10.4282c-0.33137 -0.2485 -0.80147 -0.1813 -1.05 0.15 -0.24853 0.3314 -0.18137 0.8015 0.15 1.05l2 1.5c0.31205 0.2341 0.75141 0.1898 1.01056 -0.1017l4.00004 -4.5Z" clip-rule="evenodd"/>'],
+    "UpdateAvailable": ["0 0.096 14 14", '<path fill-rule="evenodd" d="M5.25 3.49994 11.9563 0.794702C12.9396 0.412306 14 1.13767 14 2.19271v8.22609c0 1.0238 -1.003 1.7468 -1.9743 1.423L5.25 9.49994v-6ZM3 3.5h1v7c0 0.5523 0.44772 1 1 1h0.5c0.55228 0 1 0.4477 1 1s-0.44772 1 -1 1H5c-1.65685 0 -3 -1.3431 -3 -3V9.32929C0.834808 8.91746 0 7.80622 0 6.5c0 -1.65685 1.34315 -3 3 -3Z" clip-rule="evenodd"/>'],
+    "WhatsNew": ["0 0.255 14 14", '<path d="M4.657 0.626a0.75 0.75 0 1 0 -0.804 1.267l0.958 0.607H1.5C0.778 2.5 0 2.989 0 3.806v1.416c0 0.762 0.677 1.24 1.354 1.3a0.497 0.497 0 0 0 -0.017 0.005h5.038V3.884h1.25v2.643h5.038a0.493 0.493 0 0 0 -0.018 -0.006C13.324 6.461 14 5.984 14 5.222V3.806c0 -0.817 -0.778 -1.306 -1.5 -1.306H9.189l0.958 -0.607A0.75 0.75 0 0 0 9.344 0.626L7 2.112 4.657 0.626Z"/><path d="M13 7.777H7.625l0 6.223 3.875 0a1.5 1.5 0 0 0 1.5 -1.5V7.777Z"/><path d="M6.375 7.777H1V12.5A1.5 1.5 0 0 0 2.5 14l3.875 0 0 -6.223Z"/><path d="M4.697 2.755H9.197A0.625 0.625 0 0 1 9.197 4.005H4.697A0.625 0.625 0 0 1 4.697 2.755Z"/>']
   };
   // The markup for one glyph, sized by the font size of whatever holds it (.cc-glyph in Tokens.css),
   // in the ink of its control.
@@ -1026,6 +1031,29 @@
     return el;
   }
 
+  // One of TowerTorch's own buttons with its glyph before its words, shown as the label mode asks
+  // (sheets/TowerTorch.Labels.css). Called again, it changes both. The words stay the accessible
+  // name in every mode, and in glyph mode they are the bubble unless the button has one of its own.
+  function labelled(el, name, text) {
+    el.classList.add("cc-lb");
+    el.textContent = "";
+    var g = document.createElement("span"), l = document.createElement("span");
+    g.className = "cc-lb-g"; g.innerHTML = glyph(name);
+    l.className = "cc-lb-l"; l.textContent = text;
+    el.appendChild(g); el.appendChild(l);
+    labelTip(el);
+    return el;
+  }
+  function labelTip(el) {
+    var l = el.querySelector(".cc-lb-l");
+    if (!l || (el.hasAttribute("data-tip") && !el.ccLbTip)) return;
+    if (document.documentElement.getAttribute("data-cc-labels-buttons") === "glyph") {
+      el.setAttribute("data-tip", l.textContent); el.ccLbTip = true;
+    } else if (el.ccLbTip) {
+      el.removeAttribute("data-tip"); el.ccLbTip = false;
+    }
+  }
+
   // Every TowerTorch window is modal (GlimStone rule 15): the page behind it is darkened and
   // blurred by a scrim, focus moves into the window and Tab cycles inside it, Escape and a click on
   // the scrim dismiss it, and focus goes back to the control that opened it. Windows stack, so a
@@ -1128,7 +1156,7 @@
   // A question in its own window, in place of window.confirm and window.prompt. o.input asks for a
   // name, which Enter takes and an empty one refuses; o.danger marks a deleting answer, which looks
   // like Cancel rather than red and leaves the focus on Cancel, the safe choice. o.onOk gets the
-  // trimmed name.
+  // trimmed name. o.glyph is the answer's glyph and o.cancelGlyph the other one's.
   function ask(o) {
     var win = document.createElement("div"); win.className = "cc-win cc-dlg";
     var title = document.createElement("div"); title.className = "cc-win-title"; title.textContent = o.title; win.appendChild(title);
@@ -1144,8 +1172,8 @@
     }
     if (card.childNodes.length) win.appendChild(card);
     var act = document.createElement("div"); act.className = "cc-win-act";
-    var no = pressable(document.createElement("span")); no.className = "cc-win-btn"; no.textContent = o.cancel;
-    var yes = pressable(document.createElement("span")); yes.className = "cc-win-btn " + (o.danger ? "cc-win-del" : "cc-win-go"); yes.textContent = o.ok;
+    var no = pressable(document.createElement("span")); no.className = "cc-win-btn"; labelled(no, o.cancelGlyph || "Close", o.cancel);
+    var yes = pressable(document.createElement("span")); yes.className = "cc-win-btn " + (o.danger ? "cc-win-del" : "cc-win-go"); labelled(yes, o.glyph || (o.danger ? "Trash" : "Confirm"), o.ok);
     act.appendChild(no); act.appendChild(yes); win.appendChild(act);
     document.body.appendChild(win);
     paintWin(win);
@@ -1277,7 +1305,7 @@
     lumOf: lumOf, LUM_FLOOR: LUM_FLOOR, liftDark: liftDark, liftLight: liftLight, lightTheme: lightTheme,
     liftSurface: liftSurface, surfacePalette: surfacePalette, isRed: isRed, deleteSlot: deleteSlot, toast: toast, shake: shake, fail: fail, deny: deny,
     pressable: pressable, modal: modal, closeBadge: closeBadge,
-    PRESETS: PRESETS, colorPicker: colorPicker, colorSwatch: colorSwatch, swMark: swMark, swMarkRow: swMarkRow, refind: refind, paintWin: paintWin, ask: ask, glyph: glyph, menu: menu, slosh: slosh,
+    PRESETS: PRESETS, colorPicker: colorPicker, colorSwatch: colorSwatch, swMark: swMark, swMarkRow: swMarkRow, refind: refind, paintWin: paintWin, ask: ask, glyph: glyph, labelled: labelled, labelTip: labelTip, menu: menu, slosh: slosh,
     edge: edge, placeAt: placeAt,
     icons: {
       MODES: ICON_MODES, SIMPLE_MAX: ICON_SIMPLE_MAX,

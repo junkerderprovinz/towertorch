@@ -34,6 +34,7 @@
   // script; without it a control keeps its tooltip and its name and only loses the drawing.
   var CC_TRASH_SVG = (window.CCTheme && window.CCTheme.CC_TRASH_SVG) || "";
   function ccGlyph(name) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(name) : ""; }
+  function ccLabelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
   // A dropdown's trigger takes the focus on a click and from Tab, which is what lets the wheel step
   // its value (GlimStone rule 14), and Enter or Space opens it.
   function selTrigger(trig) {
@@ -1029,7 +1030,7 @@
     if (!folded.some(Boolean)) return;
     var btn = bar.querySelector(".cc-allct");
     if (!btn) {
-      btn = el("span", "cc-allct", t("allContainers")); btn.setAttribute(MARK, "1");
+      btn = ccLabelled(el("span", "cc-allct"), "Containers", t("allContainers")); btn.setAttribute(MARK, "1");
       btn.setAttribute("role", "button"); btn.setAttribute("tabindex", "0"); btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false");
       var caret = el("span", "cc-allct-caret"); caret.setAttribute("aria-hidden", "true"); btn.appendChild(caret);
       var open = function () {
@@ -1599,7 +1600,7 @@
       // The badge carries no .cc-b: that is the sm-tier chip recipe, which reads as a different
       // species beside the bar's uppercase buttons. Its look comes from
       // `div.js-actions .cc-bulkmode-badge` in docker.css, which shares the native buttons' rules.
-      btn = el("span", "cc-bulkmode-badge" + (ccBulkModeOn ? " cc-bulkmode-badge-on" : ""), LANG === "de" ? "Mehrfachauswahl" : "Multi-select");
+      btn = ccLabelled(el("span", "cc-bulkmode-badge" + (ccBulkModeOn ? " cc-bulkmode-badge-on" : "")), "SelectAll", LANG === "de" ? "Mehrfachauswahl" : "Multi-select");
       btn.setAttribute(MARK, "1"); btn.setAttribute("role", "button"); btn.setAttribute("tabindex", "0");
       btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); ccBulkModeToggle(); });
       btn.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); ccBulkModeToggle(); } });
@@ -1813,10 +1814,10 @@
     if (!ccBulkBarEl) {
       var bar = el("div", "cc-bulkbar");
       var count = el("span", "cc-bulkbar-count"); bar.appendChild(count);
-      var startB = el("span", "cc-b cc-bulkbtn", de ? "Starten" : "Start"); startB.addEventListener("click", function () { ccBulkRun("start"); }); bar.appendChild(startB);
-      var stopB = el("span", "cc-b cc-bulkbtn", de ? "Stoppen" : "Stop"); stopB.addEventListener("click", function () { ccBulkRun("stop"); }); bar.appendChild(stopB);
-      var rmB = el("span", "cc-b cc-bulkbtn cc-bulkbtn-del", de ? "Entfernen" : "Remove"); rmB.addEventListener("click", ccBulkRemove); bar.appendChild(rmB);
-      var clearB = el("span", "cc-b cc-bulkbtn cc-bulkbtn-clear", de ? "Aufheben" : "Clear"); clearB.addEventListener("click", function () { ccBulkSel = {}; ccBulkClearMarks(); ccBulkBarSync(); }); bar.appendChild(clearB);
+      var startB = ccLabelled(el("span", "cc-b cc-bulkbtn"), "Play", de ? "Starten" : "Start"); startB.addEventListener("click", function () { ccBulkRun("start"); }); bar.appendChild(startB);
+      var stopB = ccLabelled(el("span", "cc-b cc-bulkbtn"), "Stop", de ? "Stoppen" : "Stop"); stopB.addEventListener("click", function () { ccBulkRun("stop"); }); bar.appendChild(stopB);
+      var rmB = ccLabelled(el("span", "cc-b cc-bulkbtn cc-bulkbtn-del"), "Trash", de ? "Entfernen" : "Remove"); rmB.addEventListener("click", ccBulkRemove); bar.appendChild(rmB);
+      var clearB = ccLabelled(el("span", "cc-b cc-bulkbtn cc-bulkbtn-clear"), "ClearSelection", de ? "Aufheben" : "Clear"); clearB.addEventListener("click", function () { ccBulkSel = {}; ccBulkClearMarks(); ccBulkBarSync(); }); bar.appendChild(clearB);
       if (window.CCTheme) [startB, stopB, rmB, clearB].forEach(window.CCTheme.pressable);
       document.body.appendChild(bar);
       ccBulkBarEl = bar;
@@ -2108,7 +2109,7 @@
     state.appendChild(dot);
     state.appendChild(el("span", "cc-tile-status", stateLabel(st)));
     if (updateReady(c.name, row) && typeof window.updateContainer === "function") {
-      var up = el("span", "cc-tile-up", t("update")); up.setAttribute("data-tip", t("updateCt"));
+      var up = el("span", "cc-tile-up"); up.setAttribute("data-tip", t("updateCt")); ccLabelled(up, "Update", t("update"));
       up.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); window.updateContainer(c.name); });
       if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(up);
       state.appendChild(up);
@@ -2288,7 +2289,7 @@
     var de = LANG === "de";
     ccOrgAsk({
       title: de ? names.length + " Container aktualisieren?" : "Update " + names.length + " container" + (names.length === 1 ? "" : "s") + "?",
-      text: names.join(", "), ok: t("updateCt"), cancel: t("cancel"), opener: ctl,
+      text: names.join(", "), ok: t("updateCt"), glyph: "Update", cancel: t("cancel"), opener: ctl,
       onOk: function () { window.openDocker("update_container " + names.map(encodeURIComponent).join("*"), t("bulkUpdateAll"), "", "loadlist"); }
     });
   }
@@ -2389,8 +2390,8 @@
     find.addEventListener("input", function () { var q = norm(find.value); rows.forEach(function (r) { r.style.display = !q || r.dataset.name.indexOf(q) >= 0 ? "" : "none"; }); });
     pop.appendChild(list);
     var act = el("div", "cc-pop-row cc-pop-act");
-    var cancel = el("span", "cc-btn", t("cancel")); cancel.addEventListener("click", dismissPop);
-    var save = el("span", "cc-btn cc-btn-primary", t("saveShort"));
+    var cancel = ccLabelled(el("span", "cc-btn"), "Close", t("cancel")); cancel.addEventListener("click", dismissPop);
+    var save = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort"));
     save.addEventListener("click", function () {
       var name = nameIn.value.trim();
       if (!name) { if (window.CCTheme && window.CCTheme.shake) window.CCTheme.shake(nameIn); nameIn.focus(); return; }
@@ -2686,7 +2687,7 @@
     }
     if (m.children.length) m.appendChild(el("div", "cc-menu-sep"));
     var prow = el("div", "cc-menu-row cc-menu-plain");
-    var save = el("button", "cc-btn", t("save")), fire = el("button", "cc-btn cc-btn-primary", t("startorder"));
+    var save = ccLabelled(el("button", "cc-btn"), "Save", t("save")), fire = ccLabelled(el("button", "cc-btn cc-btn-primary"), "Play", t("startorder"));
     save.addEventListener("click", function () { savePlan(false, save); }); fire.addEventListener("click", function () { savePlan(true, fire); });
     prow.appendChild(save); prow.appendChild(fire); m.appendChild(prow);
     // The colours, the icons and the basic or advanced view are set elsewhere, on the settings page
@@ -2808,7 +2809,7 @@
   function ccOrgAsk(o) { if (window.CCTheme && window.CCTheme.ask) window.CCTheme.ask(o); }
   function ccOrgCreateFolder() {
     if (!ccOrgAvailable || !ccOrgView) return;
-    ccOrgAsk({ title: t("newFolderTitle"), input: { label: t("folderName"), placeholder: t("folderName") }, ok: t("create"), cancel: t("cancel"), onOk: ccOrgCreateNamed });
+    ccOrgAsk({ title: t("newFolderTitle"), input: { label: t("folderName"), placeholder: t("folderName") }, ok: t("create"), glyph: "Add", cancel: t("cancel"), onOk: ccOrgCreateNamed });
   }
   function ccOrgCreateNamed(name) {
     if (!ccOrgAvailable || !ccOrgView) return;
@@ -3207,7 +3208,7 @@
     var pop = openPop;
     if (!pop) return;
     if (!pop._unsaved || !pop._unsaved() || !window.CCTheme || !window.CCTheme.ask) { closePop(); return; }
-    window.CCTheme.ask({ title: t("discardTitle"), ok: t("discard"), cancel: t("keepEditing"), danger: true, onOk: function () { if (openPop === pop) closePop(); } });
+    window.CCTheme.ask({ title: t("discardTitle"), ok: t("discard"), cancel: t("keepEditing"), cancelGlyph: "Pencil", danger: true, onOk: function () { if (openPop === pop) closePop(); } });
   }
   // clicking the SAME badge again closes its popover (toggle). Returns true if it closed.
   function togglePop(anchor) { if (openPop && openPopAnchor === anchor) { closePop(); return true; } return false; }
@@ -3779,7 +3780,7 @@
     // it) and none of its controls had a --cc-rb-c jewel. hardenPop is scoped to the new row;
     // paintPopChrome re-runs over the whole window so the rotation stays one continuous sequence
     // rather than restarting at slot 0 inside the new row.
-    var addB = el("span", "cc-btn cc-btn-sm", t("addsched"));
+    var addB = ccLabelled(el("span", "cc-btn cc-btn-sm"), "Add", t("addsched"));
     addB.addEventListener("click", function () { var nr = schedRow(null); sList.appendChild(nr); hardenPop(nr); paintSelects(); paintPopChrome(pop); });
     sSec.appendChild(addB);
     pop.appendChild(sSec);
@@ -3792,7 +3793,7 @@
     // order stays a daemon and apply concern.
     var act = el("div", "cc-pop-row cc-pop-act");
     act.style.setProperty("border-top", "none", "important"); // no bottom separator line either
-    var bSave = el("span", "cc-btn cc-btn-primary", t("saveShort"));
+    var bSave = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort"));
     bSave.addEventListener("click", function () { saveEditor(name, readWatchdog(), readSchedules(), readNursery(), false, bSave); });
     act.appendChild(bSave); pop.appendChild(act);
     // What Save would store from this window, against what it opened with. The plan fields are left
@@ -3931,8 +3932,8 @@
     pop.appendChild(body); // no explainer text; the diagnosis line says what matters
     function readKbit(inp) { var v = parseFloat(String(inp.value).trim().replace(",", ".")); return v > 0 ? Math.round(v * 1000) : 0; }
     var srow = el("div", "cc-pop-row cc-pop-act");
-    var rem = el("span", "cc-btn", t("removeLim")); rem.addEventListener("click", function () { saveBandwidth(name, 0, 0, rem); });
-    var save = el("span", "cc-btn cc-btn-primary", t("saveShort")); save.addEventListener("click", function () { saveBandwidth(name, readKbit(upIn), readKbit(dnIn), save); });
+    var rem = ccLabelled(el("span", "cc-btn"), "Trash", t("removeLim")); rem.addEventListener("click", function () { saveBandwidth(name, 0, 0, rem); });
+    var save = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort")); save.addEventListener("click", function () { saveBandwidth(name, readKbit(upIn), readKbit(dnIn), save); });
     srow.appendChild(rem); srow.appendChild(save); pop.appendChild(srow);
     document.body.appendChild(pop); hardenPop(pop);
     placePop(pop, anchor, 300);   // Rule 15: anchors head/foot, clamps into the viewport, locks the page behind it
@@ -4134,7 +4135,7 @@
     // field to practical-unlimited, host RAM or all cores, and strips it from the template.
     // Sending remove_* instead of mem_bytes=hostMem also covers a browser whose cached hostMem
     // is 0, where the Remove button would otherwise do nothing.
-    var rem = el("span", "cc-btn", t("removeLim"));
+    var rem = ccLabelled(el("span", "cc-btn"), "Trash", t("removeLim"));
     rem.addEventListener("click", function () {
       var payload = { name: name };
       if (showRam) payload.remove_mem = true;
@@ -4147,7 +4148,7 @@
     // made before the prefill returns cannot remove a limit nobody touched, and cannot miss a
     // real removal because the bulk map was stale.
     var cur = limits[name] || {}, curLoaded = false;
-    var save = el("span", "cc-btn cc-btn-primary", t("saveShort"));
+    var save = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort"));
     save.addEventListener("click", function () {
       // The fields are prefilled with the current limits, so clearing one means "remove that
       // limit", which is how a cap is lifted, not "leave unchanged". A value sets the limit;

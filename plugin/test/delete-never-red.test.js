@@ -43,7 +43,7 @@ for (const f of sheets) {
   const injected = (settings.match(/"#cc-settings [^"]*"/g) || []).map((s) => s.slice(1, -1));
   const hits = injected.filter((r) => DELETE.test(r.split('{')[0]) && RED.test(r));
   ok('settings.js injected rules', hits.length === 0, hits.join(' | '));
-  ok('"Reset all" is a plain .cc-btn like Export and Import', /el\("span", "cc-btn cc-set-xbtn", T\("Alles zurücksetzen", "Reset all"\)\)/.test(settings));
+  ok('"Reset all" is a plain .cc-btn like Export and Import', /labelled\(el\("span", "cc-btn cc-set-xbtn"\), "Refresh", T\("Alles zurücksetzen", "Reset all"\)\)/.test(settings));
   ok('the .cc-set-danger class is gone', !/cc-set-danger/.test(settings));
 }
 

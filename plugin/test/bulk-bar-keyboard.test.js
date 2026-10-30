@@ -45,7 +45,7 @@ doc.documentElement = { classList: { toggle() {} } };
 const pressable = new Function(grabFn(theme, 'pressable') + '\nreturn pressable;')();
 const ran = [];
 const bulk = new Function('document', 'el', 'window', 'LANG', 'ccBulkRun', 'ccBulkRemove', 'ccBulkClearMarks',
-  'var ccBulkBarEl = null, ccBulkSel = {}, colorBulkButtons = function () {};\n' + grabFn(src, 'ccBulkBarSync') + '\nreturn { sync: ccBulkBarSync, pick: function (s) { ccBulkSel = s; } };')(
+  'var ccBulkBarEl = null, ccBulkSel = {}, colorBulkButtons = function () {};\n' + grabFn(src, 'ccLabelled') + '\n' + grabFn(src, 'ccBulkBarSync') + '\nreturn { sync: ccBulkBarSync, pick: function (s) { ccBulkSel = s; } };')(
   doc, node, { CCTheme: { pressable } }, 'de', (a) => ran.push(a), () => ran.push('remove'), () => {});
 const sync = bulk.sync;
 bulk.pick({ web: {}, db: {} });
