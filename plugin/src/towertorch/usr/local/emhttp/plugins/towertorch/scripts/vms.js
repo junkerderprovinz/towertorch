@@ -255,9 +255,7 @@
     var seg = el("span", "cc-vm-seg");
     seg.setAttribute("role", "group"); seg.setAttribute("aria-label", de ? "Ansicht" : "View");
     [["list", de ? "Liste" : "List", "ViewList"], ["grid", de ? "Kacheln" : "Tiles", "ViewGrid"]].forEach(function (o) {
-      var b = el("span", "cc-seg-btn");
-      b.innerHTML = ccGlyph(o[2]);
-      b.appendChild(el("span", null, o[1]));
+      var b = ccLabelled(el("span", "cc-seg-btn"), o[2], o[1]);
       b.setAttribute("data-v", o[0]);
       if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b); else { b.setAttribute("role", "button"); b.setAttribute("tabindex", "0"); }
       b.addEventListener("click", function () { try { localStorage.setItem(VMVIEW_KEY, o[0]); } catch (e) {} apply(); });
@@ -341,6 +339,7 @@
   }
   // from docker.js, so the VM badges share Docker's classes and structure
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
+  function ccLabelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
 
   // VM limits: a gear per resource opens an editor for CPU pin/cap, RAM (balloon) and up/down
   // bandwidth. The engine applies CPU and RAM through virsh and bandwidth host-side with an
@@ -593,7 +592,7 @@
     inp.style.cssText = "width:74px;background:var(--cc-surface-3,#2e2e2e);color:var(--cc-text,#e6e6e6);border:none;border-radius:var(--cc-radius-control);padding:6px 8px;font-size:var(--cc-text-subline);outline:none";
     var unit = el("span", null, "GiB"); unit.style.cssText = "font-size:var(--cc-text-meta);color:var(--cc-text-dim,#8a8a8a)";
     var btn = el("button", "cc-vm-grow", VMDE ? "Vergrößern" : "Grow");
-    if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(btn, "Expand", VMDE ? "Vergrößern" : "Grow");
+    ccLabelled(btn, "Expand", VMDE ? "Vergrößern" : "Grow");
     btn.style.cssText ="background:var(--cc-accent,#FCC419);color:var(--cc-accent-text, #161616);border:none;border-radius:var(--cc-radius-pill);padding:6px 12px;font-size:var(--cc-text-meta);font-weight:600;cursor:pointer";
     btn.onclick = function () {
       var g = parseFloat(String(inp.value).replace(",", "."));
@@ -696,7 +695,7 @@
     if (hasLimFields) {
       var act = el("div", "cc-win-act");
       apply = el("span", "cc-win-btn cc-win-go", VMDE ? "Anwenden" : "Apply"); act.appendChild(apply);
-      if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(apply, "Apply", VMDE ? "Anwenden" : "Apply");
+      ccLabelled(apply, "Apply", VMDE ? "Anwenden" : "Apply");
       win.appendChild(act);
     }
     document.body.appendChild(win);

@@ -56,7 +56,7 @@
     b.className = "cc-sortreset";
     b.setAttribute("role", "button"); b.setAttribute("tabindex", "0");
     b.setAttribute("data-tip", tip); b.setAttribute("aria-label", tip);
-    b.innerHTML = window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph("Sort") : "";
+    b.innerHTML = window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph("Refresh") : "";
     // The head cell may sort its column on a click, so the press stays with the badge.
     b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); reset(); });
     b.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); reset(); } });

@@ -78,3 +78,9 @@ html[data-cc-labels-buttons="reactive"] .cc-lb-g {
 html[data-cc-labels-buttons="reactive"] .cc-lb-l {
   transition: max-width var(--cc-motion-label-dur) var(--cc-motion-label-ease), opacity calc(var(--cc-motion-label-dur) * .6) ease-out;
 }
+/* The view switches, the New folder tile and the menu's buttons set the space between glyph and
+   words with their own gap, which goes while the words are hidden so the glyph sits in the middle. */
+html[data-cc-labels-buttons] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings) > .cc-lb-g,
+html[data-cc-labels-buttons="reactive"] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings).cc-lb:is(:hover, :focus-visible) > .cc-lb-g { margin-inline-end: 0; }
+html[data-cc-labels-buttons="glyph"] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings).cc-lb,
+html[data-cc-labels-buttons="reactive"] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings).cc-lb:not(:hover, :focus-visible) { gap: 0 !important; }

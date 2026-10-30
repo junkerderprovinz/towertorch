@@ -28,7 +28,7 @@ ok('the hidden paths and ports are opened through Unraid\'s own toggle', /window
 ok('only once, so a second pass does not fold them again', /if \(rm && !rm\.hasAttribute\("data-cc-open"\)\)/.test(unfold));
 ok('and the row that unfolded them goes', /#canvas dl\.cc-ct-foldrow \{ display: none !important; \}/.test(css));
 ok('the allocations open in a CC window', /window\.CCTheme\.modal\(win/.test(unfold) && /el\("div", "cc-win cc-dlg cc-ct-allocwin"\)/.test(unfold));
-ok('the link says what it opens, without a chevron or an ellipsis', /a\.textContent = LANG === "de" \? "Docker-Zuweisungen" : "Docker allocations";/.test(unfold));
+ok('the link says what it opens with the show glyph, without a chevron or an ellipsis', /ccLabelled\(a, "Eye", LANG === "de" \? "Docker-Zuweisungen" : "Docker allocations"\);/.test(unfold));
 ok('the list goes back where it was when the window closes', /home\.insertBefore\(list, next\)/.test(unfold) && /list\.style\.display = "none"/.test(unfold));
 ok('ahead of Unraid\'s own onclick, which would unfold it', /at\.addEventListener\("click", [^\n]*, true\)/.test(unfold));
 

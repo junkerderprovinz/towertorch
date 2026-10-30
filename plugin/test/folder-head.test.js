@@ -118,7 +118,7 @@ console.log('\nThe New folder tile');
   const root = render().children[0];
   ok('it is the view\'s last tile', root.children[root.children.length - 1].classList.contains('cc-tile-new'));
   ok('a search hides it', !find(render({ filterText: 'pl' }), 'cc-tile-new'));
-  const tile = new Function('el', 'ccGlyph', 't', 'window', 'ccOrgCreateFolder', grabFn('newFolderTile') + '\nreturn newFolderTile;')(el, () => '', (k) => k, {}, () => { tile.created = true; })();
+  const tile = new Function('el', 'ccGlyph', 't', 'window', 'ccOrgCreateFolder', grabFn('ccLabelled') + '\n' + grabFn('newFolderTile') + '\nreturn newFolderTile;')(el, () => '', (k) => k, {}, () => { tile.created = true; })();
   tile.fire('click');
   ok('a click runs the same create path as the gear menu', tile.created === true);
   ok('the gear menu keeps its New folder button', /el\("button", "cc-btn cc-menu-newfolder"\)[\s\S]{0,200}t\("newFolder"\)[\s\S]{0,120}ccOrgCreateFolder\(\)/.test(src));

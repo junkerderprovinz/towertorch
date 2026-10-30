@@ -2277,8 +2277,7 @@
     if (v[1]) v[1].textContent = humanBytes(l.used);
   }
   function newFolderTile() {
-    var b = el("span", "cc-tile-new"); b.innerHTML = ccGlyph("Folder");
-    b.appendChild(el("span", null, t("newFolder")));
+    var b = ccLabelled(el("span", "cc-tile-new"), "Folder", t("newFolder"));
     b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); ccOrgCreateFolder(); });
     if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b);
     return b;
@@ -2672,7 +2671,7 @@
       views.forEach(function (v) {
         var b = el("button", "cc-seg-btn" + (mode === v[0] ? " cc-seg-on" : "")); b.type = "button";
         b.setAttribute("role", "radio"); b.setAttribute("aria-checked", mode === v[0] ? "true" : "false");
-        b.innerHTML = ccGlyph(v[2]); b.appendChild(el("span", null, v[1]));
+        ccLabelled(b, v[2], v[1]);
         b.addEventListener("click", function () { closeMenu(); setMode(v[0]); });
         seg.appendChild(b);
       });
@@ -2680,7 +2679,7 @@
       if (ccOrgAvailable && mode === "folder") {
         var nrow = el("div", "cc-menu-row cc-menu-plain");
         var nb = el("button", "cc-btn cc-menu-newfolder"); nb.type = "button";
-        nb.innerHTML = ccGlyph("Folder"); nb.appendChild(el("span", null, t("newFolder")));
+        ccLabelled(nb, "Folder", t("newFolder"));
         nb.addEventListener("click", function () { closeMenu(); ccOrgCreateFolder(); });
         nrow.appendChild(nb); m.appendChild(nrow);
       }
@@ -2693,8 +2692,7 @@
     // The colours, the icons and the basic or advanced view are set elsewhere, on the settings page
     // and with the switch beside the toolbar, so the menu keeps to the view of this page.
     var srow = el("div", "cc-menu-row cc-menu-plain");
-    var link = el("a", "cc-btn cc-menu-settings"); link.innerHTML = ccGlyph("Gear");
-    link.appendChild(el("span", null, LANG === "de" ? "Einstellungen" : "Settings"));
+    var link = ccLabelled(el("a", "cc-btn cc-menu-settings"), "Gear", LANG === "de" ? "Einstellungen" : "Settings");
     link.href = "/Settings/TowerTorch"; srow.appendChild(link); m.appendChild(srow);
     paintSelectors(m);
     return m;
@@ -4691,7 +4689,7 @@
       var a = at && at.querySelector("a");
       if (!a || !list || a.hasAttribute("data-cc-win")) return;
       a.setAttribute("data-cc-win", "1");
-      a.textContent = LANG === "de" ? "Docker-Zuweisungen" : "Docker allocations";
+      ccLabelled(a, "Eye", LANG === "de" ? "Docker-Zuweisungen" : "Docker allocations");
       a.setAttribute("role", "button"); a.setAttribute("tabindex", "0");
       var open = function (ev) {
         ev.preventDefault(); ev.stopPropagation();

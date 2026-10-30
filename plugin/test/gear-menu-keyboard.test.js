@@ -103,7 +103,7 @@ console.log('\nThe callers');
   const bm = grabFn(docker, 'buildMenu');
   ok('the menu keeps to the view: no rainbow and no icon colour switch, both live on the settings page', !/Rainbow (aus|an|off|on)|Icons (grau|farbig|grey|coloured)|cc\.actcolors|cc\.rainbow"/.test(bm));
   ok('and no second basic or advanced switch beside the one at the toolbar', !/"Einfach"|"Erweitert"|setAdvView|input\.advancedview/.test(bm));
-  ok('the settings page opens from a secondary button with the gear glyph', /var link = el\("a", "cc-btn cc-menu-settings"\); link\.innerHTML = ccGlyph\("Gear"\);/.test(bm) && /link\.href = "\/Settings\/TowerTorch"/.test(bm) && !/cc-btn-primary cc-menu-settings/.test(bm));
+  ok('the settings page opens from a secondary button with the gear glyph', /var link = ccLabelled\(el\("a", "cc-btn cc-menu-settings"\), "Gear", /.test(bm) && /link\.href = "\/Settings\/TowerTorch"/.test(bm) && !/cc-btn-primary cc-menu-settings/.test(bm));
   ok('in a button row of its own', /var srow = el\("div", "cc-menu-row cc-menu-plain"\);[\s\S]*srow\.appendChild\(link\); m\.appendChild\(srow\);/.test(bm));
 }
 

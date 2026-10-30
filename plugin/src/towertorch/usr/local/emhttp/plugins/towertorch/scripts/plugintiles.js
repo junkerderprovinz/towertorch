@@ -85,6 +85,7 @@
   }
 
   function glyph(n) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(n) : ""; }
+  function labelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
   function cardHtml(p) {
     var gear = window.CCTheme && window.CCTheme.icons
       ? '<span class="cc-plugicm" role="button" tabindex="0" data-act="icons" data-tip="' + esc(t("icons")) + '" aria-label="' + esc(t("icons") + ": " + p.name) + '">' + glyph("Gear") + "</span>" : "";
@@ -144,7 +145,7 @@
     seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("view"));
     [["list", "ViewList"], ["tiles", "ViewGrid"]].forEach(function (o) {
       var b = el("span", "cc-seg-btn");
-      b.innerHTML = glyph(o[1]) + "<span>" + esc(t(o[0])) + "</span>";
+      labelled(b, o[1], t(o[0]));
       b.setAttribute("data-v", o[0]);
       if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b); else { b.setAttribute("role", "button"); b.setAttribute("tabindex", "0"); }
       b.addEventListener("click", function () { s(KEY, o[0]); render(); });

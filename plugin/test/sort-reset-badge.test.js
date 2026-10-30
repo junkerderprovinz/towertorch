@@ -96,7 +96,7 @@ console.log('\nThe badge stands in for Unraid\'s icon and shows only while there
   load('de', {}, docker)();
   const b = badgeOf(docker);
   ok('an arranged Docker list shows the badge before the head\'s text', b && !b.hidden && docker.th.children.indexOf(b) === docker.th.children.indexOf(docker.native) - 1);
-  ok('it wears GlimStone\'s Sort glyph', b && /data-name="Sort"/.test(b.innerHTML));
+  ok('it wears the reset glyph, since it goes back to the default order', b && /data-name="Refresh"/.test(b.innerHTML));
   ok('its bubble and name say what it does, in German', b && b.getAttribute('data-tip') === 'Sortierung zurücksetzen' && b.getAttribute('aria-label') === 'Sortierung zurücksetzen');
   ok('it is a button the keyboard reaches', b && b.getAttribute('role') === 'button' && b.getAttribute('tabindex') === '0' && !!b.listeners.click && !!b.listeners.keydown);
   ok('Unraid\'s icon is marked to step aside', docker.native.classList.contains('cc-sortreset-native'));
