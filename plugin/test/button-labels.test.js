@@ -53,7 +53,16 @@ console.log('\nEvery caption Unraid prints on these pages has its glyph');
   ok('no caption stands under two glyphs', twice.length === 0, twice.join(', '));
   ok('the map is kept in lower case, which is how captions are looked up', all.every((c) => c === c.toLowerCase()));
   ok('Apply and Done, side by side on every form, wear different glyphs', glyphFor('Anwenden') !== glyphFor('Fertig'));
-  ok('a caption is matched whatever its case and a trailing colon or dots', glyphFor('ANWENDEN') === 'Save' && glyphFor('Fertig:') === 'Check' && glyphFor('Hinzufügen …') === 'Add');
+  ok('a caption is matched whatever its case and a trailing colon or dots', glyphFor('ANWENDEN') === 'Apply' && glyphFor('Fertig:') === 'Confirm' && glyphFor('Hinzufügen …') === 'Add');
+}
+
+console.log('\nClose meanings wear different glyphs');
+{
+  ok('a reset goes back to the default, a refresh tries again', glyphFor('Reset') === 'Refresh' && glyphFor('Standard') === 'Refresh' && glyphFor('Refresh') === 'Retry' && glyphFor('Neu laden') === 'Retry');
+  ok('Read and Write take settings in and out, Upload and Download move files', glyphFor('Read') === 'Import' && glyphFor('Schreiben') === 'Export' && glyphFor('Upload') === 'Upload' && glyphFor('Herunterladen') === 'Download');
+  ok('Check tests, Done agrees, Apply takes over, Save saves', glyphFor('Prüfen') === 'Check' && glyphFor('OK') === 'Confirm' && glyphFor('Übernehmen') === 'Apply' && glyphFor('Speichern') === 'Save');
+  ok('Install, Update and Restore each wear their own', glyphFor('Installieren') === 'Install' && glyphFor('Update All') === 'Update' && glyphFor('Restore') === 'Restore');
+  ok('emptying a list is not deleting it', glyphFor('Clear Log') === 'Empty' && glyphFor('Delete') === 'Trash');
 }
 
 console.log('\nAn unknown caption keeps its text');
@@ -80,7 +89,7 @@ console.log('\nThe glyph follows a caption change');
   b.value = 'Löschen';
   ok('setting the value asks for a pass', calls === 1, calls);
   ok('and the button reads its new value as before', b.value === 'Löschen' && b._v === 'Löschen');
-  ok('the new caption has its own glyph', glyphFor(b.value) === 'Trash' && glyphFor('Anwenden') === 'Save');
+  ok('the new caption has its own glyph', glyphFor(b.value) === 'Trash' && glyphFor('Anwenden') === 'Apply');
   calls = 0; b.ccLblCap = 'Löschen'; b.value = 'Löschen';
   ok('writing the same caption again asks for nothing', calls === 0, calls);
   api.unhookAll();

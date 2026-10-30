@@ -53,7 +53,7 @@ console.log('\nEvery name the scripts ask for is in the set');
     const src = read(f);
     for (const re of patterns) { let m; while ((m = re.exec(src))) for (const g of m.slice(1)) if (g) asked.set(g, (asked.get(g) || new Set()).add(path.basename(f))); }
   }
-  ok('the scan finds the glyphs the rows ask for', ['Play', 'Stop', 'Pause', 'More', 'Trash', 'Log', 'Restore', 'Star', 'Warning'].every((n) => asked.has(n)), [...asked.keys()].join(' '));
+  ok('the scan finds the glyphs the rows ask for', ['Play', 'Stop', 'Pause', 'More', 'Trash', 'Log', 'Refresh', 'Star', 'Warning'].every((n) => asked.has(n)), [...asked.keys()].join(' '));
   for (const [n, where] of asked) ok(n + ' (' + [...where].join(', ') + ') is in the set', n in GLYPHS);
 }
 

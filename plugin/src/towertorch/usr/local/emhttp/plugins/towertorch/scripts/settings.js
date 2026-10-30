@@ -206,7 +206,7 @@
   function T(d, e) { return de ? d : e; }
   var CC_VER = "@@CCVER@@"; if (CC_VER.indexOf("@@") === 0) CC_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "3.5.0";
+  var GLS_VER = "3.7.1";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
   var LATEST_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest";
@@ -1415,10 +1415,10 @@
       sw.style.background = cx; sw.setAttribute("data-tip", cx); sw.setAttribute("aria-label", cx);
       rbrow.appendChild(sw);
     });
-    // a restore glyph right of the swatches, the same size as one of them
+    // a reset glyph right of the swatches, the same size as one of them
     var rbReset = el("span", "cc-set-ibtn");
     rbReset.setAttribute("data-tip", T("Farben zurücksetzen", "Reset colours"));
-    rbReset.innerHTML = glyph("Restore");
+    rbReset.innerHTML = glyph("Refresh");
     rbReset.addEventListener("click", function () { del("cc.rbpal"); render(); syncHeaderBar(); syncSharesBar(); });
     rbrow.appendChild(rbReset);
     var rbCol = el("div", "cc-set-pickrow"); rbCol.appendChild(rbrow); rbCol.appendChild(rbPick);
@@ -1519,7 +1519,7 @@
         var fpal = []; for (var kf = 0; kf < RBDEF.length; kf++) fpal.push(f1.colors[kf % f1.colors.length]);
         fpal.forEach(function (c9) { var sw9 = el("span", "cc-set-sw"); sw9.style.background = c9; sw9.setAttribute("data-tip", c9); frow.appendChild(sw9); });
         var fReset = el("span", "cc-set-ibtn"); fReset.setAttribute("data-tip", T("Flagge zurücksetzen", "Reset flag"));
-        fReset.innerHTML = glyph("Restore");
+        fReset.innerHTML = glyph("Refresh");
         fReset.addEventListener("click", function () { del("cc.flag"); del("cc.flagpal"); setColorMode("accent"); render(); syncHeaderBar(); syncSharesBar(); });
         frow.appendChild(fReset);
         fcol.appendChild(frow);

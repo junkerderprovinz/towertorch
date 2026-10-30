@@ -1447,7 +1447,7 @@
     r1.appendChild(term ? actBtn("Log", "Log", function () { window.openTerminal("docker", name, ".log"); }) : actBtnOff("Log", "Log"));
     r1.appendChild(cx.xml ? actBtn("Pencil", de ? "Bearbeiten" : "Edit", function () { editTemplate(cx.xml); }) : actBtnOff("Pencil", de ? "kein Template" : "no template"));
     var r2 = el("div", "cc-actrow");
-    r2.appendChild(actBtn("Refresh", t("restart"), function () { doAction(name, "restart"); }));
+    r2.appendChild(actBtn("Retry", t("restart"), function () { doAction(name, "restart"); }));
     r2.appendChild(paused ? actBtn("Resume", t("resume"), function () { doAction(name, "unpause"); })
       : (running ? actBtn("Pause", t("pause"), function () { doAction(name, "pause"); }) : actBtnOff("Pause", t("pause"))));
     // The stop and start slot. Its action is re-derived at click time, so a stale bar never runs
@@ -1457,7 +1457,7 @@
     var konsole = de ? "Konsole" : "Console";
     r3.appendChild(term && running ? actBtn("Code", konsole, function () { if (cx.shell) window.openTerminal("docker", name, cx.shell); else window.openTerminal("docker", name); }) : actBtnOff("Code", term ? (de ? "Konsole erst, wenn der Container läuft" : "Console once the container is running") : konsole));
     // Update and remove go through Unraid's own functions, which ask before they act.
-    r3.appendChild(typeof window.updateContainer === "function" ? actBtn("Download", t("updateCt"), function () { window.updateContainer(name); }) : actBtnOff("Download", t("updateCt")));
+    r3.appendChild(typeof window.updateContainer === "function" ? actBtn("Update", t("updateCt"), function () { window.updateContainer(name); }) : actBtnOff("Update", t("updateCt")));
     var rmLabel = de ? "Entfernen" : "Remove";
     var rm = typeof window.rmContainer === "function" && cx.id ? actBtn("Trash", rmLabel, function () { window.rmContainer(name, cx.image, cx.id); }) : actBtnOff("Trash", rmLabel);
     rm.classList.add("cc-act-del"); r3.appendChild(rm);
@@ -2119,7 +2119,7 @@
     acts.appendChild(paused ? actBtn("Resume", t("resume"), function () { doAction(c.name, "unpause"); })
       : running ? actBtn("Stop", t("stop"), function () { doAction(c.name, "stop"); })
         : actBtn("Play", t("start"), function () { doAction(c.name, "start"); }));
-    acts.appendChild(actBtn("Refresh", t("restart"), function () { doAction(c.name, "restart"); }));
+    acts.appendChild(actBtn("Retry", t("restart"), function () { doAction(c.name, "restart"); }));
     tintAct(acts);
     foot.appendChild(acts);
     body.appendChild(foot);
@@ -2565,14 +2565,14 @@
           var hsBtn = folderActBtn("cc-folder-act" + (hsOn ? " cc-folder-act-on" : ""), hsOn ? "EyeOff" : "Eye", t("hideStopped"));
           hsBtn.addEventListener("click", function (ev) { ev.stopPropagation(); setFolderHideStopped(e.id, !folderHidesStopped(e.id)); renderFolderView(); });
           acts.appendChild(hsBtn);
-          [["Play", "bulkStartAll", "start"], ["Stop", "bulkStopAll", "stop"], ["Refresh", "bulkRestartAll", "restart"]].forEach(function (b) {
+          [["Play", "bulkStartAll", "start"], ["Stop", "bulkStopAll", "stop"], ["Retry", "bulkRestartAll", "restart"]].forEach(function (b) {
             var btn = folderActBtn("cc-folder-act", b[0], t(b[1]));
             btn.addEventListener("click", function (ev) { ev.stopPropagation(); ccFolderBulk(e.id, b[2]); });
             acts.appendChild(btn);
           });
           var updatable = names.filter(function (n) { return updateReady(n, rowsByName[n]); });
           if (updatable.length && typeof window.openDocker === "function") {
-            var updBtn = folderActBtn("cc-folder-act", "Download", t("bulkUpdateAll"));
+            var updBtn = folderActBtn("cc-folder-act", "Update", t("bulkUpdateAll"));
             updBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ccFolderUpdate(updatable, updBtn); });
             acts.appendChild(updBtn);
           }

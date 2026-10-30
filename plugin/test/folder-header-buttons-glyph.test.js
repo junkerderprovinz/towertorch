@@ -59,8 +59,8 @@ console.log('\nfolderActBtn(): a glyph button, never raw emoji text');
 console.log('\nEvery folder-header button calls folderActBtn()');
 {
   ok('hide-stopped button: an open eye, a crossed one while stopped containers are hidden', /var hsBtn = folderActBtn\("cc-folder-act" \+ \(hsOn \? " cc-folder-act-on" : ""\), hsOn \? "EyeOff" : "Eye", t\("hideStopped"\)\);/.test(src));
-  ok('start, stop and restart all: Play, Stop and Refresh through folderActBtn()', /\[\["Play", "bulkStartAll", "start"\], \["Stop", "bulkStopAll", "stop"\], \["Refresh", "bulkRestartAll", "restart"\]\]\.forEach\(function \(b\) \{\s*var btn = folderActBtn\("cc-folder-act", b\[0\], t\(b\[1\]\)\);/.test(src));
-  ok('update all button: folderActBtn(..., "Download", t("bulkUpdateAll"))', /var updBtn = folderActBtn\("cc-folder-act", "Download", t\("bulkUpdateAll"\)\);/.test(src));
+  ok('start, stop and restart all: Play, Stop and Retry through folderActBtn()', /\[\["Play", "bulkStartAll", "start"\], \["Stop", "bulkStopAll", "stop"\], \["Retry", "bulkRestartAll", "restart"\]\]\.forEach\(function \(b\) \{\s*var btn = folderActBtn\("cc-folder-act", b\[0\], t\(b\[1\]\)\);/.test(src));
+  ok('update all button: folderActBtn(..., "Update", t("bulkUpdateAll"))', /var updBtn = folderActBtn\("cc-folder-act", "Update", t\("bulkUpdateAll"\)\);/.test(src));
   ok('edit button: folderActBtn(..., "Pencil", t("editFolder"))', /var editBtn = folderActBtn\("cc-folder-act", "Pencil", t\("editFolder"\)\);/.test(src));
   ok('delete button: folderActBtn(..., "Trash", t("deleteFolder"))', /var delBtn = folderActBtn\("cc-folder-act", "Trash", t\("deleteFolder"\)\);/.test(src));
 }

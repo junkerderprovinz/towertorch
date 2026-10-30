@@ -813,7 +813,7 @@
     r1.appendChild((cx.log && typeof window.openTerminal === "function") ? actBtn("Log", "Log", function () { window.openTerminal("log", name, cx.log); }) : actBtnOff("Log", "Log"));
     r1.appendChild(actBtn("Pencil", de ? "Bearbeiten" : "Edit", function () { location.href = path + "/UpdateVM?uuid=" + uuid; }));
     var r2 = el("div", "cc-actrow");
-    r2.appendChild(running ? actBtn("Refresh", de ? "Neustart" : "Restart", function () { vmDisp("domain-restart", uuid); }) : actBtnOff("Refresh", de ? "Neustart" : "Restart"));
+    r2.appendChild(running ? actBtn("Retry", de ? "Neustart" : "Restart", function () { vmDisp("domain-restart", uuid); }) : actBtnOff("Retry", de ? "Neustart" : "Restart"));
     r2.appendChild(paused ? actBtn("Resume", de ? "Fortsetzen" : "Resume", function () { vmDisp(st === "pmsuspended" ? "domain-pmwakeup" : "domain-resume", uuid); })
       : (running ? actBtn("Pause", "Pause", function () { vmDisp("domain-pause", uuid); }) : actBtnOff("Pause", "Pause")));
     r2.appendChild((running || paused) ? actBtn("Stop", de ? "Stoppen" : "Stop", function () { vmDisp("domain-stop", uuid); })

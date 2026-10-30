@@ -74,8 +74,8 @@ console.log('\nThree rows, three, three and four');
   const bar = api.bars('web', { state: 'running' }, null).bar;
   const r = rows(bar);
   ok('WebUI, Log, Bearbeiten', r[0] === 'ExternalLink Log Pencil', r[0]);
-  ok('Neustart, Pause, Stoppen', r[1] === 'Refresh Pause Stop', r[1]);
-  ok('Konsole, Aktualisieren, Entfernen, Mehr', r[2] === 'Code Download Trash More', r[2]);
+  ok('Neustart, Pause, Stoppen', r[1] === 'Retry Pause Stop', r[1]);
+  ok('Konsole, Aktualisieren, Entfernen, Mehr', r[2] === 'Code Update Trash More', r[2]);
   ok('the bar knows the state it was drawn for', bar.dataset.ccState === 'running');
   const b = bar.querySelectorAll('.cc-actbtn');
   b[6].click(); b[7].click(); b[8].click();
@@ -90,11 +90,11 @@ console.log('\nThree rows, three, three and four');
 console.log('\nAn action that does not apply keeps its slot');
 {
   const stopped = rows(api.bars('web', { state: 'exited' }, null).bar);
-  ok('a stopped container: WebUI, console and pause disabled, start in the stop slot', stopped.join(' / ') === 'ExternalLink- Log Pencil / Refresh Pause- Play / Code- Download Trash More', stopped.join(' / '));
-  ok('a paused one resumes from the pause slot', rows(api.bars('web', { state: 'paused' }, null).bar)[1] === 'Refresh Resume Stop');
+  ok('a stopped container: WebUI, console and pause disabled, start in the stop slot', stopped.join(' / ') === 'ExternalLink- Log Pencil / Retry Pause- Play / Code- Update Trash More', stopped.join(' / '));
+  ok('a paused one resumes from the pause slot', rows(api.bars('web', { state: 'paused' }, null).bar)[1] === 'Retry Resume Stop');
   ctx = { webui: '', xml: '', tswebui: '', shell: '', id: '', image: '', links: [] };
   const bare = rows(api.bars('bare', { state: 'running' }, null).bar);
-  ok('no WebUI, no template, no id and no links: every slot stays, disabled', bare.join(' / ') === 'ExternalLink- Log Pencil- / Refresh Pause Stop / Code Download Trash- More', bare.join(' / '));
+  ok('no WebUI, no template, no id and no links: every slot stays, disabled', bare.join(' / ') === 'ExternalLink- Log Pencil- / Retry Pause Stop / Code Update Trash- More', bare.join(' / '));
   ok('so every row has three, three and four', bare.map((r) => r.split(' ').length).join('') === '334');
 }
 
