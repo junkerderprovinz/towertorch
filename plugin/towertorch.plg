@@ -360,7 +360,7 @@ The header becomes a live status island with your server name, flag mode joins r
 - **Animations.** Popups fade in and controls change colour smoothly, without touching live-updating chips, and all of it stops under the system's reduced-motion setting. Badges with a function lift on hover.
 - **Your limits win over the template.** When TowerTorch sets a CPU or RAM limit, the engine removes conflicting entries (--memory, --cpus, --cpuset-cpus and similar) from the template's extra parameters, so recreating the container cannot bring old values back.
 **🎨 Design**
-- **New logo.** Three cannons in a double ring on the Unraid tile, the header, the banner and the settings, readable on every Unraid theme.
+- **New logo.** A double ring on the Unraid tile, the header, the banner and the settings, readable on every Unraid theme.
 - **No flash of the native page.** The style applies before the first render, so the plain Unraid view does not appear for a moment while a page loads.
 - **Floating hover bubbles.** Every bubble floats at page level, so no table edge or bar can clip it, and it flips upward when space runs out. The last native browser tooltips on the Docker and Start tabs become TowerTorch bubbles.
 - **Docker tab details.** Up to four action icons per row, CPU, RAM and bandwidth badges with their own rainbow colours, the oversized native container-port column hidden (ports stay available as a badge), and update and changelog chips that rest grey in reactive mode.
