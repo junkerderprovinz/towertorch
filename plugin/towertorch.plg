@@ -83,10 +83,10 @@ TowerTorch now covers Unraid's login page too, puts glyphs on Unraid's own butto
 - "Choose logo" and "Remove" have the same size and shape as the other buttons.
 
 ### 1.2.0
-CannonadeCommand is now TowerTorch. With the new name and logo comes a release that touches every page. Main, Shares, Plugins and VMs can show tiles, and the disks, the array, the mover and the start plan have small animated pictures. The settings page is laid out from scratch, Unraid's own forms are cards now, and the Docker tab stays quiet while nothing needs you.
+This release touches every page and brings a new logo. Main, Shares, Plugins and VMs can show tiles, and the disks, the array, the mover and the start plan have small animated pictures. The settings page is laid out from scratch, Unraid's own forms are cards now, and the Docker tab stays quiet while nothing needs you.
 
 **✨ Added**
-- **New name, new logo.** The plugin, its settings page and its menu entries are called TowerTorch, with a tower carrying a torch flame as its logo. Install it once from **Plugins → Install Plugin** with `https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin/towertorch.plg`. It takes over an existing CannonadeCommand install with its settings, start plans and limits, and removes the old plugin.
+- **New logo.** A tower carrying a torch flame marks the plugin, its settings page and its menu entries.
 - **Tile views.** Disks on Main, shares on Shares, plugins and VMs can be shown as tiles. Shares start as tiles, VMs as a list, like Docker.
 - **The array as a vessel.** The array has its own card in front of the parity disk. Its fill level is drawn as a vessel that sloshes gently, turns orange from 90 % and red past 95 %.
 - **Disks at work.** A spinning disk's platter turns while it reads or writes, runs up and coasts down instead of stopping dead, and keeps turning between short bursts. SSD, NVMe and USB drives show data flowing through them. The activity LED blinks on every access.
@@ -121,7 +121,7 @@ CannonadeCommand is now TowerTorch. With the new name and logo comes a release t
 - A container pinned to its original logo showed a tinted logo.
 
 ### 1.1.0
-CannonadeCommand moves to GlimStone 3.5.0. The Version card opens the release notes, the filter in the Docker gear menu starts as a Search button, pages and windows use the full width, and fill bars slosh. The gear menu works from the keyboard, and the white theme got a round of readability fixes.
+TowerTorch moves to GlimStone 3.5.0. The Version card opens the release notes, the filter in the Docker gear menu starts as a Search button, pages and windows use the full width, and fill bars slosh. The gear menu works from the keyboard, and the white theme got a round of readability fixes.
 
 **✨ Added**
 - **Release notes on the Info tab.** A "Versionshinweise" button on the Version card, before "Nach Updates suchen", opens a "Neu in x.y.z" window with the notes of the version you run and a link to the release on GitHub. You can scroll the notes with the keyboard, and their links show the focus halo.
@@ -148,7 +148,7 @@ CannonadeCommand moves to GlimStone 3.5.0. The Version card opens the release no
 - **The GlimStone link on the Info tab** pointed to a release that no longer exists.
 
 ### 1.0.0
-CannonadeCommand moves onto the GlimStone 3.4.1 design language, with new colours, one shape setting for every corner, motion levels, quieter Docker rows with a More menu, an Info tab, and windows that ask and close the same way everywhere. Your saved colours, shape and motion choice carry over.
+TowerTorch moves onto the GlimStone 3.4.1 design language, with new colours, one shape setting for every corner, motion levels, quieter Docker rows with a More menu, an Info tab, and windows that ask and close the same way everywhere. Your saved colours, shape and motion choice carry over.
 
 **✨ Added**
 - **Info tab.** The last settings tab lists the UI, engine and GlimStone versions, each linked to its release page, with a "Nach Updates suchen" button that also understands pre-release builds. A Help card points to GitHub issues and the bug report form, and an About card carries the donation links. The version line at the foot of the page and the version entry in the Docker gear menu are gone, so each version appears once.
@@ -171,11 +171,11 @@ CannonadeCommand moves onto the GlimStone 3.4.1 design language, with new colour
 - **Settings page.** Card titles sit on the card's top edge as badges, every tab has an icon and the same width, and the tab strip wraps on narrow screens. The search badge and "Öffnen" are secondary buttons, so the page keeps one filled accent button.
 - **Selection mark and switches.** Docker multi-select uses a round mark with a filled tick in the row's colour, shown on hover and once something is picked. On/off choices in the Startplan window and the badge visibility table are switches.
 - **Editor windows.** Startplan, bandwidth, the CPU and RAM limits and the VM limits share one layout: a title badge, a content card and a button row with "Schließen" on the left. The page behind dims, Tab stays inside the window, Escape closes it, and focus goes back to the button that opened it.
-- **Glyphs and the (i) bubble.** The icons CannonadeCommand adds itself, such as restore, star, close, download, warning and the move-to-folder button, are drawn from GlimStone's set. The info bubble fades in and uses the host font. It opens on focus only after keyboard use, so a click leaves no bubble standing, and keyboard focus shows as the accent halo on the (i) icon and on every button and badge.
+- **Glyphs and the (i) bubble.** The icons TowerTorch adds itself, such as restore, star, close, download, warning and the move-to-folder button, are drawn from GlimStone's set. The info bubble fades in and uses the host font. It opens on focus only after keyboard use, so a click leaves no bubble standing, and keyboard focus shows as the accent halo on the (i) icon and on every button and badge.
 
 **⚡ Improved**
 - **Settings save as you change them.** On the Notifications and Bandwidth cards, a switch saves at once and flips back if the save fails, and a text field saves after a short pause. The Startplan editor keeps its Save button.
-- **Confirmations say what happens.** Creating, renaming and deleting folders, the bulk remove, growing a vDisk, removing a VM, removing a plugin, removing a Previous App and "Alles zurücksetzen" all ask in a CannonadeCommand window whose title names the action and the count, such as "3 Container entfernen?". Browser prompts and click-twice buttons are gone.
+- **Confirmations say what happens.** Creating, renaming and deleting folders, the bulk remove, growing a vDisk, removing a VM, removing a plugin, removing a Previous App and "Alles zurücksetzen" all ask in a TowerTorch window whose title names the action and the count, such as "3 Container entfernen?". Browser prompts and click-twice buttons are gone.
 - **One kind of toast.** Notices stack in the bottom corner, stay for four seconds and pause while you hover over or focus them. Docker progress notes turn into their result instead of piling up.
 - **Time picker.** A schedule's time opens from a clock button, works with the arrow keys, Home and End, and offers minutes in five-minute steps. Escape closes it and puts the time back.
 - **Mouse wheel on dropdowns.** A closed dropdown steps with the wheel only after you click or tab into it, so scrolling the page past it leaves its value alone. Focus stays on it after a pick.
@@ -189,7 +189,7 @@ CannonadeCommand moves onto the GlimStone 3.4.1 design language, with new colour
 - **Two settings saved at the same moment could fail,** with the engine rejecting the second write. A setting changed on the Docker page could also be reset by the server's copy before it had synced.
 - **A setting changed just before leaving a page could be lost.** The page sends what has not synced yet in one request as it closes.
 - **The "updated to" notice came back** on every Docker and Settings page load after an update.
-- **Buttons showed Unraid's orange frame,** and on the white theme the text fields in CannonadeCommand's windows, such as the Startplan's max./Std. and the CPU fields, were close to unreadable, because Unraid's own rules won over CannonadeCommand's.
+- **Buttons showed Unraid's orange frame,** and on the white theme the text fields in TowerTorch's windows, such as the Startplan's max./Std. and the CPU fields, were close to unreadable, because Unraid's own rules won over TowerTorch's.
 - **Grid and Folder views dropped the keyboard focus** every few seconds when they refreshed, and after a folder was renamed.
 - **White text sat on pastel fills** at a contrast too low to read. Text on a coloured fill is dark or white, whichever reads better.
 - **Some rainbow and flag fills took the wrong text colour,** such as dark text on red when hovering "Alles zurücksetzen" in flag mode.
@@ -223,7 +223,7 @@ Folder view arrives on the Docker tab, logos get a pipeline that picks the right
 - **Dropdowns in every colour mode.** Every dropdown list, "Hängt ab von" included (with its arrow), gives each entry its own palette colour and rests neutral in reactive mode until hovered. The last native dropdowns on the Dashboard tiles are replaced.
 - **Process windows.** Update and recreate windows always open at the same size, their title, section badges and buttons rotate through the palette, and a template edit (Edit, Apply) shows the same window as a real update.
 - **Swatches and placeholders.** The selected colour swatch shows a tick instead of growing, and placeholder text in fields is grey instead of link blue.
-- **Clearer explanations.** Restart policy, "Hängt ab von" and "Auto-Stop bei Leerlauf" explain what they do and what their numbers mean, and every bubble names CannonadeCommand in full.
+- **Clearer explanations.** Restart policy, "Hängt ab von" and "Auto-Stop bei Leerlauf" explain what they do and what their numbers mean, and every bubble names TowerTorch in full.
 **⚡ Improved**
 - **Fast view switching.** On a host with 55 containers, switching between simple and advanced view takes 0.8 seconds instead of 7.6, and opening the Docker tab blocks for about one second instead of eight. Closing an update window freezes the tab far less.
 - **Windows stay on screen.** An open Startplan, CPU, RAM or bandwidth window pins the page behind it, never opens off-screen, keeps its title and buttons fixed while the middle scrolls, and moves back on screen when it grows or the browser is resized.
@@ -278,7 +278,7 @@ VMs get the same live resource control as containers, Community Applications joi
 - **Community Applications in the house style.** The search is a full-width "Suche" field in the sidebar with a large results list over a blurred page, the sidebar is a set of section cards and equal-width entry badges, section headers are badges with a SHOW MORE badge and the description in a bubble, and app cards, ribbons, pagination and sort arrows follow your colour mode. Hold the right mouse button or Shift to scroll app rows with the wheel.
 - **App Info drawer and Previous Apps.** The drawer gets dark cards, chip buttons and a dimmed details table, and Previous Apps has a "Remove selected" button that deletes every checked app from the history at once.
 - **Installs from Apps are styled.** The container form and its output window look the same whether you come from Docker or from Apps, and the Docker allocations list can be sorted by name or by IP.
-- **More of Unraid's settings.** The boot device and all its sub-tabs, Boot Parameters, Management Access, Unraid API Status, API Settings and API Keys, the Users page tiles and the account menu follow your accent, shape and colour mode. The SMB "copy settings" checklist is a full CannonadeCommand dropdown.
+- **More of Unraid's settings.** The boot device and all its sub-tabs, Boot Parameters, Management Access, Unraid API Status, API Settings and API Keys, the Users page tiles and the account menu follow your accent, shape and colour mode. The SMB "copy settings" checklist is a full TowerTorch dropdown.
 - **Icons on the main tabs.** Each main menu tab can show an icon next to its label, and two switches hide the icons or the text for an icon-only bar.
 - **Animations: off, normal or wild.** Wild makes the menu tabs hop on hover, pills and gears spring and popovers bounce in.
 - **Flat or glass badges.** Glass adds a soft top sheen to every badge, chip, tab, button, toggle and logo tile; flat keeps them matte.
@@ -286,7 +286,7 @@ VMs get the same live resource control as containers, Community Applications joi
 **🎨 Design**
 - **The finish.** Lit elevation and soft entrances on popovers, tracked small caps on badges, tabular figures so live numbers do not jitter, one jewel-toned rainbow palette shared by every tab, crisp line gears, and a state glyph on running, paused and stopped badges so state does not rely on colour alone.
 - **Shape and colour everywhere.** The badge shape drives gears, toggles, swatches and scrollbars, reactive mode works in the plain accent mode too, and logo tiles, the bell and the menu join the colour modes. Docker, VM and Plugin logo tiles share one size.
-- **Styled scrollbars and table headers.** Scrollbars follow your badge shape and accent without end arrows, and every column-header row and Unraid's orange section title bars get the quiet CannonadeCommand style.
+- **Styled scrollbars and table headers.** Scrollbars follow your badge shape and accent without end arrows, and every column-header row and Unraid's orange section title bars get the quiet TowerTorch style.
 - **One backdrop.** Every popup, menu and the notification centre dims and blurs the whole page the same way, and dialog frames sit on a lighter card surface so they stand out.
 - **Lined up on the right.** The status island, header icons, view toggle, footer arrows and every list row finish flush at the content edge, on wide windows too.
 - **Notification centre and footer arrows.** Messages are separate cards, tabs and filters each get a palette colour, and the footer scroll arrows take your badge shape and colour mode, sit side by side and fade out at the top and bottom of a page.
@@ -307,16 +307,16 @@ VMs get the same live resource control as containers, Community Applications joi
 A consistency pass across Unraid's own Tools and Settings sub-pages, plus a command palette, a one-click arrange mode, a first light-theme pass and a status island that works behind a reverse proxy.
 
 **✨ Added**
-- **Command palette.** Press Ctrl+K (Cmd+K on a Mac) to search and jump to any page or run a few CannonadeCommand actions, entirely by keyboard.
+- **Command palette.** Press Ctrl+K (Cmd+K on a Mac) to search and jump to any page or run a few TowerTorch actions, entirely by keyboard.
 - **Arrange mode.** Unraid's own arrange icon, which otherwise lives only on the Dashboard, shows on every tab. One click makes the menu tabs and status island chips wiggle so you can move them straight away; another click or Esc locks them and saves the layout.
 - **A status island you can arrange and click.** Place chips freely across three rows. A click jumps to the matching page (array and fill to Main, containers to Docker, RAM, CPU and temperature to the Dashboard), the container chip shows running and stopped counts, and chips without fresh data keep a placeholder instead of vanishing.
-- **CPU load from the engine.** The CPU chip reads load through the CannonadeCommand engine over plain HTTP, so it works on Unraid 7.3 and behind reverse proxies that do not pass Unraid's websocket.
+- **CPU load from the engine.** The CPU chip reads load through the TowerTorch engine over plain HTTP, so it works on Unraid 7.3 and behind reverse proxies that do not pass Unraid's websocket.
 - **Tools and Settings sub-pages in the house style.** Each page heading is a badge, labels lose their colons and sit compactly beside their values, Yes/No settings become switches, native help moves behind an (i) on its label, and selects, toggles, radio buttons, checkboxes and multi-select lists match the rest. Help texts Unraid ships only in English appear in German where the language pack misses them.
 - **Help in the house style.** The help icon in the menu bar shows a page's help texts full width as notes; otherwise the descriptions stay in their bubbles.
 - **Couple header colours to the theme.** On by default: a dark Unraid theme gets a dark header with light text, a light theme the reverse.
 - **Animations switch.** On by default, it brings smooth transitions and small motions (the status island fading in, cards lifting on hover) and overrides the system reduce-motion setting; off stills everything. Wiggle and pulse effects respect reduced motion.
 - **Light theme, first pass.** In the white and azure themes, elements with a weak or transparent surface get a light surface and dark text, so nothing disappears.
-- **Keyboard and screen readers in dropdowns.** Every CannonadeCommand dropdown opens with Enter, Space or Arrow down, moves with the arrow keys, closes with Esc and reports its role and state.
+- **Keyboard and screen readers in dropdowns.** Every TowerTorch dropdown opens with Enter, Space or Arrow down, moves with the arrow keys, closes with Esc and reports its role and state.
 - **Update toast.** After an update a short hint shows the new version number.
 - **Running state as a dot.** On the Docker tab a coloured dot under each container name shows its state, follows your badge shape and explains itself on hover. A click on the dot or on the container name makes the action icons flash.
 - **Action icons that expand in place.** Three icons per row, with "..." as the fourth on the second row; it reveals the rest, and they fold away when the pointer leaves.
@@ -326,7 +326,7 @@ A consistency pass across Unraid's own Tools and Settings sub-pages, plus a comm
 - **State indicators.** With native state colours off, usage bars, the Docker update badge and the Plugins status badges follow your colour mode; with it on they keep green, yellow and red. Disk state dots and fill bars join reactive mode.
 - **Floating windows.** Container update, template update, plugin changelog, system information and feedback windows share one dark surface with no light header or footer, a title badge without status text, borderless step cards and buttons in your colour mode. A three-dot loader at the bottom left turns into a green check when the job is done.
 - **Badge hierarchy.** Main menu badges are the largest size, the icons beside them match, and section and title badges are one step smaller on every page.
-- **Flush with the menu bar on every page,** including pages without their own CannonadeCommand section and the "Boxed" display width on wide screens.
+- **Flush with the menu bar on every page,** including pages without their own TowerTorch section and the "Boxed" display width on wide screens.
 - **Settings polish.** Colour fields, the hex field and reset form one row of equal cells, the search is an expandable icon badge at the top right, the header colour fields get real swatches, the UI and engine versions sit at the bottom, and the server name offers many more fonts.
 **🐛 Fixed**
 - **The help icon swallowed clicks,** because the docked profile area lay invisibly over it.
@@ -337,32 +337,32 @@ A consistency pass across Unraid's own Tools and Settings sub-pages, plus a comm
 - **Status island chips could fail to arrange or to show temperatures** on some pages.
 
 ### 0.5.0
-The header becomes a live status island with your server name, flag mode joins rainbow, and the notification centre, Unraid's display settings, the add-container form and every streaming window get the CannonadeCommand look.
+The header becomes a live status island with your server name, flag mode joins rainbow, and the notification centre, Unraid's display settings, the add-container form and every streaming window get the TowerTorch look.
 
 **✨ Added**
 - **Status island.** Compact chips at the top right show uptime, edition, the Unraid version (clickable), array state, array fill, RAM, CPU load, temperatures and the number of running containers, live on every page. Temperatures always show, with a green, amber or red dot against a threshold you set. The hover texts add real detail (boot time, parity progress, CPU and board temperature), and a checklist in the settings shows or hides each chip.
 - **Your server name in the header.** It stands large at the left, where the Unraid wordmark was, flush with the first menu tab. Size, weight, italic, font and colour are adjustable in the settings.
-- **Header icons.** The bell and menu button match the icons beside them and dock at the end of the icon row, every header icon can be hidden one by one, and the hamburger menu opens in the CannonadeCommand style over a blurred backdrop.
+- **Header icons.** The bell and menu button match the icons beside them and dock at the end of the icon row, every header icon can be hidden one by one, and the hamburger menu opens in the TowerTorch style over a blurred backdrop.
 - **Notification centre.** It opens as a larger floating window. "Alle archivieren" and a new "Alle löschen" are badges side by side, and delete clears unread and archived messages after a "Wirklich löschen?" step, without a detached confirmation.
 - **Flag mode.** Pick one of about 195 country flags from a searchable, keyboard-operable picker that shows the real flag, and everything takes that flag's colours. It has its own reactive variant and its own eight editable colours with a reset, and turning it on switches rainbow off (and the other way round).
 - **Reactive rainbow mode.** The active-only mode, renamed, works per row on the Docker tab: hovering a container colours all its badges, action icons and logo background, while active things (the current tab, an active plan, set limits, switched-on toggles) stay coloured. The Plugins tab, the settings tabs and the tile backgrounds join it.
 - **"Logos &amp; Icons" card in General.** One global card sets logo background, colour and strength. A tab's own picker switches to its own colour when you pick one and jumps back to the global one when you adopt it.
 - **Native state colours.** "Zustandsanzeigen nativ färben" decides whether usage bars show green, yellow and red by fill or follow your colour mode.
 - **Tile size.** Small, medium or large tiles for Settings, Tools and Favorites, and for the logo tiles on the Docker and Plugins tabs. Medium matches the Docker logo tile.
-- **Display settings close at hand.** A compact "Anzeige" card holds Unraid's three header colours and syncs them live, with a button to Unraid's own Display page, which wears the CannonadeCommand style like the other native settings pages.
+- **Display settings close at hand.** A compact "Anzeige" card holds Unraid's three header colours and syncs them live, with a button to Unraid's own Display page, which wears the TowerTorch style like the other native settings pages.
 - **Hide the footer and the Favorites tab.** Switches remove Unraid's bottom status bar and the Favorites menu tab, without a reload.
 - **Search and reset in the settings.** A search field filters cards across all settings tabs, and a two-step "Reset all" returns every setting to its default. Every card's help sits behind an (i) bubble.
 - **IPs and ports for stopped containers.** The engine reads the configured static IP and published ports, so the Docker badges and the allocations table show them instead of "invalid IP" and "???", marked as configured values.
-- **Plugin removal with one icon.** The uninstall control is a solid red trash icon that asks "Plugin entfernen?" in a CannonadeCommand dialog, without Unraid's separate confirm checkbox.
+- **Plugin removal with one icon.** The uninstall control is a solid red trash icon that asks "Plugin entfernen?" in a TowerTorch dialog, without Unraid's separate confirm checkbox.
 - **The add-container form, field by field.** Every label is a badge without a colon, required fields carry a red dot, select fields look like dropdowns at full height, colour variables get a colour picker, all fields start on one line, and the template list opens as an overlay that scrolls.
 - **Streaming windows.** Plugin install, plugin update and container update windows show their log monospace in a dark terminal block, steps as cards, a clean ring spinner beside the title in place of the bright green dots, and one consistent full-width title badge. Applying a container shows its docker run output in the same floating window, and the ShipLog changelog window keeps a readable title and clean Markdown.
 - **Resizable columns on Shares.** Drag the column widths on the Shares tab as on the Start tab, with a reset; the size and storage columns get at least 110px.
 - **Animations.** Popups fade in and controls change colour smoothly, without touching live-updating chips, and all of it stops under the system's reduced-motion setting. Badges with a function lift on hover.
-- **Your limits win over the template.** When CannonadeCommand sets a CPU or RAM limit, the engine removes conflicting entries (--memory, --cpus, --cpuset-cpus and similar) from the template's extra parameters, so recreating the container cannot bring old values back.
+- **Your limits win over the template.** When TowerTorch sets a CPU or RAM limit, the engine removes conflicting entries (--memory, --cpus, --cpuset-cpus and similar) from the template's extra parameters, so recreating the container cannot bring old values back.
 **🎨 Design**
 - **New logo.** Three cannons in a double ring on the Unraid tile, the header, the banner and the settings, readable on every Unraid theme.
 - **No flash of the native page.** The style applies before the first render, so the plain Unraid view does not appear for a moment while a page loads.
-- **Floating hover bubbles.** Every bubble floats at page level, so no table edge or bar can clip it, and it flips upward when space runs out. The last native browser tooltips on the Docker and Start tabs become CannonadeCommand bubbles.
+- **Floating hover bubbles.** Every bubble floats at page level, so no table edge or bar can clip it, and it flips upward when space runs out. The last native browser tooltips on the Docker and Start tabs become TowerTorch bubbles.
 - **Docker tab details.** Up to four action icons per row, CPU, RAM and bandwidth badges with their own rainbow colours, the oversized native container-port column hidden (ports stay available as a badge), and update and changelog chips that rest grey in reactive mode.
 - **VM usage statistics** show memory, disk IO and network IO as chips, and the CPU pills follow rainbow and flag mode.
 - **Tidier settings.** Tabs follow the menu bar order with General first and the header after it, the badge card is regrouped (colour, rainbow, flag, shape, state colours, preview), and tile size sits in the same place on every tab.
@@ -385,11 +385,11 @@ The Start (Main) tab gets the full treatment, from the disk lists to the array o
 - **Parity check card.** While a check runs, size, time, position, speed, finish time and sync errors sit in a card beside the buttons, with a progress bar in your badge shape that shows the percentage, animates its stripes inside the fill and runs a colour gradient in rainbow mode.
 - **Unassigned Devices.** The header splits into three translated badges (disks, remote shares, historical), device and share rows use badges, switches follow your badge shape, logos turn monochrome, and the gear and refresh controls become icon tiles with hover texts. Unraid's floating text buttons are hidden because the icons do their job.
 - **Long-press to rearrange the menu bar.** Hold a tab for about half a second, the bar wiggles, and you can drag tabs, utility icons and the usage meter anywhere along one drag zone. A normal click navigates as usual, and the saved order also applies to icons Unraid adds late.
-- **Add and edit container form.** Filled inputs, the CannonadeCommand dropdowns, accent buttons, switches and accent CPU pins. The page title becomes a header badge, the category picker a dark field with check marks, the three collapsible rows quiet pills, and the config popup's dropdowns match.
+- **Add and edit container form.** Filled inputs, the TowerTorch dropdowns, accent buttons, switches and accent CPU pins. The page title becomes a header badge, the category picker a dark field with check marks, the three collapsible rows quiet pills, and the config popup's dropdowns match.
 - **Native popups in the house style.** Dialogs such as the update check and every confirmation get a dark surface, no borders, rounded corners and shadows. The title is a full-width badge in your colour mode, buttons are large and filled, and the page behind is dimmed and blurred.
 - **Apply result in the limit editors.** After you apply a CPU, RAM or bandwidth limit, a green check (or a red cross) appears behind the field with the details in a hover bubble, and the window stays open. Each editor keeps all its help in one bubble next to its title.
 - **A clearer start plan badge.** An active plan shows a plain "aktiv" badge with dependencies, watchdog and schedules in its tooltip, and the editor's notes move into bubbles.
-- **Backup and transfer.** Export all CannonadeCommand settings as JSON and import them on any box.
+- **Backup and transfer.** Export all TowerTorch settings as JSON and import them on any box.
 - **Global density.** The density control (compact, normal, airy) applies to Docker, Start and Shares at once.
 **🎨 Design**
 - **No lines anywhere.** Borders, rings on active badges, separator lines and focus rings are gone across every area, popups included. Active and selected states show by fill, keyboard focus by brightening, and cards separate by surface and shadow.
@@ -397,7 +397,7 @@ The Start (Main) tab gets the full treatment, from the disk lists to the array o
 - **Uniform badges on Shares and Start.** Every badge except the share or disk name has the same size, badges with a function or link glow on hover, and no badge is underlined.
 - **Rainbow reaches the rest.** Section badges, the Start tab rows, the Array Operation buttons, Unassigned Devices, the add-container page and the add-share buttons follow both rainbow modes. In the active-only mode they rest grey and colour on hover, status badges keep their meaning, and Reboot and Shutdown stay red outside rainbow.
 - **Protection as a dot.** A share's protection status shows as a dot before its name, like the disk state dots, and both follow your badge shape.
-- **Hover bubbles everywhere.** Unraid's tooltips and native title balloons give way to borderless CannonadeCommand bubbles in your badge shape.
+- **Hover bubbles everywhere.** Unraid's tooltips and native title balloons give way to borderless TowerTorch bubbles in your badge shape.
 - **Calmer pages.** Labels under the Settings and Tools tiles appear only on hover, empty notes ("Keine ... konfiguriert") are grey pills, the third-party note and group label on the Docker tab are badges, and "Reset colours" is an undo-arrow tile beside the swatches.
 - **The Plugins update button stays on the tab row.** "Check for updates" sits on the sub-tab row, right-aligned with the menu bar icons above it.
 **🐛 Fixed**
@@ -408,7 +408,7 @@ A master switch separates the engine from the look, idle containers can stop the
 
 **✨ Added**
 - **Master theming switch.** A "Theming" toggle at the top of the General tab turns every visual change off and keeps only the Docker functions: start plan, dependencies, health gate, watchdog, schedules, CPU and RAM limits, bandwidth and idle auto-stop.
-- **Auto-stop when idle.** In a container's start plan editor, set idle minutes and a CPU threshold, and the engine stops the container once it has stayed quiet on both CPU and network for that long. A busy container is never stopped, host and container-network containers are skipped with a notification, and the plan chip shows a moon while it is active. CannonadeCommand does not start it again itself; a schedule, the plan or Unraid's autostart does.
+- **Auto-stop when idle.** In a container's start plan editor, set idle minutes and a CPU threshold, and the engine stops the container once it has stayed quiet on both CPU and network for that long. A busy container is never stopped, host and container-network containers are skipped with a notification, and the plan chip shows a moon while it is active. TowerTorch does not start it again itself; a schedule, the plan or Unraid's autostart does.
 - **"Colour only the active badge" rainbow sub-mode.** Badges rest neutral grey, only the active item shows colour, and any badge colours on hover. It covers the menu bar, the Shares list and tabs, and the Settings and Tools tiles.
 - **Circles badge shape.** A fourth shape rounds square objects (tile icons, logo badges, menu icons) into circles, while text badges stay capsules.
 - **Reorder the main menu.** Drag the main tabs into any order. The order is remembered, and tabs added later by plugins go to the end.
@@ -416,11 +416,11 @@ A master switch separates the engine from the look, idle containers can stop the
 - **VM actions column.** Every Docker-style action is there: VNC console, log, edit, restart, pause/resume, stop/start and a "More" menu with console, hibernate, force stop, snapshot, clone and remove. Clicking the VM logo makes the icons light up, and the "VM-Nutzungsstatistiken" sub-tab is styled too.
 - **Start area for the Main tab.** It has its own switch and colour. Disk names become large badges, values and read/write counters become badges, rows get more room, Browse gets its own column, and the disk list repaints in step with Unraid so it does not flicker.
 - **Favorites area.** The Favorites tab gets the same icon badges as the Settings tiles, with its own style and colour section.
-- **Tab view per tab.** On every tab with sub-tabs (Shares, Start, Plugins, VMs), choose native Unraid sub-tabs or stacked CannonadeCommand sections.
+- **Tab view per tab.** On every tab with sub-tabs (Shares, Start, Plugins, VMs), choose native Unraid sub-tabs or stacked TowerTorch sections.
 - **Tools tab.** The Werkzeuge (Tools) category tiles get the same badge treatment as Settings under one "Einstellungen und Werkzeuge" area. Section headings on both pages become badges, and image logos on tiles are tinted like the glyphs.
-- **File manager.** The Durchsuchen page gets the CannonadeCommand table, buttons and row highlight, with owner, permissions, size and date as badges.
+- **File manager.** The Durchsuchen page gets the TowerTorch table, buttons and row highlight, with owner, permissions, size and date as badges.
 - **Network columns per view.** On the Docker tab, network, container IP, LAN IP and ports can each be shown or hidden for the simple and the advanced view.
-- **System Stats controls.** The interval and reset controls sit below the graphs in the CannonadeCommand style instead of in the tab bar.
+- **System Stats controls.** The interval and reset controls sit below the graphs in the TowerTorch style instead of in the tab bar.
 **🎨 Design**
 - **Share details as sections.** Share settings and SMB/NFS pages use sections with a title badge and no enclosing box, matching Settings and Tools, with text contrast that holds up on light themes. Dropdown options rest grey and fill with the accent on hover, and the Apply, Read and Write buttons follow the accent.
 - **Measured alignment.** The left edge of the main menu bar is measured at runtime and every area lines up with it, whatever the theme, font size or header setting. The gap from the menu bar to the sub-tabs is the same on every main tab.
@@ -434,7 +434,7 @@ A master switch separates the engine from the look, idle containers can stop the
 - **The Settings and Tools tabs and the Plugins sub-tabs** did not line up with the main menu bar.
 
 ### 0.2.0
-CannonadeCommand reaches past the Docker tab: an Areas tab switches each part on or off, and the main menu bar, the VMs tab, the Settings page and the Shares pages pick up the same look, all driven from a new General tab.
+TowerTorch reaches past the Docker tab: an Areas tab switches each part on or off, and the main menu bar, the VMs tab, the Settings page and the Shares pages pick up the same look, all driven from a new General tab.
 
 **✨ Added**
 - **"Bereiche" (Areas) tab.** Switch the main menu bar, Docker, Plugins, VMs, Settings and Shares on or off one by one. Each area gets its own style tab, and switching an area off hides its tab straight away.
@@ -443,12 +443,12 @@ CannonadeCommand reaches past the Docker tab: an Areas tab switches each part on
 - **VMs tab, first pass.** Each VM row gets a state badge (running, paused, stopped) in your badge shape and accent theme.
 - **Settings area.** The category grid on Unraid's Settings page turns each icon into a large square accent badge that follows your accent colour, badge shape and rainbow mode. Raster plugin logos there are tinted like the glyphs.
 - **Logos card per area.** Docker, Plugins, VMs and Settings each get a "Logos" card with a "Hintergrund" (background) toggle, colour picker, strength and live preview. With the background off the logo is colourised; with it on, the logo sits on a coloured badge and turns black or white for contrast.
-- **"Freigaben" (Shares) area.** Sub-tabs on every page become pills, lone single-tab bars are hidden, and Unraid's tabbed page view is switched on for you. On the Shares list the share name is a large headline badge, the values (SMB, NFS, storage, size, free) are badges, Browse is its own badge column, and the action buttons get the CannonadeCommand style.
+- **"Freigaben" (Shares) area.** Sub-tabs on every page become pills, lone single-tab bars are hidden, and Unraid's tabbed page view is switched on for you. On the Shares list the share name is a large headline badge, the values (SMB, NFS, storage, size, free) are badges, Browse is its own badge column, and the action buttons get the TowerTorch style.
 - **Protected-status badge on shares.** Each share shows a green "Protected" when its files live on the parity-protected array and an orange "Unprotected" when they sit on an unprotected cache or pool, read from Unraid's own status.
 - **Share settings as cards.** A share's settings and SMB pages show as stacked, centred cards on one page instead of tabs, with the sub-page name as a solid title badge. "Einstellungen übernehmen von" (Read settings from) moves into a small side card, and "SMB Benutzerzugriff" gets its own card.
 - **Matching dropdowns on share pages.** Every select on the share settings pages (allocation method, split level, pool, export and the rest) gets the same small custom dropdown. Disk lists open vertically, a single click picks a disk, and selected disks show as badges.
 - **Safer share delete.** The "Löschen" badge stays grey and inert until you tick the confirm checkbox beside it. The Plugins tab uses the same delete badge with a separate checkbox.
-- **"Allgemein" (General) tab.** CannonadeCommand's settings open with a General tab holding the area switches, the global badge colour, the badge shape and rainbow mode. Every area, Docker included, has an "Adopt the global badge colour" toggle and can keep its own accent instead.
+- **"Allgemein" (General) tab.** TowerTorch's settings open with a General tab holding the area switches, the global badge colour, the badge shape and rainbow mode. Every area, Docker included, has an "Adopt the global badge colour" toggle and can keep its own accent instead.
 - **One global rainbow mode.** A single switch and palette colour every enabled area, including the whole main menu bar, the settings tab bar and each Shares row, where a row's name and values share one stable palette colour.
 - **Info bubbles in the settings.** A small "i" next to a setting opens a bubble that explains it, so the cards stay tidy. The live preview shows a mixed set of sample badges (headline, value pill, tab pill).
 **🎨 Design**
@@ -481,37 +481,11 @@ The first release: a small Go engine that starts your containers in dependency o
 - **Plugins tab in the same style.** Logos are brought to one visual size whatever Unraid ships (PNG, FontAwesome or its glyph font), names use the container font, and author, version, status, changelog and support become badges. A pending update shows as an amber "Neu" badge and update pill, and the install form and error table are styled too.
 - **VM icon tinting.** The VM tab's icons take your theme colour.
 - **Accent or rainbow theming.** Use one accent colour everywhere or rainbow mode with an editable palette and automatic colour rotation. Text on a badge turns black or white by luminance, and a badge shape setting (pills, rounded, square) applies to badges, action icons, toggles, segments and tabs.
-- **Settings page.** Settings &gt; Utilities &gt; CannonadeCommand holds the theme, an embedded colour picker, row density, column defaults, the bandwidth interface, notifications and diagnostics, with Docker, Plugins and VM sections that each have their own style switch.
+- **Settings page.** Settings &gt; Utilities &gt; TowerTorch holds the theme, an embedded colour picker, row density, column defaults, the bandwidth interface, notifications and diagnostics, with Docker, Plugins and VM sections that each have their own style switch.
 - **Settings that follow you.** Every setting is mirrored into the engine's config, so it applies on IP, hostname and domain alike and survives cleared browser data.
-- **ShipLog integration.** When ShipLog is installed too, its changelog bubble takes the CannonadeCommand accent or rainbow colour and badge shape. ShipLog on its own keeps its own look.
+- **ShipLog integration.** When ShipLog is installed too, its changelog bubble takes the TowerTorch accent or rainbow colour and badge shape. ShipLog on its own keeps its own look.
 - **A careful engine.** The Go daemon listens on a local unix socket behind a same-origin proxy with a strict path allowlist, writes carry Unraid's csrf token, and only read and lifecycle verbs are exposed. The plan and config live on the flash drive and are kept on uninstall. Every build is tested against a real dockerd and measures real throughput through the bandwidth rule.
 </CHANGES>
-
-<!-- The plugin's earlier names were cannonadecommand and, before that,
-     cannonadecommander. The first install under this name takes over their flash
-     folder (config, start plan, limits, icon cache) unless &plgPath; already holds
-     something, and removes the old install, so two daemons never manage the same
-     containers. The old .plg goes as well, or Unraid would install it again at the
-     next boot. -->
-<FILE Run="/bin/bash">
-<INLINE>
-for old in cannonadecommand cannonadecommander; do
-  /usr/local/emhttp/plugins/$old/scripts/rc.$old stop 2>/dev/null
-  for p in $(pgrep -f "/usr/local/emhttp/plugins/$old/bin/$old" 2>/dev/null); do kill -9 "$p" 2>/dev/null; done
-  pkg=$(ls /var/log/packages/ 2>/dev/null | grep -E "^$old-[^-]+-[^-]+-[^-]+$" | head -n1)
-  if [ -n "$pkg" ]; then removepkg "$pkg" >/dev/null 2>&amp;1; fi
-  rm -rf /usr/local/emhttp/plugins/$old
-  rm -f /boot/config/plugins/$old.plg /var/log/plugins/$old.plg /var/run/$old.pid /var/run/$old.sock
-  [ -d /boot/config/plugins/$old ] || continue
-  rm -f /boot/config/plugins/$old/*.txz /boot/config/plugins/$old/*.txz.md5 /boot/config/plugins/$old/*.plg
-  [ -z "$(ls -A &plgPath; 2>/dev/null)" ] || continue
-  if mkdir -p &plgPath; &amp;&amp; cp -r /boot/config/plugins/$old/. &plgPath;/; then
-    rm -rf /boot/config/plugins/$old
-    echo "Settings of $old moved to &plgPath;"
-  fi
-done
-</INLINE>
-</FILE>
 
 <!-- Pre-install: stop the old daemon and WIPE the plugin dir before installing, so
      files removed between versions cannot linger (installpkg overwrites same-path
