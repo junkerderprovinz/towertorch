@@ -32,31 +32,31 @@ function node(cls) {
   };
 }
 const api = new Function('el', grabFn(docker, 'statHost') + '\n' + grabFn(docker, 'statDot') + '\n' + grabFn(docker, 'statSlot') + '\n' + grabFn(docker, 'statClear') + '\nreturn { statDot: statDot, statSlot: statSlot, statClear: statClear };')((tag, cls) => node(cls));
-const row = () => { const r = node('cc-pop-row'); r.appendChild(node('cc-pop-lbl')); r.appendChild(node('cc-in')); r.appendChild(node('cc-unit')); return r; };
+const row = () => { const r = node('tt-pop-row'); r.appendChild(node('tt-pop-lbl')); r.appendChild(node('tt-in')); r.appendChild(node('tt-unit')); return r; };
 
 console.log('\nThe apply-status dot stands in the label column');
 {
   const r = row();
   api.statSlot(r);
-  ok('its reserved slot goes into the label', r.children[0].children.length === 1 && /cc-stat-slot/.test(r.children[0].children[0].className));
-  ok('so the last thing in the row is still the field or its unit', r.children[r.children.length - 1].className === 'cc-unit');
+  ok('its reserved slot goes into the label', r.children[0].children.length === 1 && /tt-stat-slot/.test(r.children[0].children[0].className));
+  ok('so the last thing in the row is still the field or its unit', r.children[r.children.length - 1].className === 'tt-unit');
   api.statDot(r, true, 'RAM 8 GB');
-  ok('the result fills that slot instead of adding a second dot', r.children[0].children.length === 1 && /cc-stat-ok/.test(r.children[0].children[0].className));
+  ok('the result fills that slot instead of adding a second dot', r.children[0].children.length === 1 && /tt-stat-ok/.test(r.children[0].children[0].className));
   api.statClear(r);
-  ok('clearing it leaves the slot in place', /cc-stat-slot/.test(r.children[0].children[0].className) && !r.children[0].children[0].attrs['data-tip']);
-  const bare = node('cc-pop-row'); bare.appendChild(node('cc-in'));
+  ok('clearing it leaves the slot in place', /tt-stat-slot/.test(r.children[0].children[0].className) && !r.children[0].children[0].attrs['data-tip']);
+  const bare = node('tt-pop-row'); bare.appendChild(node('tt-in'));
   api.statDot(bare, false, 'x');
   ok('a row without a label still gets its dot', bare.children.length === 2);
-  ok('a label holding the dot spreads it to the column\'s end', /\.cc-pop-lbl:has\(> \.cc-statdot\) \{[^}]*justify-content: space-between/.test(css));
+  ok('a label holding the dot spreads it to the column\'s end', /\.tt-pop-lbl:has\(> \.tt-statdot\) \{[^}]*justify-content: space-between/.test(css));
 }
 
 console.log('\nThe core picker and the (i)');
 {
-  ok('the core boxes stand at the row\'s end', /\.cc-cores \{[^}]*justify-content: flex-end/.test(css));
+  ok('the core boxes stand at the row\'s end', /\.tt-cores \{[^}]*justify-content: flex-end/.test(css));
   const lim = grabFn(docker, 'openLimits');
   ok('the limits window puts its (i) inside the title badge', /limTitle\.appendChild\(infoBubble\(/.test(lim) && !/head\.appendChild\(infoBubble\(/.test(lim));
   ok('so does the bandwidth window', /bwTitle\.appendChild\(infoBubble\(/.test(docker));
-  ok('where it takes the badge\'s ink', /\.cc-win-title \.cc-info \{ color: inherit !important;/.test(tokens));
+  ok('where it takes the badge\'s ink', /\.tt-win-title \.tt-info \{ color: inherit !important;/.test(tokens));
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

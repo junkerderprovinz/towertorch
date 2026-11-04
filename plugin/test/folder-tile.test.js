@@ -66,7 +66,7 @@ const scope = new Proxy(env, {
   set: (o, k, v) => { env[k] = v; return true; },
 });
 const api = new Function('scope', 'with (scope) {\n' +
-  ['el', 'norm', 't', 'stateLabel', 'humanBytes', 'gauge', 'ccLabelled', 'actBtn', 'actBtnOff', 'cardIcon', 'folderTile', 'updateReady'].map(grabFn).join('\n') +
+  ['el', 'norm', 't', 'stateLabel', 'humanBytes', 'gauge', 'ttLabelled', 'actBtn', 'actBtnOff', 'cardIcon', 'folderTile', 'updateReady'].map(grabFn).join('\n') +
   '\nreturn { folderTile: folderTile, updateReady: updateReady }; }')(scope);
 env.ctxFor = (name) => Object.assign({ webui: '', links: [] }, env.ctx[name] || {});
 env.doAction = (name, action) => calls.push([action, name]);
@@ -80,52 +80,52 @@ console.log('\nThe tile\'s parts');
   env.stats = { plex: { cpu_percent: 12, mem_percent: 40, mem_used: 1024 * 1024 * 512, mem_limit: 1024 * 1024 * 1024 * 8 } };
   env.ctx = { plex: { webui: 'http://plex' } };
   const tile = api.folderTile({ name: 'plex', state: 'running', ip: '192.168.20.5' }, row(true));
-  ok('it is a cc-card for the colour plumbing and a cc-tile for its fixed size', tile.classList.contains('cc-card') && tile.classList.contains('cc-tile'));
+  ok('it is a tt-card for the colour plumbing and a tt-tile for its fixed size', tile.classList.contains('tt-card') && tile.classList.contains('tt-tile'));
   ok('it is tagged with the container name, as refreshStats() looks it up', tile.dataset.name === 'plex');
-  const icoBtn = find(tile, 'cc-tile-icobtn');
-  ok('the icon sits in a button that opens the container menu', !!icoBtn && !!find(icoBtn, 'cc-card-ico'));
+  const icoBtn = find(tile, 'tt-tile-icobtn');
+  ok('the icon sits in a button that opens the container menu', !!icoBtn && !!find(icoBtn, 'tt-card-ico'));
   icoBtn.fire('click');
   ok('a click on the icon opens the menu', calls.some(c => c[0] === 'menu' && c[1] === 'plex'));
-  ok('the name is shown', find(tile, 'cc-tile-name').textContent === 'plex');
-  ok('the IP sits under it', find(tile, 'cc-tile-ip').textContent === '192.168.20.5');
-  const up = find(tile, 'cc-tile-up');
+  ok('the name is shown', find(tile, 'tt-tile-name').textContent === 'plex');
+  ok('the IP sits under it', find(tile, 'tt-tile-ip').textContent === '192.168.20.5');
+  const up = find(tile, 'tt-tile-up');
   ok('an update badge shows while the list offers the apply link', !!up && up.textContent === 'Update');
   calls.length = 0; up.fire('click');
   ok('it starts the update through updateContainer(), as the list does', calls.length === 1 && calls[0][0] === 'update' && calls[0][1] === 'plex');
-  const bars = findAll(tile, 'cc-gauge-fill'), vals = findAll(tile, 'cc-stat-val');
+  const bars = findAll(tile, 'tt-gauge-fill'), vals = findAll(tile, 'tt-stat-val');
   ok('two bars while it runs, CPU first and RAM second, as refreshStats() expects', bars.length === 2 && vals[0].textContent === '12%' && /512M/.test(vals[1].textContent), vals.map(v => v.textContent).join(' | '));
   ok('the CPU bar is filled to its value', bars[0].style.width === '12%');
-  const dot = find(tile, 'cc-tile-dot');
-  ok('the state dot is a badge the poll keeps in sync', dot.classList.contains('cc-badge') && dot.classList.contains('cc-badge-running') && dot.dataset.name === 'plex');
-  const acts = find(tile, 'cc-tile-act');
-  ok('the actions reveal like every other row\'s', acts.classList.contains('cc-mrow-act'));
+  const dot = find(tile, 'tt-tile-dot');
+  ok('the state dot is a badge the poll keeps in sync', dot.classList.contains('tt-badge') && dot.classList.contains('tt-badge-running') && dot.dataset.name === 'plex');
+  const acts = find(tile, 'tt-tile-act');
+  ok('the actions reveal like every other row\'s', acts.classList.contains('tt-mrow-act'));
   const tips = acts.children.map(b => b.getAttribute('data-tip'));
   ok('WebUI, Stop and Restart for a running container with a WebUI', JSON.stringify(tips) === JSON.stringify(['WebUI', 'Stop', 'Restart']), tips.join(', '));
   calls.length = 0; acts.children[0].fire('click');
   ok('WebUI opens the container\'s page', calls[0] && calls[0][0] === 'open' && calls[0][1] === 'http://plex');
-  ok('no uptime and no image tag on the tile', !find(tile, 'cc-card-img') && !/uptime/i.test(JSON.stringify(tile.className)));
+  ok('no uptime and no image tag on the tile', !find(tile, 'tt-card-img') && !/uptime/i.test(JSON.stringify(tile.className)));
 }
 
 console.log('\nA stopped container');
 {
   env.ctx = {};
   const tile = api.folderTile({ name: 'radarr', state: 'exited' }, row(false));
-  ok('no bars, the space stays empty', findAll(tile, 'cc-gauge').length === 0 && !!find(tile, 'cc-tile-stats'));
-  ok('no IP line without an IP', !find(tile, 'cc-tile-ip'));
-  ok('no update badge without an apply link', !find(tile, 'cc-tile-up'));
-  ok('the state word says stopped', find(tile, 'cc-tile-status').textContent === 'stopped');
-  const tips = find(tile, 'cc-tile-act').children.map(b => b.getAttribute('data-tip'));
+  ok('no bars, the space stays empty', findAll(tile, 'tt-gauge').length === 0 && !!find(tile, 'tt-tile-stats'));
+  ok('no IP line without an IP', !find(tile, 'tt-tile-ip'));
+  ok('no update badge without an apply link', !find(tile, 'tt-tile-up'));
+  ok('the state word says stopped', find(tile, 'tt-tile-status').textContent === 'stopped');
+  const tips = find(tile, 'tt-tile-act').children.map(b => b.getAttribute('data-tip'));
   ok('no WebUI button without a WebUI, then Start and Restart', JSON.stringify(tips) === JSON.stringify(['Start', 'Restart']), tips.join(', '));
   env.ctx = { radarr: { webui: 'http://radarr' } };
   const withUi = api.folderTile({ name: 'radarr', state: 'exited' }, row(false));
-  ok('a stopped container with a WebUI shows it greyed out', find(withUi, 'cc-tile-act').children[0].classList.contains('cc-actoff'));
+  ok('a stopped container with a WebUI shows it greyed out', find(withUi, 'tt-tile-act').children[0].classList.contains('tt-actoff'));
 }
 
 console.log('\nA paused container resumes');
 {
   env.ctx = {};
   const tile = api.folderTile({ name: 'db', state: 'paused' }, row(false));
-  const first = find(tile, 'cc-tile-act').children[0];
+  const first = find(tile, 'tt-tile-act').children[0];
   calls.length = 0; first.fire('click');
   ok('the start and stop slot reads Resume and unpauses', first.getAttribute('data-tip') === 'Resume' && calls[0][0] === 'unpause');
 }
@@ -133,12 +133,12 @@ console.log('\nA paused container resumes');
 console.log('\nThe full name in the bubble only when cut');
 {
   const tile = api.folderTile({ name: 'a-very-long-container-name', state: 'exited' }, row(false));
-  const nm = find(tile, 'cc-tile-name');
+  const nm = find(tile, 'tt-tile-name');
   nm.scrollWidth = 300; nm.clientWidth = 120; nm.fire('mouseover');
   ok('a cut name puts itself in data-tip', nm.getAttribute('data-tip') === 'a-very-long-container-name');
   nm.scrollWidth = 100; nm.fire('mouseover');
   ok('a name that fits drops it again', nm.getAttribute('data-tip') === null);
-  ok('no title attribute, the bubble is CC\'s own', nm.getAttribute('title') === null);
+  ok('no title attribute, the bubble is TowerTorch\'s own', nm.getAttribute('title') === null);
 }
 
 console.log('\nThe live search hides a tile that does not match');
@@ -152,14 +152,14 @@ console.log('\nThe live search hides a tile that does not match');
 console.log('\nThe density choice is gone');
 {
   ok('no density reader or writer and no chip or list-row builder', !/function (folderDensity|setFolderDensity|folderChip|folderListRow)\(/.test(src));
-  ok('the stored cc.folderDensity is not read', src.indexOf('cc.folderDensity') < 0);
+  ok('the stored tt.folderDensity is not read', src.indexOf('tt.folderDensity') < 0);
   ok('the gear menu offers no folder content choice', !/folderContent|"Detailliert"/.test(src));
   const css = fs.readFileSync(path.join(DIR, 'styles', 'docker.css'), 'utf8');
-  ok('docker.css has no rules left for the chip or the list row', !/\.cc-(chip|frow)\b|cc-folderview-(grid|list)|cc-folder-group-body-(grid|list)/.test(css));
-  ok('every tile has the same size on one fixed grid column', /\.cc-card\.cc-tile \{[^}]*width: 264px; height: var\(--cc-tile-h\);/.test(css) && /\.cc-folderview, \.cc-folder-group-body \{ display: grid; grid-template-columns: repeat\(auto-fill, 264px\);/.test(css));
-  ok('one height for the simple view and a taller one with the bars of the advanced view', /\.cc-grid-holder \{ --cc-tile-h: 84px; \}/.test(css) && /\.cc-grid-holder\.cc-adv \{ --cc-tile-h: 122px; \}/.test(css) && /\.cc-grid-holder:not\(\.cc-adv\) \.cc-tile-stats \{ display: none; \}/.test(css));
-  ok('the logo box runs the tile\'s full height on its left', /\.cc-card\.cc-tile \{[^}]*flex-direction: row;/.test(css) && /\.cc-tile-icobtn \{[^}]*align-self: stretch;/.test(css));
-  ok('the box carries the tile colour, never the logo the ink filter runs over', /\.cc-grid-holder\.cc-docker-iconbg \.cc-card-icobox \{/.test(css) && !/\.cc-card-ico \{[^}]*background/.test(css));
+  ok('docker.css has no rules left for the chip or the list row', !/\.tt-(chip|frow)\b|tt-folderview-(grid|list)|tt-folder-group-body-(grid|list)/.test(css));
+  ok('every tile has the same size on one fixed grid column', /\.tt-card\.tt-tile \{[^}]*width: 264px; height: var\(--tt-tile-h\);/.test(css) && /\.tt-folderview, \.tt-folder-group-body \{ display: grid; grid-template-columns: repeat\(auto-fill, 264px\);/.test(css));
+  ok('one height for the simple view and a taller one with the bars of the advanced view', /\.tt-grid-holder \{ --tt-tile-h: 84px; \}/.test(css) && /\.tt-grid-holder\.tt-adv \{ --tt-tile-h: 122px; \}/.test(css) && /\.tt-grid-holder:not\(\.tt-adv\) \.tt-tile-stats \{ display: none; \}/.test(css));
+  ok('the logo box runs the tile\'s full height on its left', /\.tt-card\.tt-tile \{[^}]*flex-direction: row;/.test(css) && /\.tt-tile-icobtn \{[^}]*align-self: stretch;/.test(css));
+  ok('the box carries the tile colour, never the logo the ink filter runs over', /\.tt-grid-holder\.tt-docker-iconbg \.tt-card-icobox \{/.test(css) && !/\.tt-card-ico \{[^}]*background/.test(css));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

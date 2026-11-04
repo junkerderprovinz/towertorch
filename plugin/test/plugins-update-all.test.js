@@ -59,7 +59,7 @@ ok('once the updates are through it stays hidden', ua.style.display === 'none');
 
 console.log('\nThe tick');
 const tick = grab('plugPinTick');
-ok('runs it behind the theming and area gate', /cc\.enable\.plugins"\) === "0"\) return;\n\s*showUpdateAll\(\);/.test(tick));
+ok('runs it behind the theming and area gate', /tt\.enable\.plugins"\) === "0"\) return;\n\s*showUpdateAll\(\);/.test(tick));
 ok('a click on the button holds it', /closest\("#updateall"\)\) uaHeld = pendingUpdates\(\);/.test(js));
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

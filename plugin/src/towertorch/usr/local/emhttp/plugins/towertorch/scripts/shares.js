@@ -1,8 +1,8 @@
 // Enhances the Shares, Main, Browse and Stats pages and the sub-page tabs of /Shares and /Docker.
-// Loaded on every page through TowerTorch.Shares.page, it toggles html.cc-shares-on while
+// Loaded on every page through TowerTorch.Shares.page, it toggles html.tt-shares-on while
 // the "Freigaben" area is enabled (default off, since enabling flips Unraid's global tabbed
 // setting), mirrors the theme vars onto the root and badges the tables. The styling lives in
-// sheets/TowerTorch.Shares.css, scoped to html.cc-shares-on.
+// sheets/TowerTorch.Shares.css, scoped to html.tt-shares-on.
 (function () {
   "use strict";
   var mo = null, moPending = false, tabbedTried = false;
@@ -12,26 +12,26 @@
     var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
     return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff";
   }
-  // adopt toggle: cc.styleshares on -> shared cc.* keys, else this area's own ccsh.* keys
-  function eff(k, d) { return g("cc.styleshares", "1") !== "0" ? g("cc." + k, d) : g("ccsh." + k, d); }
+  // adopt toggle: tt.styleshares on -> shared tt.* keys, else this area's own ttsh.* keys
+  function eff(k, d) { return g("tt.styleshares", "1") !== "0" ? g("tt." + k, d) : g("ttsh." + k, d); }
   function accent() { var a = eff("accent", "#FCC419"); return /^#[0-9a-f]{6}$/i.test(a) ? a : "#FCC419"; }
-  // /Main is its own area (cc.enable.main, cc.stylemain, ccm.*) but lives here because it reuses
-  // the flatten and badge code. On /Main --cc-shr-accent carries the Start accent, so the
+  // /Main is its own area (tt.enable.main, tt.stylemain, ttm.*) but lives here because it reuses
+  // the flatten and badge code. On /Main --tt-shr-accent carries the Start accent, so the
   // shares-scoped rules paint in that colour without a second CSS scope.
-  function effMain(k, d) { return g("cc.stylemain", "1") !== "0" ? g("cc." + k, d) : g("ccm." + k, d); }
+  function effMain(k, d) { return g("tt.stylemain", "1") !== "0" ? g("tt." + k, d) : g("ttm." + k, d); }
   function mainAccent() { var a = effMain("accent", "#FCC419"); return /^#[0-9a-f]{6}$/i.test(a) ? a : "#FCC419"; }
   var RB = ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"];
-  if (window.CCTheme) { idealText = window.CCTheme.idealText; RB = window.CCTheme.RB; } // the local copies are the fallback
-  var RB_OFF = window.CCTheme ? window.CCTheme.rbSeed(RB.length) : Math.floor(Math.random() * RB.length); // the persisted seed keeps the rainbow aligned across areas
+  if (window.TTTheme) { idealText = window.TTTheme.idealText; RB = window.TTTheme.RB; } // the local copies are the fallback
+  var RB_OFF = window.TTTheme ? window.TTTheme.rbSeed(RB.length) : Math.floor(Math.random() * RB.length); // the persisted seed keeps the rainbow aligned across areas
   // Rainbow is a global mode, read directly rather than through eff(), so one switch colours
-  // every enabled area. Flag mode keeps its own palette in cc.flagpal.
-  function storedPal() { try { if (g("cc.flagmode", "0") === "1") { var f = JSON.parse(g("cc.flagpal", "null")); if (f && f.length) return f; } var p = JSON.parse(g("cc.rbpal", "null")); if (p && p.length) return p; } catch (e) {} return RB; }
-  // On a light theme the near-white slots are swapped, see CCTheme.surfacePalette.
-  function pal() { var p = storedPal(); return (window.CCTheme && window.CCTheme.surfacePalette) ? window.CCTheme.surfacePalette(p, accent()) : p; }
-  function rbOn() { return g("cc.rainbow", "0") === "1"; }
-  function rbColor(i) { if (!rbOn()) return accent(); var off = g("cc.rainbowrot", "1") === "0" ? 0 : RB_OFF; var p = pal(); return p[(i + off) % p.length]; } // rotation defaults to on, as in the other areas
-  // rainbow "active only" sub-mode (cc.rbmode=active): idle badges neutral, active painted, hover colours.
-  function rbNeutral() { return g("cc.rbmode", "all") === "active"; }
+  // every enabled area. Flag mode keeps its own palette in tt.flagpal.
+  function storedPal() { try { if (g("tt.flagmode", "0") === "1") { var f = JSON.parse(g("tt.flagpal", "null")); if (f && f.length) return f; } var p = JSON.parse(g("tt.rbpal", "null")); if (p && p.length) return p; } catch (e) {} return RB; }
+  // On a light theme the near-white slots are swapped, see TTTheme.surfacePalette.
+  function pal() { var p = storedPal(); return (window.TTTheme && window.TTTheme.surfacePalette) ? window.TTTheme.surfacePalette(p, accent()) : p; }
+  function rbOn() { return g("tt.rainbow", "0") === "1"; }
+  function rbColor(i) { if (!rbOn()) return accent(); var off = g("tt.rainbowrot", "1") === "0" ? 0 : RB_OFF; var p = pal(); return p[(i + off) % p.length]; } // rotation defaults to on, as in the other areas
+  // rainbow "active only" sub-mode (tt.rbmode=active): idle badges neutral, active painted, hover colours.
+  function rbNeutral() { return g("tt.rbmode", "all") === "active"; }
   // The pathname without trailing slashes, for exact page checks (/Shares vs /Shares/Share).
   function pn() { try { return location.pathname.replace(/\/+$/, ""); } catch (e) { return ""; } }
   // The file manager is reached as /<parent>/Browse?dir=… with a varying parent, hence the suffix
@@ -50,17 +50,17 @@
     try {
       var box = document.getElementById("displaybox"); if (!box) return;
       var st = box.querySelector("span.status"); if (!st) return;
-      if (st.getAttribute("data-cc-moved") === "1" && st.parentNode === box) return;
+      if (st.getAttribute("data-tt-moved") === "1" && st.parentNode === box) return;
       box.appendChild(st);
-      st.setAttribute("data-cc-moved", "1");
+      st.setAttribute("data-tt-moved", "1");
     } catch (e) {}
   }
   function statsControlsTeardown() {
     try {
-      var st = document.querySelector("#displaybox > span.status[data-cc-moved]"); if (!st) return;
+      var st = document.querySelector("#displaybox > span.status[data-tt-moved]"); if (!st) return;
       var tabs = document.querySelector("#displaybox nav.tabs");
       if (tabs) tabs.appendChild(st);
-      st.removeAttribute("data-cc-moved");
+      st.removeAttribute("data-tt-moved");
     } catch (e) {}
   }
   // i18n as in docker.js: German when the page language is, else English
@@ -70,19 +70,19 @@
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
   // The browse badge wears the glyph Unraid's Browse captions wear, after the label mode.
   function browseLabel(view) {
-    if (view.querySelector(".cc-b-lab")) return;
-    if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(view, "Search", t("browse")).querySelector(".cc-lb-l").classList.add("cc-b-lab");
-    else view.appendChild(el("span", "cc-b-lab", t("browse")));
+    if (view.querySelector(".tt-b-lab")) return;
+    if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(view, "Search", t("browse")).querySelector(".tt-lb-l").classList.add("tt-b-lab");
+    else view.appendChild(el("span", "tt-b-lab", t("browse")));
   }
   // File manager: badges the owner, permission, size and date values. The page deletes and moves
   // files, so only those plain text cells are touched, never the check glyph, name, Location (its
   // icon colour encodes encryption) or actions cells; columns and tablesorter's data attributes
   // stay as they are. The tbody is replaced by AJAX, so the observer re-runs this.
-  function ccBrowseCell(td, cls) {
-    if (!td || td.classList.contains("cc-bcell")) return;
+  function ttBrowseCell(td, cls) {
+    if (!td || td.classList.contains("tt-bcell")) return;
     var txt = (td.textContent || "").trim(); if (!txt) return;
-    var b = el("span", "cc-fmb " + (cls || ""), txt);
-    td.textContent = ""; td.appendChild(b); td.classList.add("cc-bcell");
+    var b = el("span", "tt-fmb " + (cls || ""), txt);
+    td.textContent = ""; td.appendChild(b); td.classList.add("tt-bcell");
   }
   function enhanceBrowse() {
     try {
@@ -90,22 +90,22 @@
       var rows = document.querySelectorAll("#displaybox table.indexer tbody:not(.tablesorter-infoOnly) tr");
       for (var i = 0; i < rows.length; i++) {
         var tr = rows[i];
-        ccBrowseCell(tr.querySelector('td[id^="owner_"]'), "cc-b-owner");
-        ccBrowseCell(tr.querySelector('td[id^="perm_"]'), "cc-b-perm");
+        ttBrowseCell(tr.querySelector('td[id^="owner_"]'), "tt-b-owner");
+        ttBrowseCell(tr.querySelector('td[id^="perm_"]'), "tt-b-perm");
         // size and then the date follow perm_N, each a plain text td with a numeric data=""
         var perm = tr.querySelector('td[id^="perm_"]');
         var size = perm && perm.nextElementSibling;
         // a folder's size is Unraid's <FOLDER> marker, which stays plain text
-        if (size && size.hasAttribute("data") && !size.querySelector("*") && !size.classList.contains("loc")) ccBrowseCell(size, /^<.*>$/.test((size.textContent || "").trim()) ? "cc-b-size cc-b-dir" : "cc-b-size");
+        if (size && size.hasAttribute("data") && !size.querySelector("*") && !size.classList.contains("loc")) ttBrowseCell(size, /^<.*>$/.test((size.textContent || "").trim()) ? "tt-b-size tt-b-dir" : "tt-b-size");
         var dateTd = size && size.nextElementSibling;
-        if (dateTd && dateTd.hasAttribute("data") && !dateTd.querySelector("*") && !dateTd.classList.contains("loc")) ccBrowseCell(dateTd, "cc-b-date");
+        if (dateTd && dateTd.hasAttribute("data") && !dateTd.querySelector("*") && !dateTd.classList.contains("loc")) ttBrowseCell(dateTd, "tt-b-date");
       }
     } catch (e) {}
   }
   // Hides the FireSquire sub-tab on /Main in native tab mode too; older versions of that plugin
   // are called SmokeSignal. If it was active, the first tab takes over so no dead panel shows.
   // Sections mode handles it in cardPanels.
-  function ccHideSmokeTab() {
+  function ttHideSmokeTab() {
     try {
       if (!onMain()) return;
       var btns = document.querySelectorAll('#displaybox nav.tabs button[role="tab"]');
@@ -113,27 +113,27 @@
       for (var i = 0; i < btns.length; i++) {
         var b = btns[i];
         if (!/smokesignal|firesquire/i.test(b.textContent || "")) continue;
-        if (b.classList.contains("cc-smoke-hidden")) return;
+        if (b.classList.contains("tt-smoke-hidden")) return;
         var wasActive = b.getAttribute("aria-selected") === "true";
-        b.classList.add("cc-smoke-hidden");
-        if (panels[i]) panels[i].classList.add("cc-smoke-hidden");
+        b.classList.add("tt-smoke-hidden");
+        if (panels[i]) panels[i].classList.add("tt-smoke-hidden");
         if (wasActive && btns[0]) { try { btns[0].click(); } catch (e2) {} }
         return;
       }
     } catch (e) {}
   }
   // Rainbow paints the tab buttons in rotated palette colours; accent mode clears the inline
-  // overrides so the sheet's --cc-accent shows.
+  // overrides so the sheet's --tt-accent shows.
   function paintTabs() {
     try {
-      ccHideSmokeTab();
+      ttHideSmokeTab();
       var rb = rbOn(), neutral = rb && rbNeutral(), btns = document.querySelectorAll('#displaybox nav.tabs button[role="tab"]');
-      document.documentElement.classList.toggle("cc-shares-rbneutral", rbNeutral()); // paintRows never runs for the /Docker tab bar
+      document.documentElement.classList.toggle("tt-shares-rbneutral", rbNeutral()); // paintRows never runs for the /Docker tab bar
       for (var i = 0; i < btns.length; i++) {
         var b = btns[i], active = b.getAttribute("aria-selected") === "true";
-        if (!rb) { b.style.removeProperty("background"); b.style.removeProperty("color"); b.style.removeProperty("--cc-rb-c"); b.style.removeProperty("--cc-rb-ct"); continue; }
+        if (!rb) { b.style.removeProperty("background"); b.style.removeProperty("color"); b.style.removeProperty("--tt-rb-c"); b.style.removeProperty("--tt-rb-ct"); continue; }
         var c = rbColor(i), tc = idealText(c);
-        b.style.setProperty("--cc-rb-c", c); b.style.setProperty("--cc-rb-ct", tc); // per-tab colour for the neutral-mode :hover
+        b.style.setProperty("--tt-rb-c", c); b.style.setProperty("--tt-rb-ct", tc); // per-tab colour for the neutral-mode :hover
         // "active only" paints just the active tab; the others rest grey and colour on hover
         if (!neutral || active) { b.style.setProperty("background", c, "important"); b.style.setProperty("color", tc, "important"); }
         else { b.style.removeProperty("background"); b.style.removeProperty("color"); }
@@ -141,18 +141,18 @@
       // A tab switch only flips aria-selected, which the childList observer misses, so each tab
       // bar gets an attribute observer. paintTabs never writes aria-selected, so it cannot loop.
       var bar = document.querySelector('#displaybox nav.tabs');
-      if (bar && !bar.__ccTabObs) {
-        bar.__ccTabObs = new MutationObserver(function () { paintTabs(); });
-        try { bar.__ccTabObs.observe(bar, { attributes: true, attributeFilter: ["aria-selected"], subtree: true }); } catch (e2) {}
+      if (bar && !bar.__ttTabObs) {
+        bar.__ttTabObs = new MutationObserver(function () { paintTabs(); });
+        try { bar.__ttTabObs.observe(bar, { attributes: true, attributeFilter: ["aria-selected"], subtree: true }); } catch (e2) {}
       }
     } catch (e) {}
   }
   // The share detail page stacks its sub-tabs as cards instead of a tab bar, so the rainbow paints
-  // each card's title badge here. Without rainbow, var(--cc-shr-accent) from the sheet shows.
+  // each card's title badge here. Without rainbow, var(--tt-shr-accent) from the sheet shows.
   function paintCards() {
     try {
       if (pn() !== "/Shares/Share") return;
-      var rb = rbOn(), heads = document.querySelectorAll("#displaybox .cc-card-head");
+      var rb = rbOn(), heads = document.querySelectorAll("#displaybox .tt-card-head");
       for (var i = 0; i < heads.length; i++) {
         var h = heads[i];
         if (rb) { var c = rbColor(i); h.style.setProperty("background", c, "important"); h.style.setProperty("color", idealText(c), "important"); }
@@ -168,14 +168,14 @@
       if (tabbedTried) return;
       // Tab-Ansicht needs Tabbed mode on /Shares, /Docker and /Main; boot() gates the enhancer on
       // the Freigaben area already.
-      if (g("cc.theming", "1") === "0") return;
+      if (g("tt.theming", "1") === "0") return;
       var p = pn();
       if (p !== "/Shares" && p !== "/Docker" && p !== "/Main") return;
-      if (p === "/Main" && g("cc.enable.main", "0") === "0") return;
+      if (p === "/Main" && g("tt.enable.main", "0") === "0") return;
       if (document.querySelector("#displaybox nav.tabs")) return;
       if (!window.jQuery) return;
       // Once per browser session: a POST that does not stick would otherwise reload forever.
-      try { if (sessionStorage.getItem("cc-tabbed-tried") === "1") return; sessionStorage.setItem("cc-tabbed-tried", "1"); } catch (e) {}
+      try { if (sessionStorage.getItem("tt-tabbed-tried") === "1") return; sessionStorage.setItem("tt-tabbed-tried", "1"); } catch (e) {}
       tabbedTried = true;
       window.jQuery.post("/update.php", { "#file": "dynamix/dynamix.cfg", "#section": "display", "tabs": "0" }, function () {
         try { location.reload(); } catch (e) {}
@@ -186,7 +186,7 @@
   // 121); elsewhere the CSS rule does it and reverts cleanly. /Shares keeps its one tab.
   function hideRedundantTabs() {
     try {
-      if (g("cc.enable.shares", "0") === "0") return;
+      if (g("tt.enable.shares", "0") === "0") return;
       if (window.CSS && CSS.supports && CSS.supports("selector(:has(*))")) return;
       var navs = document.querySelectorAll("#displaybox nav.tabs");
       for (var i = 0; i < navs.length; i++) {
@@ -197,12 +197,12 @@
   }
   // The /Shares list wraps each SMB/NFS/Storage/Size/Free value in a badge and moves the browse
   // link (a.view) into its own column. Unraid replaces the whole tbody on every refill, so this
-  // re-runs from the observer; the per-row data-cc-sh guard keeps a pass from repeating itself.
+  // re-runs from the observer; the per-row data-tt-sh guard keeps a pass from repeating itself.
   function badgeCell(td) {
-    if (!td || td.querySelector(":scope > .cc-b")) return;
+    if (!td || td.querySelector(":scope > .tt-b")) return;
     var txt = (td.textContent || "").trim();
     if (txt === "" || txt === "-") return;
-    var b = el("span", "cc-b"), v = el("span", "cc-b-v");
+    var b = el("span", "tt-b"), v = el("span", "tt-b-v");
     while (td.firstChild) v.appendChild(td.firstChild); // moved, so links and orbs keep working
     b.appendChild(v); td.appendChild(b);
   }
@@ -216,32 +216,32 @@
     var infoA = orb.closest("a"); // a.info.nohand
     var words = infoA && infoA.querySelector("span");
     var tip = (words && words.textContent.trim()) || t({ ok: "protected", warn: "partly", idle: "unknown" }[st]);
-    var sb = el("span", "cc-shield cc-shield-" + st);
+    var sb = el("span", "tt-shield tt-shield-" + st);
     sb.setAttribute("role", "img"); sb.setAttribute("tabindex", "0");
     sb.setAttribute("data-tip", tip); sb.setAttribute("aria-label", tip);
-    sb.innerHTML = window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph({ ok: "ShieldOn", warn: "ShieldAlert", idle: "Shield" }[st]) : "";
+    sb.innerHTML = window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph({ ok: "ShieldOn", warn: "ShieldAlert", idle: "Shield" }[st]) : "";
     (infoA || orb).style.setProperty("display", "none", "important");
     return sb;
   }
   // The share-name link becomes a large badge with its href intact.
   function enhanceName(name) {
     var nl = name.querySelector('a[href*="/Share?name="]');
-    if (nl && !nl.classList.contains("cc-b-name")) { nl.classList.add("cc-b"); nl.classList.add("cc-b-name"); }
+    if (nl && !nl.classList.contains("tt-b-name")) { nl.classList.add("tt-b"); nl.classList.add("tt-b-name"); }
   }
   // A row becomes [Name] [Browse] [Comment] [values…]. The Browse cell is always inserted so the
   // body matches the head, and the cells are listed before it shifts the indices.
   function enhanceRow(tr) {
-    if (tr.getAttribute("data-cc-sh")) return;
-    tr.setAttribute("data-cc-sh", "1");
+    if (tr.getAttribute("data-tt-sh")) return;
+    tr.setAttribute("data-tt-sh", "1");
     var empty = tr.querySelector(":scope > td.empty");
     if (empty) { empty.colSpan = (empty.colSpan || 1) + 1; return; } // the no-shares placeholder spans the Browse column too
     var tds = Array.prototype.slice.call(tr.children);
     var name = tds[0]; if (!name) return;
     var dot = statusPill(name); if (dot) name.insertBefore(dot, name.firstChild);
-    var bt = el("td", "cc-browse-col");
+    var bt = el("td", "tt-browse-col");
     var view = name.querySelector("a.view");
     if (view && view.getAttribute("href")) { // real browse link (disk sub-rows carry an empty a.view)
-      view.classList.add("cc-b-browse");
+      view.classList.add("tt-b-browse");
       var ic = view.querySelector("i"); if (ic) ic.parentNode.removeChild(ic);
       browseLabel(view);
       bt.appendChild(view); // moved, so href and onclick stay intact
@@ -262,54 +262,54 @@
   }
   function enhanceHead(table) {
     var head = table && table.querySelector("thead tr");
-    if (!head || head.getAttribute("data-cc-sh")) return;
-    head.setAttribute("data-cc-sh", "1");
+    if (!head || head.getAttribute("data-tt-sh")) return;
+    head.setAttribute("data-tt-sh", "1");
     var name = head.children[0]; if (!name) return;
-    head.insertBefore(el("td", "cc-browse-col", t("browse")), name.nextSibling);
+    head.insertBefore(el("td", "tt-browse-col", t("browse")), name.nextSibling);
   }
   function enhanceShares() {
     try {
-      if (g("cc.enable.shares", "0") === "0") return;
+      if (g("tt.enable.shares", "0") === "0") return;
       if (pn() !== "/Shares") return;
       // The User and Disk Shares sub-tabs use the same MainContentTabbed DOM as /Main, so
-      // Tab-Ansicht flattens them the same way; apply() stamps cc-sections-share for /Shares.
+      // Tab-Ansicht flattens them the same way; apply() stamps tt-sections-share for /Shares.
       var box = document.getElementById("displaybox");
-      if (box) { if (g("cc.sections.shares", "0") !== "0") cardPanels(box); else flattenTeardown(); }
+      if (box) { if (g("tt.sections.shares", "0") !== "0") cardPanels(box); else flattenTeardown(); }
       var ids = ["shareslist", "disk_list"];
       for (var j = 0; j < ids.length; j++) {
         var tb = document.getElementById(ids[j]); if (!tb) continue;
         var table = tb.closest ? tb.closest("table") : null;
-        if (table) { enhanceHead(table); ccShareCols.grips(table); }   // grips after the Browse header, as on /Main
+        if (table) { enhanceHead(table); ttShareCols.grips(table); }   // grips after the Browse header, as on /Main
         var rows = tb.children;
         for (var r = 0; r < rows.length; r++) if (rows[r].tagName === "TR") enhanceRow(rows[r]);
       }
-      ccShareCols.apply();
-      ccShareCols.resetBtn();
-      ccMutedEmpties();   // after the row pass has widened the colspan
+      ttShareCols.apply();
+      ttShareCols.resetBtn();
+      ttMutedEmpties();   // after the row pass has widened the colspan
     } catch (e) {}
   }
   // In rainbow mode every row's badges and Browse pill share one rotated palette colour; accent
-  // mode clears the inline colour so the sheet's --cc-shr-accent shows. The row index skips the
+  // mode clears the inline colour so the sheet's --tt-shr-accent shows. The row index skips the
   // placeholder, so it stays stable across tbody refills.
   function paintRows() {
     try {
-      if (g("cc.enable.shares", "0") === "0") return;
+      if (g("tt.enable.shares", "0") === "0") return;
       if (pn() !== "/Shares") return;
       var rb = rbOn(), neutral = rb && rbNeutral(), ids = ["shareslist", "disk_list"];
-      document.documentElement.classList.toggle("cc-shares-rbneutral", rbNeutral()); // "active only": rows neutral, whole row colours on hover
+      document.documentElement.classList.toggle("tt-shares-rbneutral", rbNeutral()); // "active only": rows neutral, whole row colours on hover
       for (var j = 0; j < ids.length; j++) {
         var tb = document.getElementById(ids[j]); if (!tb) continue;
         var rows = tb.children, ri = 0;
         for (var r = 0; r < rows.length; r++) {
           var tr = rows[r]; if (tr.tagName !== "TR" || tr.querySelector(":scope > td.empty")) continue;
-          var bs = tr.querySelectorAll(".cc-b, .cc-b-browse");
+          var bs = tr.querySelectorAll(".tt-b, .tt-b-browse");
           if (!rb) {
-            tr.style.removeProperty("--cc-rb-c"); tr.style.removeProperty("--cc-rb-ct");
+            tr.style.removeProperty("--tt-rb-c"); tr.style.removeProperty("--tt-rb-ct");
             for (var k = 0; k < bs.length; k++) { bs[k].style.removeProperty("background"); bs[k].style.removeProperty("color"); }
             ri++; continue;
           }
           var c = rbColor(ri), tc = idealText(c);
-          tr.style.setProperty("--cc-rb-c", c); tr.style.setProperty("--cc-rb-ct", tc); // on the row, so every badge and the neutral-mode :hover inherit it
+          tr.style.setProperty("--tt-rb-c", c); tr.style.setProperty("--tt-rb-ct", tc); // on the row, so every badge and the neutral-mode :hover inherit it
           for (var k = 0; k < bs.length; k++) {
             if (!neutral) { bs[k].style.setProperty("background", c, "important"); bs[k].style.setProperty("color", tc, "important"); }
             else { bs[k].style.removeProperty("background"); bs[k].style.removeProperty("color"); }
@@ -320,29 +320,29 @@
     } catch (e) {}
   }
   // Rainbow on /Main: each disk_status row's badges take one rotated colour as in paintRows, and
-  // each Array-Vorgang control row's buttons one colour per row. The .cc-aop-status pills live in
+  // each Array-Vorgang control row's buttons one colour per row. The .tt-aop-status pills live in
   // table.array_status, which the badge loop never visits, and disabled buttons are skipped,
   // since an inline !important would beat the sheet's inert grey.
   function paintMain() {
     try {
-      if (g("cc.enable.main", "0") === "0") return;
+      if (g("tt.enable.main", "0") === "0") return;
       if (!onMain()) return;
       var rb = rbOn(), neutral = rb && rbNeutral();
-      document.documentElement.classList.toggle("cc-shares-rbneutral", rbNeutral());
+      document.documentElement.classList.toggle("tt-shares-rbneutral", rbNeutral());
       var tbs = document.querySelectorAll("#displaybox table.unraid.disk_status");
       for (var j = 0; j < tbs.length; j++) {
         var rows = tbs[j].querySelectorAll("tbody > tr"), ri = 0;
         for (var r = 0; r < rows.length; r++) {
           var tr = rows[r];
-          var bs = tr.querySelectorAll(".cc-b, a.cc-b-browse");
+          var bs = tr.querySelectorAll(".tt-b, a.tt-b-browse");
           if (!bs.length) continue;                                  // placeholder rows
           if (!rb) {
-            tr.style.removeProperty("--cc-rb-c"); tr.style.removeProperty("--cc-rb-ct");
+            tr.style.removeProperty("--tt-rb-c"); tr.style.removeProperty("--tt-rb-ct");
             for (var k = 0; k < bs.length; k++) { bs[k].style.removeProperty("background"); bs[k].style.removeProperty("color"); }
             ri++; continue;
           }
           var c = rbColor(ri), tc = idealText(c);
-          tr.style.setProperty("--cc-rb-c", c); tr.style.setProperty("--cc-rb-ct", tc);
+          tr.style.setProperty("--tt-rb-c", c); tr.style.setProperty("--tt-rb-ct", tc);
           for (var k2 = 0; k2 < bs.length; k2++) {
             if (!neutral) { bs[k2].style.setProperty("background", c, "important"); bs[k2].style.setProperty("color", tc, "important"); }
             else { bs[k2].style.removeProperty("background"); bs[k2].style.removeProperty("color"); }
@@ -361,8 +361,8 @@
           for (var b2 = 0; b2 < btns.length; b2++) {
             var bt = btns[b2];
             var c2 = rbColor(bi), tc2 = idealText(c2);
-            if (rb) { bt.style.setProperty("--cc-rb-c", c2); bt.style.setProperty("--cc-rb-ct", tc2); }   // the hover colour in the neutral sub-mode
-            else { bt.style.removeProperty("--cc-rb-c"); bt.style.removeProperty("--cc-rb-ct"); }
+            if (rb) { bt.style.setProperty("--tt-rb-c", c2); bt.style.setProperty("--tt-rb-ct", tc2); }   // the hover colour in the neutral sub-mode
+            else { bt.style.removeProperty("--tt-rb-c"); bt.style.removeProperty("--tt-rb-ct"); }
             if (!rb || neutral || bt.disabled) { bt.style.removeProperty("background"); bt.style.removeProperty("color"); continue; }
             bt.style.setProperty("background", c2, "important"); bt.style.setProperty("color", tc2, "important");
           }
@@ -370,28 +370,28 @@
         }
       }
       // The buttons and inputs below the arrays, such as Unassigned Devices' add-share row,
-      // continue the rotation; sub-tab pills and the parity card stay out. .cc-xbtn lets the
+      // continue the rotation; sub-tab pills and the parity card stay out. .tt-xbtn lets the
       // neutral sub-mode CSS reach them.
       var xbtns = document.querySelectorAll('#displaybox button:not([role="tab"]), #displaybox input[type="button"], #displaybox input[type="submit"]');
       for (var x2 = 0; x2 < xbtns.length; x2++) {
         var xb = xbtns[x2];
-        if (xb.closest("table.array_status") || xb.closest("nav.tabs") || xb.closest(".cc-aop-pcard")) continue;
-        xb.classList.add("cc-xbtn");
+        if (xb.closest("table.array_status") || xb.closest("nav.tabs") || xb.closest(".tt-aop-pcard")) continue;
+        xb.classList.add("tt-xbtn");
         var xc = rbColor(bi), xtc = idealText(xc);
-        if (rb) { xb.style.setProperty("--cc-rb-c", xc); xb.style.setProperty("--cc-rb-ct", xtc); }
-        else { xb.style.removeProperty("--cc-rb-c"); xb.style.removeProperty("--cc-rb-ct"); }
+        if (rb) { xb.style.setProperty("--tt-rb-c", xc); xb.style.setProperty("--tt-rb-ct", xtc); }
+        else { xb.style.removeProperty("--tt-rb-c"); xb.style.removeProperty("--tt-rb-ct"); }
         if (!rb || neutral || xb.disabled) { xb.style.removeProperty("background"); xb.style.removeProperty("color"); bi++; continue; }
         xb.style.setProperty("background", xc, "important"); xb.style.setProperty("color", xtc, "important");
         bi++;
       }
       // UD icon tiles, toggle tracks, the column-reset icon and the Planung/Wiki links read
-      // --cc-rb-c with the accent as fallback, so without the stamp they show the accent.
+      // --tt-rb-c with the accent as fallback, so without the stamp they show the accent.
       // Checked toggle tracks keep their colour in the neutral sub-mode.
-      var extras = document.querySelectorAll("#displaybox a.cc-ud-icon, #displaybox a.cc-ibtn, #displaybox .cc-aop-link, #displaybox .switch-button-background");
+      var extras = document.querySelectorAll("#displaybox a.tt-ud-icon, #displaybox a.tt-ibtn, #displaybox .tt-aop-link, #displaybox .switch-button-background");
       for (var e3 = 0; e3 < extras.length; e3++) {
         var ex = extras[e3];
-        if (rb) { var ec = rbColor(bi), ect = idealText(ec); ex.style.setProperty("--cc-rb-c", ec); ex.style.setProperty("--cc-rb-ct", ect); bi++; }
-        else { ex.style.removeProperty("--cc-rb-c"); ex.style.removeProperty("--cc-rb-ct"); }
+        if (rb) { var ec = rbColor(bi), ect = idealText(ec); ex.style.setProperty("--tt-rb-c", ec); ex.style.setProperty("--tt-rb-ct", ect); bi++; }
+        else { ex.style.removeProperty("--tt-rb-c"); ex.style.removeProperty("--tt-rb-ct"); }
       }
       // Unassigned Devices rows follow the disk_status contract: one colour per row, and the
       // neutral sub-mode falls back to the accent.
@@ -401,63 +401,63 @@
         var urows = utbs[u].children, uri = 0;
         for (var ur = 0; ur < urows.length; ur++) {
           var utr = urows[ur]; if (utr.tagName !== "TR") continue;
-          var ubs = utr.querySelectorAll(".cc-b"); if (!ubs.length) continue;
+          var ubs = utr.querySelectorAll(".tt-b"); if (!ubs.length) continue;
           var uc = rbColor(uri), utc = idealText(uc);
-          if (rb) { utr.style.setProperty("--cc-rb-c", uc); utr.style.setProperty("--cc-rb-ct", utc); }
-          else { utr.style.removeProperty("--cc-rb-c"); utr.style.removeProperty("--cc-rb-ct"); }
+          if (rb) { utr.style.setProperty("--tt-rb-c", uc); utr.style.setProperty("--tt-rb-ct", utc); }
+          else { utr.style.removeProperty("--tt-rb-c"); utr.style.removeProperty("--tt-rb-ct"); }
           for (var uk = 0; uk < ubs.length; uk++) {
-            if (!rb || neutral) { ubs[uk].style.removeProperty("background"); ubs[uk].style.removeProperty("color"); ubs[uk].classList.toggle("cc-ink-dark", accDark); }
-            else { ubs[uk].style.setProperty("background", uc, "important"); ubs[uk].style.setProperty("color", utc, "important"); ubs[uk].classList.toggle("cc-ink-dark", utc !== "#fff"); }
+            if (!rb || neutral) { ubs[uk].style.removeProperty("background"); ubs[uk].style.removeProperty("color"); ubs[uk].classList.toggle("tt-ink-dark", accDark); }
+            else { ubs[uk].style.setProperty("background", uc, "important"); ubs[uk].style.setProperty("color", utc, "important"); ubs[uk].classList.toggle("tt-ink-dark", utc !== "#fff"); }
           }
           uri++;
         }
       }
       // The UD split pills and the /Main section heads take consecutive colours in both rainbow
       // sub-modes, like paintCards() does on /Shares/Share.
-      var hbs = document.querySelectorAll("#displaybox .cc-b.cc-ud-h, #displaybox .cc-card-head");
+      var hbs = document.querySelectorAll("#displaybox .tt-b.tt-ud-h, #displaybox .tt-card-head");
       for (var hb = 0; hb < hbs.length; hb++) {
-        if (!rb) { hbs[hb].style.removeProperty("background"); hbs[hb].style.removeProperty("color"); hbs[hb].classList.toggle("cc-ink-dark", accDark); continue; }
+        if (!rb) { hbs[hb].style.removeProperty("background"); hbs[hb].style.removeProperty("color"); hbs[hb].classList.toggle("tt-ink-dark", accDark); continue; }
         var hc = rbColor(hb), htc = idealText(hc);
         hbs[hb].style.setProperty("background", hc, "important"); hbs[hb].style.setProperty("color", htc, "important");
-        hbs[hb].classList.toggle("cc-ink-dark", htc !== "#fff");
+        hbs[hb].classList.toggle("tt-ink-dark", htc !== "#fff");
       }
     } catch (e) {}
   }
   // Replaces each native <select> on the share page with the disk-dropdown look. The open popup of
-  // a native select is drawn by the OS, so an overlay (.cc-sel) mirrors the options. The real
+  // a native select is drawn by the OS, so an overlay (.tt-sel) mirrors the options. The real
   // select stays hidden as the source of truth for the form POST and Unraid's inline JS; a pick
   // writes selectedIndex and dispatches change so the inline onchange handlers still fire.
-  function ccSelects(box) {
+  function ttSelects(box) {
     try {
       if (pn() !== "/Shares/Share") return;
-      var sels = box.querySelectorAll('select:not([multiple]):not([data-cc-sel])'); // multiples are dropdownchecklists, badged already
-      for (var i = 0; i < sels.length; i++) ccWrapSelect(sels[i]);
+      var sels = box.querySelectorAll('select:not([multiple]):not([data-tt-sel])'); // multiples are dropdownchecklists, badged already
+      for (var i = 0; i < sels.length; i++) ttWrapSelect(sels[i]);
       // Unraid relabels and reselects options at runtime, and its first updateScreen() runs after
-      // this defer script has wrapped them, so the wrapped ones are re-synced too. ccSyncOne writes
+      // this defer script has wrapped them, so the wrapped ones are re-synced too. ttSyncOne writes
       // only on a real change, so this cannot loop.
-      var done = box.querySelectorAll("select[data-cc-sel]");
-      for (var j = 0; j < done.length; j++) ccSyncOne(done[j]);
-      // The shared painter stamps the rotating --cc-rb-c the sheet reads, here where the page
+      var done = box.querySelectorAll("select[data-tt-sel]");
+      for (var j = 0; j < done.length; j++) ttSyncOne(done[j]);
+      // The shared painter stamps the rotating --tt-rb-c the sheet reads, here where the page
       // (re)builds its selects.
-      try { if (window.CCTheme && window.CCTheme.paintSelects) window.CCTheme.paintSelects(document); } catch (e2) {}
+      try { if (window.TTTheme && window.TTTheme.paintSelects) window.TTTheme.paintSelects(document); } catch (e2) {}
     } catch (e) {}
   }
-  function ccWrapSelect(sel) {
+  function ttWrapSelect(sel) {
     // header.js's page-wide sweep may reach the select first. This page's overlay takes its place
     // instead of nesting inside it, where both triggers would show.
     var tsel = sel.parentNode;
-    if (tsel && tsel.classList.contains("cc-tsel")) { tsel.parentNode.insertBefore(sel, tsel); tsel.parentNode.removeChild(tsel); sel.removeAttribute("data-cc-tsel"); }
-    sel.setAttribute("data-cc-sel", "1");                 // first, so the observer's re-fire is a no-op
-    var wrap = el("span", "cc-sel"); sel.parentNode.insertBefore(wrap, sel);
+    if (tsel && tsel.classList.contains("tt-tsel")) { tsel.parentNode.insertBefore(sel, tsel); tsel.parentNode.removeChild(tsel); sel.removeAttribute("data-tt-tsel"); }
+    sel.setAttribute("data-tt-sel", "1");                 // first, so the observer's re-fire is a no-op
+    var wrap = el("span", "tt-sel"); sel.parentNode.insertBefore(wrap, sel);
     sel.style.display = "none"; wrap.appendChild(sel);
     // The trigger takes the focus on a click and from Tab, which lets the wheel step the value
     // (GlimStone rule 14), and Enter or Space opens it.
-    var trig = el("span", "cc-sel-trigger"); wrap.appendChild(trig);
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(trig);
+    var trig = el("span", "tt-sel-trigger"); wrap.appendChild(trig);
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(trig);
     trig.setAttribute("aria-haspopup", "listbox");
-    var panel = el("div", "cc-sel-panel"); wrap.appendChild(panel);
+    var panel = el("div", "tt-sel-panel"); wrap.appendChild(panel);
     for (var k = 0; k < sel.options.length; k++) {
-      var chip = el("div", "cc-sel-opt", sel.options[k].text); chip.setAttribute("data-i", k);
+      var chip = el("div", "tt-sel-opt", sel.options[k].text); chip.setAttribute("data-i", k);
       chip.addEventListener("click", (function (idx) {
         return function (ev) {
           ev.stopPropagation();
@@ -465,12 +465,12 @@
           sel.selectedIndex = idx;
           sel.dispatchEvent(new Event("change", { bubbles: true }));
           // The clone block sits beside the form, not in it, so its select has no form and
-          // ccSyncGroup would skip it.
-          ccSyncOne(sel);
+          // ttSyncGroup would skip it.
+          ttSyncOne(sel);
           // updateScreen() has already re-pointed the storage cascade by property writes, which
           // no observer sees.
-          ccSyncGroup(sel.form);
-          wrap.classList.remove("cc-open");
+          ttSyncGroup(sel.form);
+          wrap.classList.remove("tt-open");
           trig.focus();
         };
       })(k));
@@ -479,16 +479,16 @@
     trig.addEventListener("click", function (ev) {
       ev.stopPropagation();
       if (sel.disabled) return;
-      ccSyncOne(sel);
-      var open = wrap.classList.toggle("cc-open");
-      if (open) { var o = document.querySelectorAll(".cc-sel.cc-open"); for (var j = 0; j < o.length; j++) if (o[j] !== wrap) o[j].classList.remove("cc-open"); }
+      ttSyncOne(sel);
+      var open = wrap.classList.toggle("tt-open");
+      if (open) { var o = document.querySelectorAll(".tt-sel.tt-open"); for (var j = 0; j < o.length; j++) if (o[j] !== wrap) o[j].classList.remove("tt-open"); }
     });
-    ccSyncOne(sel);
+    ttSyncOne(sel);
   }
-  function ccSyncOne(sel) {
+  function ttSyncOne(sel) {
     var w = sel.parentNode; if (!w) return;
-    w.classList.toggle("cc-sel-disabled", !!sel.disabled);   // e.g. shareCOW on an existing share
-    var t = w.querySelector(".cc-sel-trigger"), c = w.querySelectorAll(".cc-sel-opt");
+    w.classList.toggle("tt-sel-disabled", !!sel.disabled);   // e.g. shareCOW on an existing share
+    var t = w.querySelector(".tt-sel-trigger"), c = w.querySelectorAll(".tt-sel-opt");
     // Every text write is guarded: rewriting an unchanged string is still a childList mutation and
     // would keep the page's observer repainting in a loop.
     var label = sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : "";
@@ -502,23 +502,23 @@
       c[k].classList.toggle("is-disabled", !!o.disabled);
     }
   }
-  function ccSyncGroup(f) { if (!f) return; var s = f.querySelectorAll("select[data-cc-sel]"); for (var i = 0; i < s.length; i++) ccSyncOne(s[i]); }
-  // The mouse wheel over a closed field is handled in cc-theme.js. Like a click, it has to re-sync
+  function ttSyncGroup(f) { if (!f) return; var s = f.querySelectorAll("select[data-tt-sel]"); for (var i = 0; i < s.length; i++) ttSyncOne(s[i]); }
+  // The mouse wheel over a closed field is handled in tt-theme.js. Like a click, it has to re-sync
   // the siblings as well, since updateScreen() re-points them by property writes.
-  try { if (window.CCTheme && window.CCTheme.registerSelectSync) window.CCTheme.registerSelectSync(function (sel, wrap) { if (!wrap || !wrap.classList || !wrap.classList.contains("cc-sel")) return false; ccSyncOne(sel); ccSyncGroup(sel.form); return true; }); } catch (e) {}
-  function ccSelectsTeardown() {
+  try { if (window.TTTheme && window.TTTheme.registerSelectSync) window.TTTheme.registerSelectSync(function (sel, wrap) { if (!wrap || !wrap.classList || !wrap.classList.contains("tt-sel")) return false; ttSyncOne(sel); ttSyncGroup(sel.form); return true; }); } catch (e) {}
+  function ttSelectsTeardown() {
     try {
-      var wraps = document.querySelectorAll("#displaybox .cc-sel");
+      var wraps = document.querySelectorAll("#displaybox .tt-sel");
       for (var i = 0; i < wraps.length; i++) {
         var w = wraps[i], sel = w.querySelector("select");
-        if (sel) { sel.style.display = ""; sel.removeAttribute("data-cc-sel"); w.parentNode.insertBefore(sel, w); }
+        if (sel) { sel.style.display = ""; sel.removeAttribute("data-tt-sel"); w.parentNode.insertBefore(sel, w); }
         if (w.parentNode) w.parentNode.removeChild(w);
       }
     } catch (e) {}
   }
-  // a click outside an open cc-select closes it
+  // a click outside an open tt-select closes it
   document.addEventListener("click", function () {
-    var o = document.querySelectorAll(".cc-sel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open");
+    var o = document.querySelectorAll(".tt-sel.tt-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("tt-open");
   });
   // Unraid's Read buttons (readShare, readSMB, readUserSMB, readNFS) set the selects by property
   // inside a $.get callback, which raises no event the overlay could see. Their jQuery
@@ -528,8 +528,8 @@
   try {
     if (window.jQuery) window.jQuery(document).ajaxComplete(function (ev, xhr, opt) {
       if (!/\/(ProtocolData|ShareData)\.php/.test((opt && opt.url) || "")) return;
-      var s = document.querySelectorAll("#displaybox select[data-cc-sel]");
-      for (var i = 0; i < s.length; i++) ccSyncOne(s[i]);
+      var s = document.querySelectorAll("#displaybox select[data-tt-sel]");
+      for (var i = 0; i < s.length; i++) ttSyncOne(s[i]);
     });
   } catch (e) {}
 
@@ -537,22 +537,22 @@
   // only an existing share's Apply carries, so there it stops with an error and nothing is added.
   // On that page Read fills the visible fields instead and leaves the name and Add Share, with
   // Unraid's own checks, to the user.
-  function ccReadIntoNew() {
+  function ttReadIntoNew() {
     var f = document.forms.share_edit, read = document.getElementById("readshare");
-    if (!f || !read || f.shareNameOrig.value || document.getElementById("cmdEditShare") || read.hasAttribute("data-cc-read")) return;
-    read.setAttribute("data-cc-read", "1");
+    if (!f || !read || f.shareNameOrig.value || document.getElementById("cmdEditShare") || read.hasAttribute("data-tt-read")) return;
+    read.setAttribute("data-tt-read", "1");
     read.onclick = function () {
       var from = document.querySelector('select[name="readshare"]');
       if (!from.value) return;
       window.jQuery.get("/webGui/include/ShareData.php", { name: from.value }, function (json) {
         var d = JSON.parse(json);
-        if (d) ccFillShare(f, d);
+        if (d) ttFillShare(f, d);
       });
     };
   }
   // A floor comes in kilobytes and goes in as a size with a decimal dot, the one form Unraid's
   // parseDiskSize reads in every locale.
-  function ccFloor(kb) {
+  function ttFloor(kb) {
     var units = ["KB", "MB", "GB", "TB", "PB"], i = 0;
     while (kb >= 1000 && i < units.length - 1) { kb /= 1000; i++; }
     return Math.round(kb * 10) / 10 + " " + units[i];
@@ -561,7 +561,7 @@
   // first, since Unraid rebuilds their checklists; then the storage selects in the order a person
   // would set them, each with the change event its own handler lays the form out on, which also arms
   // Add Share.
-  function ccFillShare(f, d) {
+  function ttFillShare(f, d) {
     function pick(sel, v) {
       for (var i = 0; i < sel.options.length; i++) if (sel.options[i].value === v && !sel.options[i].disabled) { sel.selectedIndex = i; break; }
       sel.dispatchEvent(new Event("change", { bubbles: true }));
@@ -583,64 +583,64 @@
     var dir = document.getElementById("direction");
     if (moves) { dir.selectedIndex = use === "prefer" ? 1 : 0; dir.dispatchEvent(new Event("change", { bubbles: true })); }
     pick(f.shareCOW, d.cow || "auto");
-    if (+d.floor > 0) f.shareFloor.value = ccFloor(+d.floor);
-    ccSyncGroup(f);
+    if (+d.floor > 0) f.shareFloor.value = ttFloor(+d.floor);
+    ttSyncGroup(f);
     if (!f.shareName.value) f.shareName.focus();
   }
 
   // Moves the "Read/Write settings from" clone block into a side card beside the settings form.
   // Unraid renders three variants, all normalised by turning the enclosing .relative into the flex
-  // row with a .cc-main-col and a .cc-side-card:
+  // row with a .tt-main-col and a .tt-side-card:
   //   A  ShareEdit:        .relative = [clone, form]                -> main = form
   //   B  SMB settings:     .relative = [clone];  form-.shade is the .relative's next sibling
   //   C  SMB user-access:  .relative = [clone, .shade>form]         -> main = .shade
   // The main column takes every other child of .relative, or in B the following siblings up to the
   // next .title/.relative. Whole forms move, so no field leaves its <form> and the form JS works.
-  function ccCards(root) {
+  function ttCards(root) {
     try {
-      var clones = root.querySelectorAll(".clone-settings:not([data-cc-clone])");
+      var clones = root.querySelectorAll(".clone-settings:not([data-tt-clone])");
       for (var i = 0; i < clones.length; i++) {
         try {
           var clone = clones[i], rel = clone.closest(".relative");
-          if (!rel || rel.classList.contains("cc-split-row")) continue;
+          if (!rel || rel.classList.contains("tt-split-row")) continue;
           var mains = [], c;
           for (c = rel.firstElementChild; c; c = c.nextElementSibling) { if (c !== clone) mains.push(c); }
           if (!mains.length) {                        // variant B
             var n = rel.nextElementSibling;
             while (n && n.tagName !== "SCRIPT" && n.tagName !== "STYLE" && !(n.classList && (n.classList.contains("title") || n.classList.contains("relative")))) { var nx = n.nextElementSibling; mains.push(n); n = nx; }
           }
-          var main = el("div", "cc-main-col"), side = el("div", "cc-side-card");
+          var main = el("div", "tt-main-col"), side = el("div", "tt-side-card");
           for (var m = 0; m < mains.length; m++) main.appendChild(mains[m]);
-          side.appendChild(el("div", "cc-side-head", t("copy")));
+          side.appendChild(el("div", "tt-side-head", t("copy")));
           side.appendChild(clone);
           rel.appendChild(main); rel.appendChild(side);
-          rel.classList.add("cc-split-row");
-          clone.setAttribute("data-cc-clone", "1");
+          rel.classList.add("tt-split-row");
+          clone.setAttribute("data-tt-clone", "1");
         } catch (e) {}
       }
     } catch (e) {}
   }
-  function ccUnwrap(node) { if (!node || !node.parentNode) return; while (node.firstChild) node.parentNode.insertBefore(node.firstChild, node); node.parentNode.removeChild(node); }
-  function ccCardsTeardown() {
+  function ttUnwrap(node) { if (!node || !node.parentNode) return; while (node.firstChild) node.parentNode.insertBefore(node.firstChild, node); node.parentNode.removeChild(node); }
+  function ttCardsTeardown() {
     try {
       // Without the CSS the clone floats absolutely again, so the changed DOM order does not show.
-      var rows = document.querySelectorAll("#displaybox .cc-split-row");
+      var rows = document.querySelectorAll("#displaybox .tt-split-row");
       for (var r = 0; r < rows.length; r++) {
         var row = rows[r];
-        var main = row.querySelector(":scope > .cc-main-col"), side = row.querySelector(":scope > .cc-side-card");
-        if (main) ccUnwrap(main);
-        if (side) { var sh = side.querySelector(":scope > .cc-side-head"); if (sh) side.removeChild(sh); ccUnwrap(side); }
-        row.classList.remove("cc-split-row");
+        var main = row.querySelector(":scope > .tt-main-col"), side = row.querySelector(":scope > .tt-side-card");
+        if (main) ttUnwrap(main);
+        if (side) { var sh = side.querySelector(":scope > .tt-side-head"); if (sh) side.removeChild(sh); ttUnwrap(side); }
+        row.classList.remove("tt-split-row");
       }
-      var marks = document.querySelectorAll("#displaybox [data-cc-clone]");
-      for (var k = 0; k < marks.length; k++) marks[k].removeAttribute("data-cc-clone");
+      var marks = document.querySelectorAll("#displaybox [data-tt-clone]");
+      for (var k = 0; k < marks.length; k++) marks[k].removeAttribute("data-tt-clone");
     } catch (e) {}
   }
 
   // The FireSquire plugin, formerly SmokeSignal, adds its own sub-tab to /Main although it has a
   // page of its own.
-  function ccIsSmokeTab(btn) { return !!btn && /smokesignal|firesquire/i.test(btn.textContent || ""); }
-  // Flattens a tabbed container into stacked cards, each panel headed by a .cc-card-head cloned from
+  function ttIsSmokeTab(btn) { return !!btn && /smokesignal|firesquire/i.test(btn.textContent || ""); }
+  // Flattens a tabbed container into stacked cards, each panel headed by a .tt-card-head cloned from
   // its hidden tab button; shared by /Shares/Share and /Main, which render the same
   // MainContentTabbed DOM. Panels pair with buttons by DOM index, not aria-labelledby:
   // MainContentTabbed.php numbers them in two loops with different skip logic, so a panel can point
@@ -651,12 +651,12 @@
     var panels = box.querySelectorAll('section[role="tabpanel"]');
     for (var i = 0; i < panels.length; i++) {
       var section = panels[i];
-      if (section.getAttribute("data-cc-card")) continue;   // skipped by attribute so i stays the DOM index
-      if (ccIsSmokeTab(tabBtns[i])) { section.setAttribute("data-cc-card", "1"); section.classList.add("cc-smoke-hidden"); continue; }
-      section.setAttribute("data-cc-card", "1");
-      ccCards(section);
+      if (section.getAttribute("data-tt-card")) continue;   // skipped by attribute so i stays the DOM index
+      if (ttIsSmokeTab(tabBtns[i])) { section.setAttribute("data-tt-card", "1"); section.classList.add("tt-smoke-hidden"); continue; }
+      section.setAttribute("data-tt-card", "1");
+      ttCards(section);
       var head = document.createElement("div");
-      head.className = "cc-card-head";
+      head.className = "tt-card-head";
       var btn = tabBtns[i];
       if (btn && btn.childNodes.length) {                   // the localized <span.left><icon>Title</span>
         var kids = btn.childNodes;
@@ -664,66 +664,66 @@
       } else {
         head.textContent = (btn && btn.textContent.trim()) || (section.id || "").replace(/-panel$/, "");
       }
-      var cols = section.querySelectorAll(".cc-main-col");
+      var cols = section.querySelectorAll(".tt-main-col");
       if (!cols.length) { section.insertBefore(head, section.firstChild); }   // without a split the section is the card
       else {
         cols[0].insertBefore(head, cols[0].firstChild);
         for (var ci = 1; ci < cols.length; ci++) {
           var col = cols[ci];
-          if (col.querySelector(":scope > .cc-card-head")) continue;
-          var crow = col.closest(".cc-split-row"), nh = crow ? crow.previousElementSibling : null;
-          while (nh && !(nh.classList && (nh.classList.contains("title") || nh.classList.contains("cc-split-row")))) nh = nh.previousElementSibling;
-          if (nh && nh.classList && nh.classList.contains("cc-split-row")) nh = null;   // another split row came first, so no heading
+          if (col.querySelector(":scope > .tt-card-head")) continue;
+          var crow = col.closest(".tt-split-row"), nh = crow ? crow.previousElementSibling : null;
+          while (nh && !(nh.classList && (nh.classList.contains("title") || nh.classList.contains("tt-split-row")))) nh = nh.previousElementSibling;
+          if (nh && nh.classList && nh.classList.contains("tt-split-row")) nh = null;   // another split row came first, so no heading
           var lft = nh && (nh.querySelector("span.left") || nh);
-          var h2 = el("div", "cc-card-head");
+          var h2 = el("div", "tt-card-head");
           h2.textContent = (lft && (lft.textContent || "").trim()) || "SMB";
           col.insertBefore(h2, col.firstChild);
           if (nh) {
             var rgt = nh.querySelector("span.right");
-            if (rgt && (rgt.textContent || "").trim()) { var note = el("div", "cc-card-note"); note.textContent = (rgt.textContent || "").trim(); col.insertBefore(note, h2.nextSibling); }
-            nh.classList.add("cc-carded");   // the CSS hides the native heading
+            if (rgt && (rgt.textContent || "").trim()) { var note = el("div", "tt-card-note"); note.textContent = (rgt.textContent || "").trim(); col.insertBefore(note, h2.nextSibling); }
+            nh.classList.add("tt-carded");   // the CSS hides the native heading
           }
         }
       }
     }
   }
   // Reverts cardPanels when Tab-Ansicht is off, so the native sub-tabs show.
-  function flattenTeardown() { headsTeardown(); ccCardsTeardown(); }
+  function flattenTeardown() { headsTeardown(); ttCardsTeardown(); }
   function headsTeardown() {
     try {
-      var stray = document.querySelectorAll("#displaybox .cc-card-head, #displaybox .cc-card-note");
+      var stray = document.querySelectorAll("#displaybox .tt-card-head, #displaybox .tt-card-note");
       for (var s = 0; s < stray.length; s++) stray[s].parentNode.removeChild(stray[s]);
-      var carded = document.querySelectorAll("#displaybox .cc-carded");
-      for (var cd = 0; cd < carded.length; cd++) carded[cd].classList.remove("cc-carded");
-      var marked = document.querySelectorAll("#displaybox [data-cc-card]");
-      for (var m = 0; m < marked.length; m++) marked[m].removeAttribute("data-cc-card");
+      var carded = document.querySelectorAll("#displaybox .tt-carded");
+      for (var cd = 0; cd < carded.length; cd++) carded[cd].classList.remove("tt-carded");
+      var marked = document.querySelectorAll("#displaybox [data-tt-card]");
+      for (var m = 0; m < marked.length; m++) marked[m].removeAttribute("data-tt-card");
     } catch (e) {}
   }
 
-  // The share detail page. Its theming is CSS through the cc-on-share-detail class; a
-  // .cc-share-title left by an older version is removed.
+  // The share detail page. Its theming is CSS through the tt-on-share-detail class; a
+  // .tt-share-title left by an older version is removed.
   function enhanceShareDetail() {
     try {
       var box = document.getElementById("displaybox"); if (!box) return;
       if (pn() !== "/Shares/Share") return;
-      if (g("cc.enable.shares", "0") === "0") return;   // the observer can still fire after a runtime disable
-      var ttl = box.querySelector(":scope > .cc-share-title"); if (ttl) ttl.parentNode.removeChild(ttl);
+      if (g("tt.enable.shares", "0") === "0") return;   // the observer can still fire after a runtime disable
+      var ttl = box.querySelector(":scope > .tt-share-title"); if (ttl) ttl.parentNode.removeChild(ttl);
       // Unraid nests input[name=confirmDelete] inside label#deleteLabel, a full-width <dl> grid
       // item. Both go into one span with the checkbox moved in front, so the badge hugs its text.
       // The checkbox is moved, not cloned: chkDelete() finds it by name, and a clone would send
       // confirmDelete twice.
       var label = box.querySelector("dl > #deleteLabel");
-      if (label && !box.querySelector(".cc-del-wrap")) {
+      if (label && !box.querySelector(".tt-del-wrap")) {
         var cb = label.querySelector('input[type="checkbox"][name="confirmDelete"]');
         var dl = label.parentNode;
         if (cb && dl) {
           var wrap = document.createElement("span");
-          wrap.className = "cc-del-wrap"; wrap.setAttribute("data-cc", "1");
+          wrap.className = "tt-del-wrap"; wrap.setAttribute("data-tt", "1");
           dl.insertBefore(wrap, label);
           wrap.appendChild(cb);
           wrap.appendChild(label);
-          cb.classList.add("cc-cb-del");
-          label.classList.add("cc-b-del");
+          cb.classList.add("tt-cb-del");
+          label.classList.add("tt-b-del");
           // The checkbox arms Unraid's delete submit (#cmdEditShare) through its native onchange,
           // and the CSS keeps the badge inert until then. A click on the armed badge forwards to
           // #cmdEditShare; the label has no for=, so it cannot untick the checkbox.
@@ -733,82 +733,82 @@
         }
       }
       // Tab-Ansicht: native sub-tabs by default, or stacked sections. The default "0" has to match
-      // the cc-sections-share stamp in apply(), or the flattened DOM lacks its gating class.
+      // the tt-sections-share stamp in apply(), or the flattened DOM lacks its gating class.
       // With the native sub-tabs the copy-settings block still becomes its own card beside the form.
-      if (g("cc.sections.shares", "0") !== "0") cardPanels(box); else { headsTeardown(); ccCards(box); }
-      ccSelects(box);
-      ccReadIntoNew();
+      if (g("tt.sections.shares", "0") !== "0") cardPanels(box); else { headsTeardown(); ttCards(box); }
+      ttSelects(box);
+      ttReadIntoNew();
     } catch (e) {}
   }
   // /Main has its own row code: table.unraid.disk_status has ten mixed columns, is refilled by
   // nchan and carries structural rows (colspan placeholders, pool_header, tr_last, offline rows)
   // that the share-list logic would break. onMain() requires nav.tabs, so it runs in Tabbed mode only.
   function onMain() { try { return pn() === "/Main" && !!document.querySelector("#displaybox nav.tabs"); } catch (e) { return false; } }
-  // Badges a value cell by moving its children into .cc-b > .cc-b-v, so the Reads/Writes spans and
+  // Badges a value cell by moving its children into .tt-b > .tt-b-v, so the Reads/Writes spans and
   // the Errors info icon keep working. Skipped: the usage bar (restyled by CSS), the assignment
   // <select>, structural colspan cells and the disk-name link, which is its own large badge.
   function mainBadgeCell(td) {
-    if (!td || td.classList.contains("cc-bcell")) return;
-    if (td.classList.contains("cc-browse-col")) return;      // already holds the browse pill
+    if (!td || td.classList.contains("tt-bcell")) return;
+    if (td.classList.contains("tt-browse-col")) return;      // already holds the browse pill
     if (td.querySelector(".usage-disk")) return;
     if (td.querySelector("select")) return;
     if (td.hasAttribute("colspan")) return;
-    if (td.querySelector("a.cc-b-name")) return;
+    if (td.querySelector("a.tt-b-name")) return;
     var txt = (td.textContent || "").trim(); if (txt === "" || txt === "-" || txt === "*") return;
-    var b = el("span", "cc-b"), v = el("span", "cc-b-v");
+    var b = el("span", "tt-b"), v = el("span", "tt-b-v");
     while (td.firstChild) v.appendChild(td.firstChild);
-    b.appendChild(v); td.appendChild(b); td.classList.add("cc-bcell");
+    b.appendChild(v); td.appendChild(b); td.classList.add("tt-bcell");
   }
   // The disk name becomes a large badge like the share name. Its link sits in the Identification
   // cell (td.desc) rather than the Device cell, so the whole row is searched.
   function enhanceMainName(tr) {
     var nl = tr.querySelector('a[href*="/Main/Device?name="], a[href*="/Main/Boot?name="]') || tr.querySelector(':scope > td.desc a[href]');
-    if (nl) { if (!nl.classList.contains("cc-b-name")) { nl.classList.add("cc-b"); nl.classList.add("cc-b-name"); } return; }
+    if (nl) { if (!nl.classList.contains("tt-b-name")) { nl.classList.add("tt-b"); nl.classList.add("tt-b-name"); } return; }
     // With the array stopped, an empty slot (DISK_NP, DISK_NP_DSBL) renders its name as a bare text
     // node in the Device cell and has no td.desc, so that text node is wrapped instead. It stops at
     // the first <br>, after which DISK_NP_MISSING and DISK_WRONG append a "Missing" note.
-    var cell = tr.children[0]; if (!cell || cell.querySelector(":scope > .cc-b-name")) return;
+    var cell = tr.children[0]; if (!cell || cell.querySelector(":scope > .tt-b-name")) return;
     for (var n = cell.firstChild; n; n = n.nextSibling) {
       if (n.nodeType === 1 && n.tagName === "BR") return;
       if (n.nodeType !== 3) continue;
       var txt = (n.textContent || "").replace(new RegExp(String.fromCharCode(160), "g"), " ").trim();
       if (!txt) continue;
-      cell.replaceChild(el("span", "cc-b cc-b-name", txt), n);
+      cell.replaceChild(el("span", "tt-b tt-b-name", txt), n);
       return;
     }
   }
   // With the array stopped, the Identification cell holds the assignment <select class='slot'>,
   // which native CSS fixes at 440px; on hover it spills across the Temp column. Shares.css clamps it
-  // to the cell, so the full device string goes into a title that ccTipSweep shows as a bubble.
-  function ccSlotTip(tr) {
+  // to the cell, so the full device string goes into a title that ttTipSweep shows as a bubble.
+  function ttSlotTip(tr) {
     try {
       var s = tr.querySelector("select.slot"); if (!s) return;
       var o = s.options[s.selectedIndex], txt = ((o && o.text) || "").trim();
-      if (txt && !s.getAttribute("data-cc-tip") && s.getAttribute("title") !== txt) s.setAttribute("title", txt);
+      if (txt && !s.getAttribute("data-tt-tip") && s.getAttribute("title") !== txt) s.setAttribute("title", txt);
     } catch (e) {}
   }
   // With the array stopped, an empty <tr class='tr_last'> separates Parity from Data. tr_last is
   // also the totals bar that Shares.css tints, so empty ones are marked and the CSS turns them into
   // a section gap; rows with content keep the bar.
-  function ccVoidRow(tr) {
+  function ttVoidRow(tr) {
     try {
       var cells = tr.children, empty = true;
       for (var i = 0; i < cells.length; i++) {
         if (cells[i].querySelector("*")) { empty = false; break; }
         if (((cells[i].textContent || "").replace(new RegExp(String.fromCharCode(160), "g"), " ").trim())) { empty = false; break; }
       }
-      tr.classList.toggle("cc-tr-void", empty);
+      tr.classList.toggle("tt-tr-void", empty);
     } catch (e) {}
   }
   function enhanceMainHead(table) {
-    var h = table && table.querySelector("thead tr"); if (!h || h.getAttribute("data-cc-main")) return;
-    h.setAttribute("data-cc-main", "1");
+    var h = table && table.querySelector("thead tr"); if (!h || h.getAttribute("data-tt-main")) return;
+    h.setAttribute("data-tt-main", "1");
     var dev = h.children[0]; if (!dev) return;
     if (h.children.length < 8) { if (dev.hasAttribute("colspan")) dev.colSpan = (dev.colSpan || 1) + 1; return; }   // a short head row is widened; an inserted cell would show as a dark block
-    h.insertBefore(el("td", "cc-browse-col", t("browse")), dev.nextSibling);
+    h.insertBefore(el("td", "tt-browse-col", t("browse")), dev.nextSibling);
   }
   function enhanceMainRow(tr) {
-    if (tr.getAttribute("data-cc-main")) return; tr.setAttribute("data-cc-main", "1");
+    if (tr.getAttribute("data-tt-main")) return; tr.setAttribute("data-tt-main", "1");
     var first = tr.children[0]; if (!first) return;
     // The Browse column is column 2. A structural row whose first cell spans (placeholder, stopped
     // separator) is widened; any other gets an empty cell after the first, like the data rows.
@@ -816,19 +816,19 @@
     // any other span would shift the totals left of their headers.
     if (first.hasAttribute("colspan") || tr.classList.contains("pool_header") || tr.classList.contains("tr_last") || tr.querySelector(":scope > td.empty")) {
       if (first.hasAttribute("colspan")) first.colSpan = (first.colSpan || 1) + 1;
-      else tr.insertBefore(el("td", "cc-browse-col"), first.nextSibling);
-      ccFill11(tr);
-      ccVoidBars(tr);
-      ccVoidRow(tr);
+      else tr.insertBefore(el("td", "tt-browse-col"), first.nextSibling);
+      ttFill11(tr);
+      ttVoidBars(tr);
+      ttVoidRow(tr);
       // Pool and boot summary rows get badges too. The name link comes from the first cell only,
       // since td.desc can hold a pool status "(ONLINE)" link that is not the name.
       if (tr.classList.contains("pool_header")) {
         var pnl = first.querySelector('a[href*="/Main/Device?name="], a[href*="/Main/Boot?name="]');
-        if (pnl && !pnl.classList.contains("cc-b-name")) { pnl.classList.add("cc-b"); pnl.classList.add("cc-b-name"); }
+        if (pnl && !pnl.classList.contains("tt-b-name")) { pnl.classList.add("tt-b"); pnl.classList.add("tt-b-name"); }
         // the pool's own browse link moves into the inserted Browse cell, as in the data rows
         var pbt = tr.children[1], pview = first.querySelector("a.view");
-        if (pview && pview.getAttribute("href") && pbt && pbt.classList.contains("cc-browse-col") && !pbt.firstChild) {
-          pview.classList.add("cc-b-browse");
+        if (pview && pview.getAttribute("href") && pbt && pbt.classList.contains("tt-browse-col") && !pbt.firstChild) {
+          pview.classList.add("tt-b-browse");
           var pic = pview.querySelector("i"); if (pic) pic.parentNode.removeChild(pic);
           browseLabel(pview);
           pbt.appendChild(pview);
@@ -838,10 +838,10 @@
       }
       return;
     }
-    var bt = el("td", "cc-browse-col");
+    var bt = el("td", "tt-browse-col");
     var view = first.querySelector("a.view");
     if (view && view.getAttribute("href")) {
-      view.classList.add("cc-b-browse");
+      view.classList.add("tt-b-browse");
       var ic = view.querySelector("i"); if (ic) ic.parentNode.removeChild(ic);
       browseLabel(view);
       bt.appendChild(view);
@@ -850,25 +850,25 @@
     enhanceMainName(tr);
     var tds = Array.prototype.slice.call(tr.children);
     for (var i = 2; i < tds.length; i++) mainBadgeCell(tds[i]);
-    ccSlotTip(tr);
-    ccFill11(tr);
-    ccVoidBars(tr);
+    ttSlotTip(tr);
+    ttFill11(tr);
+    ttVoidBars(tr);
   }
   // Hides usage bars whose label is only whitespace or &nbsp;, which the CSS :empty guard cannot
   // see and which would show as a bare grey track.
-  function ccVoidBars(tr) {
+  function ttVoidBars(tr) {
     try {
       var bars = tr.querySelectorAll(".usage-disk");
       for (var vb = 0; vb < bars.length; vb++) {
         var lab = bars[vb].lastElementChild;
         var vtxt = ((lab && lab.textContent) || "").replace(new RegExp(String.fromCharCode(160), "g"), " ").trim();
-        bars[vb].classList.toggle("cc-bar-void", !vtxt);
+        bars[vb].classList.toggle("tt-bar-void", !vtxt);
       }
     } catch (e) {}
   }
   // Pads every row to 11 grid columns; under colfix a short row leaves a dark patch at the right
   // end. The deficit goes to the last colspan cell, else the last cell.
-  function ccFill11(tr) {
+  function ttFill11(tr) {
     try {
       var colsum = 0, lastSpan = null, cells = tr.children;
       if (!cells.length) return;
@@ -879,20 +879,20 @@
     } catch (e) {}
   }
   // Column drag-resize in the style of Windows Explorer, for /Main and both /Shares lists. Every
-  // full thead row gets a .cc-colgrip on each cell's right edge. A drag writes pixel widths into a
-  // <colgroup data-cc-colw> on every matching table with table-layout:fixed and the sum as the
+  // full thead row gets a .tt-colgrip on each cell's right edge. A drag writes pixel widths into a
+  // <colgroup data-tt-colw> on every matching table with table-layout:fixed and the sum as the
   // table width; explicit widths on all columns keep fixed layout safe with colspan rows and keep
   // sibling tables in step. The widths persist as JSON under cfg.key; refills replace only the
-  // tbodys, so apply() re-applies them on load. A double-click on a grip or the .cc-colreset button
+  // tbodys, so apply() re-applies them on load. A double-click on a grip or the .tt-colreset button
   // resets. Without stored widths one shared set is derived from the first visible table, and only
   // that derived set passes through cfg.fix.
-  //   cfg: key   localStorage key ("cc.main.colpx" / "cc.shares.colpx")
+  //   cfg: key   localStorage key ("tt.main.colpx" / "tt.shares.colpx")
   //        sel   the instance's table family selector
   //        n     fixed grid column count (/Main: 11 incl. colspan rows); omit -> read the live thead
   //        host  () -> element hosting the reset ibtn (null = not on this page)
   //        place (host, btn) -> insert the reset ibtn (per-page spot idiom)
   //        fix   (widths, headRow) -> correction pass on the derived set
-  function ccColFactory(cfg) {
+  function ttColFactory(cfg) {
     var min = 40, drag = null, bound = false;
     function tables() { return document.querySelectorAll(cfg.sel); }
     function headOf(tb) { return tb.querySelector("thead tr"); }
@@ -911,10 +911,10 @@
       } catch (e) { return null; }
     }
     function colgroup(table, n) {
-      var cg = table.querySelector(":scope > colgroup[data-cc-colw]");
+      var cg = table.querySelector(":scope > colgroup[data-tt-colw]");
       if (cg && cg.children.length !== n) { cg.parentNode.removeChild(cg); cg = null; }
       if (!cg) {
-        cg = document.createElement("colgroup"); cg.setAttribute("data-cc-colw", "1");
+        cg = document.createElement("colgroup"); cg.setAttribute("data-tt-colw", "1");
         for (var i = 0; i < n; i++) cg.appendChild(document.createElement("col"));
         table.insertBefore(cg, table.firstChild);
       }
@@ -973,18 +973,18 @@
       for (var t = 0; t < tbs.length; t++) {
         var cols = colgroup(tbs[t], n).children;
         for (i = 0; i < n; i++) { var px = w[i] + "px"; if (cols[i].style.width !== px) cols[i].style.width = px; }
-        tbs[t].classList.add("cc-colfix");
+        tbs[t].classList.add("tt-colfix");
         var tw = sum + "px"; if (tbs[t].style.width !== tw) tbs[t].style.width = tw;   // wider than the container scrolls inside .TableContainer
       }
     }
     function clear() {
       var tbs = tables();
       for (var t = 0; t < tbs.length; t++) {
-        var cg = tbs[t].querySelector(":scope > colgroup[data-cc-colw]"); if (cg) cg.parentNode.removeChild(cg);
-        tbs[t].classList.remove("cc-colfix"); tbs[t].style.removeProperty("width");
+        var cg = tbs[t].querySelector(":scope > colgroup[data-tt-colw]"); if (cg) cg.parentNode.removeChild(cg);
+        tbs[t].classList.remove("tt-colfix"); tbs[t].style.removeProperty("width");
       }
     }
-    function markAuto(on) { var tbs = tables(); for (var t = 0; t < tbs.length; t++) tbs[t].classList.toggle("cc-colauto", !!on); }   // derived widths keep the table at 100%, without a horizontal scroll
+    function markAuto(on) { var tbs = tables(); for (var t = 0; t < tbs.length; t++) tbs[t].classList.toggle("tt-colauto", !!on); }   // derived widths keep the table at 100%, without a horizontal scroll
     function apply() {
       var n = num(); if (!n) return;
       var w = read();
@@ -994,7 +994,7 @@
           var h = headOf(tbs[t]);
           if (!h || h.children.length < n) continue;
           if (!tbs[t].getBoundingClientRect().width) continue;   // a hidden sub-tab measures 0
-          if (tbs[t].classList.contains("cc-colfix")) { w = null; break; }   // derived already on this load
+          if (tbs[t].classList.contains("tt-colfix")) { w = null; break; }   // derived already on this load
           w = []; for (var k = 0; k < n; k++) w.push(Math.max(min, Math.round(h.children[k].getBoundingClientRect().width)));
           if (cfg.fix) cfg.fix(w, h);
           break;
@@ -1015,10 +1015,10 @@
       if (!h || !n || h.children.length < n) return;
       var w = []; for (var k = 0; k < n; k++) w.push(Math.max(min, Math.round(h.children[k].getBoundingClientRect().width)));   // the grabbed table's geometry as drawn, fitted or not, so nothing jumps
       set(w);
-      var ci = +this.getAttribute("data-cc-col");
+      var ci = +this.getAttribute("data-tt-col");
       drag = { i: ci, x: e.clientX, w: w, start: w[ci] };
       try { this.setPointerCapture(e.pointerId); } catch (e2) {}
-      document.documentElement.classList.add("cc-col-dragging");
+      document.documentElement.classList.add("tt-col-dragging");
       e.preventDefault();
     }
     function move(e) {
@@ -1031,7 +1031,7 @@
       if (!drag) return;
       try { localStorage.setItem(cfg.key, JSON.stringify(drag.w)); } catch (e) {}
       drag = null;
-      document.documentElement.classList.remove("cc-col-dragging");
+      document.documentElement.classList.remove("tt-col-dragging");
     }
     function reset(e) {   // the caller re-applies the derived set
       try { localStorage.removeItem(cfg.key); } catch (e2) {}
@@ -1043,8 +1043,8 @@
       var n = num(); if (!n) return;
       var tds = h.children; if (tds.length < n) return;   // a short divider thead gets none
       for (var i = 0; i < n; i++) {
-        if (tds[i].querySelector(":scope > .cc-colgrip")) continue;
-        var gp = el("span", "cc-colgrip"); gp.setAttribute("data-cc-col", i);
+        if (tds[i].querySelector(":scope > .tt-colgrip")) continue;
+        var gp = el("span", "tt-colgrip"); gp.setAttribute("data-tt-col", i);
         gp.addEventListener("pointerdown", down);
         gp.addEventListener("pointermove", move);   // pointer capture keeps the drag on the grip outside the table too
         gp.addEventListener("pointerup", up);
@@ -1056,31 +1056,31 @@
     function resetBtn() {
       try {
         var host = cfg.host && cfg.host(); if (!host) return;
-        if (document.querySelector('.cc-colreset[data-cc-colreset="' + cfg.key + '"]')) return;
-        var b = el("a", "cc-ibtn cc-colreset");
+        if (document.querySelector('.tt-colreset[data-tt-colreset="' + cfg.key + '"]')) return;
+        var b = el("a", "tt-ibtn tt-colreset");
         b.href = "#";
-        b.setAttribute("data-cc-colreset", cfg.key);
-        b.setAttribute("data-cc-tip", mtText("Reset column widths"));
-        b.innerHTML = window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph("Refresh") : "";
+        b.setAttribute("data-tt-colreset", cfg.key);
+        b.setAttribute("data-tt-tip", mtText("Reset column widths"));
+        b.innerHTML = window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph("Refresh") : "";
         b.addEventListener("click", function (e) { e.preventDefault(); reset(); apply(); });
         cfg.place(host, b);
       } catch (e) {}
     }
     function teardown() {   // keeps the stored widths for a re-enable
       try {
-        var gps = document.querySelectorAll(cfg.sel + " .cc-colgrip");
+        var gps = document.querySelectorAll(cfg.sel + " .tt-colgrip");
         for (var i = 0; i < gps.length; i++) gps[i].parentNode.removeChild(gps[i]);
-        var rb2 = document.querySelector('.cc-colreset[data-cc-colreset="' + cfg.key + '"]'); if (rb2) rb2.parentNode.removeChild(rb2);
+        var rb2 = document.querySelector('.tt-colreset[data-tt-colreset="' + cfg.key + '"]'); if (rb2) rb2.parentNode.removeChild(rb2);
         clear();
         drag = null;
-        document.documentElement.classList.remove("cc-col-dragging");
+        document.documentElement.classList.remove("tt-col-dragging");
       } catch (e) {}
     }
     return { apply: apply, grips: grips, resetBtn: resetBtn, teardown: teardown };
   }
   // On the derived /Shares widths every size column gets at least 110px, taken proportionally from
   // the other columns' surplus above 60px.
-  function ccShareColFix(w, head) {
+  function ttShareColFix(w, head) {
     try {
       var MINB = 110, FLOOR = 60, sz = /Größe|Grösse|Size|Speicher|Storage|frei|free|used/i;   // /i does not fold ß onto an uppercase GRÖSSE
       var need = 0, donors = [], i;
@@ -1097,110 +1097,110 @@
       for (d = 0; d < donors.length; d++) w[donors[d]] -= Math.round(take * Math.max(0, w[donors[d]] - FLOOR) / pool);
     } catch (e) {}
   }
-  // /Main: a fixed 11-column grid, with ccFill11 normalising the colspan rows.
-  var ccMainCols = ccColFactory({
-    key: "cc.main.colpx", n: 11,
+  // /Main: a fixed 11-column grid, with ttFill11 normalising the colspan rows.
+  var ttMainCols = ttColFactory({
+    key: "tt.main.colpx", n: 11,
     sel: "#displaybox table.unraid.disk_status",
     host: function () { var a = document.querySelector("#displaybox span.status a.tooltip_diskio"); return a ? a.parentNode : null; },
     place: function (host, b) { host.insertBefore(b, host.firstChild); }   // leads the cluster; behind the toggle it overflows the right alignment edge
   });
   // /Shares: #shareslist and #disk_list share one width set, with the column count read from the
   // live thead. The reset button sits at the tab bar's right end, as on /Main.
-  var ccShareCols = ccColFactory({
-    key: "cc.shares.colpx",
+  var ttShareCols = ttColFactory({
+    key: "tt.shares.colpx",
     sel: "#displaybox table.unraid.share_status",
     host: function () { return pn() === "/Shares" ? document.querySelector("#displaybox nav.tabs") : null; },
     place: function (host, b) { host.appendChild(b); },
-    fix: ccShareColFix
+    fix: ttShareColFix
   });
   // A long Identification value (the boot USB serial) clips at rest and slides left on hover to
   // reveal its tail, like the Docker volume column. Delegated once, inline transform only, since
   // the nchan refill recreates the cells clean and teardown unwraps the pills wholesale.
-  var ccMarqBound = false, ccMarqRun = null;   // outside the DOM: the 1s tbody refill destroys the animated node mid-slide
-  function ccMarqStart(b) {
-    var v = b.querySelector(":scope > .cc-b-v"); if (!v) return;
+  var ttMarqBound = false, ttMarqRun = null;   // outside the DOM: the 1s tbody refill destroys the animated node mid-slide
+  function ttMarqStart(b) {
+    var v = b.querySelector(":scope > .tt-b-v"); if (!v) return;
     var ov = v.scrollWidth - b.clientWidth + 24;
     if (ov <= 6) return;
     var dur = Math.min(8, Math.max(2, ov / 60));
-    ccMarqRun = { ov: ov, dur: dur, t0: Date.now(), key: (v.textContent || "").trim() };   // the value text identifies the same pill across node swaps
-    b.setAttribute("data-cc-marq", "1");
+    ttMarqRun = { ov: ov, dur: dur, t0: Date.now(), key: (v.textContent || "").trim() };   // the value text identifies the same pill across node swaps
+    b.setAttribute("data-tt-marq", "1");
     v.style.transition = "transform " + dur + "s linear";
     v.style.transform = "translateX(-" + ov + "px)";
   }
   // The refill recreates the hovered cell without the transform, so on its own the slide would jump
   // back and restart every tick. Called from enhanceMain's sync pass before paint, this re-enters
   // the freshly built pill at the interpolated offset and runs out the remaining time.
-  function ccMarqResume() {
-    if (!ccMarqRun) return;
-    if ((Date.now() - ccMarqRun.t0) / 1000 > ccMarqRun.dur + 2) { ccMarqRun = null; return; }   // over, plus a grace margin
-    var b = document.querySelector("#displaybox table.unraid.disk_status td.desc:hover .cc-b");
+  function ttMarqResume() {
+    if (!ttMarqRun) return;
+    if ((Date.now() - ttMarqRun.t0) / 1000 > ttMarqRun.dur + 2) { ttMarqRun = null; return; }   // over, plus a grace margin
+    var b = document.querySelector("#displaybox table.unraid.disk_status td.desc:hover .tt-b");
     // A missing :hover match does not mean the pointer left: right after the node swap the
     // browser's hit-test can lag a frame. The run state stays, and the next tick or the re-fired
     // mouseover resumes it; mouseout ends it.
     if (!b) return;
-    if (b.getAttribute("data-cc-marq") === "1") return;          // the node survived this tick, so the animation is intact
-    var v = b.querySelector(":scope > .cc-b-v"); if (!v) return;
-    if ((v.textContent || "").trim() !== ccMarqRun.key) return;  // a different pill under the pointer; its own mouseover starts it
-    var p = Math.min(1, (Date.now() - ccMarqRun.t0) / (ccMarqRun.dur * 1000));
-    b.setAttribute("data-cc-marq", "1");
+    if (b.getAttribute("data-tt-marq") === "1") return;          // the node survived this tick, so the animation is intact
+    var v = b.querySelector(":scope > .tt-b-v"); if (!v) return;
+    if ((v.textContent || "").trim() !== ttMarqRun.key) return;  // a different pill under the pointer; its own mouseover starts it
+    var p = Math.min(1, (Date.now() - ttMarqRun.t0) / (ttMarqRun.dur * 1000));
+    b.setAttribute("data-tt-marq", "1");
     v.style.transition = "none";
-    v.style.transform = "translateX(-" + Math.round(ccMarqRun.ov * p) + "px)";
+    v.style.transform = "translateX(-" + Math.round(ttMarqRun.ov * p) + "px)";
     void v.offsetWidth;                                          // commit the entry point before re-arming the transition
     if (p < 1) {
-      v.style.transition = "transform " + (ccMarqRun.dur * (1 - p)) + "s linear";
-      v.style.transform = "translateX(-" + ccMarqRun.ov + "px)";
+      v.style.transition = "transform " + (ttMarqRun.dur * (1 - p)) + "s linear";
+      v.style.transform = "translateX(-" + ttMarqRun.ov + "px)";
     }
   }
-  function ccIdentMarq() {
-    if (ccMarqBound) return; ccMarqBound = true;
+  function ttIdentMarq() {
+    if (ttMarqBound) return; ttMarqBound = true;
     var host = document.getElementById("displaybox"); if (!host) return;
     host.addEventListener("mouseover", function (e) {
-      var b = e.target && e.target.closest ? e.target.closest("table.unraid.disk_status td.desc .cc-b") : null;
-      if (!b || b.getAttribute("data-cc-marq") === "1") return;
+      var b = e.target && e.target.closest ? e.target.closest("table.unraid.disk_status td.desc .tt-b") : null;
+      if (!b || b.getAttribute("data-tt-marq") === "1") return;
       // The refill swaps the node under the pointer, so the browser re-fires mouseover on the new
       // node. Starting fresh would reset t0 every second, so a run still going on the same pill
       // resumes at its interpolated point instead.
-      var v0 = b.querySelector(":scope > .cc-b-v");
-      if (ccMarqRun && v0 && (v0.textContent || "").trim() === ccMarqRun.key) { ccMarqResume(); return; }
-      ccMarqStart(b);
+      var v0 = b.querySelector(":scope > .tt-b-v");
+      if (ttMarqRun && v0 && (v0.textContent || "").trim() === ttMarqRun.key) { ttMarqResume(); return; }
+      ttMarqStart(b);
     });
     host.addEventListener("mouseout", function (e) {
-      var b = e.target && e.target.closest ? e.target.closest("table.unraid.disk_status td.desc .cc-b") : null;
-      if (!b || b.getAttribute("data-cc-marq") !== "1") return;
+      var b = e.target && e.target.closest ? e.target.closest("table.unraid.disk_status td.desc .tt-b") : null;
+      if (!b || b.getAttribute("data-tt-marq") !== "1") return;
       if (e.relatedTarget && b.contains(e.relatedTarget)) return;   // still inside the pill
-      var v = b.querySelector(":scope > .cc-b-v");
+      var v = b.querySelector(":scope > .tt-b-v");
       if (v) v.style.transform = "translateX(0)";
-      b.removeAttribute("data-cc-marq");
-      ccMarqRun = null;
+      b.removeAttribute("data-tt-marq");
+      ttMarqRun = null;
     });
   }
   // Sections mode only: the UD title bar's control cluster (the span/div.right elements holding
   // gear, refresh and the three switchButtons) leaves the bar, and the emptied bar is hidden via
-  // .cc-ud-moved. While UD's parts are tile cards (disks.js puts them in .cc-dk-udrow inside a
-  // .cc-dk-box) the cluster is a card of its own at the end of their row, one line per control;
-  // otherwise it sits in the UD section's .cc-card-head. Like ccDiskioMove this moves rather than
-  // clones, so UD's jQuery bindings ride along; ccUdCtrlsHome puts the cluster back before any
+  // .tt-ud-moved. While UD's parts are tile cards (disks.js puts them in .tt-dk-udrow inside a
+  // .tt-dk-box) the cluster is a card of its own at the end of their row, one line per control;
+  // otherwise it sits in the UD section's .tt-card-head. Like ttDiskioMove this moves rather than
+  // clones, so UD's jQuery bindings ride along; ttUdCtrlsHome puts the cluster back before any
   // teardown that deletes card heads.
-  function ccUdCtrlsMove() {
+  function ttUdCtrlsMove() {
     try {
-      if (g("cc.sections.main", "0") === "0") return;
-      var wrap = document.querySelector("#displaybox .cc-ud-ctrls[data-cc-ud-ctrls]"), bar;
-      if (wrap) bar = document.querySelector("#displaybox div.title[data-cc-ud-moved]");
+      if (g("tt.sections.main", "0") === "0") return;
+      var wrap = document.querySelector("#displaybox .tt-ud-ctrls[data-tt-ud-ctrls]"), bar;
+      if (wrap) bar = document.querySelector("#displaybox div.title[data-tt-ud-moved]");
       else {
         var uda = document.querySelector("#displaybox input.disks-switch, #displaybox input.shares-switch, #displaybox input.historical-switch, #displaybox a[onclick^='rescan_disks'], #displaybox a[href*='UnassignedDevicesSettings']");
         bar = uda && uda.closest ? uda.closest("div.title") : null;
       }
-      var sec = bar && bar.closest("section[data-cc-card]"); if (!sec) return;
-      var row = sec.classList.contains("cc-dk-box") ? sec.querySelector(":scope > .cc-dk-udrow") : null;
-      var host = row ? ccUdPanel(row) : sec.querySelector(":scope > .cc-card-head"); if (!host) return;
-      if (!wrap) { wrap = ccUdCtrlsGather(bar); if (!wrap) return; }
+      var sec = bar && bar.closest("section[data-tt-card]"); if (!sec) return;
+      var row = sec.classList.contains("tt-dk-box") ? sec.querySelector(":scope > .tt-dk-udrow") : null;
+      var host = row ? ttUdPanel(row) : sec.querySelector(":scope > .tt-card-head"); if (!host) return;
+      if (!wrap) { wrap = ttUdCtrlsGather(bar); if (!wrap) return; }
       if (wrap.parentNode !== host) host.appendChild(wrap);
-      ccUdLabels(wrap, !!row);
-      if (!row) ccUdPanelDrop();
+      ttUdLabels(wrap, !!row);
+      if (!row) ttUdPanelDrop();
     } catch (e) {}
   }
-  function ccUdCtrlsGather(bar) {
-    var wrap = el("span", "cc-ud-ctrls"); wrap.setAttribute("data-cc-ud-ctrls", "1");
+  function ttUdCtrlsGather(bar) {
+    var wrap = el("span", "tt-ud-ctrls"); wrap.setAttribute("data-tt-ud-ctrls", "1");
     var kids = Array.prototype.slice.call(bar.children);
     for (var i = 0; i < kids.length; i++) {
       var k = kids[i];
@@ -1208,14 +1208,14 @@
       if (k.tagName === "A" || (k.querySelector && k.querySelector("a, input[type='checkbox'], .switch-button-background"))) wrap.appendChild(k);
     }
     if (!wrap.firstChild) return null;
-    // Stamp cc-ud-icon on every non-switch anchor that has content, since the glyph can be the
+    // Stamp tt-ud-icon on every non-switch anchor that has content, since the glyph can be the
     // anchor's own text rather than an <i>. An empty anchor (each toggle span carries one) would
     // render as a blank accent square between the toggle and its label.
     var as = wrap.querySelectorAll("a");
     for (var ai = 0; ai < as.length; ai++) {
       var aEl = as[ai], hasGlyph = !!((aEl.textContent || "").trim() || aEl.querySelector("i, img, span, svg, b"));
-      if (!aEl.closest("[class*='switch']") && hasGlyph) aEl.classList.add("cc-ud-icon");
-      else aEl.classList.remove("cc-ud-icon");   // drop a stale stamp
+      if (!aEl.closest("[class*='switch']") && hasGlyph) aEl.classList.add("tt-ud-icon");
+      else aEl.classList.remove("tt-ud-icon");   // drop a stale stamp
     }
     // each toggle gets its label as plain hover text rather than a balloon
     for (var tw = 0; tw < wrap.children.length; tw++) {
@@ -1226,30 +1226,30 @@
     // circling arrows for refresh)
     for (var ti = 0; ti < as.length; ti++) {
       var ta = as[ti];
-      if (!ta.classList.contains("cc-ud-icon") || ta.getAttribute("title")) continue;
+      if (!ta.classList.contains("tt-ud-icon") || ta.getAttribute("title")) continue;
       var cls = ((ta.querySelector("i, span") || {}).className || "") + " " + (ta.className || "");
       if (/gear|cog|setting/i.test(cls)) ta.setAttribute("title", LANG === "de" ? "Unassigned-Devices-Einstellungen" : "Unassigned Devices settings");
       else if (/refresh|sync|rotate/i.test(cls)) ta.setAttribute("title", LANG === "de" ? "Datenträger neu einlesen" : "Refresh disks");
     }
-    bar.setAttribute("data-cc-ud-moved", "1"); bar.classList.add("cc-ud-moved");
+    bar.setAttribute("data-tt-ud-moved", "1"); bar.classList.add("tt-ud-moved");
     return wrap;
   }
   // The controls' card is headed like UD's three by a badge in a div.title, so their card and
   // badge rules in Disks.css and the badge painting draw it too. It stays the last card of the row.
-  function ccUdPanel(row) {
-    var p = row.querySelector(":scope > .cc-ud-panel");
+  function ttUdPanel(row) {
+    var p = row.querySelector(":scope > .tt-ud-panel");
     if (!p) {
-      p = el("div", "cc-ud-panel");
-      var b = el("span", "cc-b cc-ud-h");
-      b.classList.toggle("cc-ink-dark", idealText(mainAccent()) !== "#fff");
-      b.appendChild(el("span", "cc-b-v", "Unassigned Devices"));
+      p = el("div", "tt-ud-panel");
+      var b = el("span", "tt-b tt-ud-h");
+      b.classList.toggle("tt-ink-dark", idealText(mainAccent()) !== "#fff");
+      b.appendChild(el("span", "tt-b-v", "Unassigned Devices"));
       p.appendChild(el("div", "title")).appendChild(el("span", "left")).appendChild(b);
     }
     if (p !== row.lastElementChild) row.appendChild(p);
     return p;
   }
-  function ccUdPanelDrop() {
-    var p = document.querySelector("#displaybox .cc-ud-panel");
+  function ttUdPanelDrop() {
+    var p = document.querySelector("#displaybox .tt-ud-panel");
     if (p) p.parentNode.removeChild(p);
   }
   // Each control's name and (i) in the card, found by what the control is rather than by UD's
@@ -1261,42 +1261,42 @@
     ["input.shares-switch", "Freigaben anzeigen", "Show shares", "Zeigt oder verbirgt die Karte mit den Netzwerk- und ISO-Freigaben.", "Shows or hides the card with the network and ISO shares."],
     ["input.disks-switch", "Datenträger anzeigen", "Show disks", "Zeigt oder verbirgt die Karte mit den nicht zugewiesenen Datenträgern.", "Shows or hides the card with the unassigned disks."]
   ];
-  function ccUdName(unit) {
+  function ttUdName(unit) {
     var de = LANG === "de";
     for (var i = 0; i < UD_NAMES.length; i++) {
       var n = UD_NAMES[i];
       if (unit.querySelector(n[0])) return { label: de ? n[1] : n[2], tip: de ? n[3] : n[4] };
     }
-    var t = unit.querySelector("[title], [data-cc-tip]");
-    var own = t && (t.getAttribute("title") || t.getAttribute("data-cc-tip"));
+    var t = unit.querySelector("[title], [data-tt-tip]");
+    var own = t && (t.getAttribute("title") || t.getAttribute("data-tt-tip"));
     return own ? { label: own, tip: "" } : null;
   }
   // A control's line is the largest box around it that holds no other control: UD boxes each one,
   // the switch's hidden input and labels included, in a div.right.ud.
-  function ccUdLabels(wrap, on) {
-    var ctrls = wrap.querySelectorAll("a.cc-ud-icon, .switch-button-background");
+  function ttUdLabels(wrap, on) {
+    var ctrls = wrap.querySelectorAll("a.tt-ud-icon, .switch-button-background");
     for (var i = 0; i < ctrls.length; i++) {
       var unit = ctrls[i];
-      while (unit.parentNode !== wrap && unit.parentNode.querySelectorAll("a.cc-ud-icon, .switch-button-background").length === 1) unit = unit.parentNode;
+      while (unit.parentNode !== wrap && unit.parentNode.querySelectorAll("a.tt-ud-icon, .switch-button-background").length === 1) unit = unit.parentNode;
       if (unit === ctrls[i]) continue;
-      var lbl = unit.querySelector(":scope > .cc-ud-lbl");
-      if (!on) { if (lbl) unit.removeChild(lbl); unit.classList.remove("cc-ud-unit"); continue; }
+      var lbl = unit.querySelector(":scope > .tt-ud-lbl");
+      if (!on) { if (lbl) unit.removeChild(lbl); unit.classList.remove("tt-ud-unit"); continue; }
       if (lbl) continue;
-      var name = ccUdName(unit); if (!name) continue;
-      lbl = el("span", "cc-ud-lbl");
+      var name = ttUdName(unit); if (!name) continue;
+      lbl = el("span", "tt-ud-lbl");
       lbl.appendChild(el("span", null, name.label));
-      if (name.tip) lbl.appendChild(ccInfoIcon(name.tip));
-      unit.insertBefore(lbl, unit.firstChild); unit.classList.add("cc-ud-unit");
+      if (name.tip) lbl.appendChild(ttInfoIcon(name.tip));
+      unit.insertBefore(lbl, unit.firstChild); unit.classList.add("tt-ud-unit");
     }
   }
-  // UD's loose text buttons float detached in the CC layout and duplicate the gear and refresh
+  // UD's loose text buttons float detached in the TowerTorch layout and duplicate the gear and refresh
   // icons, so they are hidden wherever they ended up.
-  function ccUdLoose() {
+  function ttUdLoose() {
     try {
       // The texts are UD's hover-reveal companions of the gear/refresh anchors and can carry an
       // icon child, so the scan matches any element in the UD scopes whose whole normalised text
       // equals a target, excluding the hosts of real controls.
-      var scopes = document.querySelectorAll("#displaybox .cc-ud-ctrls, #displaybox div.title.ud, #displaybox [id*='unassigned' i]");
+      var scopes = document.querySelectorAll("#displaybox .tt-ud-ctrls, #displaybox div.title.ud, #displaybox [id*='unassigned' i]");
       for (var s0 = 0; s0 < scopes.length; s0++) {
         var cand = scopes[s0].querySelectorAll("*");
         for (var i = 0; i < cand.length; i++) {
@@ -1304,44 +1304,44 @@
           // The gear/refresh anchors contain their tooltip source span.help-content, so their own
           // textContent equals a target; stamping one would hide the icon. The icon and its
           // insides stay untouched, and a stamp already sitting on them is removed.
-          if (e2.classList.contains("cc-ud-icon") || (e2.closest && e2.closest("a.cc-ud-icon"))) { e2.classList.remove("cc-ud-hidden"); continue; }
-          if (e2.classList.contains("cc-ud-hidden") || e2.closest(".cc-ud-lbl")) continue;   // the controls card names its lines in the same words
-          if (e2.querySelector(".switch-button-background, a.cc-ud-icon, input")) continue;   // never a container of real controls
+          if (e2.classList.contains("tt-ud-icon") || (e2.closest && e2.closest("a.tt-ud-icon"))) { e2.classList.remove("tt-ud-hidden"); continue; }
+          if (e2.classList.contains("tt-ud-hidden") || e2.closest(".tt-ud-lbl")) continue;   // the controls card names its lines in the same words
+          if (e2.querySelector(".switch-button-background, a.tt-ud-icon, input")) continue;   // never a container of real controls
           var t2 = ((e2.value || e2.textContent || "") + "").replace(new RegExp(String.fromCharCode(160), "g"), " ").replace(/\s+/g, " ").trim().toUpperCase();
-          if (t2 === "UNASSIGNED DEVICES SETTINGS" || t2 === "REFRESH DISKS AND CONFIGURATION") e2.classList.add("cc-ud-hidden");
+          if (t2 === "UNASSIGNED DEVICES SETTINGS" || t2 === "REFRESH DISKS AND CONFIGURATION") e2.classList.add("tt-ud-hidden");
         }
       }
     } catch (e) {}
   }
   // Hover names for the UD controls in both homes, the native title bar and the relocated cluster.
   // Runs every pass, cheap and idempotent.
-  function ccUdTitles() {
+  function ttUdTitles() {
     try {
-      var hosts = document.querySelectorAll("#displaybox .cc-ud-ctrls, #displaybox div.title.ud :is(span.right, div.right, span.right.ud, div.right.ud)");
+      var hosts = document.querySelectorAll("#displaybox .tt-ud-ctrls, #displaybox div.title.ud :is(span.right, div.right, span.right.ud, div.right.ud)");
       for (var h = 0; h < hosts.length; h++) {
         // When all three switchButtons share one wrapper, a wrapper-level title from the first
         // label wins every hover, so each track gets its own label's title and a multi-track
-        // wrapper loses the bulk one. Stamped as data-cc-tip, which header.js renders as the
-        // floating bubble; a title write would churn against ccTipSweep every pass.
+        // wrapper loses the bulk one. Stamped as data-tt-tip, which header.js renders as the
+        // floating bubble; a title write would churn against ttTipSweep every pass.
         var trks = hosts[h].querySelectorAll(".switch-button-background");
         for (var t3 = 0; t3 < trks.length; t3++) {
           var trk = trks[t3], lb = trk.previousElementSibling, lbt = "";
           if (!(lb && lb.classList && lb.classList.contains("switch-button-label"))) lb = trk.nextElementSibling;
           if (lb && lb.classList && lb.classList.contains("switch-button-label")) lbt = (lb.textContent || "").trim();
           if (!lbt && trk.parentNode) { var pl = trk.parentNode.querySelector(".switch-button-label"); if (pl) lbt = (pl.textContent || "").trim(); }
-          if (lbt && trk.getAttribute("data-cc-tip") !== lbt) trk.setAttribute("data-cc-tip", lbt);
+          if (lbt && trk.getAttribute("data-tt-tip") !== lbt) trk.setAttribute("data-tt-tip", lbt);
         }
         var kids = hosts[h].children;
         for (var k = 0; k < kids.length; k++) {
           var kd = kids[k];
-          if (kd.querySelectorAll && kd.querySelectorAll(".switch-button-background").length > 1) { kd.removeAttribute("title"); kd.removeAttribute("data-cc-tip"); continue; }   // a wrapper around several tracks carries no tip of its own
-          if (kd.getAttribute("title") || kd.getAttribute("data-cc-tip")) continue;
+          if (kd.querySelectorAll && kd.querySelectorAll(".switch-button-background").length > 1) { kd.removeAttribute("title"); kd.removeAttribute("data-tt-tip"); continue; }   // a wrapper around several tracks carries no tip of its own
+          if (kd.getAttribute("title") || kd.getAttribute("data-tt-tip")) continue;
           var lbl = kd.querySelector ? kd.querySelector(".switch-button-label") : null;
-          if (lbl) { kd.setAttribute("data-cc-tip", (lbl.textContent || "").trim()); continue; }
+          if (lbl) { kd.setAttribute("data-tt-tip", (lbl.textContent || "").trim()); continue; }
           if (kd.tagName === "A") {
             var kcls = ((kd.querySelector("i, span") || {}).className || "") + " " + (kd.className || "");
-            if (/gear|cog|setting/i.test(kcls)) kd.setAttribute("data-cc-tip", LANG === "de" ? "Unassigned-Devices-Einstellungen" : "Unassigned Devices settings");
-            else if (/refresh|sync|rotate/i.test(kcls)) kd.setAttribute("data-cc-tip", LANG === "de" ? "Datenträger neu einlesen" : "Refresh disks");
+            if (/gear|cog|setting/i.test(kcls)) kd.setAttribute("data-tt-tip", LANG === "de" ? "Unassigned-Devices-Einstellungen" : "Unassigned Devices settings");
+            else if (/refresh|sync|rotate/i.test(kcls)) kd.setAttribute("data-tt-tip", LANG === "de" ? "Datenträger neu einlesen" : "Refresh disks");
           }
         }
         // The text that floats free on hover over gear/refresh is UD's own balloon machinery
@@ -1349,34 +1349,34 @@
         var bal = hosts[h].querySelectorAll("a");
         for (var b3 = 0; b3 < bal.length; b3++) {
           var ba = bal[b3];
-          if (ba.getAttribute("data-cc-ud-ttoff")) continue;
+          if (ba.getAttribute("data-tt-ud-ttoff")) continue;
           if (window.jQuery) {
             try { if (window.jQuery.fn.tooltipster) window.jQuery(ba).tooltipster("disable"); } catch (e3) {}
             try { if (window.jQuery.fn.tooltip) window.jQuery(ba).tooltip("destroy"); } catch (e4) {}
           }
           ba.classList.remove("tooltip");   // UD binds its balloon by this class
-          ba.setAttribute("data-cc-ud-ttoff", "1");
+          ba.setAttribute("data-tt-ud-ttoff", "1");
         }
       }
     } catch (e) {}
   }
-  function ccUdCtrlsHome() {
+  function ttUdCtrlsHome() {
     try {
-      var wrap = document.querySelector("#displaybox .cc-ud-ctrls[data-cc-ud-ctrls]"); if (!wrap) return;
-      var bar = document.querySelector("#displaybox div.title[data-cc-ud-moved]");
-      ccUdLabels(wrap, false);
-      if (bar) { while (wrap.firstChild) bar.appendChild(wrap.firstChild); bar.removeAttribute("data-cc-ud-moved"); bar.classList.remove("cc-ud-moved"); }
+      var wrap = document.querySelector("#displaybox .tt-ud-ctrls[data-tt-ud-ctrls]"); if (!wrap) return;
+      var bar = document.querySelector("#displaybox div.title[data-tt-ud-moved]");
+      ttUdLabels(wrap, false);
+      if (bar) { while (wrap.firstChild) bar.appendChild(wrap.firstChild); bar.removeAttribute("data-tt-ud-moved"); bar.classList.remove("tt-ud-moved"); }
       wrap.parentNode.removeChild(wrap);
-      ccUdPanelDrop();
+      ttUdPanelDrop();
     } catch (e) {}
   }
-  // Moves the native [title] balloons on /Main over to the floating CC bubble, which header.js
-  // renders from [data-cc-tip] at body level, so no table or pill overflow can clip it. The nchan
+  // Moves the native [title] balloons on /Main over to the floating TowerTorch bubble, which header.js
+  // renders from [data-tt-tip] at body level, so no table or pill overflow can clip it. The nchan
   // refills recreate cells with fresh titles, so this runs every pass over the disk tables, the UD
   // block, the array-op panel, the toggles and the disk-state orbs; apply() restores the title
   // attributes on teardown. The UD gear balloon carries its content in a nested span.help-content
   // whose text becomes the tip, line-broken between rows.
-  function ccHelpText(host) {
+  function ttHelpText(host) {
     var out = "";
     (function walk(n) {
       for (var c = n.firstChild; c; c = c.nextSibling) {
@@ -1391,96 +1391,96 @@
     })(host);
     return out.replace(new RegExp(String.fromCharCode(160), "g"), " ").replace(/[ \t]+/g, " ").replace(/ *\n */g, "\n").replace(/\n+/g, "\n").trim();
   }
-  function ccTipSweep() {
+  function ttTipSweep() {
     try {
       if (!onMain()) return;
       var box = document.getElementById("displaybox"); if (!box) return;
       // Balloon-content anchors such as the UD gear: fold the nested span.help-content text into
-      // the tip once per anchor. The attribute rides along when ccUdCtrlsMove relocates the node.
-      var helps = box.querySelectorAll("a:not([data-cc-help]) > span.help-content");
+      // the tip once per anchor. The attribute rides along when ttUdCtrlsMove relocates the node.
+      var helps = box.querySelectorAll("a:not([data-tt-help]) > span.help-content");
       for (var h2 = 0; h2 < helps.length; h2++) {
-        var ha = helps[h2].parentNode, ht2 = ccHelpText(helps[h2]);
-        ha.setAttribute("data-cc-help", "1");
-        if (ht2 && ha.getAttribute("data-cc-tip") !== ht2) ha.setAttribute("data-cc-tip", ht2);
+        var ha = helps[h2].parentNode, ht2 = ttHelpText(helps[h2]);
+        ha.setAttribute("data-tt-help", "1");
+        if (ht2 && ha.getAttribute("data-tt-tip") !== ht2) ha.setAttribute("data-tt-tip", ht2);
         ha.removeAttribute("title");
       }
       // The disk-state orbs and the error info icons are a.info CSS tooltips with no title at all:
       // the balloon is a nested <span> that default-base.css reveals on :hover. Folding its text
-      // into data-cc-tip also keys the Shares.css rule that hides the native box, so teardown
-      // reverts it. Only disk_status and the UD tables; array_status stays with ccFoldDesc.
+      // into data-tt-tip also keys the Shares.css rule that hides the native box, so teardown
+      // reverts it. Only disk_status and the UD tables; array_status stays with ttFoldDesc.
       var infos = box.querySelectorAll("table.unraid.disk_status a.info, :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.info");
       for (var n2 = 0; n2 < infos.length; n2++) {
         var ia = infos[n2], sp2 = ia.querySelector(":scope > span"); if (!sp2) continue;
-        var it2 = ccHelpText(sp2); if (!it2) continue;
-        if (ia.getAttribute("data-cc-tip") !== it2) ia.setAttribute("data-cc-tip", it2);
+        var it2 = ttHelpText(sp2); if (!it2) continue;
+        if (ia.getAttribute("data-tt-tip") !== it2) ia.setAttribute("data-tt-tip", it2);
         ia.removeAttribute("title");
       }
       // Every remaining native title in the enhanced area. A fresh node from a refill carries no
-      // data-cc-tip, so its title wins; an element that already has a tip only loses the stale
+      // data-tt-tip, so its title wins; an element that already has a tip only loses the stale
       // title, which keeps this from churning against the direct stamps above.
       var tips = box.querySelectorAll("[title]");
       for (var i2 = 0; i2 < tips.length; i2++) {
         var te2 = tips[i2], tv2 = te2.getAttribute("title");
         te2.removeAttribute("title");
-        if (tv2 && tv2.replace(/\s+/g, "") && !te2.getAttribute("data-cc-tip")) te2.setAttribute("data-cc-tip", tv2);
+        if (tv2 && tv2.replace(/\s+/g, "") && !te2.getAttribute("data-tt-tip")) te2.setAttribute("data-tt-tip", tv2);
       }
     } catch (e) {}
   }
   function enhanceMain() {
     try {
-      if (g("cc.enable.main", "0") === "0") return;
+      if (g("tt.enable.main", "0") === "0") return;
       if (!onMain()) return;
       var box = document.getElementById("displaybox");
-      // ccDiskioHome and ccUdCtrlsHome run before flattenTeardown, which deletes every
-      // .cc-card-head including the ones hosting the relocated controls.
-      if (box) { if (g("cc.sections.main", "0") !== "0") { cardPanels(box); ccDiskioMove(box); } else { ccDiskioHome(); ccUdCtrlsHome(); flattenTeardown(); } }
-      // The reads/writes toggle loses its tooltipster balloon in both tab modes; ccDiskioMove runs
+      // ttDiskioHome and ttUdCtrlsHome run before flattenTeardown, which deletes every
+      // .tt-card-head including the ones hosting the relocated controls.
+      if (box) { if (g("tt.sections.main", "0") !== "0") { cardPanels(box); ttDiskioMove(box); } else { ttDiskioHome(); ttUdCtrlsHome(); flattenTeardown(); } }
+      // The reads/writes toggle loses its tooltipster balloon in both tab modes; ttDiskioMove runs
       // in sections mode only, so in native-tabs mode the bar would keep the black balloon.
       var dio = document.querySelector("#displaybox span.status a.tooltip_diskio");
-      if (dio && dio.closest) { var dst = dio.closest("span.status"); if (dst) ccDiskioTip(dst); }
+      if (dio && dio.closest) { var dst = dio.closest("span.status"); if (dst) ttDiskioTip(dst); }
       var tbs = document.querySelectorAll("#displaybox table.unraid.disk_status");
       for (var i = 0; i < tbs.length; i++) {
         enhanceMainHead(tbs[i]);
-        ccMainCols.grips(tbs[i]);   // after the Browse header insert
+        ttMainCols.grips(tbs[i]);   // after the Browse header insert
         var rows = tbs[i].querySelectorAll("tbody > tr");
         for (var r = 0; r < rows.length; r++) enhanceMainRow(rows[r]);
       }
-      ccMainCols.apply();
-      ccMainCols.resetBtn();
-      ccMarqResume();   // pick a running ident marquee back up across the tbody refill
-      ccIdentMarq();
+      ttMainCols.apply();
+      ttMainCols.resetBtn();
+      ttMarqResume();   // pick a running ident marquee back up across the tbody refill
+      ttIdentMarq();
       if (box) enhanceArrayOps(box);
-      ccLocalizeMain();
-      enhanceUD();   // after ccLocalizeMain: the heading split consumes the already translated text
-      ccUdLoose();
-      ccUdTitles();
-      ccMutedEmpties();   // after the badge passes
-      ccTipSweep();   // last: the refills keep bringing native titles back
+      ttLocalizeMain();
+      enhanceUD();   // after ttLocalizeMain: the heading split consumes the already translated text
+      ttUdLoose();
+      ttUdTitles();
+      ttMutedEmpties();   // after the badge passes
+      ttTipSweep();   // last: the refills keep bringing native titles back
     } catch (e) {}
   }
   // The /Main "Array-Vorgang" table (ArrayOperation.page) puts each control in
   // <tr><td>[status]</td><td>[button]</td><td>[description]</td></tr>, with separator rows carrying
-  // a td.line. The description becomes a .cc-info bubble in the button cell. A mixed cell (Check
+  // a td.line. The description becomes a .tt-info bubble in the button cell. A mixed cell (Check
   // carries prose plus a Schedule link, a checkbox and its label; Reboot and Shutdown carry prose
   // plus the safemode label; Mover's #mover-text is filled asynchronously; Sleep carries prose plus
   // a wiki link) folds its prose nodes only, so every control and a checkbox's trailing label stay
-  // inline and live. data-cc-aop is set at the end rather than on the first pass, so the async
+  // inline and live. data-tt-aop is set at the end rather than on the first pass, so the async
   // #mover-text refolds on the observer tick. aopTeardown reverses all of it.
   function svgEl(tag, attrs) { var n = document.createElementNS("http://www.w3.org/2000/svg", tag); for (var k in attrs) if (attrs.hasOwnProperty(k)) n.setAttribute(k, attrs[k]); return n; }
-  // The plugin has one (i) glyph, shared through cc-theme.js; this is the fallback for a page that
+  // The plugin has one (i) glyph, shared through tt-theme.js; this is the fallback for a page that
   // loads without it.
-  function ccInfoIcon(tip) {
-    if (window.CCTheme && window.CCTheme.infoIcon) return window.CCTheme.infoIcon(tip);
-    var s = el("span", "cc-info"); s.setAttribute("data-tip", tip); s.setAttribute("aria-label", tip); s.setAttribute("tabindex", "0");
+  function ttInfoIcon(tip) {
+    if (window.TTTheme && window.TTTheme.infoIcon) return window.TTTheme.infoIcon(tip);
+    var s = el("span", "tt-info"); s.setAttribute("data-tip", tip); s.setAttribute("aria-label", tip); s.setAttribute("tabindex", "0");
     var svg = svgEl("svg", { viewBox: "0 0 16 16", width: "15", height: "15", fill: "none", "aria-hidden": "true" });
     svg.appendChild(svgEl("circle", { cx: "8", cy: "8", r: "7", stroke: "currentColor", "stroke-width": "1.3" }));
     svg.appendChild(svgEl("circle", { cx: "8", cy: "4.6", r: "0.9", fill: "currentColor" }));
     svg.appendChild(svgEl("path", { d: "M8 7v4.4", stroke: "currentColor", "stroke-width": "1.3", "stroke-linecap": "round" }));
     s.appendChild(svg); return s;
   }
-  function ccIsCtrl(n) { if (n.nodeType !== 1) return false; var t = n.tagName; return t === "INPUT" || t === "SELECT" || t === "A" || t === "LABEL" || t === "BUTTON"; }
+  function ttIsCtrl(n) { if (n.nodeType !== 1) return false; var t = n.tagName; return t === "INPUT" || t === "SELECT" || t === "A" || t === "LABEL" || t === "BUTTON"; }
   // True when n labels an immediately preceding checkbox, skipping whitespace and <br>.
-  function ccPrevIsCheckbox(n) {
+  function ttPrevIsCheckbox(n) {
     var p = n.previousSibling;
     while (p) {
       if (p.nodeType === 1) { if (p.tagName === "INPUT") return /checkbox/i.test(p.getAttribute("type") || ""); if (p.tagName === "BR") { p = p.previousSibling; continue; } return false; }
@@ -1492,7 +1492,7 @@
   // Folds the prose of a mixed description cell into the bubble text, hiding each prose node in
   // place while the interactive controls stay visible. An already hidden node is only re-counted
   // for the tip, never re-wrapped, so a refill of #mover-text refolds without an observer loop.
-  function ccFoldDesc(cell) {
+  function ttFoldDesc(cell) {
     var tip = "", segs = [""], nodes = Array.prototype.slice.call(cell.childNodes);
     function flush() { if (segs[segs.length - 1]) segs.push(""); }
     function add(s) { if (s) { tip += (tip ? " " : "") + s; segs[segs.length - 1] += (segs[segs.length - 1] ? " " : "") + s; } }
@@ -1500,21 +1500,21 @@
       var n = nodes[i];
       // A <br> is a segment boundary, since a pair row's description is one sentence per <br>.
       // Checked before the hidden-node branch so an already hidden <br> still flushes on a refold.
-      if (n.nodeType === 1 && n.tagName === "BR") { flush(); n.classList.add("cc-aop-hide"); continue; }
+      if (n.nodeType === 1 && n.tagName === "BR") { flush(); n.classList.add("tt-aop-hide"); continue; }
       // A link that does not point at the Scheduler (the s3-sleep wiki, registration hrefs) is
       // prose and falls through to the generic element branch. Scheduler links, href-less a.info
       // wrappers and anchors around controls (confirmFormat sits inside one) count as controls.
       var foldA = n.nodeType === 1 && n.tagName === "A" && (n.getAttribute("href") || "") !== "" &&
                   (n.getAttribute("href") || "").indexOf("/Main/Settings/Scheduler") === -1 &&
                   !n.querySelector("input, select, button");
-      if (ccIsCtrl(n) && !foldA) continue;
-      if (n.nodeType === 1 && (n.tagName === "SMALL" || n.tagName === "SPAN") && ccPrevIsCheckbox(n)) continue;
-      if (n.nodeType === 3 && ccPrevIsCheckbox(n)) continue;
-      if (n.nodeType === 1 && n.classList.contains("cc-aop-hide")) { add((n.textContent || "").replace(/\s+/g, " ").trim()); continue; }
+      if (ttIsCtrl(n) && !foldA) continue;
+      if (n.nodeType === 1 && (n.tagName === "SMALL" || n.tagName === "SPAN") && ttPrevIsCheckbox(n)) continue;
+      if (n.nodeType === 3 && ttPrevIsCheckbox(n)) continue;
+      if (n.nodeType === 1 && n.classList.contains("tt-aop-hide")) { add((n.textContent || "").replace(/\s+/g, " ").trim()); continue; }
       var s = (n.textContent || "").replace(/\s+/g, " ").trim();
       add(s);
-      if (n.nodeType === 1) { n.classList.add("cc-aop-hide"); }
-      else if (s) { var w = el("span", "cc-aop-hide"); w.setAttribute("data-cc-aop-w", "1"); n.parentNode.insertBefore(w, n); w.appendChild(n); }   // a bare prose text node needs a wrapper to hide
+      if (n.nodeType === 1) { n.classList.add("tt-aop-hide"); }
+      else if (s) { var w = el("span", "tt-aop-hide"); w.setAttribute("data-tt-aop-w", "1"); n.parentNode.insertBefore(w, n); w.appendChild(n); }   // a bare prose text node needs a wrapper to hide
     }
     if (!segs[segs.length - 1]) segs.pop();
     var out = [];
@@ -1522,23 +1522,23 @@
     return { tip: tip.replace(/\s+/g, " ").trim(), segs: out };
   }
   function enhanceArrayOpRow(tr) {
-    if (tr.querySelector(":scope > td.line")) { tr.setAttribute("data-cc-aop", "1"); return; }   // separator row, collapsed by CSS
+    if (tr.querySelector(":scope > td.line")) { tr.setAttribute("data-tt-aop", "1"); return; }   // separator row, collapsed by CSS
     var tds = tr.children; if (tds.length < 3) return;
     var btnCell = tds[1], descCell = tds[2];
     if (!btnCell.querySelector("input, button, a")) return;
     // Every description cell folds in place, pure text included: hiding the whole <td> drops the
     // third column from the spin and keyfile tables and rescales the native 33/22 percent columns.
-    var fresh = !descCell.querySelector(".cc-aop-hide");   // first pass, or a cell #mover-text rewrote
-    var fold = ccFoldDesc(descCell), tip = mtText(fold.tip);   // translated before the data-tip compare, so refolds stay churn-free
+    var fresh = !descCell.querySelector(".tt-aop-hide");   // first pass, or a cell #mover-text rewrote
+    var fold = ttFoldDesc(descCell), tip = mtText(fold.tip);   // translated before the data-tip compare, so refolds stay churn-free
     // Scheduler links move into the button cell beside the bubble. Stale moved badges are purged
     // only on a freshly written cell that carries prose or links, so a link-only cell is not purged
     // without a replacement. Once moved, descCell has no a[href] left and the next tick no-ops.
     var links = descCell.querySelectorAll('a[href*="/Main/Settings/Scheduler"]');   // the s3-sleep wiki anchor stays inside its folded prose
     if (fresh && (tip || links.length)) {
-      var stale = btnCell.querySelectorAll(":scope > a.cc-aop-link");
+      var stale = btnCell.querySelectorAll(":scope > a.tt-aop-link");
       for (var s0 = 0; s0 < stale.length; s0++) stale[s0].parentNode.removeChild(stale[s0]);
     }
-    // A pair row holds several buttons in span.buttons-spaced and gets one .cc-aop-brow per button,
+    // A pair row holds several buttons in span.buttons-spaced and gets one .tt-aop-brow per button,
     // each with its own sentence bubble. Sentence i maps to native button i in DOM order, matched
     // by the ids and names from ArrayOperation.page, so the mapping is language-independent and
     // survives FireSquire injecting its button between reboot and shutdown. A foreign button gets a
@@ -1554,61 +1554,61 @@
         // this wrap has run, so it lands inside the reboot brow and would sit side by side with it;
         // such a stowaway gets its own brow right after the host brow.
         var bt2 = pair[p1], pn2 = bt2.parentNode, brow = null;
-        if (pn2 && pn2.classList && pn2.classList.contains("cc-aop-brow")) {
+        if (pn2 && pn2.classList && pn2.classList.contains("tt-aop-brow")) {
           if (pn2.querySelector('input[type="button"], input[type="submit"], button:not([role="tab"]), a.button') === bt2) brow = pn2;
-          else { brow = el("span", "cc-aop-brow"); brow.setAttribute("data-cc-aop-brw", "1"); pn2.parentNode.insertBefore(brow, pn2.nextSibling); brow.appendChild(bt2); }
-        } else { brow = el("span", "cc-aop-brow"); brow.setAttribute("data-cc-aop-brw", "1"); pn2.insertBefore(brow, bt2); brow.appendChild(bt2); }
+          else { brow = el("span", "tt-aop-brow"); brow.setAttribute("data-tt-aop-brw", "1"); pn2.parentNode.insertBefore(brow, pn2.nextSibling); brow.appendChild(bt2); }
+        } else { brow = el("span", "tt-aop-brow"); brow.setAttribute("data-tt-aop-brw", "1"); pn2.insertBefore(brow, bt2); brow.appendChild(bt2); }
         var ni = natives.indexOf(bt2), st = "";
         if (ni > -1) {
           st = mtText(fold.segs[ni] || "");
           if (ni === natives.length - 1) for (var p2 = natives.length; p2 < fold.segs.length; p2++) st += (st ? " " : "") + mtText(fold.segs[p2]);
         }
-        var bub = brow.querySelector(":scope > .cc-info");
-        if (st) { if (bub) { if (bub.getAttribute("data-tip") !== st) { bub.setAttribute("data-tip", st); bub.setAttribute("aria-label", st); } } else brow.appendChild(ccInfoIcon(st)); }
+        var bub = brow.querySelector(":scope > .tt-info");
+        if (st) { if (bub) { if (bub.getAttribute("data-tip") !== st) { bub.setAttribute("data-tip", st); bub.setAttribute("aria-label", st); } } else brow.appendChild(ttInfoIcon(st)); }
         else if (bub) bub.parentNode.removeChild(bub);
       }
-      var solo = btnCell.querySelector(":scope > .cc-info");   // a pair row has no single centred bubble
+      var solo = btnCell.querySelector(":scope > .tt-info");   // a pair row has no single centred bubble
       if (solo) solo.parentNode.removeChild(solo);
     } else {
-      var info = btnCell.querySelector(":scope > .cc-info");
+      var info = btnCell.querySelector(":scope > .tt-info");
       if (tip) {
         if (info) { if (info.getAttribute("data-tip") !== tip) { info.setAttribute("data-tip", tip); info.setAttribute("aria-label", tip); } }
-        else btnCell.appendChild(ccInfoIcon(tip));                                      // a single-button row keeps the bubble after the button
+        else btnCell.appendChild(ttInfoIcon(tip));                                      // a single-button row keeps the bubble after the button
       }
     }
     for (var l0 = 0; l0 < links.length; l0++) {
       var lk = links[l0];
-      if (!lk.classList.contains("cc-aop-link")) {
-        lk.classList.add("cc-aop-link"); lk.setAttribute("data-cc-aop-moved", "1");
+      if (!lk.classList.contains("tt-aop-link")) {
+        lk.classList.add("tt-aop-link"); lk.setAttribute("data-tt-aop-moved", "1");
         var lt = (lk.textContent || "").trim(), m0 = /^\((.+)\)$/.exec(lt);
-        if (m0) { lk.setAttribute("data-cc-aop-orig", lt); lk.textContent = mt(m0[1]) || m0[1]; }   // strip the brackets and translate what the pack left English
+        if (m0) { lk.setAttribute("data-tt-aop-orig", lt); lk.textContent = mt(m0[1]) || m0[1]; }   // strip the brackets and translate what the pack left English
       }
       btnCell.appendChild(lk);                                                        // after the bubble, as a badge beside it
     }
     // The optionCorrect and safemode checkboxes move into the button cell behind the bubble and the
     // badge. They are moved, never cloned, because the POST and shutdown_now() find them by name.
     // Both native markups occur: a <label> wrapping the input, and a bare input with a following
-    // <small>. data-cc-aop-tg marks what aopTeardown undoes.
+    // <small>. data-tt-aop-tg marks what aopTeardown undoes.
     var cb0 = descCell.querySelector('input[type="checkbox"][name="optionCorrect"], input[type="checkbox"][name="safemode"]');
-    if (cb0 && !btnCell.querySelector(".cc-aop-toggle")) {
+    if (cb0 && !btnCell.querySelector(".tt-aop-toggle")) {
       // safemode rides on the reboot button's brow where a pair row has one; an optionCorrect row
       // has a single button and keeps the plain button cell.
       var rbIn = btnCell.querySelector('input[name="reboot"]');
-      var rbBrow = rbIn && rbIn.parentNode && rbIn.parentNode.classList.contains("cc-aop-brow") ? rbIn.parentNode : null;
+      var rbBrow = rbIn && rbIn.parentNode && rbIn.parentNode.classList.contains("tt-aop-brow") ? rbIn.parentNode : null;
       var unit = cb0.closest("label");
       if (unit && descCell.contains(unit)) {
-        unit.classList.add("cc-aop-toggle"); unit.setAttribute("data-cc-aop-tg", "1");
+        unit.classList.add("tt-aop-toggle"); unit.setAttribute("data-tt-aop-tg", "1");
         (rbBrow || btnCell).appendChild(unit);
       } else {
         var lab0 = cb0.nextSibling;
         while (lab0 && lab0.nodeType === 3 && !lab0.textContent.trim()) lab0 = lab0.nextSibling;   // skip whitespace
-        var w1 = el("label", "cc-aop-toggle"); w1.setAttribute("data-cc-aop-tg", "1"); w1.setAttribute("data-cc-aop-tgw", "1");
+        var w1 = el("label", "tt-aop-toggle"); w1.setAttribute("data-tt-aop-tg", "1"); w1.setAttribute("data-tt-aop-tgw", "1");
         w1.appendChild(cb0);
         if (lab0 && (lab0.nodeType === 3 || lab0.tagName === "SMALL" || lab0.tagName === "SPAN")) w1.appendChild(lab0);
         (rbBrow || btnCell).appendChild(w1);
       }
     }
-    tr.setAttribute("data-cc-aop", "1");
+    tr.setAttribute("data-tt-aop", "1");
   }
   // The array-state and parity status cells become large badges coloured by status. The colour
   // sources are language-independent: the native orb class in the cell (green for running, yellow
@@ -1617,29 +1617,29 @@
   // running). A cell that is neither, such as the unmountable-disks list, stays native. The orb's
   // a.info tooltip moves into the pill and stays live.
   function aopStatusBadge(tr) {
-    var td = tr.children[0]; if (!td || td.classList.contains("cc-aop-st")) return;
-    if (td.querySelector(".cc-b")) return;
+    var td = tr.children[0]; if (!td || td.classList.contains("tt-aop-st")) return;
+    if (td.querySelector(".tt-b")) return;
     var orb = td.querySelector("a.info i.orb");
     var isCheck = !!tr.querySelector('input[name="cmdCheck"]');
     var isRun = !!tr.querySelector("#pauseButton, #cancelButton");
     if (!orb && !isCheck && !isRun) return;
     var txt = (td.textContent || "").replace(/\s+/g, " ").trim(); if (!txt) return;   // the Read-Check and Sync branches leave it empty
-    var cls = orb ? (orb.classList.contains("green-orb") ? "cc-aop-ok" : orb.classList.contains("yellow-orb") ? "cc-aop-warn" : "cc-aop-off")
-                  : (isRun ? "cc-aop-warn" : "cc-aop-ok");
-    var b = el("span", "cc-b cc-aop-status " + cls), v = el("span", "cc-b-v");
+    var cls = orb ? (orb.classList.contains("green-orb") ? "tt-aop-ok" : orb.classList.contains("yellow-orb") ? "tt-aop-warn" : "tt-aop-off")
+                  : (isRun ? "tt-aop-warn" : "tt-aop-ok");
+    var b = el("span", "tt-b tt-aop-status " + cls), v = el("span", "tt-b-v");
     while (td.firstChild) v.appendChild(td.firstChild);
-    b.appendChild(v); td.appendChild(b); td.classList.add("cc-aop-st");
+    b.appendChild(v); td.appendChild(b); td.classList.add("tt-aop-st");
   }
   // The parity-check progress gets its own card right of the button column. It mirrors rather than
   // moves, because Unraid re-renders those rows on every parity tick. The native rows stay in place
   // and keep updating behind a CSS hide, and the card holds synced text copies written only on a
   // change, so the observer sees no churn. The card retires when the check ends.
-  function ccAopParityCard(box) {
+  function ttAopParityCard(box) {
     try {
       var lines = box.querySelectorAll("table.array_status td[id^='line']");
-      var card = box.querySelector(".cc-aop-pcard");
-      if (!lines.length) { if (card) card.parentNode.removeChild(card); ccAopParityRing(box, null); return; }
-      if (!card) { card = el("div", "cc-aop-pcard"); var sec = lines[0].closest("section") || box; sec.appendChild(card); }
+      var card = box.querySelector(".tt-aop-pcard");
+      if (!lines.length) { if (card) card.parentNode.removeChild(card); ttAopParityRing(box, null); return; }
+      if (!card) { card = el("div", "tt-aop-pcard"); var sec = lines[0].closest("section") || box; sec.appendChild(card); }
       // The top edge sits flush with the first button row, which a fixed CSS offset cannot do
       // because the badge row above varies in height. The card is out of flow, so measuring the
       // first array-op table here cannot feed back into layout.
@@ -1650,14 +1650,14 @@
           if (off > 0 && Math.abs((parseInt(card.style.top, 10) || 0) - off) > 1) card.style.top = off + "px";
         }
       }
-      var rowsBox = card.querySelector(":scope > .cc-aop-rows"), pbx = card.querySelector(":scope > .cc-aop-pbar");
+      var rowsBox = card.querySelector(":scope > .tt-aop-rows"), pbx = card.querySelector(":scope > .tt-aop-pbar");
       if (!rowsBox || !pbx || pbx.previousElementSibling !== rowsBox) {   // build the card shell: rows on top, progress bar below
         card.textContent = "";
-        rowsBox = el("div", "cc-aop-rows");
+        rowsBox = el("div", "tt-aop-rows");
         card.appendChild(rowsBox);
-        var bar = el("div", "cc-aop-pbar");
-        bar.appendChild(el("span", "cc-aop-pfill"));
-        bar.appendChild(el("span", "cc-aop-plab"));
+        var bar = el("div", "tt-aop-pbar");
+        bar.appendChild(el("span", "tt-aop-pfill"));
+        bar.appendChild(el("span", "tt-aop-plab"));
         card.appendChild(bar);
       }
       var n = 0;
@@ -1666,7 +1666,7 @@
         var lab = tr.cells && tr.cells[0] ? (tr.cells[0].textContent || "").trim() : "";
         var val = (lines[i].textContent || "").trim();
         var row = rowsBox.children[n];
-        if (!row) { row = el("div", "cc-aop-prow"); row.appendChild(el("span", "cc-aop-pl")); row.appendChild(el("span", "cc-aop-pv")); rowsBox.appendChild(row); }
+        if (!row) { row = el("div", "tt-aop-prow"); row.appendChild(el("span", "tt-aop-pl")); row.appendChild(el("span", "tt-aop-pv")); rowsBox.appendChild(row); }
         if (row.firstChild.textContent !== lab) row.firstChild.textContent = lab;
         if (row.lastChild.textContent !== val) row.lastChild.textContent = val;
         n++;
@@ -1676,75 +1676,75 @@
       // parsed language-independently with either decimal separator.
       var pct = null;
       for (var j = 0; j < lines.length; j++) { var m = /\(([\d.,]+)\s*%\s*\)/.exec(lines[j].textContent || ""); if (m) { pct = parseFloat(m[1].replace(",", ".")); break; } }
-      var pb = card.querySelector(":scope > .cc-aop-pbar");
+      var pb = card.querySelector(":scope > .tt-aop-pbar");
       if (pb) {
         if (pct == null || !(pct >= 0)) { if (pb.style.display !== "none") pb.style.display = "none"; }
         else {
           if (pb.style.display !== "") pb.style.display = "";
-          var fl = pb.querySelector(".cc-aop-pfill"), pl2 = pb.querySelector(".cc-aop-plab");
+          var fl = pb.querySelector(".tt-aop-pfill"), pl2 = pb.querySelector(".tt-aop-plab");
           var wv = Math.min(100, Math.max(0, pct)) + "%";
           if (fl && fl.style.width !== wv) fl.style.width = wv;
           var lt = (Math.round(pct * 10) / 10) + " %";
           if (pl2 && pl2.textContent !== lt) pl2.textContent = lt;
         }
       }
-      ccAopParityRing(box, pct);
+      ttAopParityRing(box, pct);
     } catch (e) {}
   }
   // While a check runs, its status chip carries a progress ring with the share done (GlimStone: "a
   // status ring becomes a progress ring while work runs"), and loses it when the check ends. The
   // running check's row is the one with Unraid's pause button; its chip may have moved to the stack.
-  function ccAopParityRing(box, pct) {
+  function ttAopParityRing(box, pct) {
     var run = box.querySelector("table.array_status #pauseButton");
     var home = run && run.closest("tr") ? run.closest("tr").children[0] : null;
-    var ref = home && home.getAttribute("data-cc-aop-pillhome");
-    var pill = ref ? box.querySelector('.cc-aop-status[data-cc-aop-pillref="' + ref + '"]') : home && home.querySelector(".cc-aop-status");
-    if (pct == null || !window.CCPictures) pill = null;
-    var ringed = box.querySelectorAll(".cc-aop-status.cc-aop-ringed");
+    var ref = home && home.getAttribute("data-tt-aop-pillhome");
+    var pill = ref ? box.querySelector('.tt-aop-status[data-tt-aop-pillref="' + ref + '"]') : home && home.querySelector(".tt-aop-status");
+    if (pct == null || !window.TTPictures) pill = null;
+    var ringed = box.querySelectorAll(".tt-aop-status.tt-aop-ringed");
     for (var i = 0; i < ringed.length; i++) {
       if (ringed[i] === pill) continue;
-      if (ringed[i].__ccRing && ringed[i].__ccRing.el.parentNode) ringed[i].__ccRing.el.parentNode.removeChild(ringed[i].__ccRing.el);
-      ringed[i].__ccRing = null; ringed[i].classList.remove("cc-aop-ringed");
+      if (ringed[i].__ttRing && ringed[i].__ttRing.el.parentNode) ringed[i].__ttRing.el.parentNode.removeChild(ringed[i].__ttRing.el);
+      ringed[i].__ttRing = null; ringed[i].classList.remove("tt-aop-ringed");
     }
     if (!pill) return;
-    if (!pill.__ccRing) {
-      pill.__ccRing = window.CCPictures.ring((pill.textContent || "").trim());
-      pill.insertBefore(pill.__ccRing.el, pill.firstChild);
-      pill.classList.add("cc-aop-ringed");
+    if (!pill.__ttRing) {
+      pill.__ttRing = window.TTPictures.ring((pill.textContent || "").trim());
+      pill.insertBefore(pill.__ttRing.el, pill.firstChild);
+      pill.classList.add("tt-aop-ringed");
     }
-    pill.__ccRing.set(pct / 100);
+    pill.__ttRing.set(pct / 100);
   }
   // The status pills leave their grid rows for a tight stack of their own, so their spacing matches
   // the button gap instead of the row heights. Each pill remembers its home cell, so aopTeardown
   // can hand it back before unwrapping.
-  var ccPillSeq = 0;
-  function ccAopPillStack(box) {
+  var ttPillSeq = 0;
+  function ttAopPillStack(box) {
     try {
-      var pills = box.querySelectorAll("table.array_status td.cc-aop-st > .cc-b.cc-aop-status");
+      var pills = box.querySelectorAll("table.array_status td.tt-aop-st > .tt-b.tt-aop-status");
       // /Main carries several array_status tables, so anchor on the pills' own one, and insert at
       // the section's direct child: the table sits inside a form, where inserting before it throws
       // NotFoundError.
       var pt = pills.length ? pills[0].closest("table") : box.querySelector("table.array_status");
       if (!pt) return;
       var sec = pt.closest("section") || box;
-      var stack = sec.querySelector(".cc-aop-pills");
+      var stack = sec.querySelector(".tt-aop-pills");
       if (pills.length && !stack) {
-        stack = el("div", "cc-aop-pills");
+        stack = el("div", "tt-aop-pills");
         var anch = pt; while (anch.parentElement && anch.parentElement !== sec) anch = anch.parentElement;
         sec.insertBefore(stack, anch);
       }
       if (!stack) return;
       // nchan rebuilds the rows, and a rebuilt td gets a fresh pill, so drop the stack pills whose
       // home cell is gone before adopting the current set.
-      var olds = stack.querySelectorAll(".cc-b.cc-aop-status[data-cc-aop-pillref]");
+      var olds = stack.querySelectorAll(".tt-b.tt-aop-status[data-tt-aop-pillref]");
       for (var k = 0; k < olds.length; k++) {
-        var rf = olds[k].getAttribute("data-cc-aop-pillref");
-        if (!box.querySelector('table.array_status td[data-cc-aop-pillhome="' + rf + '"]')) stack.removeChild(olds[k]);
+        var rf = olds[k].getAttribute("data-tt-aop-pillref");
+        if (!box.querySelector('table.array_status td[data-tt-aop-pillhome="' + rf + '"]')) stack.removeChild(olds[k]);
       }
       for (var i = 0; i < pills.length; i++) {
         var home = pills[i].parentNode;
-        if (!home.getAttribute("data-cc-aop-pillhome")) home.setAttribute("data-cc-aop-pillhome", String(++ccPillSeq));
-        pills[i].setAttribute("data-cc-aop-pillref", home.getAttribute("data-cc-aop-pillhome"));
+        if (!home.getAttribute("data-tt-aop-pillhome")) home.setAttribute("data-tt-aop-pillhome", String(++ttPillSeq));
+        pills[i].setAttribute("data-tt-aop-pillref", home.getAttribute("data-tt-aop-pillhome"));
         stack.appendChild(pills[i]);
       }
       // top edge at the first button, measured as in the parity card
@@ -1761,108 +1761,108 @@
     try {
       var tables = box.querySelectorAll("table.array_status");
       for (var i = 0; i < tables.length; i++) { var rows = tables[i].rows; for (var r = 0; r < rows.length; r++) { aopStatusBadge(rows[r]); enhanceArrayOpRow(rows[r]); } }
-      ccAopPillStack(box);    // after badging, so there are pills to stack
-      ccAopParityCard(box);
+      ttAopPillStack(box);    // after badging, so there are pills to stack
+      ttAopParityCard(box);
     } catch (e) {}
   }
   function aopTeardown() {
     try {
-      var pc = document.querySelector("#displaybox .cc-aop-pcard"); if (pc) pc.parentNode.removeChild(pc);   // a pure mirror, and the rows unhide with the class
-      var dsp = document.getElementById("displaybox"); if (dsp) ccAopParityRing(dsp, null);
-      var infos = document.querySelectorAll("#displaybox table.array_status .cc-info");
+      var pc = document.querySelector("#displaybox .tt-aop-pcard"); if (pc) pc.parentNode.removeChild(pc);   // a pure mirror, and the rows unhide with the class
+      var dsp = document.getElementById("displaybox"); if (dsp) ttAopParityRing(dsp, null);
+      var infos = document.querySelectorAll("#displaybox table.array_status .tt-info");
       for (var i = 0; i < infos.length; i++) infos[i].parentNode.removeChild(infos[i]);
       // moved link badges back into their row's description cell, with the bracketed text restored
-      var mvd = document.querySelectorAll("#displaybox table.array_status a.cc-aop-link[data-cc-aop-moved]");
+      var mvd = document.querySelectorAll("#displaybox table.array_status a.tt-aop-link[data-tt-aop-moved]");
       for (var v = 0; v < mvd.length; v++) {
         var a2 = mvd[v], row2 = a2.closest("tr"), home = row2 && row2.children[2];
-        var o2 = a2.getAttribute("data-cc-aop-orig"); if (o2) a2.textContent = o2;
-        a2.classList.remove("cc-aop-link"); a2.removeAttribute("data-cc-aop-moved"); a2.removeAttribute("data-cc-aop-orig");
+        var o2 = a2.getAttribute("data-tt-aop-orig"); if (o2) a2.textContent = o2;
+        a2.classList.remove("tt-aop-link"); a2.removeAttribute("data-tt-aop-moved"); a2.removeAttribute("data-tt-aop-orig");
         if (home) home.appendChild(a2);
       }
       // relocated optionCorrect and safemode toggles back into their row's description cell
-      var tgs = document.querySelectorAll("#displaybox table.array_status .cc-aop-toggle[data-cc-aop-tg]");
+      var tgs = document.querySelectorAll("#displaybox table.array_status .tt-aop-toggle[data-tt-aop-tg]");
       for (var g2 = 0; g2 < tgs.length; g2++) {
         var tg = tgs[g2], rw = tg.closest("tr"), hm = rw && rw.children[2];
         if (!hm) continue;
-        if (tg.getAttribute("data-cc-aop-tgw") === "1") { while (tg.firstChild) hm.appendChild(tg.firstChild); tg.parentNode.removeChild(tg); }
-        else { tg.classList.remove("cc-aop-toggle"); tg.removeAttribute("data-cc-aop-tg"); hm.appendChild(tg); }
+        if (tg.getAttribute("data-tt-aop-tgw") === "1") { while (tg.firstChild) hm.appendChild(tg.firstChild); tg.parentNode.removeChild(tg); }
+        else { tg.classList.remove("tt-aop-toggle"); tg.removeAttribute("data-tt-aop-tg"); hm.appendChild(tg); }
       }
       // Unwrap the per-button rows. The bubbles and the safemode toggle have left them in the two
       // loops above, so this order is the only safe one.
-      var brs = document.querySelectorAll('#displaybox table.array_status span.cc-aop-brow[data-cc-aop-brw]');
-      for (var b3 = 0; b3 < brs.length; b3++) ccUnwrap(brs[b3]);
-      var descs = document.querySelectorAll("#displaybox table.array_status td.cc-aop-desc");
-      for (var d = 0; d < descs.length; d++) descs[d].classList.remove("cc-aop-desc");
+      var brs = document.querySelectorAll('#displaybox table.array_status span.tt-aop-brow[data-tt-aop-brw]');
+      for (var b3 = 0; b3 < brs.length; b3++) ttUnwrap(brs[b3]);
+      var descs = document.querySelectorAll("#displaybox table.array_status td.tt-aop-desc");
+      for (var d = 0; d < descs.length; d++) descs[d].classList.remove("tt-aop-desc");
       // unfold the mixed-cell prose: unwrap the text-node wrappers, strip the hide class elsewhere
-      var hid = document.querySelectorAll("#displaybox table.array_status .cc-aop-hide");
-      for (var h = 0; h < hid.length; h++) { var n = hid[h]; if (n.tagName === "SPAN" && n.getAttribute("data-cc-aop-w") === "1") ccUnwrap(n); else n.classList.remove("cc-aop-hide"); }
+      var hid = document.querySelectorAll("#displaybox table.array_status .tt-aop-hide");
+      for (var h = 0; h < hid.length; h++) { var n = hid[h]; if (n.tagName === "SPAN" && n.getAttribute("data-tt-aop-w") === "1") ttUnwrap(n); else n.classList.remove("tt-aop-hide"); }
       // stacked pills back into their home cells first, since the stack holds the live nodes
-      var pstack = document.querySelector("#displaybox .cc-aop-pills");
+      var pstack = document.querySelector("#displaybox .tt-aop-pills");
       if (pstack) {
-        var spb = pstack.querySelectorAll(".cc-b.cc-aop-status[data-cc-aop-pillref]");
+        var spb = pstack.querySelectorAll(".tt-b.tt-aop-status[data-tt-aop-pillref]");
         for (var sp3 = 0; sp3 < spb.length; sp3++) {
-          var ref3 = spb[sp3].getAttribute("data-cc-aop-pillref");
-          var home3 = document.querySelector('#displaybox table.array_status td[data-cc-aop-pillhome="' + ref3 + '"]');
+          var ref3 = spb[sp3].getAttribute("data-tt-aop-pillref");
+          var home3 = document.querySelector('#displaybox table.array_status td[data-tt-aop-pillhome="' + ref3 + '"]');
           if (home3) home3.appendChild(spb[sp3]);
         }
         pstack.parentNode.removeChild(pstack);
       }
       // unbadge the state and parity pills; their children move back into the cell
-      var stb = document.querySelectorAll("#displaybox table.array_status td.cc-aop-st");
+      var stb = document.querySelectorAll("#displaybox table.array_status td.tt-aop-st");
       for (var s = 0; s < stb.length; s++) {
-        var bb = stb[s].querySelector(":scope > .cc-b.cc-aop-status");
-        if (bb) { var vv = bb.querySelector(":scope > .cc-b-v"); if (vv) ccUnwrap(vv); ccUnwrap(bb); }
-        stb[s].classList.remove("cc-aop-st"); stb[s].removeAttribute("data-cc-aop-pillhome");
+        var bb = stb[s].querySelector(":scope > .tt-b.tt-aop-status");
+        if (bb) { var vv = bb.querySelector(":scope > .tt-b-v"); if (vv) ttUnwrap(vv); ttUnwrap(bb); }
+        stb[s].classList.remove("tt-aop-st"); stb[s].removeAttribute("data-tt-aop-pillhome");
       }
-      var marked = document.querySelectorAll("#displaybox table.array_status tr[data-cc-aop]");
-      for (var m = 0; m < marked.length; m++) marked[m].removeAttribute("data-cc-aop");
+      var marked = document.querySelectorAll("#displaybox table.array_status tr[data-tt-aop]");
+      for (var m = 0; m < marked.length; m++) marked[m].removeAttribute("data-tt-aop");
     } catch (e) {}
   }
   // In tabbed mode ArrayOperation.page appends span.status with the diskio toggle into nav.tabs,
-  // which CC's sections mode collapses, so the whole span moves into the first .cc-card-head as one
-  // unit and keeps toggle_diskio() and tooltipster bound. ccDiskioHome has to run before any
-  // teardown that deletes .cc-card-head, or the native control goes with it. The marker is
-  // data-cc-dio-moved rather than data-cc-moved, which statsControlsTeardown queries.
-  function ccDiskioMove(box) {
+  // which TowerTorch's sections mode collapses, so the whole span moves into the first .tt-card-head as one
+  // unit and keeps toggle_diskio() and tooltipster bound. ttDiskioHome has to run before any
+  // teardown that deletes .tt-card-head, or the native control goes with it. The marker is
+  // data-tt-dio-moved rather than data-tt-moved, which statsControlsTeardown queries.
+  function ttDiskioMove(box) {
     try {
       var st = box.querySelector("nav.tabs span.status"); if (!st || !st.querySelector("a.tooltip_diskio")) return;
-      var head = box.querySelector('section[data-cc-card] .cc-card-head'); if (!head) return;
-      head.appendChild(st); st.setAttribute("data-cc-dio-moved", "1");
-      ccDiskioTip(st);
+      var head = box.querySelector('section[data-tt-card] .tt-card-head'); if (!head) return;
+      head.appendChild(st); st.setAttribute("data-tt-dio-moved", "1");
+      ttDiskioTip(st);
     } catch (e) {}
   }
   // tooltipster consumes the title attribute at init, and ArrayOperation.page's inline script runs
   // at parse time, before this deferred one, so stripping the title alone leaves the black balloon.
   // Read the stored content and disable the instance, which 'enable' reverses.
-  function ccDiskioTip(st) {
+  function ttDiskioTip(st) {
     try {
-      var a = st.querySelector("a.tooltip_diskio"); if (!a || a.getAttribute("data-cc-dio-tip")) return;
+      var a = st.querySelector("a.tooltip_diskio"); if (!a || a.getAttribute("data-tt-dio-tip")) return;
       var tip = a.getAttribute("title") || "";                              // the fallback before tooltipster ran
       if (window.jQuery && window.jQuery.fn.tooltipster) {
         try { var c = window.jQuery(a).tooltipster("content"); if (c && typeof c === "string") tip = c; window.jQuery(a).tooltipster("disable"); } catch (e2) {}
       }
-      if (a.hasAttribute("title")) a.setAttribute("data-cc-tip-orig", a.getAttribute("title"));
+      if (a.hasAttribute("title")) a.setAttribute("data-tt-tip-orig", a.getAttribute("title"));
       if (!tip) tip = "Toggle reads/writes display";
       // The translated tip becomes a plain title tooltip on the toggle itself, with no bubble;
       // tooltipster stays disabled.
       a.setAttribute("title", mtText(tip));
-      var oldIc = st.querySelector(":scope > .cc-info"); if (oldIc) oldIc.remove();
-      a.setAttribute("data-cc-dio-tip", "1");
+      var oldIc = st.querySelector(":scope > .tt-info"); if (oldIc) oldIc.remove();
+      a.setAttribute("data-tt-dio-tip", "1");
     } catch (e) {}
   }
-  function ccDiskioHome() {
+  function ttDiskioHome() {
     try {
-      var st = document.querySelector("#displaybox .cc-card-head span.status[data-cc-dio-moved]"); if (!st) return;
-      var ic = st.querySelector(":scope > .cc-info"); if (ic) st.removeChild(ic);
+      var st = document.querySelector("#displaybox .tt-card-head span.status[data-tt-dio-moved]"); if (!st) return;
+      var ic = st.querySelector(":scope > .tt-info"); if (ic) st.removeChild(ic);
       var a = st.querySelector("a.tooltip_diskio");
       if (a) {
-        var o = a.getAttribute("data-cc-tip-orig"); if (o) { a.setAttribute("title", o); a.removeAttribute("data-cc-tip-orig"); }
+        var o = a.getAttribute("data-tt-tip-orig"); if (o) { a.setAttribute("title", o); a.removeAttribute("data-tt-tip-orig"); }
         if (window.jQuery && window.jQuery.fn.tooltipster) { try { window.jQuery(a).tooltipster("enable"); } catch (e2) {} }
-        a.removeAttribute("data-cc-dio-tip");
+        a.removeAttribute("data-tt-dio-tip");
       }
       var tabs = document.querySelector("#displaybox nav.tabs");
       if (tabs) tabs.appendChild(st);
-      st.removeAttribute("data-cc-dio-moved");
+      st.removeAttribute("data-tt-dio-moved");
     } catch (e) {}
   }
   // Unassigned Devices is a third-party plugin, so its DOM is described here rather than assumed:
@@ -1871,10 +1871,10 @@
   // .show-shares and .show-historical each hold a div.title.shift > span.left with an icon and
   // text; the usb_mounts, samba_mounts and usb_absent tables have their tbody replaced every three
   // seconds by UD's refreshPage(). The headings are static markup and hold no listeners, so they
-  // split once, with data-cc-ud-orig keeping the original for teardown. The split reads the current
-  // text, so it works after ccLocalizeMain() has translated it.
-  function ccUdSplitHeading(host) {
-    if (!host || host.getAttribute("data-cc-ud")) return;
+  // split once, with data-tt-ud-orig keeping the original for teardown. The split reads the current
+  // text, so it works after ttLocalizeMain() has translated it.
+  function ttUdSplitHeading(host) {
+    if (!host || host.getAttribute("data-tt-ud")) return;
     var kids = Array.prototype.slice.call(host.childNodes), parts = [], cur = null;
     function flush(img) { cur = { img: img || null, txt: "" }; parts.push(cur); }
     for (var i = 0; i < kids.length; i++) {
@@ -1891,38 +1891,38 @@
       }
     }
     if (!parts.length) return;
-    host.setAttribute("data-cc-ud-orig", host.innerHTML);   // snapshot before clearing
-    host.setAttribute("data-cc-ud", "1");
+    host.setAttribute("data-tt-ud-orig", host.innerHTML);   // snapshot before clearing
+    host.setAttribute("data-tt-ud", "1");
     host.textContent = "";
     var inkDark = idealText(mainAccent()) !== "#fff";   // the ink the img monochrome filter uses
     for (var p = 0; p < parts.length; p++) {
       if (!parts[p].txt && !parts[p].img) continue;
-      var b = el("span", "cc-b cc-ud-h");
-      b.classList.toggle("cc-ink-dark", inkDark);
+      var b = el("span", "tt-b tt-ud-h");
+      b.classList.toggle("tt-ink-dark", inkDark);
       if (parts[p].img) b.appendChild(parts[p].img);
-      if (parts[p].txt) { var sg = parts[p].txt; sg = mt(sg) || sg; b.appendChild(el("span", "cc-b-v", sg)); }   // a segment already translated misses the map and stays
+      if (parts[p].txt) { var sg = parts[p].txt; sg = mt(sg) || sg; b.appendChild(el("span", "tt-b-v", sg)); }   // a segment already translated misses the map and stays
       host.appendChild(b);
     }
   }
   // A UD value cell becomes a badge. Beyond mainBadgeCell's guards it skips the mount and remove
   // controls, td.mount and the settings-gear cell, whose hidden span.help-title text would
   // otherwise leak into a pill.
-  function ccUdBadgeCell(td) {
-    if (!td || td.classList.contains("cc-bcell")) return;
+  function ttUdBadgeCell(td) {
+    if (!td || td.classList.contains("tt-bcell")) return;
     if (td.hasAttribute("colspan") || td.classList.contains("mount")) return;
     // The action cells are icon buttons dressed by CSS, not text badges. The remove X is a filled
     // tile of its own, so a badge around it would hide it.
     if (td.querySelector(".usage-disk, button, select, input, i.fa-gears, i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban")) return;
-    if (td.querySelector("a.cc-b-name")) return;
+    if (td.querySelector("a.tt-b-name")) return;
     var txt = (td.textContent || "").trim(); if (txt === "" || txt === "-" || txt === "*") return;
-    var b = el("span", "cc-b"), v = el("span", "cc-b-v");
+    var b = el("span", "tt-b"), v = el("span", "tt-b-v");
     while (td.firstChild) v.appendChild(td.firstChild);   // moved, not cloned, so the disklog icon and the links stay live
-    b.appendChild(v); td.appendChild(b); td.classList.add("cc-bcell");
+    b.appendChild(v); td.appendChild(b); td.classList.add("tt-bcell");
     // The wrapped value badge is centred, so its column header is centred too instead of keeping
     // the native right alignment. Done per column, since which UD columns exist varies.
     try {
       var ci = [].indexOf.call(td.parentNode.children, td), tbl = td.closest("table"), hr = tbl && tbl.querySelector("thead tr"), h = hr && hr.children[ci];
-      if (h && !h.hasAttribute("data-cc-udth")) { h.setAttribute("data-cc-udth", "1"); h.style.textAlign = "center"; }
+      if (h && !h.hasAttribute("data-tt-udth")) { h.setAttribute("data-tt-udth", "1"); h.style.textAlign = "center"; }
     } catch (e) {}
   }
   function enhanceUD() {
@@ -1932,85 +1932,85 @@
       // sub-section heads split into badges.
       var heads = Array.prototype.slice.call(document.querySelectorAll(
         "#displaybox :is(.show-disks, .show-shares, .show-historical) > div.title.shift :is(span.left, div.left)"));
-      for (var h = 0; h < heads.length; h++) ccUdSplitHeading(heads[h]);
-      ccUdCtrlsMove();
+      for (var h = 0; h < heads.length; h++) ttUdSplitHeading(heads[h]);
+      ttUdCtrlsMove();
       var tbs = document.querySelectorAll("#displaybox #disk-table-body, #displaybox #remotes-table-body, #displaybox #historical-table-body");
       for (var t = 0; t < tbs.length; t++) {
         var rows = tbs[t].children;
         for (var r = 0; r < rows.length; r++) {
-          var tr = rows[r]; if (tr.tagName !== "TR" || tr.getAttribute("data-cc-ud")) continue;
-          tr.setAttribute("data-cc-ud", "1");   // the refill recreates the rows fresh every three seconds
+          var tr = rows[r]; if (tr.tagName !== "TR" || tr.getAttribute("data-tt-ud")) continue;
+          tr.setAttribute("data-tt-ud", "1");   // the refill recreates the rows fresh every three seconds
           var tds = tr.children;
           var nl = tr.querySelector('td:first-child a[href^="/Main/"]');
-          if (nl && !nl.classList.contains("cc-b-name")) { nl.classList.add("cc-b"); nl.classList.add("cc-b-name"); }
-          else if (!nl && tds[0]) ccUdBadgeCell(tds[0]);   // a historical row names a removed device as plain text, with no link to badge
-          for (var c = 1; c < tds.length; c++) ccUdBadgeCell(tds[c]);
+          if (nl && !nl.classList.contains("tt-b-name")) { nl.classList.add("tt-b"); nl.classList.add("tt-b-name"); }
+          else if (!nl && tds[0]) ttUdBadgeCell(tds[0]);   // a historical row names a removed device as plain text, with no link to badge
+          for (var c = 1; c < tds.length; c++) ttUdBadgeCell(tds[c]);
         }
       }
     } catch (e) {}
   }
   function udTeardown() {
     try {
-      var hs = document.querySelectorAll("#displaybox [data-cc-ud-orig]");
-      for (var i = 0; i < hs.length; i++) { hs[i].innerHTML = hs[i].getAttribute("data-cc-ud-orig"); hs[i].removeAttribute("data-cc-ud-orig"); hs[i].removeAttribute("data-cc-ud"); }
-      var cells = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) td.cc-bcell");
+      var hs = document.querySelectorAll("#displaybox [data-tt-ud-orig]");
+      for (var i = 0; i < hs.length; i++) { hs[i].innerHTML = hs[i].getAttribute("data-tt-ud-orig"); hs[i].removeAttribute("data-tt-ud-orig"); hs[i].removeAttribute("data-tt-ud"); }
+      var cells = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) td.tt-bcell");
       for (var c2 = 0; c2 < cells.length; c2++) {
-        var b2 = cells[c2].querySelector(":scope > .cc-b"), v2 = b2 && b2.querySelector(":scope > .cc-b-v");
+        var b2 = cells[c2].querySelector(":scope > .tt-b"), v2 = b2 && b2.querySelector(":scope > .tt-b-v");
         if (v2) { while (v2.firstChild) cells[c2].insertBefore(v2.firstChild, b2); }
         if (b2) cells[c2].removeChild(b2);
-        cells[c2].classList.remove("cc-bcell");
+        cells[c2].classList.remove("tt-bcell");
       }
-      var nn = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.cc-b-name");
-      for (var n2 = 0; n2 < nn.length; n2++) { nn[n2].classList.remove("cc-b"); nn[n2].classList.remove("cc-b-name"); }
-      var thc = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) [data-cc-udth]");   // back to the native header alignment
-      for (var t2 = 0; t2 < thc.length; t2++) { thc[t2].style.removeProperty("text-align"); thc[t2].removeAttribute("data-cc-udth"); }
-      var mk = document.querySelectorAll("#displaybox tr[data-cc-ud]");
-      for (var m2 = 0; m2 < mk.length; m2++) mk[m2].removeAttribute("data-cc-ud");
+      var nn = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.tt-b-name");
+      for (var n2 = 0; n2 < nn.length; n2++) { nn[n2].classList.remove("tt-b"); nn[n2].classList.remove("tt-b-name"); }
+      var thc = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) [data-tt-udth]");   // back to the native header alignment
+      for (var t2 = 0; t2 < thc.length; t2++) { thc[t2].style.removeProperty("text-align"); thc[t2].removeAttribute("data-tt-udth"); }
+      var mk = document.querySelectorAll("#displaybox tr[data-tt-ud]");
+      for (var m2 = 0; m2 < mk.length; m2++) mk[m2].removeAttribute("data-tt-ud");
     } catch (e) {}
   }
   // Empty-state placeholders become muted pills, so that "nothing here" reads like the rest of the
-  // page. Wraps the bare text of td.empty rows and the UD single-cell notices in span.cc-muted.
+  // page. Wraps the bare text of td.empty rows and the UD single-cell notices in span.tt-muted.
   // Only text-only cells: a cell holding any element is never a bare placeholder. UD's refill
-  // recreates its rows, and the next enhanceMain pass rewraps them; ccMutedTeardown unwraps.
-  function ccMutedWrap(td) {
+  // recreates its rows, and the next enhanceMain pass rewraps them; ttMutedTeardown unwraps.
+  function ttMutedWrap(td) {
     if (!td || td.querySelector("*")) return;                // text-only, and the wrap itself is a child, so this guards against a second pass
     var txt = (td.textContent || "").trim(); if (!txt) return;
-    var s = el("span", "cc-muted");
+    var s = el("span", "tt-muted");
     while (td.firstChild) s.appendChild(td.firstChild);
     td.appendChild(s);
   }
-  function ccMutedEmpties() {
+  function ttMutedEmpties() {
     try {
       var es = document.querySelectorAll("#displaybox table td.empty");
-      for (var i = 0; i < es.length; i++) ccMutedWrap(es[i]);
+      for (var i = 0; i < es.length; i++) ttMutedWrap(es[i]);
       // a UD notice row is a lone spanning <td> of bare text
       var tbs = document.querySelectorAll("#displaybox #disk-table-body, #displaybox #remotes-table-body, #displaybox #historical-table-body");
       for (var t2 = 0; t2 < tbs.length; t2++) {
         var rows = tbs[t2].children;
         for (var r = 0; r < rows.length; r++) {
           var tr = rows[r];
-          if (tr.tagName === "TR" && tr.children.length === 1 && tr.children[0].tagName === "TD") ccMutedWrap(tr.children[0]);
+          if (tr.tagName === "TR" && tr.children.length === 1 && tr.children[0].tagName === "TD") ttMutedWrap(tr.children[0]);
         }
       }
     } catch (e) {}
   }
-  function ccMutedTeardown() {
+  function ttMutedTeardown() {
     try {
-      var ms = document.querySelectorAll("#displaybox .cc-muted");
-      for (var i = 0; i < ms.length; i++) ccUnwrap(ms[i]);
+      var ms = document.querySelectorAll("#displaybox .tt-muted");
+      for (var i = 0; i < ms.length; i++) ttUnwrap(ms[i]);
     } catch (e) {}
   }
-  // Row density follows cc.density, the key docker.js reads, so /Main and /Shares match the rest of
+  // Row density follows tt.density, the key docker.js reads, so /Main and /Shares match the rest of
   // the plugin. The default "normal" stamps neither class. The classes ride the static <table>
   // elements, so a tbody refill never wipes them, and the density CSS is page-gated, so a stamp on
   // another page is inert.
-  function ccDensity(on2) {
+  function ttDensity(on2) {
     try {
-      var dens = g("cc.density", "normal");
+      var dens = g("tt.density", "normal");
       var tbs = document.querySelectorAll("#displaybox table.unraid.share_status, #displaybox table.unraid.disk_status, #displaybox table.array_status, #displaybox table.usb_mounts, #displaybox table.samba_mounts, #displaybox table.usb_absent");
       for (var i = 0; i < tbs.length; i++) {
-        tbs[i].classList.toggle("cc-dens-compact", !!on2 && dens === "compact");
-        tbs[i].classList.toggle("cc-dens-airy", !!on2 && dens === "airy");
+        tbs[i].classList.toggle("tt-dens-compact", !!on2 && dens === "compact");
+        tbs[i].classList.toggle("tt-dens-airy", !!on2 && dens === "airy");
       }
     } catch (e) {}
   }
@@ -2020,8 +2020,8 @@
   // missing from the language packs, so replacing the text nodes is safe, and the onclick
   // attributes stay untouched. device_list's internal-boot sentence is two text nodes around the
   // wizard link. The locale map is keyed by the exact English string, as T() above; add MAIN_T.<lang>
-  // for another locale. Text already translated matches no key. data-cc-i18n-orig holds the
-  // original for ccI18nTeardown. Text-node writes are characterData mutations, which the
+  // for another locale. Text already translated matches no key. data-tt-i18n-orig holds the
+  // original for ttI18nTeardown. Text-node writes are characterData mutations, which the
   // childList-only observer never sees, so this cannot loop.
   var MAIN_T = {
     de: {
@@ -2089,8 +2089,8 @@
   }
   // Translates the direct text nodes of a host element, matching after whitespace normalisation.
   // Child elements such as icons, the wizard link and the UD images stay untouched.
-  function ccTr(host) {
-    if (!host || host.nodeType !== 1 || host.getAttribute("data-cc-i18n")) return;
+  function ttTr(host) {
+    if (!host || host.nodeType !== 1 || host.getAttribute("data-tt-i18n")) return;
     var keys = [];
     for (var c = host.firstChild; c; c = c.nextSibling) {
       if (c.nodeType !== 3) continue;
@@ -2102,9 +2102,9 @@
       c.textContent = lead + tr + trail;
       keys.push(k);
     }
-    if (keys.length) { host.setAttribute("data-cc-i18n", "1"); host.setAttribute("data-cc-i18n-orig", keys.join("")); }
+    if (keys.length) { host.setAttribute("data-tt-i18n", "1"); host.setAttribute("data-tt-i18n-orig", keys.join("")); }
   }
-  function ccLocalizeMain() {
+  function ttLocalizeMain() {
     try {
       if (pn() !== "/Main") return;
       if (LANG === "en" || !MAIN_T[LANG]) return;
@@ -2112,7 +2112,7 @@
       var sl = document.querySelectorAll('#displaybox table.array_status input[type="button"][onclick^="sleepS3"]');
       for (var s = 0; s < sl.length; s++) {
         var b = sl[s], tr = mt(b.value);
-        if (tr && !b.getAttribute("data-cc-i18n")) { b.setAttribute("data-cc-i18n", "1"); b.setAttribute("data-cc-i18n-orig", b.value); b.value = tr; }
+        if (tr && !b.getAttribute("data-tt-i18n")) { b.setAttribute("data-tt-i18n", "1"); b.setAttribute("data-tt-i18n-orig", b.value); b.value = tr; }
       }
       // UD: the section headings, the three add buttons (text nodes only), the switchButton labels
       // and the table heads. The map is keyed by the exact English string, so a head that is
@@ -2122,19 +2122,19 @@
         "#displaybox button[onclick^='add_samba_share'], #displaybox button[onclick^='add_iso_share'], #displaybox button[onclick^='add_root_share'], " +
         "#displaybox span.switch-button-label, " +
         "#displaybox table thead td, #displaybox table thead th");
-      for (var i = 0; i < els.length; i++) ccTr(els[i]);
+      for (var i = 0; i < els.length; i++) ttTr(els[i]);
       // The internal-boot sentence is the two text nodes around the wizard link. Its parentNode,
-      // not closest("td"): mainBadgeCell may have wrapped the cell text into .cc-b-v, and the
+      // not closest("td"): mainBadgeCell may have wrapped the cell text into .tt-b-v, and the
       // link's parent holds the text nodes either way.
       var links = document.querySelectorAll('#displaybox a[href*="InternalBootWizard"]');
-      for (var l = 0; l < links.length; l++) { var host = links[l].parentNode; if (host && host.nodeType === 1) ccTr(host); }
+      for (var l = 0; l < links.length; l++) { var host = links[l].parentNode; if (host && host.nodeType === 1) ttTr(host); }
     } catch (e) {}
   }
-  function ccI18nTeardown() {
+  function ttI18nTeardown() {
     try {
-      var els = document.querySelectorAll("#displaybox [data-cc-i18n]");
+      var els = document.querySelectorAll("#displaybox [data-tt-i18n]");
       for (var i = 0; i < els.length; i++) {
-        var el2 = els[i], keys = (el2.getAttribute("data-cc-i18n-orig") || "").split("");
+        var el2 = els[i], keys = (el2.getAttribute("data-tt-i18n-orig") || "").split("");
         if (el2.tagName === "INPUT") { if (keys[0]) el2.value = keys[0]; }
         else {
           for (var k = 0; k < keys.length; k++) {
@@ -2144,7 +2144,7 @@
             }
           }
         }
-        el2.removeAttribute("data-cc-i18n"); el2.removeAttribute("data-cc-i18n-orig");
+        el2.removeAttribute("data-tt-i18n"); el2.removeAttribute("data-tt-i18n-orig");
       }
     } catch (e) {}
   }
@@ -2152,93 +2152,93 @@
     try {
       var root = document.documentElement;
       // Master theming off behaves like a disabled area and runs the teardown branch below.
-      var on = g("cc.enable.shares", "0") !== "0" && g("cc.theming", "1") !== "0";   // opt in, since it flips Unraid's tabbed setting
-      // /Main is its own area but reuses this enhancer, so cc-shares-on is set there when the Start
+      var on = g("tt.enable.shares", "0") !== "0" && g("tt.theming", "1") !== "0";   // opt in, since it flips Unraid's tabbed setting
+      // /Main is its own area but reuses this enhancer, so tt-shares-on is set there when the Start
       // area is on even with the Shares area off. onMain() gates it to /Main, so the Shares styling
       // never leaks onto another page.
-      var onMainArea = g("cc.enable.main", "0") !== "0" && g("cc.theming", "1") !== "0";
+      var onMainArea = g("tt.enable.main", "0") !== "0" && g("tt.theming", "1") !== "0";
       var active = on || (onMainArea && onMain());
-      root.classList.toggle("cc-shares-on", active);
+      root.classList.toggle("tt-shares-on", active);
       // /Shares shows one legitimate tab family, so the CSS rule that hides a single tab skips it
-      root.classList.toggle("cc-on-shares", on && pn() === "/Shares");
+      root.classList.toggle("tt-on-shares", on && pn() === "/Shares");
       // The share detail page is a single-family tab page too. Without the marker the single-tab
       // hide takes its prev/next arrows with it, and its buttons, inputs and title stay unthemed.
-      root.classList.toggle("cc-on-share-detail", on && pn() === "/Shares/Share");
-      // Stacked CC sections instead of the native sub-tabs, per area. cc-on-share-detail stays set,
+      root.classList.toggle("tt-on-share-detail", on && pn() === "/Shares/Share");
+      // Stacked TowerTorch sections instead of the native sub-tabs, per area. tt-on-share-detail stays set,
       // since it gates the button and input theming in both modes; the CSS flatten rule combines it
-      // with cc-sections-share, so turning a section toggle off reverts to the native sub-tabs.
-      root.classList.toggle("cc-sections-share", on && g("cc.sections.shares", "0") !== "0" && (pn() === "/Shares/Share" || pn() === "/Shares"));   // the /Shares overview flattens too, not only the detail page
-      root.classList.toggle("cc-sections-main", onMainArea && g("cc.sections.main", "0") !== "0" && onMain());
-      root.classList.toggle("cc-on-main", onMainArea && onMain());
+      // with tt-sections-share, so turning a section toggle off reverts to the native sub-tabs.
+      root.classList.toggle("tt-sections-share", on && g("tt.sections.shares", "0") !== "0" && (pn() === "/Shares/Share" || pn() === "/Shares"));   // the /Shares overview flattens too, not only the detail page
+      root.classList.toggle("tt-sections-main", onMainArea && g("tt.sections.main", "0") !== "0" && onMain());
+      root.classList.toggle("tt-on-main", onMainArea && onMain());
       // The file manager is a CSS-only area, nothing is injected, so this class toggle is the whole
-      // teardown. The page runs delete and move jobs, so the cc-on-browse block in Shares.css keeps
+      // teardown. The page runs delete and move jobs, so the tt-on-browse block in Shares.css keeps
       // away from its rows, columns and check glyphs.
-      root.classList.toggle("cc-on-browse", on && onBrowse());
+      root.classList.toggle("tt-on-browse", on && onBrowse());
       if (on && onBrowse()) enhanceBrowse();
       // On /Stats the class drives the look and moveStatsControls() relocates the control group
       // below the graphs, which is a real DOM move with its own teardown.
       var statsOn = on && onStats();
-      root.classList.toggle("cc-on-stats", statsOn);
+      root.classList.toggle("tt-on-stats", statsOn);
       if (statsOn) moveStatsControls(); else statsControlsTeardown();
       if (!active) {
         // Disabled at runtime: removing the class reverts every CSS rule, but the injected card
         // headers would linger as stray unstyled divs, so they and their markers go as well.
         try {
-          ccDiskioHome();   // the diskio switch sits inside the first .cc-card-head, which the loop below removes
-          ccUdCtrlsHome();  // same for the UD cluster parked in the UD section's head or in its own card
-          var stray = document.querySelectorAll("#displaybox .cc-card-head, #displaybox .cc-card-note");
+          ttDiskioHome();   // the diskio switch sits inside the first .tt-card-head, which the loop below removes
+          ttUdCtrlsHome();  // same for the UD cluster parked in the UD section's head or in its own card
+          var stray = document.querySelectorAll("#displaybox .tt-card-head, #displaybox .tt-card-note");
           for (var s = 0; s < stray.length; s++) stray[s].parentNode.removeChild(stray[s]);
-          // Unhide the carded native SMB sub-heading. Its hide rule is gated on cc-shares-on, so
-          // without stripping the class the native heading and the orphaned .cc-card-note would
+          // Unhide the carded native SMB sub-heading. Its hide rule is gated on tt-shares-on, so
+          // without stripping the class the native heading and the orphaned .tt-card-note would
           // both show the same text.
-          var carded = document.querySelectorAll("#displaybox .cc-carded");
-          for (var cd = 0; cd < carded.length; cd++) carded[cd].classList.remove("cc-carded");
-          var marked = document.querySelectorAll("#displaybox [data-cc-card]");
-          for (var m = 0; m < marked.length; m++) marked[m].removeAttribute("data-cc-card");
+          var carded = document.querySelectorAll("#displaybox .tt-carded");
+          for (var cd = 0; cd < carded.length; cd++) carded[cd].classList.remove("tt-carded");
+          var marked = document.querySelectorAll("#displaybox [data-tt-card]");
+          for (var m = 0; m < marked.length; m++) marked[m].removeAttribute("data-tt-card");
           // The inline rainbow colours paintTabs and paintRows stamped survive a class removal, so
           // they are cleared here along with the neutral class.
-          root.classList.remove("cc-shares-rbneutral");
-          var painted = document.querySelectorAll('#displaybox nav.tabs button[role="tab"], #displaybox #shareslist tr, #displaybox #disk_list tr, #displaybox .cc-b, #displaybox .cc-b-browse, #displaybox table.unraid.disk_status tr, #displaybox table.array_status input[type="submit"], #displaybox table.array_status input[type="button"], #displaybox table.array_status a.button, #displaybox table.array_status button, #displaybox .cc-card-head, #displaybox a.cc-ud-icon, #displaybox a.cc-ibtn, #displaybox .cc-aop-link, #displaybox .switch-button-background');
-          for (var p = 0; p < painted.length; p++) { painted[p].style.removeProperty("background"); painted[p].style.removeProperty("color"); painted[p].style.removeProperty("--cc-rb-c"); painted[p].style.removeProperty("--cc-rb-ct"); }
-          ccSelectsTeardown();
-          ccCardsTeardown();
+          root.classList.remove("tt-shares-rbneutral");
+          var painted = document.querySelectorAll('#displaybox nav.tabs button[role="tab"], #displaybox #shareslist tr, #displaybox #disk_list tr, #displaybox .tt-b, #displaybox .tt-b-browse, #displaybox table.unraid.disk_status tr, #displaybox table.array_status input[type="submit"], #displaybox table.array_status input[type="button"], #displaybox table.array_status a.button, #displaybox table.array_status button, #displaybox .tt-card-head, #displaybox a.tt-ud-icon, #displaybox a.tt-ibtn, #displaybox .tt-aop-link, #displaybox .switch-button-background');
+          for (var p = 0; p < painted.length; p++) { painted[p].style.removeProperty("background"); painted[p].style.removeProperty("color"); painted[p].style.removeProperty("--tt-rb-c"); painted[p].style.removeProperty("--tt-rb-ct"); }
+          ttSelectsTeardown();
+          ttCardsTeardown();
           // The /Main disk_status tables give back their injected Browse column, value badges and
           // markers, so a live disable reverts before the next nchan refill. A colspan left one too
           // wide heals with that refill.
-          var mbrowse = document.querySelectorAll("#displaybox table.unraid.disk_status td.cc-browse-col");
+          var mbrowse = document.querySelectorAll("#displaybox table.unraid.disk_status td.tt-browse-col");
           for (var mb = 0; mb < mbrowse.length; mb++) mbrowse[mb].parentNode.removeChild(mbrowse[mb]);
           // Move the children back rather than reading textContent, which would destroy the wrapped
           // diskio spans and the error info icon.
-          var mbc = document.querySelectorAll("#displaybox table.unraid.disk_status td.cc-bcell");
+          var mbc = document.querySelectorAll("#displaybox table.unraid.disk_status td.tt-bcell");
           for (var bcx = 0; bcx < mbc.length; bcx++) {
-            var cbx = mbc[bcx].querySelector(":scope > .cc-b"), vvx = cbx && cbx.querySelector(":scope > .cc-b-v");
+            var cbx = mbc[bcx].querySelector(":scope > .tt-b"), vvx = cbx && cbx.querySelector(":scope > .tt-b-v");
             if (vvx) { while (vvx.firstChild) mbc[bcx].insertBefore(vvx.firstChild, cbx); }
             if (cbx) mbc[bcx].removeChild(cbx);
-            mbc[bcx].classList.remove("cc-bcell");
+            mbc[bcx].classList.remove("tt-bcell");
           }
-          var mmk = document.querySelectorAll("#displaybox [data-cc-main]");
-          for (var mmx = 0; mmx < mmk.length; mmx++) mmk[mmx].removeAttribute("data-cc-main");
+          var mmk = document.querySelectorAll("#displaybox [data-tt-main]");
+          for (var mmx = 0; mmx < mmk.length; mmx++) mmk[mmx].removeAttribute("data-tt-main");
           // strip the headline badge classes off the device link
-          var mname = document.querySelectorAll("#displaybox table.unraid.disk_status a.cc-b-name");
-          for (var mn = 0; mn < mname.length; mn++) { mname[mn].classList.remove("cc-b"); mname[mn].classList.remove("cc-b-name"); }
+          var mname = document.querySelectorAll("#displaybox table.unraid.disk_status a.tt-b-name");
+          for (var mn = 0; mn < mname.length; mn++) { mname[mn].classList.remove("tt-b"); mname[mn].classList.remove("tt-b-name"); }
           // An empty slot on a stopped array has no link to declass, since enhanceMainName wraps
           // its bare text node instead.
-          var msname = document.querySelectorAll("#displaybox table.unraid.disk_status span.cc-b-name");
+          var msname = document.querySelectorAll("#displaybox table.unraid.disk_status span.tt-b-name");
           for (var ms = 0; ms < msname.length; ms++) msname[ms].parentNode.replaceChild(document.createTextNode(msname[ms].textContent || ""), msname[ms]);
-          var mvoid = document.querySelectorAll("#displaybox table.unraid.disk_status tr.cc-tr-void");
-          for (var mv = 0; mv < mvoid.length; mv++) mvoid[mv].classList.remove("cc-tr-void");
-          ccMainCols.teardown();
-          ccShareCols.teardown();
+          var mvoid = document.querySelectorAll("#displaybox table.unraid.disk_status tr.tt-tr-void");
+          for (var mv = 0; mv < mvoid.length; mv++) mvoid[mv].classList.remove("tt-tr-void");
+          ttMainCols.teardown();
+          ttShareCols.teardown();
           aopTeardown();
-          udTeardown();   // before ccI18nTeardown, whose text-node match needs the restored headings
-          ccMutedTeardown();
-          ccDensity(false);
+          udTeardown();   // before ttI18nTeardown, whose text-node match needs the restored headings
+          ttMutedTeardown();
+          ttDensity(false);
           // styled hover bubbles back to native title balloons
-          var tps = document.querySelectorAll("#displaybox [data-cc-tip]");
-          for (var tp = 0; tp < tps.length; tp++) { tps[tp].setAttribute("title", tps[tp].getAttribute("data-cc-tip")); tps[tp].removeAttribute("data-cc-tip"); }
-          var hps = document.querySelectorAll("#displaybox [data-cc-help]");
-          for (var hp = 0; hp < hps.length; hp++) hps[hp].removeAttribute("data-cc-help");   // a re-enable derives the fold again
-          ccI18nTeardown();
+          var tps = document.querySelectorAll("#displaybox [data-tt-tip]");
+          for (var tp = 0; tp < tps.length; tp++) { tps[tp].setAttribute("title", tps[tp].getAttribute("data-tt-tip")); tps[tp].removeAttribute("data-tt-tip"); }
+          var hps = document.querySelectorAll("#displaybox [data-tt-help]");
+          for (var hp = 0; hp < hps.length; hp++) hps[hp].removeAttribute("data-tt-help");   // a re-enable derives the fold again
+          ttI18nTeardown();
         } catch (e) {}
         return;
       }
@@ -2246,10 +2246,10 @@
       // two never meet on one page load.
       var a = (onMainArea && onMain()) ? mainAccent() : accent();
       // Each area owns its accent var: every global enhancer writes on documentElement, so a
-      // shared --cc-accent would let the Freigaben colour bleed onto the menu bar and back.
-      root.style.setProperty("--cc-shr-accent", a);
-      root.style.setProperty("--cc-shr-accent-text", idealText(a));
-      root.classList.toggle("cc-shares-rb", rbOn());
+      // shared --tt-accent would let the Freigaben colour bleed onto the menu bar and back.
+      root.style.setProperty("--tt-shr-accent", a);
+      root.style.setProperty("--tt-shr-accent-text", idealText(a));
+      root.classList.toggle("tt-shares-rb", rbOn());
       ensureTabbed();
       hideRedundantTabs();
       paintTabs();
@@ -2259,7 +2259,7 @@
       paintCards();
       enhanceMain();
       paintMain();          // after the badges exist
-      ccDensity(true);
+      ttDensity(true);
       if (onStats()) moveStatsControls();   // span.status can arrive late
       if (onBrowse()) enhanceBrowse();      // navigation replaces the tbody
     } catch (e) {}
@@ -2271,7 +2271,7 @@
       var host = document.getElementById("displaybox") || document.getElementById("content");
       if (!host) return;
       mo = new MutationObserver(function (recs) {
-        if (g("cc.theming", "1") === "0") return;   // apply()'s teardown has already cleaned up
+        if (g("tt.theming", "1") === "0") return;   // apply()'s teardown has already cleaned up
         // Unraid's devices subscriber replaces the whole disk table body on every nchan tick,
         // wiping the Browse column and the badges. Going through the debounce below would land a
         // paint frame late, so the browser shows the plain 10-column rows under the 11-column head
@@ -2283,19 +2283,19 @@
           if (tgt && (tgt.id === "array_devices" || tgt.id === "disk-table-body" || tgt.id === "remotes-table-body" || tgt.id === "historical-table-body" || (tgt.closest && tgt.closest("table.unraid.disk_status")))) { enhanceMain(); paintMain(); break; }
         }
         if (moPending) return; moPending = true;
-        setTimeout(function () { moPending = false; if (g("cc.theming", "1") === "0") return; hideRedundantTabs(); paintTabs(); enhanceShares(); paintRows(); enhanceShareDetail(); paintCards(); enhanceMain(); paintMain(); if (g("cc.enable.shares", "0") !== "0" && onStats()) moveStatsControls(); if (g("cc.enable.shares", "0") !== "0" && onBrowse()) enhanceBrowse(); }, 150);
+        setTimeout(function () { moPending = false; if (g("tt.theming", "1") === "0") return; hideRedundantTabs(); paintTabs(); enhanceShares(); paintRows(); enhanceShareDetail(); paintCards(); enhanceMain(); paintMain(); if (g("tt.enable.shares", "0") !== "0" && onStats()) moveStatsControls(); if (g("tt.enable.shares", "0") !== "0" && onBrowse()) enhanceBrowse(); }, 150);
       });
       mo.observe(host, { childList: true, subtree: true });
     } catch (e) {}
   }
   function boot() {
-    try { window.ccSharesApply = apply; } catch (e) {}   // the settings page's live toggle hook, for Shares and Start
-    if (g("cc.enable.shares", "0") === "0" && g("cc.enable.main", "0") === "0") return;
+    try { window.ttSharesApply = apply; } catch (e) {}   // the settings page's live toggle hook, for Shares and Start
+    if (g("tt.enable.shares", "0") === "0" && g("tt.enable.main", "0") === "0") return;
     apply();
     watch();
-    // The settings page writes cc.* and ccsh.* keys from another tab. The [a-z]* in the pattern is
-    // what catches "ccsh.accent". cc.stateCache is skipped because docker.js rewrites it every 9s.
-    try { window.addEventListener("storage", function (e) { if (e && e.key && e.key !== "cc.stateCache" && /^cc[a-z]*\./.test(e.key)) apply(); }); } catch (e) {}
+    // The settings page writes tt.* and ttsh.* keys from another tab. The [a-z]* in the pattern is
+    // what catches "ttsh.accent". tt.stateCache is skipped because docker.js rewrites it every 9s.
+    try { window.addEventListener("storage", function (e) { if (e && e.key && e.key !== "tt.stateCache" && /^tt[a-z]*\./.test(e.key)) apply(); }); } catch (e) {}
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

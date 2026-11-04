@@ -1,7 +1,7 @@
 // A closed select field with focus steps with the scroll wheel, in every family
 // that replaces a native <select> (GlimStone rule 14, reference/selectScroll.ts).
 //
-// The handler is a single document-level listener in cc-theme.js, the one file
+// The handler is a single document-level listener in tt-theme.js, the one file
 // that loads on every page, driven by the shared family selectors. What can
 // quietly break it:
 //   · it fires only over a closed widget that has the focus, since an open
@@ -18,7 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
-const THEME = process.argv[2] || path.join(DIR, 'cc-theme.js');
+const THEME = process.argv[2] || path.join(DIR, 'tt-theme.js');
 
 let pass = 0, fail = 0;
 const ok = (c, m, extra) => { c ? (pass++, console.log('  PASS  ' + m)) : (fail++, console.log('  FAIL  ' + m + (extra ? '  -> ' + extra : ''))); };
@@ -90,10 +90,10 @@ global.sessionStorage = { getItem: () => null, setItem: () => {} };
 global.Image = class { set src(_) {} };
 
 require(THEME);
-const CCTheme = global.window.CCTheme;
-ok(!!CCTheme, 'cc-theme.js loaded and published window.CCTheme');
-ok(typeof CCTheme.nextSelIndex === 'function', 'the step function is exported for this test to reach');
-ok(typeof CCTheme.registerSelectSync === 'function', 'each family can register its own repaint');
+const TTTheme = global.window.TTTheme;
+ok(!!TTTheme, 'tt-theme.js loaded and published window.TTTheme');
+ok(typeof TTTheme.nextSelIndex === 'function', 'the step function is exported for this test to reach');
+ok(typeof TTTheme.registerSelectSync === 'function', 'each family can register its own repaint');
 ok(docListeners.wheel && docListeners.wheel.length === 1, 'one document-level wheel listener, not one per family');
 const onWheel = (docListeners.wheel || [])[0];
 
@@ -128,8 +128,8 @@ function wheel(target, dy) {
   return prevented;
 }
 
-console.log('\nStepping a closed field, in every family CC has');
-['cc-tsel', 'cc-dsel', 'cc-sel'].forEach(fam => {
+console.log('\nStepping a closed field, in every family TowerTorch has');
+['tt-tsel', 'tt-dsel', 'tt-sel'].forEach(fam => {
   const w = widget(fam, ['Automatisch', 'Natives Icon', 'Ink-Flatten', 'Luminanz-Tint'], 0);
   let changes = 0;
   w.sel.addEventListener('change', () => { changes++; });
@@ -140,15 +140,15 @@ console.log('\nStepping a closed field, in every family CC has');
   eq(w.panel.querySelectorAll('.' + fam + '-opt')[1].classList.contains('is-selected'), true, fam + ': the chip carries is-selected');
   wheel(w.trig, -120);
   eq(w.sel.selectedIndex, 0, fam + ': a wheel up steps back');
-  eq(w.wrap.classList.contains('cc-open'), false, fam + ': the panel never opened');
+  eq(w.wrap.classList.contains('tt-open'), false, fam + ': the panel never opened');
 });
 
 console.log('\nFocus is the condition, not the pointer');
 {
-  const w = widget('cc-dsel', ['a', 'b', 'c'], 0, { blur: true });
+  const w = widget('tt-dsel', ['a', 'b', 'c'], 0, { blur: true });
   ok(!wheel(w.trig, 120), 'a field the page scrolls past, without the focus, is left to the page');
   eq(w.sel.selectedIndex, 0, 'and keeps its value');
-  const other = widget('cc-dsel', ['x', 'y'], 0);
+  const other = widget('tt-dsel', ['x', 'y'], 0);
   ok(!wheel(w.trig, 120) && w.sel.selectedIndex === 0, 'the focus on another field does not count for this one');
   w.trig.focus();
   ok(wheel(w.trig, 120) && w.sel.selectedIndex === 1, 'once it has the focus, the wheel steps it');
@@ -156,19 +156,19 @@ console.log('\nFocus is the condition, not the pointer');
   const dir = path.join(DIR);
   const src = (n) => fs.readFileSync(path.join(dir, n), 'utf8');
   const docker = src('docker.js'), settings = src('settings.js'), shares = src('shares.js'), header = src('header.js');
-  ok(/function selTrigger\(trig\) \{[^}]*window\.CCTheme\.pressable\(trig\)/.test(docker) && /var trig = selTrigger\(el\("span", "cc-dsel-trigger"\)\);/.test(docker), 'docker.js: the .cc-dsel trigger takes the focus and opens on Enter');
-  ok(/var trig = el\("span", "cc-dsel-trigger"\); wrap\.appendChild\(trig\);\n    if \(window\.CCTheme && window\.CCTheme\.pressable\) window\.CCTheme\.pressable\(trig\);/.test(settings), 'settings.js: so does its .cc-dsel trigger');
-  ok(/var trig = el\("span", "cc-sel-trigger"\); wrap\.appendChild\(trig\);\n    if \(window\.CCTheme && window\.CCTheme\.pressable\) window\.CCTheme\.pressable\(trig\);/.test(shares), 'shares.js: so does the .cc-sel trigger');
-  ok(/trig\.setAttribute\("role", "button"\); trig\.setAttribute\("tabindex", "0"\);/.test(header), 'header.js: the .cc-tsel trigger already is a button with a tab stop');
-  ok(/ctSyncOne\(sel\);\n          wrap\.classList\.remove\("cc-open"\);\n          trig\.focus\(\);/.test(docker), 'docker.js: a pick hands the focus back to the trigger, so the wheel keeps working');
-  ok(/ccDselSync\(sel\); wrap\.classList\.remove\("cc-open"\); trig\.focus\(\);/.test(settings), 'settings.js: so does a pick there');
-  ok(/wrap\.classList\.remove\("cc-open"\);\n          trig\.focus\(\);/.test(shares), 'shares.js: and there');
-  ok(/wrap\.classList\.remove\("cc-open"\); trig\.setAttribute\("aria-expanded", "false"\); trig\.focus\(\);/.test(header), 'header.js: and in the header\'s family');
+  ok(/function selTrigger\(trig\) \{[^}]*window\.TTTheme\.pressable\(trig\)/.test(docker) && /var trig = selTrigger\(el\("span", "tt-dsel-trigger"\)\);/.test(docker), 'docker.js: the .tt-dsel trigger takes the focus and opens on Enter');
+  ok(/var trig = el\("span", "tt-dsel-trigger"\); wrap\.appendChild\(trig\);\n    if \(window\.TTTheme && window\.TTTheme\.pressable\) window\.TTTheme\.pressable\(trig\);/.test(settings), 'settings.js: so does its .tt-dsel trigger');
+  ok(/var trig = el\("span", "tt-sel-trigger"\); wrap\.appendChild\(trig\);\n    if \(window\.TTTheme && window\.TTTheme\.pressable\) window\.TTTheme\.pressable\(trig\);/.test(shares), 'shares.js: so does the .tt-sel trigger');
+  ok(/trig\.setAttribute\("role", "button"\); trig\.setAttribute\("tabindex", "0"\);/.test(header), 'header.js: the .tt-tsel trigger already is a button with a tab stop');
+  ok(/ctSyncOne\(sel\);\n          wrap\.classList\.remove\("tt-open"\);\n          trig\.focus\(\);/.test(docker), 'docker.js: a pick hands the focus back to the trigger, so the wheel keeps working');
+  ok(/ttDselSync\(sel\); wrap\.classList\.remove\("tt-open"\); trig\.focus\(\);/.test(settings), 'settings.js: so does a pick there');
+  ok(/wrap\.classList\.remove\("tt-open"\);\n          trig\.focus\(\);/.test(shares), 'shares.js: and there');
+  ok(/wrap\.classList\.remove\("tt-open"\); trig\.setAttribute\("aria-expanded", "false"\); trig\.focus\(\);/.test(header), 'header.js: and in the header\'s family');
 }
 
 console.log('\nIt clamps, it does not wrap');
 {
-  const w = widget('cc-dsel', ['a', 'b', 'c'], 0);
+  const w = widget('tt-dsel', ['a', 'b', 'c'], 0);
   ok(!wheel(w.trig, -120), 'at the first option a wheel up is left to the page');
   eq(w.sel.selectedIndex, 0, 'and the value did not wrap round to the last option');
   wheel(w.trig, 120); wheel(w.trig, 120);
@@ -179,31 +179,31 @@ console.log('\nIt clamps, it does not wrap');
 
 console.log('\nWhat it must keep its hands off');
 {
-  const open = widget('cc-dsel', ['a', 'b', 'c'], 0);
-  open.wrap.classList.add('cc-open');
+  const open = widget('tt-dsel', ['a', 'b', 'c'], 0);
+  open.wrap.classList.add('tt-open');
   ok(!wheel(open.trig, 120), 'an open widget is not stepped, the user scrolling its list');
   eq(open.sel.selectedIndex, 0, 'and its value is untouched');
   ok(!wheel(open.panel.children[0], 120), 'a wheel inside a panel scrolls the panel, never steps the field');
 
-  const closed = widget('cc-dsel', ['a', 'b', 'c'], 0);
+  const closed = widget('tt-dsel', ['a', 'b', 'c'], 0);
   ok(!wheel(closed.panel.children[1], 120), 'on a closed widget a wheel over the panel subtree is left alone');
 
   const plain = new N('div'); document.body.appendChild(plain);
   ok(!wheel(plain, 120), 'a wheel anywhere else on the page is not touched at all');
 
-  const drop = new N('div'); drop.className = 'cc-drop'; document.body.appendChild(drop);
-  const it = new N('div'); it.className = 'cc-drop-it'; drop.appendChild(it);
+  const drop = new N('div'); drop.className = 'tt-drop'; document.body.appendChild(drop);
+  const it = new N('div'); it.className = 'tt-drop-it'; drop.appendChild(it);
   ok(!wheel(it, 120), 'the Startplan multi-select is out of scope: a comma list has no next value');
 
-  const dis = widget('cc-dsel', ['a', 'b'], 0);
-  dis.wrap.classList.add('cc-dsel-disabled');
+  const dis = widget('tt-dsel', ['a', 'b'], 0);
+  dis.wrap.classList.add('tt-dsel-disabled');
   ok(!wheel(dis.trig, 120), 'a disabled widget is inert');
   eq(dis.sel.selectedIndex, 0, 'and keeps its value');
 
-  const one = widget('cc-dsel', ['only'], 0);
+  const one = widget('tt-dsel', ['only'], 0);
   ok(!wheel(one.trig, 120), 'a one-option field is a placeholder, not a choice, so the page scrolls');
 
-  const zoom = widget('cc-dsel', ['a', 'b'], 0);
+  const zoom = widget('tt-dsel', ['a', 'b'], 0);
   let prevented = false;
   onWheel({ target: zoom.trig, deltaY: 120, deltaX: 0, ctrlKey: true, metaKey: false, altKey: false, preventDefault() { prevented = true; } });
   ok(!prevented && zoom.sel.selectedIndex === 0, 'ctrl+wheel stays the browser zoom gesture');
@@ -211,7 +211,7 @@ console.log('\nWhat it must keep its hands off');
 
 console.log('\nDisabled options are skipped, never landed on');
 {
-  const w = widget('cc-dsel', ['a', 'b', 'c', 'd'], 0, { disabledIdx: [1, 2] });
+  const w = widget('tt-dsel', ['a', 'b', 'c', 'd'], 0, { disabledIdx: [1, 2] });
   ok(wheel(w.trig, 120), 'a step over two disabled options is still a real step');
   eq(w.sel.selectedIndex, 3, 'it landed on the next selectable option');
 }
@@ -219,25 +219,25 @@ console.log('\nDisabled options are skipped, never landed on');
 console.log('\nThe pure step function itself');
 {
   const mk = (n, sel, dis) => ({ options: Array.from({ length: n }, (_, i) => ({ disabled: (dis || []).indexOf(i) >= 0 })), selectedIndex: sel });
-  eq(CCTheme.nextSelIndex(mk(4, 0), 1), 1, 'forward from the first');
-  eq(CCTheme.nextSelIndex(mk(4, 3), 1), 3, 'forward from the last clamps, returning the same index');
-  eq(CCTheme.nextSelIndex(mk(4, 0), -1), 0, 'backward from the first clamps');
-  eq(CCTheme.nextSelIndex(mk(1, 0), 1), 0, 'a single option cannot step');
-  eq(CCTheme.nextSelIndex(mk(4, -1), 1), 0, 'nothing selected, forward: the first');
-  eq(CCTheme.nextSelIndex(mk(4, -1), -1), 3, 'nothing selected, backward: the last');
-  eq(CCTheme.nextSelIndex(mk(4, 0, [1, 2]), 1), 3, 'disabled options are skipped');
-  eq(CCTheme.nextSelIndex(mk(3, 0, [1, 2]), 1), 0, 'only disabled options ahead: no change');
+  eq(TTTheme.nextSelIndex(mk(4, 0), 1), 1, 'forward from the first');
+  eq(TTTheme.nextSelIndex(mk(4, 3), 1), 3, 'forward from the last clamps, returning the same index');
+  eq(TTTheme.nextSelIndex(mk(4, 0), -1), 0, 'backward from the first clamps');
+  eq(TTTheme.nextSelIndex(mk(1, 0), 1), 0, 'a single option cannot step');
+  eq(TTTheme.nextSelIndex(mk(4, -1), 1), 0, 'nothing selected, forward: the first');
+  eq(TTTheme.nextSelIndex(mk(4, -1), -1), 3, 'nothing selected, backward: the last');
+  eq(TTTheme.nextSelIndex(mk(4, 0, [1, 2]), 1), 3, 'disabled options are skipped');
+  eq(TTTheme.nextSelIndex(mk(3, 0, [1, 2]), 1), 0, 'only disabled options ahead: no change');
 }
 
 console.log('\nEach family repaints with its own sync rather than a generic mirror');
 {
   let called = null;
-  CCTheme.registerSelectSync((sel, wrap) => { if (!wrap.classList.contains('cc-tsel')) return false; called = sel; return true; });
-  const t = widget('cc-tsel', ['x', 'y'], 0);
+  TTTheme.registerSelectSync((sel, wrap) => { if (!wrap.classList.contains('tt-tsel')) return false; called = sel; return true; });
+  const t = widget('tt-tsel', ['x', 'y'], 0);
   t.trig.textContent = 'x';
   wheel(t.trig, 120);
   ok(called === t.sel, 'the registered sync ran for its own family');
-  const d = widget('cc-dsel', ['x', 'y'], 0);
+  const d = widget('tt-dsel', ['x', 'y'], 0);
   called = null;
   wheel(d.trig, 120);
   ok(called === null, 'and was correctly declined for a family that is not its own');

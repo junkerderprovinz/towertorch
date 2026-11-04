@@ -2,11 +2,11 @@
 // icon-pipeline tests use pointed at this file.
 //
 // plugIconInk() and paintRow() read eff("iconbg") rather than the
-// cc-plugins-iconbg class on <html>. paint() only rewrites that class after the
+// tt-plugins-iconbg class on <html>. paint() only rewrites that class after the
 // row loop that has already read it, so the class is unset on the first load and
 // one paint behind after a live settings change from another tab.
 //
-// It also pins that logoSize()'s cc.sgsize map matches docker.js's ccLogoSizes()
+// It also pins that logoSize()'s tt.sgsize map matches docker.js's ttLogoSizes()
 // and vms.js's vmLogoSizes(), and that a glyph never carries both a direct colour
 // and a tint filter.
 const fs = require('fs');
@@ -53,7 +53,7 @@ global.localStorage = {
   setItem: (k, v) => { store[k] = String(v); },
   removeItem: k => { delete store[k]; },
 };
-global.window = { localStorage: global.localStorage, CCTheme: null };
+global.window = { localStorage: global.localStorage, TTTheme: null };
 
 // Pull the functions under test out of plugins.js.
 const src = fs.readFileSync(PLUGINS, 'utf8');
@@ -65,14 +65,14 @@ function grabFn(name) {
   throw new Error('unbalanced function: ' + name);
 }
 // RB_PAL and RB_OFFSET stand in for the module-level palette vars, normally
-// window.CCTheme.RB and a persisted seed, pinned to the shipped palette at offset 0
+// window.TTTheme.RB and a persisted seed, pinned to the shipped palette at offset 0
 // so colorFor(i) is deterministic.
 const pluginsApi = new Function('document', 'localStorage', 'window',
   'var RB_PAL = ["#d9433f","#f97316","#fcc419","#1f9d55","#0ea5a4","#2f6feb","#8b5cf6","#e05299"];\n' +
   'var RB_OFFSET = 0;\n' +
   grabFn('ls') + '\n' + grabFn('eff') + '\n' + grabFn('iconBgAdoptsP') + '\n' + grabFn('iconBgOnP') + '\n' + grabFn('idealText') + '\n' + grabFn('accent') + '\n' +
   grabFn('storedPal') + '\n' + grabFn('pal') + '\n' + grabFn('colorFor') + '\n' +
-  grabFn('ccHex6') + '\n' + grabFn('ensureFlatFilter') + '\n' + grabFn('ensureMonoFilter') + '\n' +
+  grabFn('ttHex6') + '\n' + grabFn('ensureFlatFilter') + '\n' + grabFn('ensureMonoFilter') + '\n' +
   grabFn('plugTintOn') + '\n' + grabFn('plugBgColor') + '\n' +
   grabFn('plugIconInk') + '\n' + grabFn('logoSize') + '\n' + grabFn('plugGlyphInkAndFilter') + '\n' +
   'return { iconBgOnP: iconBgOnP, eff: eff, plugTintOn: plugTintOn, plugBgColor: plugBgColor, plugIconInk: plugIconInk, logoSize: logoSize, plugGlyphInkAndFilter: plugGlyphInkAndFilter, idealText: idealText, accent: accent, colorFor: colorFor };'
@@ -87,14 +87,14 @@ console.log('\nplugIconInk() resolves from eff("iconbg"), never from the DOM cla
   reset();
   // Both states the class can be in: never set, as on a first paint, and stale from
   // a previous paint after a settings change in another tab.
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconcolor', '#e5a00d');
-  ok('cc.iconbg=1 with the class unset still resolves the ink', /^#[0-9a-f]{6}$/i.test(pluginsApi.plugIconInk(false)), pluginsApi.plugIconInk(false));
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconcolor', '#e5a00d');
+  ok('tt.iconbg=1 with the class unset still resolves the ink', /^#[0-9a-f]{6}$/i.test(pluginsApi.plugIconInk(false)), pluginsApi.plugIconInk(false));
   ok('and it is the picked colour, the badge not overriding it', pluginsApi.plugIconInk(false) === '#e5a00d', pluginsApi.plugIconInk(false));
   reset();
 
-  localStorage.setItem('cc.iconbg', '0'); localStorage.setItem('cc.iconcolor', '#e5a00d');
-  document.documentElement.classList.add('cc-plugins-iconbg');
-  ok('cc.iconbg=0 with the class set resolves the picked colour, not the badge ink', pluginsApi.plugIconInk(false) === '#e5a00d', pluginsApi.plugIconInk(false));
+  localStorage.setItem('tt.iconbg', '0'); localStorage.setItem('tt.iconcolor', '#e5a00d');
+  document.documentElement.classList.add('tt-plugins-iconbg');
+  ok('tt.iconbg=0 with the class set resolves the picked colour, not the badge ink', pluginsApi.plugIconInk(false) === '#e5a00d', pluginsApi.plugIconInk(false));
   reset();
 }
 
@@ -103,29 +103,29 @@ console.log('\nHintergrund and Einfärben stay independent: the badge alone does
   reset();
   ok('nothing configured at all: no ink', pluginsApi.plugIconInk(false) === '');
 
-  localStorage.setItem('cc.iconbg', '1');
+  localStorage.setItem('tt.iconbg', '1');
   ok('background on, Einfärben untouched, no colour picked: no ink', pluginsApi.plugIconInk(false) === '');
 
-  localStorage.setItem('cc.icontint', '0');
+  localStorage.setItem('tt.icontint', '0');
   ok('background on, Einfärben off: no ink even with the badge showing', pluginsApi.plugIconInk(false) === '');
 
-  localStorage.setItem('cc.icontint', '1');
+  localStorage.setItem('tt.icontint', '1');
   ok('background on, Einfärben on, no colour picked: no ink to lift', pluginsApi.plugIconInk(false) === '');
-  localStorage.setItem('cc.iconcolor', '#e5a00d');
+  localStorage.setItem('tt.iconcolor', '#e5a00d');
   ok('background on, Einfärben on, colour picked: inked in that colour', pluginsApi.plugIconInk(false) === '#e5a00d', pluginsApi.plugIconInk(false));
   reset();
 
-  // On an install with cc.iconbg and cc.iconcolor and no cc.icontint, the colour's
+  // On an install with tt.iconbg and tt.iconcolor and no tt.icontint, the colour's
   // presence is the tint signal, which plugTintOn()'s fallback keeps reading.
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconcolor', '#1f9d55');
-  ok('no cc.icontint key at all: the icon is inked', pluginsApi.plugTintOn() === true && pluginsApi.plugIconInk(false) !== '');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconcolor', '#1f9d55');
+  ok('no tt.icontint key at all: the icon is inked', pluginsApi.plugTintOn() === true && pluginsApi.plugIconInk(false) !== '');
   reset();
 
   // With both controls on and two different colours, the ink is the tint's own,
   // never a contrast colour derived from the badge box.
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconbgcolor', '#161616'); localStorage.setItem('cc.icontint', '0');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconbgcolor', '#161616'); localStorage.setItem('tt.icontint', '0');
   ok('the background colour applies with Einfärben off', pluginsApi.plugBgColor() === '#161616');
-  localStorage.setItem('cc.icontint', '1'); localStorage.setItem('cc.iconcolor', '#e5a00d');
+  localStorage.setItem('tt.icontint', '1'); localStorage.setItem('tt.iconcolor', '#e5a00d');
   ok('with both on, the ink is the tint colour', pluginsApi.plugIconInk(false) === '#e5a00d', pluginsApi.plugIconInk(false));
   ok('and the badge box keeps its own colour', pluginsApi.plugBgColor() === '#161616', pluginsApi.plugBgColor());
   reset();
@@ -134,33 +134,33 @@ console.log('\nHintergrund and Einfärben stay independent: the badge alone does
 console.log('\ncc.iconbgrainbow: "Badge-Farben übernehmen" takes over the colours only');
 {
   reset();
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconbgcolor', '#e5a00d');
-  localStorage.setItem('cc.icontint', '1'); localStorage.setItem('cc.iconcolor', '#00aa00');
-  localStorage.setItem('cc.accent', '#2f6feb');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconbgcolor', '#e5a00d');
+  localStorage.setItem('tt.icontint', '1'); localStorage.setItem('tt.iconcolor', '#00aa00');
+  localStorage.setItem('tt.accent', '#2f6feb');
 
   ok('not adopting: plugBgColor() is the picked background colour', pluginsApi.plugBgColor() === '#e5a00d', pluginsApi.plugBgColor());
   ok('not adopting: plugIconInk() is the picked tint colour', pluginsApi.plugIconInk(false) === '#00aa00', pluginsApi.plugIconInk(false));
 
-  localStorage.setItem('cc.iconbgrainbow', '1');
-  ok('adopting: plugBgColor() answers "", so no --cc-iconbg-color is stamped and docker.css falls through to the source every generic plugin badge uses', pluginsApi.plugBgColor() === '', JSON.stringify(pluginsApi.plugBgColor()));
+  localStorage.setItem('tt.iconbgrainbow', '1');
+  ok('adopting: plugBgColor() answers "", so no --tt-iconbg-color is stamped and docker.css falls through to the source every generic plugin badge uses', pluginsApi.plugBgColor() === '', JSON.stringify(pluginsApi.plugBgColor()));
 
-  localStorage.setItem('cc.rainbow', '0');
+  localStorage.setItem('tt.rainbow', '0');
   ok('adopting with rainbow off: the ink is the contrast colour for the plain accent', pluginsApi.plugIconInk(false) === pluginsApi.idealText(pluginsApi.colorFor(5)), pluginsApi.plugIconInk(false));
 
-  localStorage.setItem('cc.rainbow', '1');
+  localStorage.setItem('tt.rainbow', '1');
   ok('adopting with rainbow on: the ink is the contrast colour for the colorFor(5) a generic badge resolves to', pluginsApi.plugIconInk(false) === pluginsApi.idealText(pluginsApi.colorFor(5)), pluginsApi.plugIconInk(false) + ' vs idealText(' + pluginsApi.colorFor(5) + ')');
   ok('and not the picked colour', pluginsApi.plugIconInk(false) !== '#00aa00');
 
-  localStorage.setItem('cc.icontint', '0');
+  localStorage.setItem('tt.icontint', '0');
   ok('adopting with Tint icons off: no ink, the icons keep their own colours', pluginsApi.plugIconInk(false) === '', pluginsApi.plugIconInk(false));
-  localStorage.setItem('cc.icontint', '1');
+  localStorage.setItem('tt.icontint', '1');
 
-  localStorage.setItem('cc.iconbg', '0');
+  localStorage.setItem('tt.iconbg', '0');
   ok('adopting with Logo tiles off: no tile', pluginsApi.iconBgOnP() === false);
   ok('and the ink is the badge colour itself, with no tile to contrast against', !/^(#fff|#161616|)$/.test(pluginsApi.plugIconInk(false)), pluginsApi.plugIconInk(false));
-  localStorage.setItem('cc.iconbg', '1');
+  localStorage.setItem('tt.iconbg', '1');
 
-  localStorage.setItem('cc.iconbgrainbow', '0');
+  localStorage.setItem('tt.iconbgrainbow', '0');
   ok('turning the master toggle off brings the picked colour back', pluginsApi.plugIconInk(false) === '#00aa00', pluginsApi.plugIconInk(false));
   reset();
 }
@@ -173,10 +173,10 @@ console.log('\nThe contrast ink per row, rather than one colour for the page');
   // there would read white on yellow. paintRow() reuses idealText(colorFor(idx))
   // for that row's own ink.
   reset();
-  localStorage.setItem('cc.iconbgrainbow', '1');
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.icontint', '1');
-  localStorage.setItem('cc.rainbow', '1');
-  localStorage.setItem('cc.accent', '#2f6feb');
+  localStorage.setItem('tt.iconbgrainbow', '1');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.icontint', '1');
+  localStorage.setItem('tt.rainbow', '1');
+  localStorage.setItem('tt.accent', '#2f6feb');
 
   ok('slot 5, the one plugIconInk() is fixed to, is #2f6feb and takes white ink', pluginsApi.colorFor(5) === '#2f6feb' && pluginsApi.idealText(pluginsApi.colorFor(5)) === '#fff');
   ok('slot 2 is the yellow #fcc419 and takes black ink', pluginsApi.colorFor(2) === '#fcc419' && pluginsApi.idealText(pluginsApi.colorFor(2)) === '#161616');
@@ -190,26 +190,26 @@ console.log('\nThe contrast ink per row, rather than one colour for the page');
 
   // With rainbow off, colorFor(i) is the flat accent at every index, so one colour
   // for the page is the right answer there.
-  localStorage.setItem('cc.rainbow', '0');
+  localStorage.setItem('tt.rainbow', '0');
   ok('rainbow off: colorFor(2) is the same flat accent as colorFor(5)', pluginsApi.colorFor(2) === pluginsApi.colorFor(5));
   ok('...so the per-row ink and plugIconInk()\'s answer agree', pluginsApi.idealText(pluginsApi.colorFor(2)) === pluginsApi.plugIconInk(false));
   reset();
 }
 
-console.log('\nlogoSize(): the cc.sgsize map docker.js and vms.js use as well');
+console.log('\nlogoSize(): the tt.sgsize map docker.js and vms.js use as well');
 {
   reset();
-  localStorage.setItem('cc.sgsize', 's'); ok('s -> 48px', pluginsApi.logoSize() === '48px');
-  localStorage.setItem('cc.sgsize', 'm'); ok('m -> 62px', pluginsApi.logoSize() === '62px');
-  localStorage.setItem('cc.sgsize', 'l'); ok('l -> 76px', pluginsApi.logoSize() === '76px');
-  localStorage.removeItem('cc.sgsize'); ok('unset defaults to m -> 62px', pluginsApi.logoSize() === '62px');
-  localStorage.setItem('cc.sgsize', 'nonsense'); ok('a garbage value falls back to 62px', pluginsApi.logoSize() === '62px');
+  localStorage.setItem('tt.sgsize', 's'); ok('s -> 48px', pluginsApi.logoSize() === '48px');
+  localStorage.setItem('tt.sgsize', 'm'); ok('m -> 62px', pluginsApi.logoSize() === '62px');
+  localStorage.setItem('tt.sgsize', 'l'); ok('l -> 76px', pluginsApi.logoSize() === '76px');
+  localStorage.removeItem('tt.sgsize'); ok('unset defaults to m -> 62px', pluginsApi.logoSize() === '62px');
+  localStorage.setItem('tt.sgsize', 'nonsense'); ok('a garbage value falls back to 62px', pluginsApi.logoSize() === '62px');
   reset();
 }
 
 console.log('\nA glyph never carries both a direct colour and the luminance-tint filter');
 {
-  const w = 'url(#cc-plug-tint)';
+  const w = 'url(#tt-plug-tint)';
   ok('native treat: no colour, the filter set to "none"', (function () { const r = pluginsApi.plugGlyphInkAndFilter({ treat: 'native' }, false, '#2f6feb', '#e5a00d', w); return !r.color && r.filter === 'none'; })());
   // The caller resolves the badge-contrast ink into pInk before calling, so the
   // badge state changes nothing on its own.

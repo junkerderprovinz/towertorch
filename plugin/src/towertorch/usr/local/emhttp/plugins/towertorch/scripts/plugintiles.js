@@ -6,7 +6,7 @@
 // then calls render(), and every action on a card clicks the control the row itself carries.
 (function () {
   "use strict";
-  var KEY = "cc.pluginview";
+  var KEY = "tt.pluginview";
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function s(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
@@ -20,7 +20,7 @@
   function pn() { try { return location.pathname.replace(/\/+$/, ""); } catch (e) { return ""; } }
   // The same gate as plugins.js, which paints the rows the cards are read from.
   function live() {
-    return g("cc.theming", "1") !== "0" && g("cc.enable.plugins", "1") !== "0" && pn() === "/Plugins" && !!document.getElementById("plugin_list");
+    return g("tt.theming", "1") !== "0" && g("tt.enable.plugins", "1") !== "0" && pn() === "/Plugins" && !!document.getElementById("plugin_list");
   }
   // One key, written by the switch and by the settings page.
   function view() { return g(KEY, "tiles") === "list" ? "list" : "tiles"; }
@@ -54,20 +54,20 @@
   function readRow(tr) {
     var td = kids(tr).filter(function (c) { return tag(c) === "TD"; });
     if (td.length < 6) return null;
-    var name = attr(td[0], "data-cc-pname");
+    var name = attr(td[0], "data-tt-pname");
     if (!name) return null;
-    var ico = byCls(td[0], "cc-plugico");
+    var ico = byCls(td[0], "tt-plugico");
     var logo = find(ico, function (n) { return (tag(n) === "IMG" || tag(n) === "I") && hasCls(n, "list"); });
     var launch = find(ico, function (n) { return tag(n) === "A" && !!attr(n, "href"); });
-    var sup = byCls(td[0], "cc-plugsup");
+    var sup = byCls(td[0], "tt-plugsup");
     var update = find(td[4], function (n) { return tag(n) === "INPUT" && hasCls(n, "update") && !n.disabled; });
     var status = update ? null : find(td[4], function (n) { return tag(n) === "SPAN" || tag(n) === "A"; });
     return {
       name: name, logo: logo, launch: launch ? attr(launch, "href") : "", support: sup ? attr(sup, "href") : "",
-      author: byCls(td[2], "cc-plugauth"),
-      version: byCls(td[3], "cc-verb"), newer: byCls(td[3], "cc-plugnew"), changelog: byCls(td[3], "cc-plugchg"),
+      author: byCls(td[2], "tt-plugauth"),
+      version: byCls(td[3], "tt-verb"), newer: byCls(td[3], "tt-plugnew"), changelog: byCls(td[3], "tt-plugchg"),
       update: update, status: status,
-      remove: byCls(td[5], "cc-b-delicon") || find(td[5], function (n) { return tag(n) === "INPUT" && hasCls(n, "remove") && attr(n, "type") === "button"; }),
+      remove: byCls(td[5], "tt-b-delicon") || find(td[5], function (n) { return tag(n) === "INPUT" && hasCls(n, "remove") && attr(n, "type") === "button"; }),
       row: tr
     };
   }
@@ -84,40 +84,40 @@
     return out;
   }
 
-  function glyph(n) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(n) : ""; }
-  function labelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
+  function glyph(n) { return window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph(n) : ""; }
+  function labelled(b, name, text) { if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(b, name, text); else b.textContent = text; return b; }
   function cardHtml(p) {
-    var gear = window.CCTheme && window.CCTheme.icons
-      ? '<span class="cc-plugicm" role="button" tabindex="0" data-act="icons" data-tip="' + esc(t("icons")) + '" aria-label="' + esc(t("icons") + ": " + p.name) + '">' + glyph("Gear") + "</span>" : "";
+    var gear = window.TTTheme && window.TTTheme.icons
+      ? '<span class="tt-plugicm" role="button" tabindex="0" data-act="icons" data-tip="' + esc(t("icons")) + '" aria-label="' + esc(t("icons") + ": " + p.name) + '">' + glyph("Gear") + "</span>" : "";
     var name = p.launch
-      ? '<a class="cc-plt-name" href="' + esc(p.launch) + '" aria-label="' + esc(p.name + " " + t("open")) + '">' + esc(p.name) + "</a>"
-      : '<span class="cc-plt-name">' + esc(p.name) + "</span>";
-    var sup = p.support ? '<a class="cc-pluglink cc-plugsup" href="' + esc(p.support) + '" target="_blank" rel="noopener">' + esc(t("support")) + "</a>" : "";
+      ? '<a class="tt-plt-name" href="' + esc(p.launch) + '" aria-label="' + esc(p.name + " " + t("open")) + '">' + esc(p.name) + "</a>"
+      : '<span class="tt-plt-name">' + esc(p.name) + "</span>";
+    var sup = p.support ? '<a class="tt-pluglink tt-plugsup" href="' + esc(p.support) + '" target="_blank" rel="noopener">' + esc(t("support")) + "</a>" : "";
     var state = p.update
-      ? '<span class="cc-plt-upd" role="button" tabindex="0" data-act="update" style="' + esc(attr(p.update, "style")) + '">' + esc(attr(p.update, "value")) + "</span>"
+      ? '<span class="tt-plt-upd" role="button" tabindex="0" data-act="update" style="' + esc(attr(p.update, "style")) + '">' + esc(attr(p.update, "value")) + "</span>"
       : markup(p.status);
-    var chg = p.changelog ? '<span class="cc-pluglink cc-plugchg" role="button" tabindex="0" data-act="changelog">' + esc(clean(text(p.changelog))) + "</span>" : "";
+    var chg = p.changelog ? '<span class="tt-pluglink tt-plugchg" role="button" tabindex="0" data-act="changelog">' + esc(clean(text(p.changelog))) + "</span>" : "";
     var del = p.remove ? markup(p.remove).replace(/^<(\w+)/, '<$1 data-act="remove"') : "";
-    return '<div class="cc-plt-head"><span class="cc-plugico cc-plt-ico">' + markup(p.logo) + gear + "</span>" +
-      '<div class="cc-plt-id"><div class="cc-plt-title">' + name + sup + "</div>" + (p.author ? '<div class="cc-plt-by">' + markup(p.author) + "</div>" : "") + "</div>" +
-      (state ? '<div class="cc-plt-state">' + state + "</div>" : "") + "</div>" +
-      '<div class="cc-plt-foot">' + (p.newer ? markup(p.newer) : "") + markup(p.version) + chg +
-      (del ? '<span class="cc-plt-acts">' + del + "</span>" : "") + "</div>";
+    return '<div class="tt-plt-head"><span class="tt-plugico tt-plt-ico">' + markup(p.logo) + gear + "</span>" +
+      '<div class="tt-plt-id"><div class="tt-plt-title">' + name + sup + "</div>" + (p.author ? '<div class="tt-plt-by">' + markup(p.author) + "</div>" : "") + "</div>" +
+      (state ? '<div class="tt-plt-state">' + state + "</div>" : "") + "</div>" +
+      '<div class="tt-plt-foot">' + (p.newer ? markup(p.newer) : "") + markup(p.version) + chg +
+      (del ? '<span class="tt-plt-acts">' + del + "</span>" : "") + "</div>";
   }
   function el(tagName, cls) { var n = document.createElement(tagName); if (cls) n.className = cls; return n; }
-  function setHtml(n, v) { if (n && n.__ccHtml !== v) { n.innerHTML = v; n.__ccHtml = v; } }
+  function setHtml(n, v) { if (n && n.__ttHtml !== v) { n.innerHTML = v; n.__ttHtml = v; } }
   function rowVar(tr, k) { return tr && tr.style && tr.style.getPropertyValue ? tr.style.getPropertyValue(k).trim() : ""; }
   function fillGrid(grid, list) {
     var old = {};
     kids(grid).forEach(function (c) { old[attr(c, "data-key")] = c; });
     list.forEach(function (p, i) {
       var c = old[p.name];
-      if (!c) { c = el("div", "cc-plt-card"); c.setAttribute("data-key", p.name); }
+      if (!c) { c = el("div", "tt-plt-card"); c.setAttribute("data-key", p.name); }
       delete old[p.name];
       if (grid.children[i] !== c) grid.insertBefore(c, grid.children[i] || null);
-      c.__ccPlugin = p;
+      c.__ttPlugin = p;
       // The row's palette colour and its ink, so the card's badges and logo tile react like the row.
-      ["--cc-rb-c", "--cc-rb-ct"].forEach(function (k) { var v = rowVar(p.row, k); if (c.style.getPropertyValue(k) !== v) { if (v) c.style.setProperty(k, v); else c.style.removeProperty(k); } });
+      ["--tt-rb-c", "--tt-rb-ct"].forEach(function (k) { var v = rowVar(p.row, k); if (c.style.getPropertyValue(k) !== v) { if (v) c.style.setProperty(k, v); else c.style.removeProperty(k); } });
       setHtml(c, cardHtml(p));
     });
     Object.keys(old).forEach(function (k) { if (old[k].parentNode === grid) grid.removeChild(old[k]); });
@@ -126,8 +126,8 @@
   function tableBox() { var tb = document.getElementById("plugin_table"); return tb && (tb.closest(".TableContainer") || tb); }
   function hostFor(box) {
     var h = box.nextElementSibling;
-    if (h && hasCls(h, "cc-plt-host")) return h;
-    h = el("div", "cc-plt-host");
+    if (h && hasCls(h, "tt-plt-host")) return h;
+    h = el("div", "tt-plt-host");
     box.parentNode.insertBefore(h, box.nextSibling);
     h.addEventListener("click", onClick);
     h.addEventListener("keydown", onKey);
@@ -136,18 +136,18 @@
   // The switch leads the group of Unraid's buttons that plugins.js pins to the right end of the
   // tab bar, the place the switch takes on /Main and /Shares.
   function pageSwitch() {
-    var host = document.getElementById("cc-plugbtns");
+    var host = document.getElementById("tt-plugbtns");
     if (!host) return null;
-    var sw = host.querySelector(":scope > .cc-plt-vsw");
+    var sw = host.querySelector(":scope > .tt-plt-vsw");
     if (sw) return sw;
-    sw = el("span", "cc-plt-vsw");
-    var seg = el("span", "cc-plt-seg");
+    sw = el("span", "tt-plt-vsw");
+    var seg = el("span", "tt-plt-seg");
     seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("view"));
     [["list", "ViewList"], ["tiles", "ViewGrid"]].forEach(function (o) {
-      var b = el("span", "cc-seg-btn");
+      var b = el("span", "tt-seg-btn");
       labelled(b, o[1], t(o[0]));
       b.setAttribute("data-v", o[0]);
-      if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b); else { b.setAttribute("role", "button"); b.setAttribute("tabindex", "0"); }
+      if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(b); else { b.setAttribute("role", "button"); b.setAttribute("tabindex", "0"); }
       b.addEventListener("click", function () { s(KEY, o[0]); render(); });
       seg.appendChild(b);
     });
@@ -159,17 +159,17 @@
   // Clicks the row's own control: the update button and the changelog link carry Unraid's
   // handlers, the trash carries the TowerTorch confirmation in front of Unraid's remove.
   function run(kind, c, at) {
-    var p = c.__ccPlugin; if (!p) return;
+    var p = c.__ttPlugin; if (!p) return;
     if (kind === "update" && p.update) p.update.click();
     else if (kind === "changelog" && p.changelog) p.changelog.click();
     else if (kind === "remove" && p.remove) p.remove.click();
-    else if (kind === "icons" && window.CCTheme && window.CCTheme.icons) {
-      window.CCTheme.icons.popover(at, "plugin", p.name, function () { if (typeof window.ccPluginsApply === "function") window.ccPluginsApply(); });
+    else if (kind === "icons" && window.TTTheme && window.TTTheme.icons) {
+      window.TTTheme.icons.popover(at, "plugin", p.name, function () { if (typeof window.ttPluginsApply === "function") window.ttPluginsApply(); });
     }
   }
   function target(e) {
     var a = e.target && e.target.closest ? e.target.closest("[data-act]") : null;
-    var c = a && a.closest(".cc-plt-card");
+    var c = a && a.closest(".tt-plt-card");
     return a && c ? { a: a, c: c } : null;
   }
   function onClick(e) {
@@ -185,45 +185,45 @@
   }
 
   function teardown() {
-    document.documentElement.classList.remove("cc-plt-on", "cc-plt-tiled");
-    Array.prototype.forEach.call(document.querySelectorAll(".cc-plt-host, .cc-plt-vsw"), function (n) { n.parentNode.removeChild(n); });
-    Array.prototype.forEach.call(document.querySelectorAll(".cc-plt-hidden"), function (n) { n.classList.remove("cc-plt-hidden"); });
+    document.documentElement.classList.remove("tt-plt-on", "tt-plt-tiled");
+    Array.prototype.forEach.call(document.querySelectorAll(".tt-plt-host, .tt-plt-vsw"), function (n) { n.parentNode.removeChild(n); });
+    Array.prototype.forEach.call(document.querySelectorAll(".tt-plt-hidden"), function (n) { n.classList.remove("tt-plt-hidden"); });
   }
   function render() {
     if (!live()) { teardown(); return; }
     var root = document.documentElement, tiles = view() === "tiles";
-    root.classList.add("cc-plt-on");
-    root.classList.toggle("cc-plt-tiled", tiles);
+    root.classList.add("tt-plt-on");
+    root.classList.toggle("tt-plt-tiled", tiles);
     var sw = pageSwitch();
-    if (sw) Array.prototype.forEach.call(sw.querySelectorAll(".cc-seg-btn"), function (b) {
+    if (sw) Array.prototype.forEach.call(sw.querySelectorAll(".tt-seg-btn"), function (b) {
       var on = attr(b, "data-v") === (tiles ? "tiles" : "list");
       if (attr(b, "aria-pressed") !== String(on)) b.setAttribute("aria-pressed", String(on));
     });
     var box = tableBox();
     if (!box) return;
     if (!tiles) {
-      box.classList.remove("cc-plt-hidden");
+      box.classList.remove("tt-plt-hidden");
       var gone = box.nextElementSibling;
-      if (gone && hasCls(gone, "cc-plt-host")) gone.parentNode.removeChild(gone);
+      if (gone && hasCls(gone, "tt-plt-host")) gone.parentNode.removeChild(gone);
       return;
     }
-    box.classList.add("cc-plt-hidden");
+    box.classList.add("tt-plt-hidden");
     var data = readList(document.getElementById("plugin_list"));
     var host = hostFor(box);
-    var empty = host.querySelector(":scope > .cc-plt-empty");
+    var empty = host.querySelector(":scope > .tt-plt-empty");
     if (!data.plugins.length && !data.notice) return;   // the rows are not painted yet
     if (!data.plugins.length) {
-      var grid0 = host.querySelector(":scope > .cc-plt-grid"); if (grid0) host.removeChild(grid0);
-      if (!empty) empty = host.appendChild(el("div", "cc-plt-empty"));
+      var grid0 = host.querySelector(":scope > .tt-plt-grid"); if (grid0) host.removeChild(grid0);
+      if (!empty) empty = host.appendChild(el("div", "tt-plt-empty"));
       setHtml(empty, esc(data.notice));
       return;
     }
     if (empty) host.removeChild(empty);
-    var grid = host.querySelector(":scope > .cc-plt-grid") || host.appendChild(el("div", "cc-plt-grid"));
+    var grid = host.querySelector(":scope > .tt-plt-grid") || host.appendChild(el("div", "tt-plt-grid"));
     fillGrid(grid, data.plugins);
   }
 
-  window.ccPluginTilesApply = render;
+  window.ttPluginTilesApply = render;
   function boot() {
     if (pn() !== "/Plugins") return;
     render();

@@ -59,10 +59,10 @@ smoke:
     bash plugin/pkg_build.sh 0.0.0-dev
     BIN=plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/bin/towertorch; \
     "$BIN" version; \
-    CC_SOCK=/tmp/cc-dev.sock CC_DATA_DIR=/tmp/ccdata-dev CC_DOCKER_SOCK=/tmp/nope.sock "$BIN" serve & \
+    TT_SOCK=/tmp/tt-dev.sock TT_DATA_DIR=/tmp/ttdata-dev TT_DOCKER_SOCK=/tmp/nope.sock "$BIN" serve & \
     PID=$!; \
-    for _ in $(seq 1 20); do [ -S /tmp/cc-dev.sock ] && break; sleep 0.5; done; \
-    curl -fsS --unix-socket /tmp/cc-dev.sock http://localhost/api/health | grep -q ok && echo "health ok"; \
+    for _ in $(seq 1 20); do [ -S /tmp/tt-dev.sock ] && break; sleep 0.5; done; \
+    curl -fsS --unix-socket /tmp/tt-dev.sock http://localhost/api/health | grep -q ok && echo "health ok"; \
     kill "$PID" 2>/dev/null || true
 
 # Regenerate the README banners from the SVG masters (needs opentype.js and @resvg/resvg-js)

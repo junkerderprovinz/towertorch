@@ -1,12 +1,12 @@
 // Pins the control chrome of the Startplan editor in docker.js. Its checkboxes,
 // Save button, activation toggle, day chips and time picker are painted by one
 // function, paintPopChrome, and the time field is replaced by one widget,
-// ccTimePicker, both of which a refactor can quietly drop.
+// ttTimePicker, both of which a refactor can quietly drop.
 //
 // So: which controls the painter sweeps, that the checkbox tick stays a legal data
 // URI, that the time picker opens from its button with 24 hours and minutes in
 // steps of five, works from the keyboard and writes a padded HH:MM back into the
-// input, and that the outside-click guard counts a body-level .cc-drop panel as
+// input, and that the outside-click guard counts a body-level .tt-drop panel as
 // part of the window, without which picking a dependency tears the editor down and
 // takes every unsaved edit with it.
 
@@ -79,11 +79,11 @@ global.document = {
 const scrolls = [];
 global.window = {
   scrollX: 0, scrollY: 0, innerHeight: 900, innerWidth: 1500,
-  CCTheme: { pressable(n) { n.setAttribute('role', 'button'); n.setAttribute('tabindex', '0'); return n; } },
+  TTTheme: { pressable(n) { n.setAttribute('role', 'button'); n.setAttribute('tabindex', '0'); return n; } },
   addEventListener(t, fn) { if (t === 'scroll') scrolls.push(fn); },
   removeEventListener(t, fn) { if (t === 'scroll' && scrolls.indexOf(fn) >= 0) scrolls.splice(scrolls.indexOf(fn), 1); },
 };
-Object.assign(global.window.CCTheme, require('./theme-place')(global.window, global.document));
+Object.assign(global.window.TTTheme, require('./theme-place')(global.window, global.document));
 global.Event = class { constructor(type) { this.type = type; } };
 global.localStorage = { _d: {}, getItem(k) { return k in this._d ? this._d[k] : null; }, setItem(k, v) { this._d[k] = String(v); } };
 global.navigator = { language: 'de' };
@@ -103,53 +103,53 @@ function grabLine(marker) {
   return src.slice(src.lastIndexOf('\n', i) + 1, src.indexOf('\n', i));
 }
 const POP_PAINT_SEL = (/var POP_PAINT_SEL = "([^"]+)"/.exec(src) || [])[1];
-const code = ['el', 'ccTimePicker'].map(grabFn).join('\n');
-const fns = new Function('paintSelects', 'var tpOpen = null; var LANG = "de"; function ccGlyph(n) { return "<glyph " + n + ">"; }\n' + code + '\n; return { el, ccTimePicker };')(function () {});
+const code = ['el', 'ttTimePicker'].map(grabFn).join('\n');
+const fns = new Function('paintSelects', 'var tpOpen = null; var LANG = "de"; function ttGlyph(n) { return "<glyph " + n + ">"; }\n' + code + '\n; return { el, ttTimePicker };')(function () {});
 
 console.log('\nPart 1: the paint sweep covers every interactive control class in the window');
 ok(!!POP_PAINT_SEL, 'POP_PAINT_SEL is still declared in docker.js');
 [
-  ['.cc-set-toggle', 'the activation toggle ("Im Startplan verwalten")'],
+  ['.tt-set-toggle', 'the activation toggle ("Im Startplan verwalten")'],
   ['input[type=checkbox]', 'the watchdog / idle-stop switches'],
-  ['.cc-day', 'the Mo..So day chips'],
-  ['.cc-btn', 'Speichern and "+ Zeitplan"'],
-  ['.cc-sched-time', 'the schedule time field'],
-  ['.cc-pop-ttl', 'the title badge, first in the rotation'],
+  ['.tt-day', 'the Mo..So day chips'],
+  ['.tt-btn', 'Speichern and "+ Zeitplan"'],
+  ['.tt-sched-time', 'the schedule time field'],
+  ['.tt-pop-ttl', 'the title badge, first in the rotation'],
 ].forEach(([sel, what]) => ok(POP_PAINT_SEL.indexOf(sel) >= 0, 'the sweep includes ' + sel + ', ' + what));
 
 console.log('\nPart 2: the switch knob takes its ink from the stamped chain');
 {
   const paint = grabFn('paintPopChrome');
-  ok(/e\.style\.setProperty\("--cc-rb-ct", idealText\(c\)\)/.test(paint), 'in rainbow each control gets the ink for its own slot');
-  ok(!/--cc-cb-tick/.test(paint), 'no per-checkbox tick image is stamped');
+  ok(/e\.style\.setProperty\("--tt-rb-ct", idealText\(c\)\)/.test(paint), 'in rainbow each control gets the ink for its own slot');
+  ok(!/--tt-cb-tick/.test(paint), 'no per-checkbox tick image is stamped');
 }
 
 console.log('\nPart 3: the time picker (GlimStone, "The time picker")');
 const input = new N('input');
-input.type = 'time'; input.className = 'cc-in cc-sched-time'; input.value = '07:30';
-const box = fns.ccTimePicker(input);
+input.type = 'time'; input.className = 'tt-in tt-sched-time'; input.value = '07:30';
+const box = fns.ttTimePicker(input);
 const btn = box.children[1];
-ok(box.classList.contains('cc-tp') && box.children[0] === input, 'the field goes into a box with its clock button');
-ok(btn.classList.contains('cc-tp-btn') && btn.innerHTML === '<glyph Schedules>', 'the button wears GlimStone\'s clock');
+ok(box.classList.contains('tt-tp') && box.children[0] === input, 'the field goes into a box with its clock button');
+ok(btn.classList.contains('tt-tp-btn') && btn.innerHTML === '<glyph Schedules>', 'the button wears GlimStone\'s clock');
 ok(btn.attrs.role === 'button' && btn.attrs.tabindex === '0', 'it is a button Tab reaches');
 ok(btn.attrs['aria-haspopup'] === 'listbox' && btn.attrs['aria-expanded'] === 'false' && !!btn.attrs['aria-label'], 'it says it opens a list, and what for');
 ok(input.attrs.dir === 'ltr' && btn.attrs.dir === 'ltr', 'a clock reading stays left to right, field and button');
 input.fire('focus'); input.fire('click', { preventDefault() {}, stopPropagation() {} });
-ok(!body.children.some(c => c.classList.contains('cc-timepick')), 'focus or a click on the field opens nothing, so typing stays undisturbed');
+ok(!body.children.some(c => c.classList.contains('tt-timepick')), 'focus or a click on the field opens nothing, so typing stays undisturbed');
 btn.fire('click', { preventDefault() {}, stopPropagation() {} });
-const panel = body.children.find(c => c.classList.contains('cc-timepick'));
+const panel = body.children.find(c => c.classList.contains('tt-timepick'));
 ok(!!panel, 'the button opens the panel');
 ok(btn.attrs['aria-expanded'] === 'true', 'and says so');
-ok(panel.classList.contains('cc-drop'), 'it is a .cc-drop, so closePop() sweeps it and paintSelects() colours it');
+ok(panel.classList.contains('tt-drop'), 'it is a .tt-drop, so closePop() sweeps it and paintSelects() colours it');
 ok(panel.attrs.dir === 'ltr', 'the panel stays left to right too');
-ok(panel.attrs['data-cc-own-keys'] === '1', 'it keeps Escape and Tab from the window behind it');
-const cols = panel.querySelectorAll('.cc-tp-col');
+ok(panel.attrs['data-tt-own-keys'] === '1', 'it keeps Escape and Tab from the window behind it');
+const cols = panel.querySelectorAll('.tt-tp-col');
 eq(cols.length, 2, 'two columns, hours and minutes');
 ok(cols.every(c => c.attrs.role === 'listbox' && !!c.attrs['aria-label']), 'each column is a named listbox');
 ok(cols[0].children.every(o => o.attrs.role === 'option' && o.tabIndex === -1), 'each entry is an option');
-eq(cols[0].querySelectorAll('.cc-drop-it').length, 24, 'every hour from 00 to 23');
+eq(cols[0].querySelectorAll('.tt-drop-it').length, 24, 'every hour from 00 to 23');
 eq(cols[1].children.map(c => c.textContent).join(' '), '00 05 10 15 20 25 30 35 40 45 50 55', 'minutes in steps of five, zero padded');
-const onChips = panel.querySelectorAll('.cc-drop-on').map(c => c.textContent);
+const onChips = panel.querySelectorAll('.tt-drop-on').map(c => c.textContent);
 eq(onChips.join(','), '07,30', 'the current value opens marked in both columns');
 ok(cols[0].children[7].attrs['aria-selected'] === 'true' && cols[0].children[6].attrs['aria-selected'] === 'false', 'and selected for a screen reader');
 ok(active === cols[0].children[7], 'the focus lands on the current hour');
@@ -172,12 +172,12 @@ ok(btn.attrs['aria-expanded'] === 'false', 'which says the panel is closed');
 
 // Picking with the pointer writes back and keeps the panel open for the other half.
 btn.fire('click', { preventDefault() {}, stopPropagation() {} });
-const pnl = body.children.find(c => c.classList.contains('cc-timepick'));
-const c2 = pnl.querySelectorAll('.cc-tp-col');
+const pnl = body.children.find(c => c.classList.contains('tt-timepick'));
+const c2 = pnl.querySelectorAll('.tt-tp-col');
 c2[0].children[22].fire('click', { preventDefault() {}, stopPropagation() {} });
 eq(input.value, '22:30', 'clicking an hour rewrites only the hour, padded');
 ok(body.children.includes(pnl), 'the panel stays open, so hour and minute take one visit');
-eq(c2[0].querySelectorAll('.cc-drop-on').map(c => c.textContent).join(), '22', 'exactly one hour stays marked, the one just picked');
+eq(c2[0].querySelectorAll('.tt-drop-on').map(c => c.textContent).join(), '22', 'exactly one hour stays marked, the one just picked');
 c2[1].children[1].fire('click', { preventDefault() {}, stopPropagation() {} });
 eq(input.value, '22:05', 'clicking a minute rewrites only the minute');
 active = c2[1].children[1]; key('Enter');
@@ -186,42 +186,42 @@ ok(!body.children.includes(pnl) && active === btn, 'Enter takes the entry and cl
 // A minute typed off the grid stays and shows as one more entry.
 input.value = '06:07';
 btn.fire('click', { preventDefault() {}, stopPropagation() {} });
-const p3 = body.children.find(c => c.classList.contains('cc-timepick'));
-eq(p3.querySelectorAll('.cc-tp-col')[1].children.map(c => c.textContent).slice(0, 4).join(' '), '00 05 07 10', 'a typed 07 slots in among the steps');
-eq(p3.querySelectorAll('.cc-drop-on').map(c => c.textContent).join(','), '06,07', 'and opens marked');
+const p3 = body.children.find(c => c.classList.contains('tt-timepick'));
+eq(p3.querySelectorAll('.tt-tp-col')[1].children.map(c => c.textContent).slice(0, 4).join(' '), '00 05 07 10', 'a typed 07 slots in among the steps');
+eq(p3.querySelectorAll('.tt-drop-on').map(c => c.textContent).join(','), '06,07', 'and opens marked');
 ok(scrolls.length === 1, 'the panel listens for a page scroll while it is open');
-scrolls[0]({ target: p3.querySelectorAll('.cc-tp-col')[1] });
+scrolls[0]({ target: p3.querySelectorAll('.tt-tp-col')[1] });
 ok(body.children.includes(p3), 'a scroll inside a column leaves it open');
 scrolls[0]({ target: body });
 ok(!body.children.includes(p3) && scrolls.length === 0, 'a scroll of the page closes it and the listener goes with it');
 
 // An empty field must not produce "NaN:NaN".
-const blank = new N('input'); blank.type = 'time'; blank.className = 'cc-in cc-sched-time'; blank.value = '';
-const bb = fns.ccTimePicker(blank).children[1];
+const blank = new N('input'); blank.type = 'time'; blank.className = 'tt-in tt-sched-time'; blank.value = '';
+const bb = fns.ttTimePicker(blank).children[1];
 bb.fire('click', { preventDefault() {}, stopPropagation() {} });
-const p2 = body.children.find(c => c.classList.contains('cc-timepick'));
-ok(active === p2.querySelectorAll('.cc-tp-col')[0].children[0], 'with no value the focus lands on 00');
-p2.querySelectorAll('.cc-tp-col')[0].children[9].fire('click', { preventDefault() {}, stopPropagation() {} });
+const p2 = body.children.find(c => c.classList.contains('tt-timepick'));
+ok(active === p2.querySelectorAll('.tt-tp-col')[0].children[0], 'with no value the focus lands on 00');
+p2.querySelectorAll('.tt-tp-col')[0].children[9].fire('click', { preventDefault() {}, stopPropagation() {} });
 eq(blank.value, '09:00', 'an empty field fills the untouched half with 00, never NaN');
 ok(/^\d{2}:\d{2}$/.test(blank.value), 'the result matches the HH:MM shape row._read insists on');
 btn.fire('click', { preventDefault() {}, stopPropagation() {} });
-eq(body.children.filter(c => c.classList.contains('cc-timepick')).length, 1, 'opening a second picker closes the first');
-const themeSrc = fs.readFileSync(path.join(path.dirname(DOCKER), 'cc-theme.js'), 'utf8');
-ok(/function onWinKey\(e\) \{[^}]*if \(e\.target && e\.target\.closest && e\.target\.closest\("\[data-cc-own-keys\]"\)\) return;/.test(themeSrc), 'a window leaves the keys alone inside a panel that keeps its own');
+eq(body.children.filter(c => c.classList.contains('tt-timepick')).length, 1, 'opening a second picker closes the first');
+const themeSrc = fs.readFileSync(path.join(path.dirname(DOCKER), 'tt-theme.js'), 'utf8');
+ok(/function onWinKey\(e\) \{[^}]*if \(e\.target && e\.target\.closest && e\.target\.closest\("\[data-tt-own-keys\]"\)\) return;/.test(themeSrc), 'a window leaves the keys alone inside a panel that keeps its own');
 
 console.log('\nPart 4: the outside-click guard, for which a body-level panel is inside');
 const guard = grabLine('if (openPop && !openPop.contains(e.target)');
-ok(guard.indexOf('.cc-drop') >= 0,
-  'the guard names .cc-drop, without which picking a dependency or a time closes the editor');
-ok(guard.indexOf('.cc-plan') >= 0, 'and .cc-plan, so re-clicking the badge stays a toggle rather than a double close');
+ok(guard.indexOf('.tt-drop') >= 0,
+  'the guard names .tt-drop, without which picking a dependency or a time closes the editor');
+ok(guard.indexOf('.tt-plan') >= 0, 'and .tt-plan, so re-clicking the badge stays a toggle rather than a double close');
 
 console.log('\nPart 5: no hard-coded colour lists left in the editor');
 ok(!/accentColor = rbc\[/.test(src), 'the six-colour accentColor list for the checkboxes is gone from docker.js');
 const css = fs.readFileSync(path.join(path.dirname(DOCKER), '..', 'styles', 'docker.css'), 'utf8');
-ok(!/\.cc-pop\.cc-rainbow \.cc-day-on \{ background: #8b5cf6/.test(css), 'the hard-coded violet for a selected day chip is gone from docker.css');
-ok(/\.cc-day-on \{ background: var\(--cc-rb-c/.test(css), 'a selected day chip reads the --cc-rb-c chain instead');
-ok(/\.cc-pop\.cc-rainbow \.cc-set-toggle-on \{ background: var\(--cc-rb-c/.test(css), 'the activation toggle reads --cc-rb-c before the shared --cc-rbaccent');
-ok(/\.cc-btn-primary \{ font-weight: 600; background: var\(--cc-rb-c/.test(css), 'the Save button reads --cc-rb-c before the shared accent');
+ok(!/\.tt-pop\.tt-rainbow \.tt-day-on \{ background: #8b5cf6/.test(css), 'the hard-coded violet for a selected day chip is gone from docker.css');
+ok(/\.tt-day-on \{ background: var\(--tt-rb-c/.test(css), 'a selected day chip reads the --tt-rb-c chain instead');
+ok(/\.tt-pop\.tt-rainbow \.tt-set-toggle-on \{ background: var\(--tt-rb-c/.test(css), 'the activation toggle reads --tt-rb-c before the shared --tt-rbaccent');
+ok(/\.tt-btn-primary \{ font-weight: 600; background: var\(--tt-rb-c/.test(css), 'the Save button reads --tt-rb-c before the shared accent');
 
 // GlimStone's "Icon glyphs" section asks for filled glyphs and names the (i) as its exception,
 // the ring being the circle around the "i", so a sweep applying that rule would
@@ -231,55 +231,55 @@ console.log('\nPart 6: the info bubble is a circle outline, never a filled disc'
 const SCRIPTS = path.dirname(DOCKER);
 const FILLED_INFO = 'M12 2c5.523 0 10 4.477 10 10';                    // tabler icons/filled/info-circle.svg
 const RING = /viewBox="0 0 16 16"[^>]*fill="none"/;                    // the GlimStone reference glyph
-[['cc-theme.js', 'the shared builder'], ['header.js', 'the header.js fallback'],
+[['tt-theme.js', 'the shared builder'], ['header.js', 'the header.js fallback'],
  ['settings.js', 'the settings.js fallback'], ['shares.js', 'the shares.js fallback']].forEach(([f, what]) => {
   const s = fs.readFileSync(path.join(SCRIPTS, f), 'utf8');
   ok(s.indexOf(FILLED_INFO) < 0, f + ': no filled info-circle disc in ' + what);
 });
-const theme = fs.readFileSync(path.join(SCRIPTS, 'cc-theme.js'), 'utf8');
-ok(RING.test(theme), 'cc-theme.js draws the 16x16 fill="none" ring');
+const theme = fs.readFileSync(path.join(SCRIPTS, 'tt-theme.js'), 'utf8');
+ok(RING.test(theme), 'tt-theme.js draws the 16x16 fill="none" ring');
 ok(/<circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1\.3"/.test(theme), 'ring: r=7, stroke-width 1.3, currentColor (GlimStone reference values)');
 ok(/<circle cx="8" cy="4\.6" r="0\.9" fill="currentColor"/.test(theme), 'the dot of the "i": r=0.9 at cy=4.6');
 ok(/<path d="M8 7v4\.4" stroke="currentColor" stroke-width="1\.3" stroke-linecap="round"/.test(theme), 'the stem is a <path> with round caps, where a <rect> would round its ends differently');
-// Stroke and fill both resolve through currentColor to .cc-info's var(--txt), so
+// Stroke and fill both resolve through currentColor to .tt-info's var(--txt), so
 // the glyph stays neutral rather than taking the accent (rule 8).
-ok(/\.cc-info \{[^}]*color: var\(--txt/.test(css), '.cc-info resolves currentColor to the neutral text colour');
-ok(/\.cc-info \{[^}]*background: none/.test(css), '.cc-info keeps background:none, which is what stops an inherited chip fill painting a disc behind the ring');
+ok(/\.tt-info \{[^}]*color: var\(--txt/.test(css), '.tt-info resolves currentColor to the neutral text colour');
+ok(/\.tt-info \{[^}]*background: none/.test(css), '.tt-info keeps background:none, which is what stops an inherited chip fill painting a disc behind the ring');
 
 console.log('\nPart 7: the schedule row fits on one line and its delete control is a badge');
-ok(/el\("span", "cc-sched-x"\); rm\.innerHTML = CC_TRASH_SVG/.test(src), 'the delete control carries the trash SVG, not a typed "✕"');
-ok(!/el\("span", "cc-sched-x", "✕"\)/.test(src), 'the bare ✕ character is gone from docker.js');
-ok(/CC_TRASH_SVG = \(window\.CCTheme && window\.CCTheme\.CC_TRASH_SVG\)/.test(src), 'docker.js takes the glyph from cc-theme.js, as it does the (i)');
+ok(/el\("span", "tt-sched-x"\); rm\.innerHTML = TT_TRASH_SVG/.test(src), 'the delete control carries the trash SVG, not a typed "✕"');
+ok(!/el\("span", "tt-sched-x", "✕"\)/.test(src), 'the bare ✕ character is gone from docker.js');
+ok(/TT_TRASH_SVG = \(window\.TTTheme && window\.TTTheme\.TT_TRASH_SVG\)/.test(src), 'docker.js takes the glyph from tt-theme.js, as it does the (i)');
 const TRASH = 'M5.76256 2.01256C6.09075 1.68437';                       // GlimStone's Trash, Streamline recycle-bin-2
-ok(/var CC_TRASH_SVG = '<svg viewBox="' \+ GLYPHS\.Trash\[0\] \+ [^;]*GLYPHS\.Trash\[1\]/.test(theme) && theme.indexOf(TRASH) >= 0, 'cc-theme.js builds the can from GlimStone\'s filled Trash, so the menus and the badges wear one drawing');
-ok(theme.indexOf('M20 6a1 1 0 0 1 .117 1.993') < 0, 'and the second can, tabler\'s, is gone from cc-theme.js');
-ok(/function delIcon\([^)]*\) \{[^}]*b\.innerHTML = CC_TRASH_SVG/.test(theme), 'the Plugins-page delete badge, CCTheme.delIcon, carries the same can, so there is one trash design');
-ok(/window\.CCTheme\.delIcon\(/.test(fs.readFileSync(path.join(SCRIPTS, 'plugins.js'), 'utf8')), 'and plugins.js builds its delete badge with it');
+ok(/var TT_TRASH_SVG = '<svg viewBox="' \+ GLYPHS\.Trash\[0\] \+ [^;]*GLYPHS\.Trash\[1\]/.test(theme) && theme.indexOf(TRASH) >= 0, 'tt-theme.js builds the can from GlimStone\'s filled Trash, so the menus and the badges wear one drawing');
+ok(theme.indexOf('M20 6a1 1 0 0 1 .117 1.993') < 0, 'and the second can, tabler\'s, is gone from tt-theme.js');
+ok(/function delIcon\([^)]*\) \{[^}]*b\.innerHTML = TT_TRASH_SVG/.test(theme), 'the Plugins-page delete badge, TTTheme.delIcon, carries the same can, so there is one trash design');
+ok(/window\.TTTheme\.delIcon\(/.test(fs.readFileSync(path.join(SCRIPTS, 'plugins.js'), 'utf8')), 'and plugins.js builds its delete badge with it');
 ok(css.indexOf(TRASH) < 0, 'and no stylesheet draws a second can as a white background image');
 ok(!/polyline points='3 6 5 6 21 6'/.test(css), 'and the stroke-drawn outline trash is gone from docker.css');
 // The badge and the day chips can only stay the same size if one rule holds both.
-const shared = /\.cc-day, \.cc-sched-x \{[^}]*\}/.exec(css);
-ok(!!shared, '.cc-day and .cc-sched-x share one geometry rule');
+const shared = /\.tt-day, \.tt-sched-x \{[^}]*\}/.exec(css);
+ok(!!shared, '.tt-day and .tt-sched-x share one geometry rule');
 if (shared) {
-  ['width: var(--cc-icon-badge, 26px)', 'height: var(--cc-icon-badge, 26px)', 'padding: 0', 'border: none', 'box-sizing: border-box', 'flex: none'].forEach(d =>
+  ['width: var(--tt-icon-badge, 26px)', 'height: var(--tt-icon-badge, 26px)', 'padding: 0', 'border: none', 'box-sizing: border-box', 'flex: none'].forEach(d =>
     ok(shared[0].indexOf(d) >= 0, 'the shared box declares ' + d));
 }
-ok(/html \.cc-limbtn, html \.cc-day, html \.cc-sched-x,/.test(css), 'both are swept by the shape engine together, so a Badge-Form change moves the badge and the chips as one');
-ok(/\.cc-sched-x \{ margin-left: auto; background: var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent,/.test(css), 'the badge takes the chosen day chip\'s colour chain, since a delete is never red');
-ok(!/\.cc-sched-x[^{]*\{[^}]*--cc-err/.test(css), 'and no rule paints it in the fault colour');
-ok(/el\("div", "cc-pop cc-pop-plan"\)/.test(src), 'the Startplan editor opens with .cc-pop-plan');
-ok(/\.cc-pop\.cc-pop-plan \{ width: 548px; \}/.test(css), 'and is 548px wide, above the 528px at which the schedule row wraps');
-ok(/\.cc-pop \.cc-sched-row \.cc-dsel \{ flex: none; width: 104px; \}/.test(css), 'the action dropdown is pinned to its content width: a flex:1 basis:0 wrapper contributes almost nothing to the line break and then takes the leftover');
-ok(/\.cc-sched-row \{[^}]*flex-wrap: wrap/.test(css), 'flex-wrap stays for the narrower case, the 92vw cap still reaching below 528px');
+ok(/html \.tt-limbtn, html \.tt-day, html \.tt-sched-x,/.test(css), 'both are swept by the shape engine together, so a Badge-Form change moves the badge and the chips as one');
+ok(/\.tt-sched-x \{ margin-left: auto; background: var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent,/.test(css), 'the badge takes the chosen day chip\'s colour chain, since a delete is never red');
+ok(!/\.tt-sched-x[^{]*\{[^}]*--tt-err/.test(css), 'and no rule paints it in the fault colour');
+ok(/el\("div", "tt-pop tt-pop-plan"\)/.test(src), 'the Startplan editor opens with .tt-pop-plan');
+ok(/\.tt-pop\.tt-pop-plan \{ width: 548px; \}/.test(css), 'and is 548px wide, above the 528px at which the schedule row wraps');
+ok(/\.tt-pop \.tt-sched-row \.tt-dsel \{ flex: none; width: 104px; \}/.test(css), 'the action dropdown is pinned to its content width: a flex:1 basis:0 wrapper contributes almost nothing to the line break and then takes the leftover');
+ok(/\.tt-sched-row \{[^}]*flex-wrap: wrap/.test(css), 'flex-wrap stays for the narrower case, the 92vw cap still reaching below 528px');
 
 console.log('\nPart 8: a standing window is re-clamped on both axes');
 const clamp = grabFn('clampPop');
-ok(/data-cc-top/.test(clamp), 'clampPop remembers the preferred top');
-ok(/data-cc-left/.test(clamp), 'and the preferred left, a wide window hanging off the right edge as the viewport shrinks');
+ok(/data-tt-top/.test(clamp), 'clampPop remembers the preferred top');
+ok(/data-tt-left/.test(clamp), 'and the preferred left, a wide window hanging off the right edge as the viewport shrinks');
 ok(/style\.left =/.test(clamp), 'clampPop is what writes left');
 {
   const runClamp = new Function('window', 'document', clamp + '\nreturn clampPop;')(global.window, global.document);
-  const pop = (top, left, w, h) => ({ parentNode: {}, offsetHeight: h, offsetWidth: w, style: {}, getAttribute: (k) => ({ 'data-cc-top': String(top), 'data-cc-left': String(left) })[k] || null });
+  const pop = (top, left, w, h) => ({ parentNode: {}, offsetHeight: h, offsetWidth: w, style: {}, getAttribute: (k) => ({ 'data-tt-top': String(top), 'data-tt-left': String(left) })[k] || null });
   const right = pop(300, 1400, 372, 200); runClamp(right);
   ok(right.style.left === (1500 - 372 - 24) + 'px', 'a window opened from the right-most column keeps 24px off a wide viewport\'s right edge', right.style.left);
   const low = pop(860, 100, 372, 300); runClamp(low);
@@ -293,16 +293,16 @@ ok(/style\.left =/.test(clamp), 'clampPop is what writes left');
 }
 const place = grabFn('placePop');
 ok(!/style\.left =/.test(place), 'placePop leaves left to it, so one formula serves the first placement and every re-clamp');
-ok(/data-cc-left/.test(place), 'placePop records the anchor-relative left as the preference');
+ok(/data-tt-left/.test(place), 'placePop records the anchor-relative left as the preference');
 
-// A hard `width` on .cc-pop-lbl cannot grow with a longer label: it wraps inside
-// the box and doubles the row. .cc-pop-auto narrowing the same column to 90px hit
+// A hard `width` on .tt-pop-lbl cannot grow with a longer label: it wraps inside
+// the box and doubles the row. .tt-pop-auto narrowing the same column to 90px hit
 // the sections with the longest labels, Restart-Policy and Leerlauf-Minuten at
 // around 92px. The shape of the floor is pinned, a hard width being what a tidy-up
 // would write back.
 console.log('\nPart 9: the label column cannot wrap, and every field is one width');
-const lblRule = /\.cc-pop-lbl \{([^}]*)\}/.exec(css);
-ok(!!lblRule, '.cc-pop-lbl is declared');
+const lblRule = /\.tt-pop-lbl \{([^}]*)\}/.exec(css);
+ok(!!lblRule, '.tt-pop-lbl is declared');
 if (lblRule) {
   ok(/min-width:/.test(lblRule[1]), 'the column is a min-width floor, a box that can grow');
   ok(!/[^-]width: \d/.test(lblRule[1]), 'and carries no hard width, which is what wrapped the long labels');
@@ -313,66 +313,66 @@ if (lblRule) {
 // The rule that was removed is quoted in the comment that replaced it, so only a
 // live declaration counts here.
 const cssLive = css.replace(/\/\*[\s\S]*?\*\//g, '');
-ok(!/\.cc-pop-auto \.cc-pop-lbl \{ width: 90px/.test(cssLive), 'there is no second, narrower label column for half the window');
-ok(/\.cc-pop\.cc-pop-plan \.cc-pop-lbl \{ min-width: 120px; \}/.test(css), 'the plan window raises its floor to 120px, its longest label measuring about 96px with the (i)');
+ok(!/\.tt-pop-auto \.tt-pop-lbl \{ width: 90px/.test(cssLive), 'there is no second, narrower label column for half the window');
+ok(/\.tt-pop\.tt-pop-plan \.tt-pop-lbl \{ min-width: 120px; \}/.test(css), 'the plan window raises its floor to 120px, its longest label measuring about 96px with the (i)');
 const harden = grabFn('hardenPop');
-ok(/cc-pop-lbl/.test(harden), 'hardenPop knows about the label column');
-ok(/classList\.contains\("cc-pop-lbl"\)[\s\S]*?white-space[\s\S]*?nowrap/.test(harden), 'and stamps nowrap and the same floor inline, where Unraid theme rules cannot reach');
-ok(/cc-pop-lbl[\s\S]{0,400}?return;/.test(harden), 'the label returns before the blanket min-width:0, which would collapse the floor to ragged per-row widths');
-ok(/\.cc-pop\.cc-pop-plan \.cc-pop-row \.cc-port \{ flex: 1 1 0 !important/.test(css), 'in the plan window every .cc-port joins the shared value column instead of staying an 80px stub');
-ok(/\.cc-pop\.cc-pop-plan \.cc-pop-row \.cc-dsel \{ flex: 1 1 16px; \}/.test(css), 'the dropdown wrapper takes a 16px basis to match a border-box .cc-in, whose flex-basis:0 is floored at its own padding');
-ok(/\.cc-port \{ flex: none; width: 80px/.test(css), 'and the CPU and RAM window keeps its 80px, where .cc-port is half of a value and unit pair');
-ok(/i\.closest\("\.cc-pop-plan"\)[\s\S]{0,120}?"flex", "1 1 0"/.test(harden), 'hardenPop agrees with the sheet instead of stamping the 80px stub back');
+ok(/tt-pop-lbl/.test(harden), 'hardenPop knows about the label column');
+ok(/classList\.contains\("tt-pop-lbl"\)[\s\S]*?white-space[\s\S]*?nowrap/.test(harden), 'and stamps nowrap and the same floor inline, where Unraid theme rules cannot reach');
+ok(/tt-pop-lbl[\s\S]{0,400}?return;/.test(harden), 'the label returns before the blanket min-width:0, which would collapse the floor to ragged per-row widths');
+ok(/\.tt-pop\.tt-pop-plan \.tt-pop-row \.tt-port \{ flex: 1 1 0 !important/.test(css), 'in the plan window every .tt-port joins the shared value column instead of staying an 80px stub');
+ok(/\.tt-pop\.tt-pop-plan \.tt-pop-row \.tt-dsel \{ flex: 1 1 16px; \}/.test(css), 'the dropdown wrapper takes a 16px basis to match a border-box .tt-in, whose flex-basis:0 is floored at its own padding');
+ok(/\.tt-port \{ flex: none; width: 80px/.test(css), 'and the CPU and RAM window keeps its 80px, where .tt-port is half of a value and unit pair');
+ok(/i\.closest\("\.tt-pop-plan"\)[\s\S]{0,120}?"flex", "1 1 0"/.test(harden), 'hardenPop agrees with the sheet instead of stamping the 80px stub back');
 
 // Unraid's default-base.css paints every placeholder in the theme's link colour,
 // so a hint reads as a link or as a filled-in value. A guard repeated per field is
 // missing wherever it was not typed.
 console.log('\nPart 10: placeholders are hints, not links');
-ok(/\.cc-in::placeholder[^{]*\{[^}]*color: var\(--cc-text-hint/.test(css), 'every .cc-in placeholder is overridden to the hint token');
-ok(/\.cc-pop input::placeholder/.test(css), 'the guard covers every input in a window, not one class at a time');
-ok(/\.cc-in::placeholder[^{]*\{[^}]*opacity: 1/.test(css), 'opacity:1 as well, Firefox dimming placeholders on top of the colour');
+ok(/\.tt-in::placeholder[^{]*\{[^}]*color: var\(--tt-text-hint/.test(css), 'every .tt-in placeholder is overridden to the hint token');
+ok(/\.tt-pop input::placeholder/.test(css), 'the guard covers every input in a window, not one class at a time');
+ok(/\.tt-in::placeholder[^{]*\{[^}]*opacity: 1/.test(css), 'opacity:1 as well, Firefox dimming placeholders on top of the colour');
 const setjs = fs.readFileSync(path.join(SCRIPTS, 'settings.js'), 'utf8');
-ok(/#cc-settings input::placeholder\{color:#8d8d8d/.test(setjs), 'and the settings panel guards every input, not just its search box');
+ok(/#tt-settings input::placeholder\{color:#8d8d8d/.test(setjs), 'and the settings panel guards every input, not just its search box');
 
 console.log('\nPart 11: the dependency picker has an arrow and an explainer');
-ok(/el\("input", "cc-in cc-dropin"\)/.test(src), 'the dependency field carries .cc-dropin');
+ok(/el\("input", "tt-in tt-dropin"\)/.test(src), 'the dependency field carries .tt-dropin');
 ok(/lblInfo\(t\("dependsOn"\), t\("dependsOnInfo"\)\)/.test(src), 'and an (i), it being the one row in the window without an explainer');
 ok(/dependsOnInfo: "/.test(src), 'dependsOnInfo exists');
-const caret = /select\.cc-in, \.cc-in\.cc-dropin \{([\s\S]*?)\}/.exec(css);
-ok(!!caret, 'the native select and the .cc-dropin field share one caret declaration');
+const caret = /select\.tt-in, \.tt-in\.tt-dropin \{([\s\S]*?)\}/.exec(css);
+ok(!!caret, 'the native select and the .tt-dropin field share one caret declaration');
 if (caret) {
-  ok(/%23cfcfcf/.test(caret[1]), 'drawn in the same #cfcfcf as .cc-pop .cc-dsel-trigger::after, so there is one arrow');
+  ok(/%23cfcfcf/.test(caret[1]), 'drawn in the same #cfcfcf as .tt-pop .tt-dsel-trigger::after, so there is one arrow');
   ok(/width='8' height='5'/.test(caret[1]), 'and the same 8x5 geometry the trigger builds from borders');
   ok(/padding-right: 24px/.test(caret[1]), 'with room reserved so the value never runs under the glyph');
 }
-ok(/cc-dropin"\)\) \? "5px 24px 5px 8px"/.test(harden), 'hardenPop exempts it from the flat padding stamp, which would otherwise undo that room');
+ok(/tt-dropin"\)\) \? "5px 24px 5px 8px"/.test(harden), 'hardenPop exempts it from the flat padding stamp, which would otherwise undo that room');
 
 // Every field in the window sits 24px from its edge: the content card 10px in, and the
 // content 14px inside the card. The arithmetic differs by nesting: a row inside
-// .cc-pop-body, .cc-pop-auto or .cc-pop-sub already has that wrapper's 4px margin and
+// .tt-pop-body, .tt-pop-auto or .tt-pop-sub already has that wrapper's 4px margin and
 // adds 10, while a block placed straight into the card carries all 14. The title badge
 // and the button row span the card's width. Pinned as the shape of the fix, since one
 // number everywhere is what a later tidy-up would write back.
 console.log('\nPart 12: one 24px side inset for the whole window');
-ok(/\.cc-pop-mid \{[^}]*margin: 0 10px/.test(css), 'the content sits 10px inside the window');
-ok(/\.cc-pop-row \{[^}]*padding: 8px 14px/.test(css), 'an unwrapped .cc-pop-row (the manage-toggle line) takes the full 14px inside the card itself');
-ok(/\.cc-pop-body \.cc-pop-row, \.cc-pop-auto \.cc-pop-row \{ padding: 3px 10px !important/.test(css), 'a wrapped row keeps 10 and lets its wrapper margin supply the other 4');
-ok(/\.cc-pop-body \{[^}]*margin: 6px 4px 2px/.test(css) && /\.cc-pop-auto \{[^}]*margin: 6px 4px/.test(css), 'both wrappers carry that 4px margin, the two halves of 14 having to agree');
-ok(/\.cc-pop-head \{[^}]*position: absolute; top: 0; left: 24px; transform: translateY\(-50%\);/.test(css) && /\.cc-pop \{ padding-top: 21px; \}/.test(css), 'the head notches the title badge into the window\'s top edge, on the content\'s 24px edge');
-ok(/\.cc-pop-act \{[^}]*padding: 10px;/.test(css), 'and so does the button row');
-ok(/\.cc-pop-sech-lone \{[^}]*padding: 10px 10px 5px/.test(css), '"ZEITPLÄNE" takes 10 inside its .cc-pop-auto, 14 there landing at 28');
-ok(/\.cc-sched-list \{[^}]*padding: 4px 10px 2px/.test(css), 'the schedule cards line up with the fields rather than sitting 4px right of them');
-ok(/\.cc-btn-sm \{ margin: 4px 10px 6px/.test(css), 'and "+ Zeitplan" with them');
+ok(/\.tt-pop-mid \{[^}]*margin: 0 10px/.test(css), 'the content sits 10px inside the window');
+ok(/\.tt-pop-row \{[^}]*padding: 8px 14px/.test(css), 'an unwrapped .tt-pop-row (the manage-toggle line) takes the full 14px inside the card itself');
+ok(/\.tt-pop-body \.tt-pop-row, \.tt-pop-auto \.tt-pop-row \{ padding: 3px 10px !important/.test(css), 'a wrapped row keeps 10 and lets its wrapper margin supply the other 4');
+ok(/\.tt-pop-body \{[^}]*margin: 6px 4px 2px/.test(css) && /\.tt-pop-auto \{[^}]*margin: 6px 4px/.test(css), 'both wrappers carry that 4px margin, the two halves of 14 having to agree');
+ok(/\.tt-pop-head \{[^}]*position: absolute; top: 0; left: 24px; transform: translateY\(-50%\);/.test(css) && /\.tt-pop \{ padding-top: 21px; \}/.test(css), 'the head notches the title badge into the window\'s top edge, on the content\'s 24px edge');
+ok(/\.tt-pop-act \{[^}]*padding: 10px;/.test(css), 'and so does the button row');
+ok(/\.tt-pop-sech-lone \{[^}]*padding: 10px 10px 5px/.test(css), '"ZEITPLÄNE" takes 10 inside its .tt-pop-auto, 14 there landing at 28');
+ok(/\.tt-sched-list \{[^}]*padding: 4px 10px 2px/.test(css), 'the schedule cards line up with the fields rather than sitting 4px right of them');
+ok(/\.tt-btn-sm \{ margin: 4px 10px 6px/.test(css), 'and "+ Zeitplan" with them');
 // hardenPop stamps the row padding inline with !important, which the sheet cannot beat.
-ok(/closest\("\.cc-pop-body, \.cc-pop-auto, \.cc-pop-sub"\)/.test(harden), 'hardenPop asks whether the row is wrapped instead of stamping one number everywhere');
+ok(/closest\("\.tt-pop-body, \.tt-pop-auto, \.tt-pop-sub"\)/.test(harden), 'hardenPop asks whether the row is wrapped instead of stamping one number everywhere');
 ok(/wrapped \? "3px 10px" : "3px 14px"/.test(harden), 'and stamps the matching half, a blanket 10 flattening the unwrapped row');
 ok(/"padding", "10px", "important"/.test(harden), 'the action row agrees with the sheet on the card\'s edges');
 
-// "CC" is everywhere in this codebase as a source-code prefix, in cc- classes,
-// CC_* constants, cc.* keys and --cc-* properties, and stays. Only string literals
+// "TT" is everywhere in this codebase as a source-code prefix, in tt- classes,
+// TT_* constants, tt.* keys and --tt-* properties, and stays. Only string literals
 // reach a user, so only those are scanned: a line-based grep would flag the class
 // names and a blind replace would break the plugin.
-console.log('\nPart 13: user-facing prose says "TowerTorch", not "CC"');
+console.log('\nPart 13: user-facing prose says "TowerTorch", not "TT"');
 function proseStrings(source) {
   const BS = String.fromCharCode(92);
   const out = [];
@@ -397,27 +397,27 @@ function proseStrings(source) {
   }
   return out;
 }
-// "CC" standing alone, or leading a hyphenated compound a user would read, such as
-// "CC-Kopfbereich". The cc- class prefix is lower case, and CC_TRASH_SVG and its
+// "TT" standing alone, or leading a hyphenated compound a user would read, such as
+// "TT-Kopfbereich". The tt- class prefix is lower case, and TT_TRASH_SVG and its
 // kind carry an underscore, so neither matches.
-const BARE_CC = /(^|[^A-Za-z0-9_])CC(-[A-Za-zÄÖÜäöü]|[^A-Za-z0-9_-]|$)/;
+const BARE_TT = /(^|[^A-Za-z0-9_])TT(-[A-Za-zÄÖÜäöü]|[^A-Za-z0-9_-]|$)/;
 [['docker.js', src], ['settings.js', setjs], ['header.js', fs.readFileSync(path.join(SCRIPTS, 'header.js'), 'utf8')],
  ['shares.js', fs.readFileSync(path.join(SCRIPTS, 'shares.js'), 'utf8')], ['vms.js', fs.readFileSync(path.join(SCRIPTS, 'vms.js'), 'utf8')],
- ['plugins.js', fs.readFileSync(path.join(SCRIPTS, 'plugins.js'), 'utf8')], ['cc-theme.js', theme]].forEach(([name, source]) => {
-  const hits = proseStrings(source).filter(o => BARE_CC.test(o.s));
-  ok(hits.length === 0, name + ' has no bare "CC" in any string a user can read'
-    + (hits.length ? ': ' + hits.map(h => 'L' + h.line + ': …' + h.s.slice(Math.max(0, h.s.search(BARE_CC) - 24), h.s.search(BARE_CC) + 40) + '…').join(' | ') : ''));
+ ['plugins.js', fs.readFileSync(path.join(SCRIPTS, 'plugins.js'), 'utf8')], ['tt-theme.js', theme]].forEach(([name, source]) => {
+  const hits = proseStrings(source).filter(o => BARE_TT.test(o.s));
+  ok(hits.length === 0, name + ' has no bare "TT" in any string a user can read'
+    + (hits.length ? ': ' + hits.map(h => 'L' + h.line + ': …' + h.s.slice(Math.max(0, h.s.search(BARE_TT) - 24), h.s.search(BARE_TT) + 40) + '…').join(' | ') : ''));
 });
 ok(/TowerTorch startet sie zuerst/.test(src) && /TowerTorch starts them first/.test(src), '"Hängt ab von" names the product in full, in German and English');
 ok(/bevor TowerTorch stoppt/.test(src) && /before TowerTorch stops it/.test(src), 'so does the idle-stop bubble, in both');
 // The other half: the source-code prefix a blind find-and-replace would destroy.
-ok(/cc-pop-lbl/.test(css) && /CC_GEAR_SVG/.test(src) && /"cc\.rainbow"/.test(src), 'the cc- class namespace, the CC_* constants and the cc.* keys stay as they are');
+ok(/tt-pop-lbl/.test(css) && /TT_GEAR_SVG/.test(src) && /"tt\.rainbow"/.test(src), 'the tt- class namespace, the TT_* constants and the tt.* keys stay as they are');
 
 // GlimStone, "Switches": a control that hangs off an off switch has no state behind it, so it is
 // absent rather than dimmed: the plan fields under "Im Startplan verwalten", the watchdog's
 // triggers under "Auto-Start" and the idle-stop numbers under its switch.
 console.log('\nPart 14: what hangs off an off switch is gone, not greyed');
-for (const sel of ['.cc-pop-body.cc-dis', '.cc-pop-sub.cc-dis']) {
+for (const sel of ['.tt-pop-body.tt-dis', '.tt-pop-sub.tt-dis']) {
   const m = new RegExp(sel.replace(/\./g, '\\.') + '\\s*\\{([^}]*)\\}').exec(cssLive);
   ok(!!m && /display:\s*none/.test(m[1]) && !/opacity/.test(m[1]), sel + ' hides its rows' + (m ? '  (' + m[1].trim() + ')' : ''));
 }

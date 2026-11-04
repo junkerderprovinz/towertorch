@@ -1,6 +1,6 @@
 // The Dashboard tiles as GlimStone cards (TowerTorch.Dashboard.page, .css, dashboard.js).
 // What can quietly break it:
-//   · a rule that is not gated on html.cc-dash-on restyles the Dashboard with the header area off
+//   · a rule that is not gated on html.tt-dash-on restyles the Dashboard with the header area off
 //   · a block display with !important on a tile or row beats Unraid's inline display:none, so a
 //     tile the person closed or a folded row comes back
 //   · a stroked drawing slipping in among the filled tile glyphs
@@ -32,27 +32,27 @@ function selectors(sheet) {
 
 console.log('\nThe hook');
 ok('the page is a Buttons hook, so its sheet loads on every page', /^Menu="Buttons:\d+"/m.test(page));
-ok('it renders no icon', /^Link="cc-dash-hook"/m.test(page));
+ok('it renders no icon', /^Link="tt-dash-hook"/m.test(page));
 ok('it loads dashboard.js', /scripts\/dashboard\.js/.test(page));
 
-console.log('\nEvery rule waits for html.cc-dash-on');
+console.log('\nEvery rule waits for html.tt-dash-on');
 {
   const rules = selectors(css);
   ok('the sheet has rules', rules.length > 20, rules.length);
   const loose = [];
-  for (const [sel] of rules) for (const part of splitTop(sel)) if (!/html\.cc-dash-on/.test(part)) loose.push(part.trim());
+  for (const [sel] of rules) for (const part of splitTop(sel)) if (!/html\.tt-dash-on/.test(part)) loose.push(part.trim());
   ok('no selector applies without the gate', loose.length === 0, loose.slice(0, 4).join(' | '));
 }
 
 console.log('\nUnraid keeps hiding tiles and rows');
 {
   const rules = selectors(css);
-  const tile = rules.find(([s]) => s === 'html.cc-dash-on table.dashboard > tbody');
+  const tile = rules.find(([s]) => s === 'html.tt-dash-on table.dashboard > tbody');
   ok('a tile is a block without !important, so an inline display:none still wins', !!tile && /display:\s*block;/.test(tile[1]) && !/display:\s*block\s*!important/.test(tile[1]), tile && tile[1]);
   const row = rules.find(([s]) => /> tbody > tr:not\(\[style\*="none"\]\)/.test(s));
   ok('the forced row display skips every row whose inline style hides it', !!row && /display:\s*block !important/.test(row[1]), row && row[0]);
   ok('nothing else forces a display with !important on a row or tile', !rules.some(([s, b]) => s !== (row && row[0]) && /(tbody|> tr)\s*$/.test(s) && /display:[^;]*!important/.test(b)));
-  const cell = rules.find(([s]) => s === 'html.cc-dash-on table.dashboard > tbody > tr > td');
+  const cell = rules.find(([s]) => s === 'html.tt-dash-on table.dashboard > tbody > tr > td');
   ok('a cell is a flow root, so the floated columns inside it stay inside the card', !!cell && /display:\s*flow-root/.test(cell[1]), cell && cell[1]);
 }
 
@@ -82,7 +82,7 @@ function run(store, dom = {}) {
     window: win, location: { pathname: '/Dashboard' },
     localStorage: { getItem: (k) => (k in store ? store[k] : null) },
     setTimeout: () => 0, clearTimeout: () => {},
-    getComputedStyle: () => ({ getPropertyValue: (p) => (p === '--cc-accent' ? ' #1f9d55' : p === '--cc-text-dim' ? '#8a8a8a' : p === '--cc-text' ? '#e6e6e6' : '') }),
+    getComputedStyle: () => ({ getPropertyValue: (p) => (p === '--tt-accent' ? ' #1f9d55' : p === '--tt-text-dim' ? '#8a8a8a' : p === '--tt-text' ? '#e6e6e6' : '') }),
     document: {
       readyState: 'complete',
       documentElement: { lang: 'de', classList: { toggle: (c, on) => (on ? classes.add(c) : classes.delete(c)), contains: (c) => classes.has(c) } },
@@ -92,32 +92,32 @@ function run(store, dom = {}) {
       addEventListener: () => {},
     },
   };
-  if (dom.CCTheme) win.CCTheme = ctx.CCTheme = dom.CCTheme;
+  if (dom.TTTheme) win.TTTheme = ctx.TTTheme = dom.TTTheme;
   vm.runInNewContext(js, ctx);
-  return { classes, win, fire: () => (listeners.storage || []).forEach((f) => f({ key: 'cc.enable.header' })) };
+  return { classes, win, fire: () => (listeners.storage || []).forEach((f) => f({ key: 'tt.enable.header' })) };
 }
 
 console.log('\nThe area switch');
 {
-  const on = run({ 'cc.enable.header': '1' });
-  ok('with the header area on the Dashboard is marked', on.classes.has('cc-dash-on'));
-  const off = run({ 'cc.enable.header': '0' });
-  ok('with it off it stays native', !off.classes.has('cc-dash-on'));
-  const master = run({ 'cc.enable.header': '1', 'cc.theming': '0' });
-  ok('master theming off wins', !master.classes.has('cc-dash-on'));
+  const on = run({ 'tt.enable.header': '1' });
+  ok('with the header area on the Dashboard is marked', on.classes.has('tt-dash-on'));
+  const off = run({ 'tt.enable.header': '0' });
+  ok('with it off it stays native', !off.classes.has('tt-dash-on'));
+  const master = run({ 'tt.enable.header': '1', 'tt.theming': '0' });
+  ok('master theming off wins', !master.classes.has('tt-dash-on'));
 }
 
 console.log('\nThe charts follow the area');
 {
-  const store = { 'cc.enable.header': '1' };
+  const store = { 'tt.enable.header': '1' };
   const r = run(store);
   const cpu = r.win.cpuchart, net = r.win.netchart;
   ok('the CPU line is the accent', cpu.seriesSet[0].options.strokeStyle === '#1f9d55', cpu.seriesSet[0].options.strokeStyle);
   ok('the grid is gone', cpu.options.grid.strokeStyle === 'transparent' && cpu.options.grid.verticalSections === 0 && cpu.options.grid.borderVisible === false);
   ok('inbound takes the accent and outbound the text colour, unfilled', net.seriesSet[0].options.strokeStyle === '#1f9d55' && net.seriesSet[1].options.strokeStyle === '#e6e6e6' && net.seriesSet[1].options.fillStyle === undefined, net.seriesSet[1].options.strokeStyle);
-  store['cc.enable.header'] = '0';
+  store['tt.enable.header'] = '0';
   r.fire();
-  ok('switched off, the area class goes', !r.classes.has('cc-dash-on'));
+  ok('switched off, the area class goes', !r.classes.has('tt-dash-on'));
   ok('and the charts get their own colours and grid back', cpu.seriesSet[0].options.strokeStyle === '#ff8c2f' && net.seriesSet[0].options.strokeStyle === '#e22828' && cpu.options.grid.strokeStyle === '#2b2b2b' && cpu.options.grid.verticalSections === 4);
 }
 
@@ -128,7 +128,7 @@ function fake(tag, cls, attrs = {}, kids = []) {
     tagName: tag, html: '', listeners: 0, set,
     classList: { contains: (c) => set.has(c), add: (...c) => c.forEach((x) => set.add(x)), remove: (...c) => c.forEach((x) => set.delete(x)), toggle: (c, on) => (on ? set.add(c) : set.delete(c)) },
     hasAttribute: (n) => n in at, getAttribute: (n) => (n in at ? at[n] : null), setAttribute: (n, v) => { at[n] = String(v); }, removeAttribute: (n) => { delete at[n]; },
-    querySelector: (sel) => kids.find((k) => (sel === 'i.fa' ? k.set.has('fa') : /title/.test(sel) && (k.hasAttribute('title') || k.hasAttribute('data-cc-tip')))) || null,
+    querySelector: (sel) => kids.find((k) => (sel === 'i.fa' ? k.set.has('fa') : /title/.test(sel) && (k.hasAttribute('title') || k.hasAttribute('data-tt-tip')))) || null,
     querySelectorAll: () => [], insertAdjacentHTML(_, h) { this.html += h; }, addEventListener() { this.listeners++; },
     style: { setProperty() {}, removeProperty() {} },
   };
@@ -139,17 +139,17 @@ console.log('\nThe server card names the server once');
   const dup = (name, desc) => {
     const span = fake('SPAN', ''); span.id = ''; span.textContent = desc;
     const h = { textContent: name, nextElementSibling: span };
-    run({ 'cc.enable.header': '1' }, { querySelector: (s) => (/tbody\.system h3/.test(s) ? h : null) });
-    return span.set.has('cc-dash-dup');
+    run({ 'tt.enable.header': '1' }, { querySelector: (s) => (/tbody\.system h3/.test(s) ? h : null) });
+    return span.set.has('tt-dash-dup');
   };
   ok('a description that repeats the name is dropped', dup('Bottich', ' Bottich '));
   ok('in any letter case', dup('Bottich', 'BOTTICH'));
   ok('a description of its own stays', !dup('Bottich', 'Medienserver im Keller'));
   ok('an empty one is left alone', !dup('Bottich', ''));
-  ok('the dropped description is hidden by the sheet', selectors(css).some(([s, b]) => /\.cc-dash-dup$/.test(s) && /display:\s*none/.test(b)));
+  ok('the dropped description is hidden by the sheet', selectors(css).some(([s, b]) => /\.tt-dash-dup$/.test(s) && /display:\s*none/.test(b)));
 }
 
-console.log('\nThe tile controls are CC icon badges');
+console.log('\nThe tile controls are TowerTorch icon badges');
 {
   const gearIcon = fake('I', 'fa fa-fw fa-cog control', { title: 'Gehe zu den Identifikations-Einstellungen' });
   const gear = fake('A', '', { href: '/Dashboard/Settings/Identification' }, [gearIcon]);
@@ -159,33 +159,33 @@ console.log('\nThe tile controls are CC icon badges');
   const fold = fake('I', 'fa fa-fw fa-chevron-down control openclose', { title: 'Inhalt ein/ausblenden' });
   const plugin = fake('SPAN', 'fa fa-fw fa-fire hand', { title: 'FireSquire' });
   const all = [gear, stop, busy, off, fold, plugin];
-  const store = { 'cc.enable.header': '1' };
+  const store = { 'tt.enable.header': '1' };
   const r = run(store, {
-    querySelectorAll: (s) => (/tile-ctrl/.test(s) ? all : /cc-dash-btn/.test(s) ? all.filter((b) => b.set.has('cc-dash-btn')) : []),
-    CCTheme: { glyph: (n) => '<svg class="cc-glyph" data-n="' + n + '"></svg>' },
+    querySelectorAll: (s) => (/tile-ctrl/.test(s) ? all : /tt-dash-btn/.test(s) ? all.filter((b) => b.set.has('tt-dash-btn')) : []),
+    TTTheme: { glyph: (n) => '<svg class="tt-glyph" data-n="' + n + '"></svg>' },
   });
-  ok('each control is marked as a CC icon badge', all.every((b) => b.set.has('cc-actbtn') && b.set.has('cc-dash-btn')));
-  ok('the power off badge is named in plain German', off.getAttribute('data-cc-tip') === 'Herunterfahren' && off.getAttribute('aria-label') === 'Herunterfahren');
-  ok('the gear says where it leads, and its icon gives up the text a bubble would find first', gear.getAttribute('data-cc-tip') === 'Identifikation bearbeiten' && !gearIcon.hasAttribute('title'));
-  ok('the fold arrow says what a press does', fold.getAttribute('data-cc-tip') === 'Karte ausklappen');
-  ok('a plugin control keeps its own name', plugin.getAttribute('data-cc-tip') === 'FireSquire');
+  ok('each control is marked as a TowerTorch icon badge', all.every((b) => b.set.has('tt-actbtn') && b.set.has('tt-dash-btn')));
+  ok('the power off badge is named in plain German', off.getAttribute('data-tt-tip') === 'Herunterfahren' && off.getAttribute('aria-label') === 'Herunterfahren');
+  ok('the gear says where it leads, and its icon gives up the text a bubble would find first', gear.getAttribute('data-tt-tip') === 'Identifikation bearbeiten' && !gearIcon.hasAttribute('title'));
+  ok('the fold arrow says what a press does', fold.getAttribute('data-tt-tip') === 'Karte ausklappen');
+  ok('a plugin control keeps its own name', plugin.getAttribute('data-tt-tip') === 'FireSquire');
   ok('the glyphs come from the set where it has the meaning', /data-n="Stop"/.test(stop.html) && /data-n="Power"/.test(off.html) && /data-n="Gear"/.test(gear.html) && plugin.html === '' && fold.html === '');
   ok('a span control is reachable and pressable by keyboard', stop.getAttribute('role') === 'button' && stop.getAttribute('tabindex') === '0' && stop.listeners === 1);
   ok('Unraid keeps its handlers', stop.getAttribute('onclick') === 'StopArray()' && off.getAttribute('onclick') === 'Shutdown()');
-  ok('a busy control rests greyed and takes no focus', busy.set.has('cc-actoff') && busy.getAttribute('aria-disabled') === 'true' && !busy.hasAttribute('tabindex'));
-  store['cc.enable.header'] = '0';
+  ok('a busy control rests greyed and takes no focus', busy.set.has('tt-actoff') && busy.getAttribute('aria-disabled') === 'true' && !busy.hasAttribute('tabindex'));
+  store['tt.enable.header'] = '0';
   r.fire();
-  ok('switched off, every control is Unraid\'s again', all.every((b) => !b.set.has('cc-dash-btn') && !b.set.has('cc-actbtn') && !b.hasAttribute('data-cc-tip') && !b.hasAttribute('role')));
+  ok('switched off, every control is Unraid\'s again', all.every((b) => !b.set.has('tt-dash-btn') && !b.set.has('tt-actbtn') && !b.hasAttribute('data-tt-tip') && !b.hasAttribute('role')));
   ok('with Unraid\'s own hover text back in place', gearIcon.getAttribute('title') === 'Gehe zu den Identifikations-Einstellungen' && stop.getAttribute('title') === 'Array stoppen');
 }
 
 console.log('\nThe badges and their corner in the sheet');
 {
   const rules = selectors(css);
-  const badge = rules.find(([s]) => s === 'html.cc-dash-on table.dashboard .cc-dash-btn');
-  ok('a badge has the one icon badge size', !!badge && /width: var\(--cc-icon-badge, 26px\)/.test(badge[1]) && /height: var\(--cc-icon-badge, 26px\)/.test(badge[1]));
-  ok('it is filled in the colour mode', !!badge && /background: var\(--cc-rb-c, var\(--cc-accent/.test(badge[1]));
-  ok('the reactive mode rests it grey until the tile has the pointer or the focus', rules.some(([s]) => /cc-header-rbneutral table\.dashboard > tbody:not\(:hover, :focus-within\) \.cc-dash-btn/.test(s)));
+  const badge = rules.find(([s]) => s === 'html.tt-dash-on table.dashboard .tt-dash-btn');
+  ok('a badge has the one icon badge size', !!badge && /width: var\(--tt-icon-badge, 26px\)/.test(badge[1]) && /height: var\(--tt-icon-badge, 26px\)/.test(badge[1]));
+  ok('it is filled in the colour mode', !!badge && /background: var\(--tt-rb-c, var\(--tt-accent/.test(badge[1]));
+  ok('the reactive mode rests it grey until the tile has the pointer or the focus', rules.some(([s]) => /tt-header-rbneutral table\.dashboard > tbody:not\(:hover, :focus-within\) \.tt-dash-btn/.test(s)));
   const corner = rules.find(([s]) => /tbody\.system:not\(:has\(\.openclose\.fa-chevron-down\)\) \.tile-ctrl/.test(s));
   ok('the power controls stand in the bottom right corner while the card is open', !!corner && /position: absolute/.test(corner[1]) && /bottom:/.test(corner[1]) && /right:/.test(corner[1]));
 }

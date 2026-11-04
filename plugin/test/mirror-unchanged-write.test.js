@@ -1,4 +1,4 @@
-// Every cc.* write is mirrored into the engine config, but a write of the value already stored
+// Every tt.* write is mirrored into the engine config, but a write of the value already stored
 // changes nothing there. The settings page rewrites its tab and a few switches on every render,
 // and each of those would otherwise send the whole config back unchanged on every load.
 const fs = require('fs');
@@ -17,23 +17,23 @@ function wrapperOf(src) {
   return null;
 }
 
-for (const [file, pend, timer, fn] of [['scripts/settings.js', 'uiPending', 'uiSyncT', 'pushUISettings'], ['scripts/docker.js', 'uiPending', 'uiSyncT', 'pushUISettings'], ['scripts/cc-theme.js', 'pending', 'syncT', 'push']]) {
+for (const [file, pend, timer, fn] of [['scripts/settings.js', 'uiPending', 'uiSyncT', 'pushUISettings'], ['scripts/docker.js', 'uiPending', 'uiSyncT', 'pushUISettings'], ['scripts/tt-theme.js', 'pending', 'syncT', 'push']]) {
   console.log('\n' + file);
   const w = wrapperOf(fs.readFileSync(path.join(DIR, file), 'utf8'));
   ok('has a mirroring setItem', !!w);
   if (!w) continue;
-  const store = { 'cc.settab': 'docker' };
+  const store = { 'tt.settab': 'docker' };
   const ls = { getItem: (k) => (k in store ? store[k] : null) };
   const orig = (k, v) => { store[k] = String(v); };
   const env = new Function('localStorage', 'orig', 'protoSet', 'setTimeout', 'clearTimeout',
     `var ${pend} = {}, ${timer} = null; function ${fn}() {}\n${w.replace(/^Storage\.prototype\.setItem = /, 'var hook = ')};\nreturn { set: function (k, v) { return hook.call(localStorage, k, v); }, pending: ${pend} };`)(ls, orig, orig, () => 1, () => {});
-  env.set('cc.settab', 'docker');
-  ok('a write of the stored value queues nothing', !('cc.settab' in env.pending), Object.keys(env.pending).join(' '));
-  env.set('cc.settab', 'vms');
-  ok('a changed value is queued for the engine', 'cc.settab' in env.pending);
-  ok('and stored', store['cc.settab'] === 'vms');
-  env.set('cc.newkey', '1');
-  ok('a key stored for the first time is queued', 'cc.newkey' in env.pending);
+  env.set('tt.settab', 'docker');
+  ok('a write of the stored value queues nothing', !('tt.settab' in env.pending), Object.keys(env.pending).join(' '));
+  env.set('tt.settab', 'vms');
+  ok('a changed value is queued for the engine', 'tt.settab' in env.pending);
+  ok('and stored', store['tt.settab'] === 'vms');
+  env.set('tt.newkey', '1');
+  ok('a key stored for the first time is queued', 'tt.newkey' in env.pending);
 }
 
 console.log('\nThe hooks reach Firefox');

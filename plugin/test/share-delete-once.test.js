@@ -12,11 +12,11 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 console.log('\nOne Delete on the share settings page');
 {
-  const hide = /html\.cc-shares-on\.cc-on-share-detail #displaybox dl:has\(> \.cc-del-wrap > \.cc-cb-del:checked\) #cmdEditShare \{ display: none !important; \}/;
+  const hide = /html\.tt-shares-on\.tt-on-share-detail #displaybox dl:has\(> \.tt-del-wrap > \.tt-cb-del:checked\) #cmdEditShare \{ display: none !important; \}/;
   ok('Unraid\'s button steps aside while the switch is on', hide.test(css));
   ok('and only then, so Apply stays at rest', !/#cmdEditShare \{[^}]*display: none/.test(css.replace(hide, '')));
   ok('the badge submits through Unraid\'s button, which keeps its own onclick', /if \(cb\.checked && !cb\.disabled\) \{ var sub = document\.getElementById\("cmdEditShare"\); if \(sub\) sub\.click\(\); \}/.test(js));
-  ok('the badge comes alive with the switch', /\.cc-del-wrap:has\(\.cc-cb-del:checked\) \.cc-b-del \{[^}]*pointer-events: auto !important;/.test(css));
+  ok('the badge comes alive with the switch', /\.tt-del-wrap:has\(\.tt-cb-del:checked\) \.tt-b-del \{[^}]*pointer-events: auto !important;/.test(css));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

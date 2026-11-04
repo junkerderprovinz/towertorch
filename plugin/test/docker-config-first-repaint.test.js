@@ -1,5 +1,5 @@
-// Pins docker.js's cross-origin config sync, loadConfig(). cc-theme.js has its own,
-// pinned in cc-theme-rerender-hook.test.js.
+// Pins docker.js's cross-origin config sync, loadConfig(). tt-theme.js has its own,
+// pinned in tt-theme-rerender-hook.test.js.
 //
 // docker.js's boot() paints synchronously off localStorage, before the async GET
 // /config resolves. If the local copy happens to equal the server's, a repaint
@@ -62,8 +62,8 @@ function harness(initialLocal) {
 console.log('docker.js loadConfig(): the first call always repaints, even with nothing to adopt');
 {
   // Local equals server, so adoptUISettings() alone would find nothing to do.
-  const h = harness({ 'cc.rainbow': '0' });
-  h.serverRef.ui_settings = { 'cc.rainbow': '0' };
+  const h = harness({ 'tt.rainbow': '0' });
+  h.serverRef.ui_settings = { 'tt.rainbow': '0' };
   h.state.loadConfig().then(() => {
     ok('applySettings ran on the first loadConfig() despite no diff', h.calls.applySettings === 1, h.calls.applySettings);
     ok('applyEnhanceClasses ran too, the mode being "list"', h.calls.applyEnhanceClasses === 1, h.calls.applyEnhanceClasses);
@@ -75,8 +75,8 @@ console.log('docker.js loadConfig(): the first call always repaints, even with n
 
 function run2() {
   console.log('\ndocker.js loadConfig(): a second call with nothing to adopt does not repaint again');
-  const h = harness({ 'cc.rainbow': '0' });
-  h.serverRef.ui_settings = { 'cc.rainbow': '0' };
+  const h = harness({ 'tt.rainbow': '0' });
+  h.serverRef.ui_settings = { 'tt.rainbow': '0' };
   h.state.loadConfig().then(() => h.state.loadConfig()).then(() => {
     ok('one repaint pass across two identical calls',
       h.calls.applySettings === 1, h.calls.applySettings);
@@ -86,16 +86,16 @@ function run2() {
 
 function run3() {
   console.log('\ndocker.js loadConfig(): a real adoption on a later call still repaints');
-  const h = harness({ 'cc.rainbow': '0' });
-  h.serverRef.ui_settings = { 'cc.rainbow': '0' };
+  const h = harness({ 'tt.rainbow': '0' });
+  h.serverRef.ui_settings = { 'tt.rainbow': '0' };
   h.state.loadConfig().then(() => {
     ok('the first call repainted once', h.calls.applySettings === 1, h.calls.applySettings);
     // A Rainbow toggle lands server-side between two polls.
-    h.serverRef.ui_settings = { 'cc.rainbow': '1' };
+    h.serverRef.ui_settings = { 'tt.rainbow': '1' };
     return h.state.loadConfig();
   }).then(() => {
     ok('a cross-origin change on a later call triggers a second repaint', h.calls.applySettings === 2, h.calls.applySettings);
-    ok('localStorage adopted the new value', h.store['cc.rainbow'] === '1', h.store['cc.rainbow']);
+    ok('localStorage adopted the new value', h.store['tt.rainbow'] === '1', h.store['tt.rainbow']);
     return h.state.loadConfig();
   }).then(() => {
     ok('a third call with nothing new to adopt does not repaint again', h.calls.applySettings === 2, h.calls.applySettings);

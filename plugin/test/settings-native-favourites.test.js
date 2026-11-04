@@ -1,6 +1,6 @@
-// The Favoriten row on the Bereiche card switches Unraid's own favourites setting from CC's
+// The Favoriten row on the Bereiche card switches Unraid's own favourites setting from TowerTorch's
 // settings page, live: it writes the field the way Unraid's display settings form does, and the
-// Favorites tab follows at once through cc.hidefavtab, which header.js turns into the class that
+// Favorites tab follows at once through tt.hidefavtab, which header.js turns into the class that
 // hides the tab. A refused write puts the switch and the tab back and says so.
 const fs = require('fs');
 const path = require('path');
@@ -35,17 +35,17 @@ console.log('\npostDisplay() writes a field as Unraid\'s own form does');
   ok('a refused write rejects, so the caller can put the switch back', refused);
 
   console.log('\nThe Favoriten row: a native switch, and the area switch while it is on');
-  const at = settings.indexOf('if (a[0] === "cc.enable.favorites") {');
+  const at = settings.indexOf('if (a[0] === "tt.enable.favorites") {');
   const block = settings.slice(at, settings.indexOf('c.appendChild(natRow); c.appendChild(row); return;', at));
   ok('the row is a switch, no line that sends the person to another page', !/lockRow\(/.test(block) && !/location\.href/.test(block));
-  ok('the switch shows the native state', /toggle\(localStorage\.getItem\("cc\.hidefavtab"\) !== "1"/.test(block));
+  ok('the switch shows the native state', /toggle\(localStorage\.getItem\("tt\.hidefavtab"\) !== "1"/.test(block));
   ok('a flip writes Unraid\'s own favorites field', /postDisplay\(\{ favorites: v \? "yes" : "no" \}\)/.test(block));
-  ok('and moves the tab at once, without a reload', /set\("cc\.hidefavtab", v \? "0" : "1"\);/.test(block) && /syncHeaderBar\(\)/.test(block) && !/location\.reload/.test(block));
-  ok('a refused write puts the switch and the tab back and says why', /\.catch\(function \(\) \{\s*set\("cc\.hidefavtab", v \? "1" : "0"\); natTgl\._setOn\(!v\);[\s\S]*failed\(natTgl,/.test(block));
-  ok('turning favourites on brings the area back with them', /if \(v\) localStorage\.setItem\("cc\.enable\.favorites", "1"\);/.test(block));
+  ok('and moves the tab at once, without a reload', /set\("tt\.hidefavtab", v \? "0" : "1"\);/.test(block) && /syncHeaderBar\(\)/.test(block) && !/location\.reload/.test(block));
+  ok('a refused write puts the switch and the tab back and says why', /\.catch\(function \(\) \{\s*set\("tt\.hidefavtab", v \? "1" : "0"\); natTgl\._setOn\(!v\);[\s\S]*failed\(natTgl,/.test(block));
+  ok('turning favourites on brings the area back with them', /if \(v\) localStorage\.setItem\("tt\.enable\.favorites", "1"\);/.test(block));
   ok('the area switch steps aside while the native one is off', /row\.hidden = off;/.test(block));
   ok('both rows have a bubble that says what they change', (block.match(/infoIcon\(/g) || []).length === 2 && /Unraids eigene Einstellung/.test(block));
-  ok('header.js hides the tab on that same key', /root\.classList\.toggle\("cc-hide-favtab", g\("cc\.hidefavtab", "0"\) === "1"/.test(header));
+  ok('header.js hides the tab on that same key', /root\.classList\.toggle\("tt-hide-favtab", g\("tt\.hidefavtab", "0"\) === "1"/.test(header));
 
   console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
   process.exit(fail ? 1 : 0);

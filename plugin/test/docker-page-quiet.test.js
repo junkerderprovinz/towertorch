@@ -27,8 +27,8 @@ function grab(name) {
 console.log('\nUp to date shows as a green chip');
 {
   ok('no rule hides it', !/span\.green-text \{ display: none/.test(css));
-  ok('it takes the ok green while its column is on', /\.cc-enh\.cc-c-update #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text \{ background: var\(--cc-ok, #6fdc8c\);/.test(css));
-  ok('and goes with the update-status column', /\.cc-enh:not\(\.cc-c-update\)  #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text,/.test(css));
+  ok('it takes the ok green while its column is on', /\.tt-enh\.tt-c-update #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text \{ background: var\(--tt-ok, #6fdc8c\);/.test(css));
+  ok('and goes with the update-status column', /\.tt-enh:not\(\.tt-c-update\)  #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text,/.test(css));
 }
 
 console.log('\nA start plan run that went well leaves no pill');
@@ -36,14 +36,14 @@ console.log('\nA start plan run that went well leaves no pill');
   const lastRun = {};
   const el = (tag, cls, txt) => ({ cls, txt, setAttribute() {} });
   const pill = new Function('lastRun', 'el', 'runLabel', grab('lastRunPill') + '\nreturn lastRunPill;')(lastRun, el, (s) => s);
-  lastRun.ccwb = { name: 'ccwb', state: 'ready' };
-  ok('a container the plan brought up ready shows no pill beside "Startplan bereit"', pill('ccwb') === null);
+  lastRun.caddy = { name: 'caddy', state: 'ready' };
+  ok('a container the plan brought up ready shows no pill beside "Startplan bereit"', pill('caddy') === null);
   for (const st of ['degraded', 'failed', 'skipped']) {
-    lastRun.ccwb = { name: 'ccwb', state: st };
-    const p = pill('ccwb');
-    ok('a ' + st + ' run still shows its pill', !!p && p.cls === 'cc-pill cc-pill-' + st);
+    lastRun.caddy = { name: 'caddy', state: st };
+    const p = pill('caddy');
+    ok('a ' + st + ' run still shows its pill', !!p && p.cls === 'tt-pill tt-pill-' + st);
   }
-  ok('no sheet colours a ready pill', !/\.cc-pill-ready/.test(css));
+  ok('no sheet colours a ready pill', !/\.tt-pill-ready/.test(css));
 }
 
 console.log('\nThe gear menu is quiet');
@@ -70,8 +70,8 @@ console.log('\nOne word for third-party containers');
 
 console.log('\nThe page action stands in the corner');
 {
-  ok('"Container hinzufügen" comes after the view switch', /input\[type=button\]\.cc-bar-primary \{\s*order: 2;/.test(css) && /\.cc-bar-adv \{ order: 1;/.test(css));
-  ok('the toasts stand above the docked bar', /html\.cc-docker-on #cc-toasts \{ bottom: calc\(var\(--cc-footer-h, 0px\) \+ var\(--cc-actbar-h, 0px\) \+ 18px\); \}/.test(css));
+  ok('"Container hinzufügen" comes after the view switch', /input\[type=button\]\.tt-bar-primary \{\s*order: 2;/.test(css) && /\.tt-bar-adv \{ order: 1;/.test(css));
+  ok('the toasts stand above the docked bar', /html\.tt-docker-on #tt-toasts \{ bottom: calc\(var\(--tt-footer-h, 0px\) \+ var\(--tt-actbar-h, 0px\) \+ 18px\); \}/.test(css));
 }
 
 console.log('\nNothing is cut off without a hint');
@@ -80,12 +80,12 @@ console.log('\nNothing is cut off without a hint');
   ok('at phone width the table drops its header', narrow && /> thead \{ display: none; \}/.test(narrow[1]));
   ok('and each row wraps its cells under the name', narrow && /tr:is\(\.sortable, \.folder-element\) \{ display: flex; flex-wrap: wrap;/.test(narrow[1]) && /td\.ct-name \{ flex: 1 0 100%; \}/.test(narrow[1]));
   ok('without forcing a display the column toggles hide', narrow && !/display: block !important/.test(narrow[1]));
-  ok('a volume path ends in an ellipsis at rest', /\.cc-vtext \{ display: block; overflow: hidden; text-overflow: ellipsis;/.test(css));
-  ok('and only scrolls once the marquee runs', /\.cc-vrun > \.cc-vtext \{ display: inline-block; overflow: visible;/.test(css) && /w\.classList\.add\("cc-vrun"\)/.test(js));
+  ok('a volume path ends in an ellipsis at rest', /\.tt-vtext \{ display: block; overflow: hidden; text-overflow: ellipsis;/.test(css));
+  ok('and only scrolls once the marquee runs', /\.tt-vrun > \.tt-vtext \{ display: inline-block; overflow: visible;/.test(css) && /w\.classList\.add\("tt-vrun"\)/.test(js));
 }
 
 console.log('\nThe start plan chip is an action, in sentence case');
-ok('its word drops the data badges\' uppercase', /\.cc-plan \.cc-b-k \{ text-transform: none; letter-spacing: normal; \}/.test(css));
+ok('its word drops the data badges\' uppercase', /\.tt-plan \.tt-b-k \{ text-transform: none; letter-spacing: normal; \}/.test(css));
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
 process.exit(fail ? 1 : 0);

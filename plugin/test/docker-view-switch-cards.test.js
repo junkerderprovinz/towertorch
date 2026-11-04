@@ -35,7 +35,7 @@ function Node(tag, cls, text) {
 }
 
 const stubs = `
-  var MARK = "data-cc", LANG = "de", ccAdvCache = null, ccEnhanceAt = 0, lastAdv = null, filterText = "";
+  var MARK = "data-tt", LANG = "de", ttAdvCache = null, ttEnhanceAt = 0, lastAdv = null, filterText = "";
   var limits = {}, stats = {}, gridHolder = null, mode = "list";
   var calls = { render: 0, enhance: 0 }, timers = [];
   function el(tag, cls, text) { return Node(tag, cls, text); }
@@ -43,16 +43,16 @@ const stubs = `
   function norm(s) { return s.toLowerCase(); }
   function themingOn() { return true; }
   function stampCardRainbow() {}
-  function cardIcon() { return el("span", "cc-card-icobox"); }
-  function planBadge() { return el("a", "cc-b cc-plan"); }
-  function autostartSwitch() { return el("span", "cc-set-toggle cc-card-auto"); }
-  function stateBadge() { return el("span", "cc-badge"); }
+  function cardIcon() { return el("span", "tt-card-icobox"); }
+  function planBadge() { return el("a", "tt-b tt-plan"); }
+  function autostartSwitch() { return el("span", "tt-set-toggle tt-card-auto"); }
+  function stateBadge() { return el("span", "tt-badge"); }
   function lastRunPill() { return null; }
-  function actionBars() { return { bar: el("div", "cc-actbar") }; }
-  function badgeInfo(k) { return el("span", "cc-b", k); }
-  function resLine(b, g) { var l = el("span", "cc-resline"); l.appendChild(b); l.appendChild(g); return l; }
-  function limGear() { return el("span", "cc-limgear"); }
-  function bwGear() { return el("span", "cc-limgear"); }
+  function actionBars() { return { bar: el("div", "tt-actbar") }; }
+  function badgeInfo(k) { return el("span", "tt-b", k); }
+  function resLine(b, g) { var l = el("span", "tt-resline"); l.appendChild(b); l.appendChild(g); return l; }
+  function limGear() { return el("span", "tt-limgear"); }
+  function bwGear() { return el("span", "tt-limgear"); }
   function cpuLimited() { return false; } function cpuPinned() { return false; } function ramLimited() { return false; }
   function bandwidthFor() { return null; } function bwTitle() { return ""; } function bwHasLimit() { return false; }
   function updateResGroup() {}
@@ -71,7 +71,7 @@ function setup(colview) {
 }
 const box = { s: false, a: true };
 const container = { name: 'ClamAV', ip: '192.168.10.31', network: 'br0.20', ports: ['3310/tcp'], state: 'running' };
-const whereOf = (cd) => { const ip = cd.querySelector('.cc-card-ip'); return ip ? ip.textContent : ''; };
+const whereOf = (cd) => { const ip = cd.querySelector('.tt-card-ip'); return ip ? ip.textContent : ''; };
 
 console.log('\nA card shows each detail in the views its list column shows in');
 {
@@ -79,14 +79,14 @@ console.log('\nA card shows each detail in the views its list column shows in');
   doc.cookie = 'docker_listview_mode=basic';
   const basic = a.card(container);
   ok('the basic view leaves the ports out of the address line', !/3310/.test(whereOf(basic)) && /192\.168\.10\.31/.test(whereOf(basic)), whereOf(basic));
-  ok('the basic view leaves out the CPU, RAM and BW row', !basic.querySelector('.cc-card-res'));
-  ok('the basic view leaves out the plan chip', !basic.querySelector('.cc-plan'));
-  ok('the autostart switch stays in both views', !!basic.querySelector('.cc-card-auto'));
+  ok('the basic view leaves out the CPU, RAM and BW row', !basic.querySelector('.tt-card-res'));
+  ok('the basic view leaves out the plan chip', !basic.querySelector('.tt-plan'));
+  ok('the autostart switch stays in both views', !!basic.querySelector('.tt-card-auto'));
   doc.cookie = 'docker_listview_mode=advanced';
   const adv = a.card(container);
   ok('the advanced view adds the ports', /3310\/tcp/.test(whereOf(adv)), whereOf(adv));
-  ok('the advanced view adds the CPU, RAM and BW row', !!adv.querySelector('.cc-card-res'));
-  ok('the advanced view adds the plan chip', !!adv.querySelector('.cc-plan'));
+  ok('the advanced view adds the CPU, RAM and BW row', !!adv.querySelector('.tt-card-res'));
+  ok('the advanced view adds the plan chip', !!adv.querySelector('.tt-plan'));
 }
 
 console.log('\nFlipping the switch draws the card and folder views again');
@@ -96,7 +96,7 @@ for (const m of ['grid', 'folder']) {
   a.setMode(m);
   const bar = Node('div', 'js-actions');
   a.bar(bar);
-  const tg = bar.querySelector('.cc-set-toggle');
+  const tg = bar.querySelector('.tt-set-toggle');
   tg.on.click({ preventDefault() {}, stopPropagation() {} });
   ok(m + ': the cookie says advanced', /docker_listview_mode=advanced/.test(doc.cookie), doc.cookie);
   ok(m + ': the view is drawn again', a.calls.render === 1, String(a.calls.render));
@@ -108,7 +108,7 @@ for (const m of ['grid', 'folder']) {
   doc.cookie = 'docker_listview_mode=basic';
   const bar = Node('div', 'js-actions');
   a.bar(bar);
-  bar.querySelector('.cc-set-toggle').on.click({ preventDefault() {}, stopPropagation() {} });
+  bar.querySelector('.tt-set-toggle').on.click({ preventDefault() {}, stopPropagation() {} });
   ok('list: no card view is drawn', a.calls.render === 0);
   a.timers.forEach((f) => f());
   ok('list: the fallback repaint still runs', a.calls.enhance === 1, String(a.calls.enhance));

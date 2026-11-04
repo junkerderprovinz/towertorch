@@ -41,10 +41,10 @@ function E(tag, cls, attrs, kids) {
   n.querySelector = (sel) => n.querySelectorAll(sel)[0] || null;
   return n;
 }
-const card = (name) => E('div', 'cc-card', { 'data-name': name }, [E('span', 'cc-b', { tabindex: '0' }), E('button', 'cc-card-movebtn'), E('span', 'cc-actbtn', { role: 'button', tabindex: '0' })]);
-const folder = (id, kids) => E('div', 'cc-folder-group', { 'data-fid': id }, [E('div', 'cc-folder-group-head', {}, [E('button', 'cc-folder-act'), E('button', 'cc-folder-act')])].concat(kids));
+const card = (name) => E('div', 'tt-card', { 'data-name': name }, [E('span', 'tt-b', { tabindex: '0' }), E('button', 'tt-card-movebtn'), E('span', 'tt-actbtn', { role: 'button', tabindex: '0' })]);
+const folder = (id, kids) => E('div', 'tt-folder-group', { 'data-fid': id }, [E('div', 'tt-folder-group-head', {}, [E('button', 'tt-folder-act'), E('button', 'tt-folder-act')])].concat(kids));
 // A container that appears between two loads shifts every control after it.
-const build = (fresh) => E('div', 'cc-grid-holder', {}, (fresh ? [card('adguard')] : []).concat([folder('f1', [card('web'), card('db')]), card('plex'), E('div', 'cc-card cc-gear-tile', {}, [E('button', 'cc-hgear')])]));
+const build = (fresh) => E('div', 'tt-grid-holder', {}, (fresh ? [card('adguard')] : []).concat([folder('f1', [card('web'), card('db')]), card('plex'), E('div', 'tt-card tt-gear-tile', {}, [E('button', 'tt-hgear')])]));
 
 const api = new Function('document', 'CSS', 'holder', 'var gridHolder = holder;\n' + between('var GRID_FOCUSABLE', 'function removeGridHolder') +
   '\nreturn { key: gridFocusKey, restore: restoreGridFocus, swap: function (h) { gridHolder = h; } };');
@@ -62,18 +62,18 @@ function across(pick, what, fresh) {
 }
 
 console.log('\nThe focus comes back to the same control after a rebuild');
-across((h) => h.querySelector('.cc-card[data-name="db"]').kids[2], 'a row action in a card inside a folder');
-across((h) => h.querySelector('.cc-card[data-name="plex"]').kids[1], 'the move button of a card at the root');
-across((h) => h.querySelector('.cc-folder-group[data-fid="f1"]').kids[0].kids[1], 'the rename button in a folder header');
-across((h) => h.querySelector('.cc-hgear'), 'the gear tile');
-across((h) => h.querySelector('.cc-card[data-name="plex"]').kids[2], 'an action in a card after a new container arrived ahead of it', true);
-across((h) => h.querySelector('.cc-folder-group[data-fid="f1"]').kids[0].kids[0], 'a folder button after a new container arrived ahead of it', true);
+across((h) => h.querySelector('.tt-card[data-name="db"]').kids[2], 'a row action in a card inside a folder');
+across((h) => h.querySelector('.tt-card[data-name="plex"]').kids[1], 'the move button of a card at the root');
+across((h) => h.querySelector('.tt-folder-group[data-fid="f1"]').kids[0].kids[1], 'the rename button in a folder header');
+across((h) => h.querySelector('.tt-hgear'), 'the gear tile');
+across((h) => h.querySelector('.tt-card[data-name="plex"]').kids[2], 'an action in a card after a new container arrived ahead of it', true);
+across((h) => h.querySelector('.tt-folder-group[data-fid="f1"]').kids[0].kids[0], 'a folder button after a new container arrived ahead of it', true);
 {
   const h1 = build(), a = api(doc, CSS_, h1);
   doc.activeElement = null;
   ok('a focus outside the view is left alone', a.key() === null);
-  const h2 = E('div', 'cc-grid-holder', {}, [card('web')]);
-  h1.querySelector('.cc-card[data-name="plex"]').kids[1].focus();
+  const h2 = E('div', 'tt-grid-holder', {}, [card('web')]);
+  h1.querySelector('.tt-card[data-name="plex"]').kids[1].focus();
   const k = a.key(); a.swap(h2); doc.activeElement = null; a.restore(k);
   ok('a card that is gone after the rebuild takes nothing', doc.activeElement === null);
 }

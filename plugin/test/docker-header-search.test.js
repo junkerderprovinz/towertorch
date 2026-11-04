@@ -59,24 +59,24 @@ console.log('\nThe header search filters the containers');
 console.log('\nThe gear menu has no search of its own');
 {
   const menu = grabFn(docker, 'buildMenu');
-  ok('no filter field and no Search button', !/cc-filter|searchToggle|cc-search/.test(menu) && !/function searchToggle/.test(docker));
-  ok('and the sheet carries none of their rules', !/\.cc-search\b|\.cc-filter\b/.test(css));
+  ok('no filter field and no Search button', !/tt-filter|searchToggle|tt-search/.test(menu) && !/function searchToggle/.test(docker));
+  ok('and the sheet carries none of their rules', !/\.tt-search\b|\.tt-filter\b/.test(css));
   ok('init follows the header search', /followHeaderSearch\(\);/.test(docker));
 }
 
 console.log('\nClosing the menu hands focus back to its gear');
 {
-  const refindSrc = grabFn(read('scripts/cc-theme.js'), 'refind');
+  const refindSrc = grabFn(read('scripts/tt-theme.js'), 'refind');
   const make = (focusInside, redrawn) => {
-    const mkGear = () => ({ focused: 0, focus() { this.focused++; }, getAttribute: (k) => (k === 'data-cc-focus-key' ? 'cc-hgear-grid' : null) });
+    const mkGear = () => ({ focused: 0, focus() { this.focused++; }, getAttribute: (k) => (k === 'data-tt-focus-key' ? 'tt-hgear-grid' : null) });
     const gear = mkGear(), fresh = redrawn ? mkGear() : null;
     const inner = {};
     const menu = { removed: false, remove() { this.removed = true; }, contains: (n) => n === inner };
     const live = redrawn ? fresh : gear;
-    const document = { activeElement: focusInside ? inner : {}, contains: (n) => n === live, querySelector: (s) => (s === '[data-cc-focus-key="cc-hgear-grid"]' ? live : null) };
+    const document = { activeElement: focusInside ? inner : {}, contains: (n) => n === live, querySelector: (s) => (s === '[data-tt-focus-key="tt-hgear-grid"]' ? live : null) };
     const refind = new Function('document', refindSrc + '\nreturn refind;')(document);
     const close = new Function('document', 'window', 'menu', 'menuAnchor', 'menuStatusEl', grabFn(docker, 'closeMenu') + '\ncloseMenu(); return menu;');
-    const left = close(document, { CCTheme: { refind } }, menu, gear, null);
+    const left = close(document, { TTTheme: { refind } }, menu, gear, null);
     return { gear, fresh, menu, left };
   };
   const kb = make(true);
@@ -85,7 +85,7 @@ console.log('\nClosing the menu hands focus back to its gear');
   ok('a click elsewhere leaves focus where the click put it', mouse.menu.removed && mouse.gear.focused === 0);
   const tick = make(true, true);
   ok('a gear the stats tick drew again in the meantime gets the caret instead', tick.fresh.focused === 1 && tick.gear.focused === 0);
-  ok('every gear carries a key to be found again by', /g\.setAttribute\("data-cc-focus-key", extra \|\| "cc-hgear"\)/.test(grabFn(docker, 'makeGear')));
+  ok('every gear carries a key to be found again by', /g\.setAttribute\("data-tt-focus-key", extra \|\| "tt-hgear"\)/.test(grabFn(docker, 'makeGear')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

@@ -1,4 +1,4 @@
-/* TowerTorch: the Dashboard, scoped to html.cc-dash-on, which dashboard.js sets on
+/* TowerTorch: the Dashboard, scoped to html.tt-dash-on, which dashboard.js sets on
    /Dashboard while the header area and master theming are on.
 
    Each tile is one <tbody> of a table.dashboard column, and Unraid's jQuery sortable moves the
@@ -10,283 +10,283 @@
    row whose inline style hides it. A cell is a flow root, as a table cell was, so the floated
    columns inside it stay inside it. */
 
-html.cc-dash-on table.dashboard { display: block; border: none; padding-top: 12px; }
-html.cc-dash-on table.dashboard > tbody {
+html.tt-dash-on table.dashboard { display: block; border: none; padding-top: 12px; }
+html.tt-dash-on table.dashboard > tbody {
   display: block; position: relative; box-sizing: border-box;
-  background: var(--cc-surface-2, #222222); border: none; border-radius: var(--cc-radius-card);
-  box-shadow: var(--cc-elev-1); margin: 0 0 32px;
+  background: var(--tt-surface-2, #222222); border: none; border-radius: var(--tt-radius-card);
+  box-shadow: var(--tt-elev-1); margin: 0 0 32px;
 }
-html.cc-dash-on table.dashboard > tbody > tr:not([style*="none"]) { display: block !important; }
-html.cc-dash-on table.dashboard > tbody > tr > td { display: flow-root; border: none; background: none; }
+html.tt-dash-on table.dashboard > tbody > tr:not([style*="none"]) { display: block !important; }
+html.tt-dash-on table.dashboard > tbody > tr > td { display: flow-root; border: none; background: none; }
 /* a cell narrowed to max-width 0 for the table ellipsis trick (the BombVault log) would collapse as
    a block, so it takes the card width */
-html.cc-dash-on table.dashboard > tbody > tr > td[class] { max-width: none; }
+html.tt-dash-on table.dashboard > tbody > tr > td[class] { max-width: none; }
 /* Unraid animates every load bar's width with jQuery, one frame at a time for each core on every
    message, and reads the width back before each step. Firefox lays out a changed bar's ancestors
    again, and here those are block rows and the core grids, so every frame relaid the whole column
    and the feed fell behind. Every bar has a fixed height and takes its width from outside, so size
    and layout containment keep a frame's change inside the bar. */
-html.cc-dash-on table.dashboard .usage-disk { contain: size layout; }
+html.tt-dash-on table.dashboard .usage-disk { contain: size layout; }
 /* the head row leaves room under the title badge, which straddles the card's top edge */
-html.cc-dash-on table.dashboard > tbody > tr:first-child > td { padding-top: 20px; }
+html.tt-dash-on table.dashboard > tbody > tr:first-child > td { padding-top: 20px; }
 /* while a tile is dragged, the sortable's placeholder shows where it will land as an empty slot */
-html.cc-dash-on table.dashboard > tbody.ui-sortable-placeholder { background: var(--cc-chip); box-shadow: none; visibility: visible !important; }
+html.tt-dash-on table.dashboard > tbody.ui-sortable-placeholder { background: var(--tt-chip); box-shadow: none; visibility: visible !important; }
 
 /* The tile title is a section badge on the card's top edge (GlimStone rules 11 and 20). It sets no
    left, so it falls back to its static position on the card's content edge, and the self-relative
    translate keeps it centred on the edge whatever its height. It is a block box, so a centred tile
    head (Docker, VMs) does not centre its static position. dashboard.js puts the tile's glyph
    inside it and stamps the rainbow position; without one it is the accent. */
-html.cc-dash-on table.dashboard .cc-dash-h {
+html.tt-dash-on table.dashboard .tt-dash-h {
   position: absolute; top: 0; z-index: 1; transform: translateY(-50%);
   display: flex; width: max-content; align-items: center; gap: 6px; box-sizing: border-box; max-width: calc(100% - 40px);
-  min-height: var(--cc-sec-h); margin: 0; padding: var(--cc-sec-pad);
-  font-size: var(--cc-sec-fs); font-weight: var(--cc-sec-fw); letter-spacing: var(--cc-sec-ls); line-height: 1.2;
+  min-height: var(--tt-sec-h); margin: 0; padding: var(--tt-sec-pad);
+  font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); line-height: 1.2;
   text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  background: var(--cc-rb-c, var(--cc-accent, #FCC419)); color: var(--cc-rb-ct, var(--cc-accent-text, #161616));
-  border-radius: var(--cc-radius-pill);
+  background: var(--tt-rb-c, var(--tt-accent, #FCC419)); color: var(--tt-rb-ct, var(--tt-accent-text, #161616));
+  border-radius: var(--tt-radius-pill);
 }
-html.cc-dash-on table.dashboard .cc-dash-h .tile-header-main { font: inherit; color: inherit; text-transform: inherit; margin: 0; }
-html.cc-dash-on table.dashboard .cc-dash-h .cc-dash-g { flex: none; width: 1.15em; height: 1.15em; }
-html.cc-dash-on table.dashboard .cc-dash-h img.cc-dash-img { object-fit: contain; filter: brightness(0) invert(1); }
-html.cc-dash-on table.dashboard .cc-dash-h[style*="--cc-rb-ct: #161616"] img.cc-dash-img,
-html.cc-dash-on:not(.cc-rb-on) table.dashboard .cc-dash-h img.cc-dash-img { filter: brightness(0); }
+html.tt-dash-on table.dashboard .tt-dash-h .tile-header-main { font: inherit; color: inherit; text-transform: inherit; margin: 0; }
+html.tt-dash-on table.dashboard .tt-dash-h .tt-dash-g { flex: none; width: 1.15em; height: 1.15em; }
+html.tt-dash-on table.dashboard .tt-dash-h img.tt-dash-img { object-fit: contain; filter: brightness(0) invert(1); }
+html.tt-dash-on table.dashboard .tt-dash-h[style*="--tt-rb-ct: #161616"] img.tt-dash-img,
+html.tt-dash-on:not(.tt-rb-on) table.dashboard .tt-dash-h img.tt-dash-img { filter: brightness(0); }
 /* the outline icon of the icon font gives way to the filled glyph inside the badge */
-html.cc-dash-on table.dashboard .cc-dash-glyphed > i.f32,
-html.cc-dash-on table.dashboard .cc-dash-glyphed > img { display: none; }
-html.cc-dash-on table.dashboard .cc-dash-glyphed { gap: 0 !important; }
-html.cc-dash-on table.dashboard .tile-header .section { color: var(--cc-text-dim, #8a8a8a); }
+html.tt-dash-on table.dashboard .tt-dash-glyphed > i.f32,
+html.tt-dash-on table.dashboard .tt-dash-glyphed > img { display: none; }
+html.tt-dash-on table.dashboard .tt-dash-glyphed { gap: 0 !important; }
+html.tt-dash-on table.dashboard .tile-header .section { color: var(--tt-text-dim, #8a8a8a); }
 
 /* The tile controls are icon badges like a Docker card's actions (dashboard.js marks them
-   .cc-dash-btn and hands each its glyph and name): filled in the colour mode with the glyph in the
+   .tt-dash-btn and hands each its glyph and name): filled in the colour mode with the glyph in the
    matching ink, one palette step per badge in rainbow, and in the reactive mode grey until the
    pointer or the focus is in the tile. Settings, info and fold come in with the pointer or the
    focus (rule 6), and stay on a touch screen; the system tile's power controls are the tile's
    actions and always stand. DashStats.css sizes the power controls with !important, hence the
    one on the font size. */
-html.cc-dash-on table.dashboard .tile-header-right-controls,
-html.cc-dash-on table.dashboard .tile-ctrl { display: inline-flex; align-items: center; gap: 6px !important; }
-html.cc-dash-on table.dashboard .cc-dash-btn {
+html.tt-dash-on table.dashboard .tile-header-right-controls,
+html.tt-dash-on table.dashboard .tile-ctrl { display: inline-flex; align-items: center; gap: 6px !important; }
+html.tt-dash-on table.dashboard .tt-dash-btn {
   display: inline-flex; flex: none; align-items: center; justify-content: center; box-sizing: border-box;
-  width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); margin: 0; padding: 0; border: none;
-  background: var(--cc-rb-c, var(--cc-accent, #FCC419)); color: var(--cc-rb-ct, var(--cc-accent-text, #161616));
-  border-radius: var(--cc-radius-pill); font-size: var(--cc-text-subline) !important; line-height: 1; text-decoration: none; cursor: pointer;
-  transition: background var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+  width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); margin: 0; padding: 0; border: none;
+  background: var(--tt-rb-c, var(--tt-accent, #FCC419)); color: var(--tt-rb-ct, var(--tt-accent-text, #161616));
+  border-radius: var(--tt-radius-pill); font-size: var(--tt-text-subline) !important; line-height: 1; text-decoration: none; cursor: pointer;
+  transition: background var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
-html.cc-dash-on table.dashboard .cc-dash-btn > i.fa,
-html.cc-dash-on table.dashboard .cc-dash-btn.fa::before {
+html.tt-dash-on table.dashboard .tt-dash-btn > i.fa,
+html.tt-dash-on table.dashboard .tt-dash-btn.fa::before {
   margin: 0; padding: 0; width: auto; height: auto; background: none; border-radius: 0; color: inherit; font-size: inherit; line-height: 1;
 }
-html.cc-dash-on table.dashboard .cc-dash-btn.cc-dash-gl > i.fa { display: none; }
-html.cc-dash-on table.dashboard .cc-dash-btn.cc-dash-gl::before { content: none; }
-html.cc-dash-on table.dashboard .cc-dash-btn.cc-actoff { background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text-dim, #8a8a8a); cursor: not-allowed; }
-html.cc-dash-on.cc-header-rbneutral table.dashboard > tbody:not(:hover, :focus-within) .cc-dash-btn:not(.cc-actoff) {
-  background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text, #e6e6e6);
+html.tt-dash-on table.dashboard .tt-dash-btn.tt-dash-gl > i.fa { display: none; }
+html.tt-dash-on table.dashboard .tt-dash-btn.tt-dash-gl::before { content: none; }
+html.tt-dash-on table.dashboard .tt-dash-btn.tt-actoff { background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text-dim, #8a8a8a); cursor: not-allowed; }
+html.tt-dash-on.tt-header-rbneutral table.dashboard > tbody:not(:hover, :focus-within) .tt-dash-btn:not(.tt-actoff) {
+  background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6);
 }
 
 /* The system tile's power controls stand in the card's bottom right corner while its content is
    open. Folded, the card is its head row alone, and they stay in it. Unraid turns the fold arrow
    down whenever it folds a tile. The arrow's class is read rather than the rows' inline display,
    which a :has() would test again on every frame of the CPU bars' animation. */
-html.cc-dash-on table.dashboard > tbody.system:not(:has(.openclose.fa-chevron-down)) .tile-ctrl {
+html.tt-dash-on table.dashboard > tbody.system:not(:has(.openclose.fa-chevron-down)) .tile-ctrl {
   position: absolute; right: 10px; bottom: 16px; z-index: 1;
 }
 /* the server's description is dropped where it only repeats the name the badge carries */
-html.cc-dash-on table.dashboard .cc-dash-dup { display: none; }
-html.cc-dash-on table.dashboard .tile-header-right-controls { opacity: 0; transition: opacity var(--cc-motion-control-dur, 0s); }
-html.cc-dash-on table.dashboard > tbody:is(:hover, :focus-within) .tile-header-right-controls { opacity: 1; }
-@media (hover: none) { html.cc-dash-on table.dashboard .tile-header-right-controls { opacity: 1; } }
+html.tt-dash-on table.dashboard .tt-dash-dup { display: none; }
+html.tt-dash-on table.dashboard .tile-header-right-controls { opacity: 0; transition: opacity var(--tt-motion-control-dur, 0s); }
+html.tt-dash-on table.dashboard > tbody:is(:hover, :focus-within) .tile-header-right-controls { opacity: 1; }
+@media (hover: none) { html.tt-dash-on table.dashboard .tile-header-right-controls { opacity: 1; } }
 
 /* Everything clickable in a tile body is a badge (rule 13): the device names, "Details ausblenden"
    and the share names rest as neutral chips, like the device names on /Main, and take the colour
    mode under the pointer. The info anchors carry a hover text and stay plain. */
-html.cc-dash-on table.dashboard > tbody > tr:not(:first-child) a:not(.none, .info, :empty) {
-  display: inline-flex; align-items: center; box-sizing: border-box; padding: var(--cc-sm-pad);
-  background: var(--cc-chip); color: var(--cc-text-chip, #cfcfcf) !important; border-radius: var(--cc-radius-pill);
-  font-size: var(--cc-sm-fs); line-height: 1.3; text-decoration: none; white-space: nowrap; max-width: 100%;
+html.tt-dash-on table.dashboard > tbody > tr:not(:first-child) a:not(.none, .info, :empty) {
+  display: inline-flex; align-items: center; box-sizing: border-box; padding: var(--tt-sm-pad);
+  background: var(--tt-chip); color: var(--tt-text-chip, #cfcfcf) !important; border-radius: var(--tt-radius-pill);
+  font-size: var(--tt-sm-fs); line-height: 1.3; text-decoration: none; white-space: nowrap; max-width: 100%;
   overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
 }
-html.cc-dash-on table.dashboard > tbody > tr:not(:first-child) a:not(.none, .info, :empty):hover {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
+html.tt-dash-on table.dashboard > tbody > tr:not(:first-child) a:not(.none, .info, :empty):hover {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
 }
-html.cc-dash-on table.dashboard span.w26 > i.icon-disk { display: none; }
+html.tt-dash-on table.dashboard span.w26 > i.icon-disk { display: none; }
 
 /* The normal case is quiet (rule 33). A spun-up disk says nothing, a SMART "OK" and its thumb
    appear only while the row is pointed at (the thumb opens the disk's menu, so it stays
    reachable), and a normal temperature reads in the text colour; standby, a warning or a fault
    keep their word and colour. A running container or VM shows no state, a stopped one shows it in
    the neutral tone, since stopped is waiting, not a fault. */
-html.cc-dash-on table.dashboard span.w18:has(> i.orb.green-orb) { visibility: hidden; }
-html.cc-dash-on table.dashboard span.w18 > i.orb.grey-orb { color: var(--cc-text-dim, #8a8a8a); }
-html.cc-dash-on table.dashboard span.w18:has(> .fa-thumbs-o-up.green-text) { opacity: 0; transition: opacity var(--cc-motion-control-dur, 0s); }
-html.cc-dash-on table.dashboard tr:is(:hover, :focus-within) span.w18:has(> .fa-thumbs-o-up.green-text) { opacity: 1; }
-@media (hover: none) { html.cc-dash-on table.dashboard span.w18:has(> .fa-thumbs-o-up.green-text) { opacity: 1; } }
-html.cc-dash-on table.dashboard span.w18 > span.green-text,
-html.cc-dash-on table.dashboard .parity .green,
-html.cc-dash-on table.dashboard #parity .green-text { color: inherit; }
-html.cc-dash-on table.dashboard .outer.started .inner > i.started,
-html.cc-dash-on table.dashboard .outer.started .inner > .state { visibility: hidden; }
-html.cc-dash-on table.dashboard .outer:is(.stopped, .paused) .inner > i,
-html.cc-dash-on table.dashboard .outer:is(.stopped, .paused) .inner > .state { color: var(--cc-text-dim, #8a8a8a); }
-html.cc-dash-on table.dashboard .outer { background: none; }
-html.cc-dash-on table.dashboard .outer .inner span[class*="blue"] { color: inherit; }
+html.tt-dash-on table.dashboard span.w18:has(> i.orb.green-orb) { visibility: hidden; }
+html.tt-dash-on table.dashboard span.w18 > i.orb.grey-orb { color: var(--tt-text-dim, #8a8a8a); }
+html.tt-dash-on table.dashboard span.w18:has(> .fa-thumbs-o-up.green-text) { opacity: 0; transition: opacity var(--tt-motion-control-dur, 0s); }
+html.tt-dash-on table.dashboard tr:is(:hover, :focus-within) span.w18:has(> .fa-thumbs-o-up.green-text) { opacity: 1; }
+@media (hover: none) { html.tt-dash-on table.dashboard span.w18:has(> .fa-thumbs-o-up.green-text) { opacity: 1; } }
+html.tt-dash-on table.dashboard span.w18 > span.green-text,
+html.tt-dash-on table.dashboard .parity .green,
+html.tt-dash-on table.dashboard #parity .green-text { color: inherit; }
+html.tt-dash-on table.dashboard .outer.started .inner > i.started,
+html.tt-dash-on table.dashboard .outer.started .inner > .state { visibility: hidden; }
+html.tt-dash-on table.dashboard .outer:is(.stopped, .paused) .inner > i,
+html.tt-dash-on table.dashboard .outer:is(.stopped, .paused) .inner > .state { color: var(--tt-text-dim, #8a8a8a); }
+html.tt-dash-on table.dashboard .outer { background: none; }
+html.tt-dash-on table.dashboard .outer .inner span[class*="blue"] { color: inherit; }
 
 /* The containers and VMs as a grid of small tiles. Running ones lead and show no state, paused
    ones follow with the warning dot, stopped ones come last with a grey icon and dot. Unraid
    rebuilds the row on every reload and hides stopped items with an inline display, so the tiles
    are drawn on its own elements and their display stays below that inline style. The icon keeps
    Unraid's click handler, and its hit area spans the tile. */
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) > tr.updated > td {
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) > tr.updated > td {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; padding-bottom: 16px;
 }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer {
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer {
   position: relative; display: flex; align-items: center; gap: 10px; box-sizing: border-box; min-width: 0; min-height: 46px;
-  float: none; margin: 0; padding: 6px 10px 6px 7px; background: var(--cc-chip); border-radius: var(--cc-radius-control);
-  transition: background var(--cc-motion-control-dur, 0s);
+  float: none; margin: 0; padding: 6px 10px 6px 7px; background: var(--tt-chip); border-radius: var(--tt-radius-control);
+  transition: background var(--tt-motion-control-dur, 0s);
 }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--cc-chip-hover); }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started { order: -2; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.paused { order: -1; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand { display: flex; flex: none; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand > .img { width: 32px; height: 32px; margin: 0; object-fit: contain; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped > span.hand > * { filter: grayscale(1); opacity: .5; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner {
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--tt-chip-hover); }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started { order: -2; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.paused { order: -1; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand { display: flex; flex: none; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand > .img { width: 32px; height: 32px; margin: 0; object-fit: contain; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped > span.hand > * { filter: grayscale(1); opacity: .5; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner {
   display: block; flex: 1; width: auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-  font-size: var(--cc-text-subline); font-weight: 600; line-height: 1.4; color: var(--cc-text, #e6e6e6);
+  font-size: var(--tt-text-subline); font-weight: 600; line-height: 1.4; color: var(--tt-text, #e6e6e6);
 }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped .inner { color: var(--cc-text-chip, #cfcfcf); }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started .inner > :is(br, i.started, .state) { display: none; }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i:is(.stopped, .paused) {
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped .inner { color: var(--tt-text-chip, #cfcfcf); }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started .inner > :is(br, i.started, .state) { display: none; }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i:is(.stopped, .paused) {
   display: inline-block; width: 8px; height: 8px; margin: 0 6px 0 0; border-radius: 50%; font-size: 0; vertical-align: middle;
-  background: var(--cc-text-dim, #8a8a8a);
+  background: var(--tt-text-dim, #8a8a8a);
 }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i.paused { background: var(--cc-warn, #ff832b); }
-html.cc-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > .state {
-  margin: 0; font-size: var(--cc-text-meta); font-weight: 400; color: var(--cc-text-dim, #8a8a8a);
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i.paused { background: var(--tt-warn, #ff832b); }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > .state {
+  margin: 0; font-size: var(--tt-text-meta); font-weight: 400; color: var(--tt-text-dim, #8a8a8a);
 }
 /* a VM's PCI or SR-IOV warning keeps its tooltip above the tile's hit area */
-html.cc-dash-on table.dashboard #vm_view span.outer .inner > i.fa-warning { position: relative; z-index: 1; margin-left: 4px; }
-html.cc-dash-on table.dashboard :is(#no_apps, #no_vms) { grid-column: 1 / -1; color: var(--cc-text-dim, #8a8a8a); }
+html.tt-dash-on table.dashboard #vm_view span.outer .inner > i.fa-warning { position: relative; z-index: 1; margin-left: 4px; }
+html.tt-dash-on table.dashboard :is(#no_apps, #no_vms) { grid-column: 1 / -1; color: var(--tt-text-dim, #8a8a8a); }
 /* a container without an icon (dashboard.js) */
-html.cc-dash-on table.dashboard span.hand.cc-dash-noicon > img { display: none; }
-html.cc-dash-on table.dashboard span.hand.cc-dash-noicon {
+html.tt-dash-on table.dashboard span.hand.tt-dash-noicon > img { display: none; }
+html.tt-dash-on table.dashboard span.hand.tt-dash-noicon {
   align-items: center; justify-content: center; width: 32px; height: 32px;
-  border-radius: var(--cc-radius-control); background: var(--cc-chip); color: var(--cc-text-dim, #8a8a8a);
+  border-radius: var(--tt-radius-control); background: var(--tt-chip); color: var(--tt-text-dim, #8a8a8a);
 }
-html.cc-dash-on table.dashboard span.hand.cc-dash-noicon > .cc-glyph { width: 20px; height: 20px; }
+html.tt-dash-on table.dashboard span.hand.tt-dash-noicon > .tt-glyph { width: 20px; height: 20px; }
 
 /* A spun-down disk rests, with the moon and the word the disk tiles on /Main use */
-html.cc-dash-on table.dashboard .cc-dash-rest {
+html.tt-dash-on table.dashboard .tt-dash-rest {
   display: inline-flex; align-items: center; gap: 5px; padding: 1px 9px; white-space: nowrap;
-  border-radius: var(--cc-radius-pill); background: var(--cc-chip); color: var(--cc-text-chip, #cfcfcf); font-size: var(--cc-text-meta);
+  border-radius: var(--tt-radius-pill); background: var(--tt-chip); color: var(--tt-text-chip, #cfcfcf); font-size: var(--tt-text-meta);
 }
-html.cc-dash-on table.dashboard .cc-dash-rest .cc-glyph { width: 1em; height: 1em; }
+html.tt-dash-on table.dashboard .tt-dash-rest .tt-glyph { width: 1em; height: 1em; }
 
 /* The processor's cores as a grid of small tiles, one per physical core, holding a load and a bar
    per thread. dashboard.js moves Unraid's own load cells in, so their inline widths and colours
    keep arriving; only the box around them changes. A core with two threads takes two columns, so
    a hyperthreaded pair always shares one row. */
-html.cc-dash-on table.dashboard > tbody > tr.cc-cores-host > td:not(.cc-cores-td),
-html.cc-dash-on table.dashboard > tbody > tr.cpu_open.cc-cores-spent { display: none !important; }
-html.cc-dash-on table.dashboard .cc-cores { display: grid; gap: 14px; padding: 6px 0 4px; }
-html.cc-dash-on table.dashboard .cc-cores-head { display: flex; align-items: baseline; gap: 8px; margin: 0 0 6px; font-size: var(--cc-text-meta); }
-html.cc-dash-on table.dashboard .cc-cores-head > span:first-child { color: var(--cc-text, #e6e6e6); font-weight: 600; }
-html.cc-dash-on table.dashboard .cc-cores-n { color: var(--cc-text-dim, #8a8a8a); }
-html.cc-dash-on table.dashboard .cc-cores-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-html.cc-dash-on table.dashboard .cc-core {
+html.tt-dash-on table.dashboard > tbody > tr.tt-cores-host > td:not(.tt-cores-td),
+html.tt-dash-on table.dashboard > tbody > tr.cpu_open.tt-cores-spent { display: none !important; }
+html.tt-dash-on table.dashboard .tt-cores { display: grid; gap: 14px; padding: 6px 0 4px; }
+html.tt-dash-on table.dashboard .tt-cores-head { display: flex; align-items: baseline; gap: 8px; margin: 0 0 6px; font-size: var(--tt-text-meta); }
+html.tt-dash-on table.dashboard .tt-cores-head > span:first-child { color: var(--tt-text, #e6e6e6); font-weight: 600; }
+html.tt-dash-on table.dashboard .tt-cores-n { color: var(--tt-text-dim, #8a8a8a); }
+html.tt-dash-on table.dashboard .tt-cores-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+html.tt-dash-on table.dashboard .tt-core {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0;
-  padding: 6px 9px 7px; background: var(--cc-chip); border-radius: var(--cc-radius-control);
+  padding: 6px 9px 7px; background: var(--tt-chip); border-radius: var(--tt-radius-control);
 }
-html.cc-dash-on table.dashboard .cc-core-ht { grid-column: span 2; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-html.cc-dash-on table.dashboard .cc-thr {
+html.tt-dash-on table.dashboard .tt-core-ht { grid-column: span 2; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+html.tt-dash-on table.dashboard .tt-thr {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; row-gap: 4px; min-width: 0;
-  font-size: var(--cc-text-meta); line-height: 1.2;
+  font-size: var(--tt-text-meta); line-height: 1.2;
 }
-html.cc-dash-on table.dashboard .cc-thr > span:not(.cc-thr-n) { display: contents; }
-html.cc-dash-on table.dashboard .cc-thr-n { color: var(--cc-text-dim, #8a8a8a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-html.cc-dash-on table.dashboard .cc-thr .load { float: none; width: auto; margin: 0; padding: 0 0 0 6px; text-align: right; font-variant-numeric: tabular-nums; }
-html.cc-dash-on table.dashboard .cc-thr .usage-disk { grid-column: 1 / -1; float: none; width: auto; height: 4px; margin: 0; overflow: hidden; border-radius: var(--cc-radius-pill); background: var(--cc-surface-2, #222222); }
-html.cc-dash-on table.dashboard .cc-thr .usage-disk > span:first-child { top: 0; height: 100%; border-radius: inherit; }
+html.tt-dash-on table.dashboard .tt-thr > span:not(.tt-thr-n) { display: contents; }
+html.tt-dash-on table.dashboard .tt-thr-n { color: var(--tt-text-dim, #8a8a8a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html.tt-dash-on table.dashboard .tt-thr .load { float: none; width: auto; margin: 0; padding: 0 0 0 6px; text-align: right; font-variant-numeric: tabular-nums; }
+html.tt-dash-on table.dashboard .tt-thr .usage-disk { grid-column: 1 / -1; float: none; width: auto; height: 4px; margin: 0; overflow: hidden; border-radius: var(--tt-radius-pill); background: var(--tt-surface-2, #222222); }
+html.tt-dash-on table.dashboard .tt-thr .usage-disk > span:first-child { top: 0; height: 100%; border-radius: inherit; }
 
 /* The interface legend matches the chart dashboard.js draws: inbound in the accent, outbound in
    the text colour. */
-html.cc-dash-on table.dashboard .view4.red-text,
-html.cc-dash-on table.dashboard .view4.orange-text { color: var(--cc-accent-ink, #FCC419); font-style: normal; }
-html.cc-dash-on table.dashboard .view4.orange-text { color: var(--cc-text, #e6e6e6); }
+html.tt-dash-on table.dashboard .view4.red-text,
+html.tt-dash-on table.dashboard .view4.orange-text { color: var(--tt-accent-ink, #FCC419); font-style: normal; }
+html.tt-dash-on table.dashboard .view4.orange-text { color: var(--tt-text, #e6e6e6); }
 /* Without the grid an empty stretch of a chart, or a quiet network whose zero lies on the canvas
    edge, would show nothing at all. A hairline at the foot says the chart is there and waiting; the
    lines draw over it. */
-html.cc-dash-on table.dashboard :is(#cpuchart, #netchart) {
-  background: linear-gradient(color-mix(in srgb, var(--cc-text-dim, #8a8a8a) 45%, transparent) 0 0) left bottom / 100% 1px no-repeat;
+html.tt-dash-on table.dashboard :is(#cpuchart, #netchart) {
+  background: linear-gradient(color-mix(in srgb, var(--tt-text-dim, #8a8a8a) 45%, transparent) 0 0) left bottom / 100% 1px no-repeat;
 }
 
-/* A tile's switches (Alle Apps, Alle VMs) take the CC toggle shape */
-html.cc-dash-on table.dashboard .switch-button-background {
-  border: none !important; box-shadow: none !important; border-radius: var(--cc-radius-pill) !important;
-  background: var(--cc-toggle-track-off, #3a3a3a) !important; width: 36px !important; height: 20px !important; vertical-align: middle;
+/* A tile's switches (Alle Apps, Alle VMs) take the TowerTorch toggle shape */
+html.tt-dash-on table.dashboard .switch-button-background {
+  border: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important;
+  background: var(--tt-toggle-track-off, #3a3a3a) !important; width: 36px !important; height: 20px !important; vertical-align: middle;
 }
-html.cc-dash-on table.dashboard .switch-button-background.checked { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; }
-html.cc-dash-on table.dashboard .switch-button-button {
-  border: none !important; box-shadow: none !important; border-radius: var(--cc-radius-pill) !important;
-  background: var(--cc-toggle-knob, #fff) !important; width: 14px !important; height: 14px !important; top: 3px !important;
+html.tt-dash-on table.dashboard .switch-button-background.checked { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; }
+html.tt-dash-on table.dashboard .switch-button-button {
+  border: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important;
+  background: var(--tt-toggle-knob, #fff) !important; width: 14px !important; height: 14px !important; top: 3px !important;
 }
 
 /* A server without a model name drops the model block (dashboard.js), and one without a case
    drops Unraid's stand-in drawing. The case picker stays reachable: it comes in, dimmed, while the
    pointer or the focus is in the card, like the tile controls. */
-html.cc-dash-on table.dashboard .cc-dash-model { display: none; }
-html.cc-dash-on table.dashboard #casing:has(> #mycase.fa-hdd-o) { opacity: 0; }
-html.cc-dash-on table.dashboard > tbody:is(:hover, :focus-within) #casing:has(> #mycase.fa-hdd-o) { opacity: 1; }
+html.tt-dash-on table.dashboard .tt-dash-model { display: none; }
+html.tt-dash-on table.dashboard #casing:has(> #mycase.fa-hdd-o) { opacity: 0; }
+html.tt-dash-on table.dashboard > tbody:is(:hover, :focus-within) #casing:has(> #mycase.fa-hdd-o) { opacity: 1; }
 
 /* The case rests in the dimmed text colour, like every resting symbol, and takes the mode colour
    as ink under the pointer. A case from Unraid's set is a font glyph and simply takes the colour.
    An uploaded picture with a transparent background is drawn as its cut-out in the same colour
    (dashboard.js hands over its address); a photo without one would become a solid block, so it
    stays a photo, grey at rest and in colour under the pointer. */
-html.cc-dash-on table.dashboard #casing {
-  color: var(--cc-text-dim, #8a8a8a); opacity: 1;
-  transition: color var(--cc-motion-control-dur, 0s), opacity var(--cc-motion-control-dur, 0s), filter var(--cc-motion-control-dur, 0s);
+html.tt-dash-on table.dashboard #casing {
+  color: var(--tt-text-dim, #8a8a8a); opacity: 1;
+  transition: color var(--tt-motion-control-dur, 0s), opacity var(--tt-motion-control-dur, 0s), filter var(--tt-motion-control-dur, 0s);
 }
-html.cc-dash-on table.dashboard #casing:is(:hover, :focus-visible) {
-  color: color-mix(in srgb, var(--cc-rbaccent, var(--cc-accent, #FCC419)) var(--cc-ink-mix, 100%), black);
+html.tt-dash-on table.dashboard #casing:is(:hover, :focus-visible) {
+  color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black);
 }
-html.cc-dash-on table.dashboard #casing > img[data-cc-case="cut"] {
+html.tt-dash-on table.dashboard #casing > img[data-tt-case="cut"] {
   background: currentColor; object-position: -99999px 0;
-  -webkit-mask: var(--cc-case-src) center / contain no-repeat; mask: var(--cc-case-src) center / contain no-repeat;
+  -webkit-mask: var(--tt-case-src) center / contain no-repeat; mask: var(--tt-case-src) center / contain no-repeat;
 }
-html.cc-dash-on table.dashboard #casing > img:not([data-cc-case="cut"]) { filter: grayscale(1); opacity: .7; transition: filter var(--cc-motion-control-dur, 0s), opacity var(--cc-motion-control-dur, 0s); }
-html.cc-dash-on table.dashboard #casing:is(:hover, :focus-visible) > img:not([data-cc-case="cut"]) { filter: none; opacity: 1; }
+html.tt-dash-on table.dashboard #casing > img:not([data-tt-case="cut"]) { filter: grayscale(1); opacity: .7; transition: filter var(--tt-motion-control-dur, 0s), opacity var(--tt-motion-control-dur, 0s); }
+html.tt-dash-on table.dashboard #casing:is(:hover, :focus-visible) > img:not([data-tt-case="cut"]) { filter: none; opacity: 1; }
 
-/* The context menus a disk, a container or a VM opens are CC menus, dark on every theme like the
-   row menu (Tokens.css .cc-rowmenu), instead of a white list. */
-html.cc-dash-on ul.dropdown-menu.dropdown-context {
-  background: #1a1a1a !important; color: #e6e6e6; border: none !important; border-radius: var(--cc-radius-card) !important;
-  box-shadow: var(--cc-elev-3) !important; padding: 6px !important; min-width: 180px;
+/* The context menus a disk, a container or a VM opens are TowerTorch menus, dark on every theme like the
+   row menu (Tokens.css .tt-rowmenu), instead of a white list. */
+html.tt-dash-on ul.dropdown-menu.dropdown-context {
+  background: #1a1a1a !important; color: #e6e6e6; border: none !important; border-radius: var(--tt-radius-card) !important;
+  box-shadow: var(--tt-elev-3) !important; padding: 6px !important; min-width: 180px;
 }
-html.cc-dash-on ul.dropdown-menu.dropdown-context > li > a,
-html.cc-dash-on ul.dropdown-menu.dropdown-context > li > span {
+html.tt-dash-on ul.dropdown-menu.dropdown-context > li > a,
+html.tt-dash-on ul.dropdown-menu.dropdown-context > li > span {
   display: flex; align-items: center; gap: 4px; color: #e6e6e6 !important; background: none;
-  border-radius: var(--cc-radius-control) !important; padding: 7px 10px !important; font-size: var(--cc-text-subline); white-space: nowrap;
+  border-radius: var(--tt-radius-control) !important; padding: 7px 10px !important; font-size: var(--tt-text-subline); white-space: nowrap;
 }
-html.cc-dash-on ul.dropdown-menu.dropdown-context > li > a:is(:hover, :focus-visible) {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
+html.tt-dash-on ul.dropdown-menu.dropdown-context > li > a:is(:hover, :focus-visible) {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
 }
-html.cc-dash-on ul.dropdown-menu.dropdown-context > li > a i { color: inherit !important; }
-html.cc-dash-on ul.dropdown-menu.dropdown-context > li.divider { height: 0; margin: 2px 0 !important; background: none !important; border: none !important; }
-html.cc-dash-on ul.dropdown-menu.dropdown-context > li.dropdown-header { color: #8a8a8a !important; font-size: var(--cc-text-meta); padding: 6px 10px; }
+html.tt-dash-on ul.dropdown-menu.dropdown-context > li > a i { color: inherit !important; }
+html.tt-dash-on ul.dropdown-menu.dropdown-context > li.divider { height: 0; margin: 2px 0 !important; background: none !important; border: none !important; }
+html.tt-dash-on ul.dropdown-menu.dropdown-context > li.dropdown-header { color: #8a8a8a !important; font-size: var(--tt-text-meta); padding: 6px 10px; }
 
 /* At phone width the three columns stack, every tile takes the full width, the memory pies
    wrap instead of running out of the card, and the core grid halves to two columns. */
 @media (max-width: 760px) {
-  html.cc-dash-on .grid { grid-template-columns: minmax(0, 1fr) !important; }
-  html.cc-dash-on .grid > .tile { width: auto !important; min-width: 0 !important; max-width: 100%; }
-  html.cc-dash-on table.dashboard { width: 100% !important; }
-  html.cc-dash-on table.dashboard .tile-system-memory-body,
-  html.cc-dash-on table.dashboard .tile-system-memory-charts { flex-wrap: wrap; min-width: 0; }
-  html.cc-dash-on table.dashboard td { overflow-wrap: anywhere; }
-  html.cc-dash-on table.dashboard .cc-cores-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  html.cc-dash-on table.dashboard .cc-dash-rest { padding: 1px 6px; gap: 4px; }
+  html.tt-dash-on .grid { grid-template-columns: minmax(0, 1fr) !important; }
+  html.tt-dash-on .grid > .tile { width: auto !important; min-width: 0 !important; max-width: 100%; }
+  html.tt-dash-on table.dashboard { width: 100% !important; }
+  html.tt-dash-on table.dashboard .tile-system-memory-body,
+  html.tt-dash-on table.dashboard .tile-system-memory-charts { flex-wrap: wrap; min-width: 0; }
+  html.tt-dash-on table.dashboard td { overflow-wrap: anywhere; }
+  html.tt-dash-on table.dashboard .tt-cores-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html.tt-dash-on table.dashboard .tt-dash-rest { padding: 1px 6px; gap: 4px; }
   /* the power controls get a line of their own under the uptime, which can reach them here */
-  html.cc-dash-on table.dashboard > tbody.system > tr:nth-child(2) > td { padding-bottom: calc(var(--cc-icon-badge, 26px) + 26px); }
+  html.tt-dash-on table.dashboard > tbody.system > tr:nth-child(2) > td { padding-bottom: calc(var(--tt-icon-badge, 26px) + 26px); }
 }

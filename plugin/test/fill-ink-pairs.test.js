@@ -1,9 +1,9 @@
 // Every fill reads a chain of colour tokens, and the ink on it has to read the matching
-// chain, step for step: --cc-rb-c with --cc-rb-ct, --cc-rbaccent with --cc-rbaccent-text,
-// --cc-accent with --cc-accent-text. Skipping a step pairs a fill with the ink of a
-// different colour. In flag mode the shared --cc-rbaccent can be a red such as #D21034,
-// whose ink is white, while the accent's ink is dark, so a fill of --cc-rbaccent with
-// --cc-accent-text ink reads at 3.3:1.
+// chain, step for step: --tt-rb-c with --tt-rb-ct, --tt-rbaccent with --tt-rbaccent-text,
+// --tt-accent with --tt-accent-text. Skipping a step pairs a fill with the ink of a
+// different colour. In flag mode the shared --tt-rbaccent can be a red such as #D21034,
+// whose ink is white, while the accent's ink is dark, so a fill of --tt-rbaccent with
+// --tt-accent-text ink reads at 3.3:1.
 const fs = require('fs');
 const path = require('path');
 const { DIR, PAGES, parseRules } = require('./cascade');
@@ -14,10 +14,10 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 // The ink token for each fill token. A fill missing here has no ink of its own and is
 // left alone.
 function inkOf(v) {
-  const fixed = { '--cc-rb-c': '--cc-rb-ct', '--cc-ok': '--cc-ok-fg', '--cc-warn': '--cc-warn-fg', '--cc-err': '--cc-err-fg', '--cc-info': '--cc-info-fg', '--cc-updall-bg': '--cc-updall-text' };
+  const fixed = { '--tt-rb-c': '--tt-rb-ct', '--tt-ok': '--tt-ok-fg', '--tt-warn': '--tt-warn-fg', '--tt-err': '--tt-err-fg', '--tt-info': '--tt-info-fg', '--tt-updall-bg': '--tt-updall-text' };
   if (fixed[v]) return fixed[v];
-  if (/^--cc-rb-[a-z]+$/.test(v)) return v + '-t';
-  if (/^--cc-([a-z]+-)?(accent|rbaccent)$/.test(v) && v !== '--cc-btn-accent') return v + '-text';
+  if (/^--tt-rb-[a-z]+$/.test(v)) return v + '-t';
+  if (/^--tt-([a-z]+-)?(accent|rbaccent)$/.test(v) && v !== '--tt-btn-accent') return v + '-text';
   return null;
 }
 const vars = (v) => (v.match(/var\(\s*(--[\w-]+)/g) || []).map((s) => s.replace(/var\(\s*/, ''));
@@ -38,13 +38,13 @@ function mismatches(rules) {
 }
 
 console.log('\nThe detector');
-ok('a skipped step is found', mismatches(parseRules('.a { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent))); color: var(--cc-rb-ct, var(--cc-accent-text)); }')).length === 1);
-ok('a matching chain passes', mismatches(parseRules('.a { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent))); color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text))); }')).length === 0);
-ok('a state fill with a fixed white is found', mismatches(parseRules('.a { background: var(--cc-ok, #6fdc8c); color: #fff; }')).length === 1);
-ok('a neutral fill is left alone', mismatches(parseRules('.a { background: var(--cc-chip); color: var(--cc-text-chip); }')).length === 0);
+ok('a skipped step is found', mismatches(parseRules('.a { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent))); color: var(--tt-rb-ct, var(--tt-accent-text)); }')).length === 1);
+ok('a matching chain passes', mismatches(parseRules('.a { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text))); }')).length === 0);
+ok('a state fill with a fixed white is found', mismatches(parseRules('.a { background: var(--tt-ok, #6fdc8c); color: #fff; }')).length === 1);
+ok('a neutral fill is left alone', mismatches(parseRules('.a { background: var(--tt-chip); color: var(--tt-text-chip); }')).length === 0);
 
 console.log('\nEvery sheet');
-const settingsStyle = parseRules((fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8').match(/"#cc-settings [^"]*"/g) || []).map((s) => JSON.parse(s)).join('\n'));
+const settingsStyle = parseRules((fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8').match(/"#tt-settings [^"]*"/g) || []).map((s) => JSON.parse(s)).join('\n'));
 for (const f of PAGES.docker) {
   const hits = mismatches(parseRules(fs.readFileSync(path.join(DIR, f), 'utf8')));
   ok(path.basename(f), hits.length === 0, '\n      ' + hits.join('\n      '));

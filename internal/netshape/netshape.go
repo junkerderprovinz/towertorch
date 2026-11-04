@@ -29,8 +29,8 @@ const DefaultIface = "eth0"
 // dlChain and ulChain are the chains inside the container namespace that hold the
 // download and upload rules, so they can be replaced and inspected on their own.
 const (
-	dlChain = "CC_DL"
-	ulChain = "CC_UL"
+	dlChain = "TT_DL"
+	ulChain = "TT_UL"
 )
 
 // ifaceOr returns iface, or DefaultIface when it is blank.
@@ -70,7 +70,7 @@ func dlRuleSpec(kbit int) []string {
 	return []string{"-m", "hashlimit",
 		"--hashlimit-above", strconv.Itoa(DLRateBytes(kbit)) + "b/s",
 		"--hashlimit-burst", strconv.Itoa(DLBurstBytes(kbit)) + "b",
-		"--hashlimit-name", "ccdl", "-j", "DROP"}
+		"--hashlimit-name", "ttdl", "-j", "DROP"}
 }
 
 // applyIngressPolicing installs the download cap. When the rule and the INPUT jump
@@ -109,7 +109,7 @@ func ulRuleSpec(kbit int) []string {
 	return []string{"-m", "hashlimit",
 		"--hashlimit-above", strconv.Itoa(DLRateBytes(kbit)) + "b/s",
 		"--hashlimit-burst", strconv.Itoa(DLBurstBytes(kbit)) + "b",
-		"--hashlimit-name", "ccul", "-j", "DROP"}
+		"--hashlimit-name", "ttul", "-j", "DROP"}
 }
 
 // applyEgressPolicing installs the upload cap on OUTPUT, like applyIngressPolicing.
@@ -193,7 +193,7 @@ func ignoreMissing(err error) error {
 	return err
 }
 
-// Show returns the qdiscs on the interface and the CC_DL and CC_UL chains inside
+// Show returns the qdiscs on the interface and the TT_DL and TT_UL chains inside
 // the namespace, for the diagnostics endpoint. Errors come back as text.
 func Show(iface string, pid int) (qdisc, filter string) {
 	dev := ifaceOr(iface)

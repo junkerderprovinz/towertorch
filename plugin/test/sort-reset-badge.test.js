@@ -1,4 +1,4 @@
-// Unraid's "Reset sorting" icon on the Docker and VM lists becomes a CC badge (sortreset.js,
+// Unraid's "Reset sorting" icon on the Docker and VM lists becomes a TowerTorch badge (sortreset.js,
 // loaded on every page from TowerTorch.Tokens.page). What can quietly break it:
 //   · the badge showing on a list in Unraid's own order, or missing on one the user arranged
 //   · a click that does nothing because Unraid's lock is closed, or that leaves the lock open
@@ -20,14 +20,14 @@ function grabFn(src, name) {
   throw new Error('unbalanced function: ' + name);
 }
 
-const js = read('scripts/sortreset.js'), theme = read('scripts/cc-theme.js'), tokens = read('sheets/TowerTorch.Tokens.css'), page = read('TowerTorch.Tokens.page');
+const js = read('scripts/sortreset.js'), theme = read('scripts/tt-theme.js'), tokens = read('sheets/TowerTorch.Tokens.css'), page = read('TowerTorch.Tokens.page');
 const LISTS = /var LISTS = \{[^\n]+\};/.exec(js)[0];
 
 console.log('\nAn arranged list is told from Unraid\'s name order');
 {
   const { natcase, arranged } = new Function(grabFn(js, 'natcase') + grabFn(js, 'arranged') + 'return { natcase, arranged };')();
-  ok('names in order are not arranged', !arranged(['7DaysToDie', 'ARKSurvivalEvolved', 'BombVault', 'CCWB', 'ClamAV']));
-  ok('one container dragged up is', arranged(['StrawDroid', 'BombVault', 'CCWB']));
+  ok('names in order are not arranged', !arranged(['7DaysToDie', 'ARKSurvivalEvolved', 'BombVault', 'Caddy', 'ClamAV']));
+  ok('one container dragged up is', arranged(['StrawDroid', 'BombVault', 'Caddy']));
   ok('case does not count, as in natcasesort', !arranged(['Enshrouded', 'homarr', 'Immich']) && arranged(['homarr', 'Enshrouded']));
   ok('numbers count as numbers', !arranged(['Storj-2', 'Storj-10']) && natcase('Storj-10', 'Storj-2') > 0);
   ok('a hyphen sorts before letters, as PHP compares bytes', !arranged(['Cloudflare-DDNS', 'Cloudflared']));
@@ -84,22 +84,22 @@ function listPage(kind, names) {
 }
 function load(lang, store, pg) {
   const doc = { documentElement: { lang }, getElementById: (id) => (id === 'resetsort' ? pg.native : null), createElement: (t) => makeNode(t) };
-  const win = { CCTheme: { glyph: (n) => '<svg class="cc-glyph" data-name="' + n + '"></svg>' } };
+  const win = { TTTheme: { glyph: (n) => '<svg class="tt-glyph" data-name="' + n + '"></svg>' } };
   const src = [grabFn(js, 'g'), 'var LANG = "' + lang + '";', grabFn(js, 'T'), LISTS, grabFn(js, 'names'), grabFn(js, 'natcase'), grabFn(js, 'arranged'), grabFn(js, 'reset'), grabFn(js, 'badge'), grabFn(js, 'body'), grabFn(js, 'update'), 'return update;'].join('\n');
   return new Function('window', 'document', 'localStorage', 'navigator', src)(win, doc, { getItem: (k) => (k in store ? store[k] : null) }, {});
 }
-const badgeOf = (pg) => pg.th.children.find((c) => c.classList.contains('cc-sortreset'));
+const badgeOf = (pg) => pg.th.children.find((c) => c.classList.contains('tt-sortreset'));
 
 console.log('\nThe badge stands in for Unraid\'s icon and shows only while there is an order to drop');
 {
-  const docker = listPage('docker_list', ['StrawDroid', 'BombVault', 'CCWB']);
+  const docker = listPage('docker_list', ['StrawDroid', 'BombVault', 'Caddy']);
   load('de', {}, docker)();
   const b = badgeOf(docker);
   ok('an arranged Docker list shows the badge before the head\'s text', b && !b.hidden && docker.th.children.indexOf(b) === docker.th.children.indexOf(docker.native) - 1);
   ok('it wears the reset glyph, since it goes back to the default order', b && /data-name="Refresh"/.test(b.innerHTML));
   ok('its bubble and name say what it does, in German', b && b.getAttribute('data-tip') === 'Sortierung zurücksetzen' && b.getAttribute('aria-label') === 'Sortierung zurücksetzen');
   ok('it is a button the keyboard reaches', b && b.getAttribute('role') === 'button' && b.getAttribute('tabindex') === '0' && !!b.listeners.click && !!b.listeners.keydown);
-  ok('Unraid\'s icon is marked to step aside', docker.native.classList.contains('cc-sortreset-native'));
+  ok('Unraid\'s icon is marked to step aside', docker.native.classList.contains('tt-sortreset-native'));
   const vms = listPage('kvm_list', ['CasaOS-Test', 'Linux', 'Windows 11']);
   const up = load('en', {}, vms);
   up();
@@ -107,22 +107,22 @@ console.log('\nThe badge stands in for Unraid\'s icon and shows only while there
   ok('in English it says Reset sorting', badgeOf(vms).getAttribute('data-tip') === 'Reset sorting');
   vms.tb.children.unshift(vms.tb.children.pop());
   up();
-  ok('once a row is moved the badge appears, and only one', !badgeOf(vms).hidden && vms.th.children.filter((c) => c.classList.contains('cc-sortreset')).length === 1);
-  load('de', { 'cc.theming': '0' }, vms)();
-  ok('theming off takes the badge away and gives Unraid its icon back', !badgeOf(vms) && !vms.native.classList.contains('cc-sortreset-native'));
+  ok('once a row is moved the badge appears, and only one', !badgeOf(vms).hidden && vms.th.children.filter((c) => c.classList.contains('tt-sortreset')).length === 1);
+  load('de', { 'tt.theming': '0' }, vms)();
+  ok('theming off takes the badge away and gives Unraid its icon back', !badgeOf(vms) && !vms.native.classList.contains('tt-sortreset-native'));
 }
 
 console.log('\nWhere it loads and how it looks');
 {
-  ok('Tokens.page loads sortreset.js deferred, after cc-theme.js', /scripts\/cc-theme\.js'\)\?>"><\/script>\n<script defer src="<\?autov\('\/plugins\/towertorch\/scripts\/sortreset\.js'\)\?>"><\/script>/.test(page));
+  ok('Tokens.page loads sortreset.js deferred, after tt-theme.js', /scripts\/tt-theme\.js'\)\?>"><\/script>\n<script defer src="<\?autov\('\/plugins\/towertorch\/scripts\/sortreset\.js'\)\?>"><\/script>/.test(page));
   ok('it watches the list body, where Unraid refills and drags', /new MutationObserver\(soon\)\.observe\(tb, \{ childList: true \}\);/.test(js));
   ok('Sort is in the glyph set', /^    "Sort": \["0\.042 0 14 14", '<path fill-rule="evenodd" d="M3\.75002 0c/m.test(theme));
   const body = (sel) => { const i = tokens.indexOf(sel + ' {'); return i < 0 ? '' : tokens.slice(i, tokens.indexOf('}', i)); };
-  ok('the badge is hidden unless theming is on', /^\.cc-sortreset \{ display: none; \}/m.test(tokens) && !!body('html.cc-popups-on .cc-sortreset:not([hidden])'));
-  ok('Unraid\'s icon hides only where the script marked it, with theming on', /^html\.cc-popups-on a#resetsort\.cc-sortreset-native \{ display: none !important; \}/m.test(tokens) && !/#resetsort[^.\n]*\{[^}]*display: none/.test(tokens.replace(/a#resetsort\.cc-sortreset-native/g, '')));
-  const rest = body('html.cc-popups-on .cc-sortreset:not([hidden])');
-  ok('it has the size every icon badge has', /width: var\(--cc-icon-badge, 26px\); height: var\(--cc-icon-badge, 26px\);/.test(rest));
-  ok('it rests on the neutral chip and takes the accent when pointed at', /background: var\(--cc-surface-3, #2e2e2e\)/.test(rest) && /background: var\(--cc-rbaccent, var\(--cc-accent, #FCC419\)\); color: var\(--cc-rbaccent-text/.test(body('html.cc-popups-on .cc-sortreset:hover')));
+  ok('the badge is hidden unless theming is on', /^\.tt-sortreset \{ display: none; \}/m.test(tokens) && !!body('html.tt-popups-on .tt-sortreset:not([hidden])'));
+  ok('Unraid\'s icon hides only where the script marked it, with theming on', /^html\.tt-popups-on a#resetsort\.tt-sortreset-native \{ display: none !important; \}/m.test(tokens) && !/#resetsort[^.\n]*\{[^}]*display: none/.test(tokens.replace(/a#resetsort\.tt-sortreset-native/g, '')));
+  const rest = body('html.tt-popups-on .tt-sortreset:not([hidden])');
+  ok('it has the size every icon badge has', /width: var\(--tt-icon-badge, 26px\); height: var\(--tt-icon-badge, 26px\);/.test(rest));
+  ok('it rests on the neutral chip and takes the accent when pointed at', /background: var\(--tt-surface-3, #2e2e2e\)/.test(rest) && /background: var\(--tt-rbaccent, var\(--tt-accent, #FCC419\)\); color: var\(--tt-rbaccent-text/.test(body('html.tt-popups-on .tt-sortreset:hover')));
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

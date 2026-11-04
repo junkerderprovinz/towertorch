@@ -18,38 +18,38 @@ console.log('\nThe sheet is inert until forms.js opts a page in');
   const rules = parseRules(read('sheets/TowerTorch.Forms.css'));
   const split = (sel) => { const out = []; let d = 0, cur = ''; for (const ch of sel) { if (ch === '(') d++; else if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; } return out.concat(cur); };
   const loose = [];
-  for (const r of rules) for (const s of split(r.selector)) if (!/^html\.cc-forms-on\b/.test(s.trim())) loose.push(s.trim());
-  ok('every selector starts at html.cc-forms-on', loose.length === 0, loose.slice(0, 3).join(' | '));
+  for (const r of rules) for (const s of split(r.selector)) if (!/^html\.tt-forms-on\b/.test(s.trim())) loose.push(s.trim());
+  ok('every selector starts at html.tt-forms-on', loose.length === 0, loose.slice(0, 3).join(' | '));
   const pg = read('TowerTorch.Forms.page');
   ok('the page hook loads the sheet by its basename and the script', /Menu="Buttons:\d+"/.test(pg) && /scripts\/forms\.js/.test(pg));
 }
 
 console.log('\nA native checkbox is the switch, never a box');
-for (const [where, html] of [['a Settings or Tools page', ['cc-tools-on']], ['the share edit page', ['cc-shares-on', 'cc-on-share-detail']]]) {
+for (const [where, html] of [['a Settings or Tools page', ['tt-tools-on']], ['the share edit page', ['tt-shares-on', 'tt-on-share-detail']]]) {
   const cb = { tag: 'input', classes: [], attrs: { type: 'checkbox' }, inside: ['#displaybox'], html };
   ok(where + ': the 44x24 track', val(win(cb, 'width')) === '44px' && val(win(cb, 'height')) === '24px', val(win(cb, 'width')) + 'x' + val(win(cb, 'height')));
   ok(where + ': the OS box is gone', val(win(cb, 'appearance')) === 'none');
-  ok(where + ': the track takes the shape engine', val(win(cb, 'border-radius')) === 'var(--cc-radius-pill)');
+  ok(where + ': the track takes the shape engine', val(win(cb, 'border-radius')) === 'var(--tt-radius-pill)');
   const on = Object.assign({}, cb, { states: { checked: true } });
-  ok(where + ': switched on, the colour mode fills it', /--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent/.test(val(win(on, 'background'))), val(win(on, 'background')));
+  ok(where + ': switched on, the colour mode fills it', /--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent/.test(val(win(on, 'background'))), val(win(on, 'background')));
 }
 
 console.log('\nA native button is a sentence-case badge, neutral at rest');
-const formsHtml = ['cc-forms-on', 'cc-tools-on'];
+const formsHtml = ['tt-forms-on', 'tt-tools-on'];
 for (const type of ['button', 'submit']) {
   const b = { tag: 'input', classes: [], attrs: { type }, inside: ['#displaybox'], html: formsHtml };
   ok(type + ': no capitals, no tracking', val(win(b, 'text-transform')) === 'none' && val(win(b, 'letter-spacing')) === 'normal', val(win(b, 'text-transform')) + ' / ' + val(win(b, 'letter-spacing')));
-  ok(type + ': the neutral fill', val(win(b, 'background')) === 'var(--cc-fm-btn)', val(win(b, 'background')));
-  ok(type + ': at the md stage', val(win(b, 'height')) === 'var(--cc-md-h, 30px)', val(win(b, 'height')));
+  ok(type + ': the neutral fill', val(win(b, 'background')) === 'var(--tt-fm-btn)', val(win(b, 'background')));
+  ok(type + ': at the md stage', val(win(b, 'height')) === 'var(--tt-md-h, 30px)', val(win(b, 'height')));
 }
 {
-  const apply = { tag: 'input', classes: ['cc-fm-primary'], attrs: { type: 'submit' }, inside: ['#displaybox'], html: formsHtml };
-  ok('the forward action is the filled one', /^var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent/.test(val(win(apply, 'background'))), val(win(apply, 'background')));
-  const reactive = Object.assign({}, apply, { html: formsHtml.concat(['cc-tools-rbneutral']) });
-  ok('in the reactive mode it rests neutral', val(win(reactive, 'background')) === 'var(--cc-fm-btn)', val(win(reactive, 'background')));
+  const apply = { tag: 'input', classes: ['tt-fm-primary'], attrs: { type: 'submit' }, inside: ['#displaybox'], html: formsHtml };
+  ok('the forward action is the filled one', /^var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent/.test(val(win(apply, 'background'))), val(win(apply, 'background')));
+  const reactive = Object.assign({}, apply, { html: formsHtml.concat(['tt-tools-rbneutral']) });
+  ok('in the reactive mode it rests neutral', val(win(reactive, 'background')) === 'var(--tt-fm-btn)', val(win(reactive, 'background')));
   const disabled = Object.assign({}, apply, { states: { disabled: true } });
-  ok('disabled, it is a grey badge rather than a dim accent', val(win(disabled, 'background')) === 'var(--cc-fm-btn)', val(win(disabled, 'background')));
-  const share = { tag: 'input', classes: [], attrs: { type: 'submit' }, inside: ['#displaybox'], html: ['cc-forms-on', 'cc-shares-on', 'cc-on-share-detail'] };
+  ok('disabled, it is a grey badge rather than a dim accent', val(win(disabled, 'background')) === 'var(--tt-fm-btn)', val(win(disabled, 'background')));
+  const share = { tag: 'input', classes: [], attrs: { type: 'submit' }, inside: ['#displaybox'], html: ['tt-forms-on', 'tt-shares-on', 'tt-on-share-detail'] };
   ok('a button on the share page is in sentence case too', val(win(share, 'text-transform')) === 'none', val(win(share, 'text-transform')));
 }
 
@@ -59,16 +59,16 @@ console.log('\nA row keeps Unraid\'s own arrangement, in a card centred in the w
   // The first rule for a selector is the desktop one; the phone rules follow in a media query.
   const first = (sel) => rules.find((r) => r.selector === sel);
   const decl = (r, prop) => { const d = r && r.decls.find((x) => x.prop === prop); return d ? d.value : '(none)'; };
-  const ROW = 'html.cc-forms-on #displaybox :is(.cc-fm-card dl, dl.cc-fm-card)';
+  const ROW = 'html.tt-forms-on #displaybox :is(.tt-fm-card dl, dl.tt-fm-card)';
   ok('the label column comes first and takes a bit over a third', /^minmax\(140px, 40%\) minmax\(0, 1fr\)$/.test(decl(first(ROW), 'grid-template-columns')), decl(first(ROW), 'grid-template-columns'));
   ok('the label is right-aligned', decl(first(ROW + ' > dt'), 'text-align') === 'right', decl(first(ROW + ' > dt'), 'text-align'));
   const dd = first(ROW + ' > dd');
   ok('the control starts right beside it', decl(dd, 'justify-self') === 'start' && decl(dd, 'justify-content') === 'flex-start', decl(dd, 'justify-self') + ' ' + decl(dd, 'justify-content'));
-  ok('a value without a label stays in the value column', decl(first(ROW + ' > dd.cc-fm-wide'), 'grid-column') === '2');
-  ok('the card is centred', /^0 auto 40px$/.test(decl(first('html.cc-forms-on #displaybox .cc-fm-card'), 'margin')), decl(first('html.cc-forms-on #displaybox .cc-fm-card'), 'margin'));
-  const head = first('html.cc-forms-on #displaybox :is(div.title, div#title, table).cc-fm-head');
+  ok('a value without a label stays in the value column', decl(first(ROW + ' > dd.tt-fm-wide'), 'grid-column') === '2');
+  ok('the card is centred', /^0 auto 40px$/.test(decl(first('html.tt-forms-on #displaybox .tt-fm-card'), 'margin')), decl(first('html.tt-forms-on #displaybox .tt-fm-card'), 'margin'));
+  const head = first('html.tt-forms-on #displaybox :is(div.title, div#title, table).tt-fm-head');
   ok('the title badge follows the centred card', /calc\(max\(0px, \(100% - 920px\) \/ 2\) \+ 18px\)/.test(decl(head, 'margin')), decl(head, 'margin'));
-  const sw = { tag: 'input', classes: [], attrs: { type: 'checkbox' }, inside: ['#displaybox', '.cc-fm-card'], html: formsHtml };
+  const sw = { tag: 'input', classes: [], attrs: { type: 'checkbox' }, inside: ['#displaybox', '.tt-fm-card'], html: formsHtml };
   ok('a switch stays where Unraid put its checkbox', val(win(sw, 'order')) === '(none)', val(win(sw, 'order')));
   const src = read('scripts/forms.js').match(/function titleTable\(t\) \{[\s\S]*?\n  \}/)[0];
   const titleTable = new Function('return ' + src)();
@@ -105,8 +105,8 @@ console.log('\nunbalanced follows the centred cards');
   const title = node('DIV', 'title'), ver = node('B'), style = node('STYLE'), form = node('FORM');
   ver.prev = title; style.prev = ver; form.prev = style;
   new Function('stripColon', 'return ' + fn)(() => {})({ querySelector: () => form });
-  ok('unbalanced\'s form becomes a card', form.cls.has('cc-fm-card') && form.cls.has('cc-fm-ub'));
-  ok('its page title becomes the badge, past its own style sheet and version line', title.cls.has('cc-fm-head') && ver.cls.has('cc-fm-ubver'));
+  ok('unbalanced\'s form becomes a card', form.cls.has('tt-fm-card') && form.cls.has('tt-fm-ub'));
+  ok('its page title becomes the badge, past its own style sheet and version line', title.cls.has('tt-fm-head') && ver.cls.has('tt-fm-ubver'));
 }
 
 console.log('\nforms.js leaves the forms working');

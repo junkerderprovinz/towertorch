@@ -7,12 +7,12 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
 const page = withUnraid('every');
-const html = ['cc-shares-on', 'cc-on-share-detail', 'Theme--white'];
+const html = ['tt-shares-on', 'tt-on-share-detail', 'Theme--white'];
 const win = (e, prop) => { const c = candidates(page, e, prop); return c[c.length - 1]; };
 const val = (w) => (w ? w.value : '(none)');
-const inked = (v) => /^var\(--cc-text, #e[6a]e[6a]e[6a]\)$/.test(v);
-const field = (v) => /^var\(--cc-surface-3, #2e2e2e\)$/.test(v);
-const raised = (v) => /^color-mix\(in srgb, var\(--cc-surface-3, #2e2e2e\) 85%, var\(--cc-text, #e6e6e6\)\)$/.test(v);
+const inked = (v) => /^var\(--tt-text, #e[6a]e[6a]e[6a]\)$/.test(v);
+const field = (v) => /^var\(--tt-surface-3, #2e2e2e\)$/.test(v);
+const raised = (v) => /^color-mix\(in srgb, var\(--tt-surface-3, #2e2e2e\) 85%, var\(--tt-text, #e6e6e6\)\)$/.test(v);
 
 console.log('\nThe fields follow the theme');
 {
@@ -24,7 +24,7 @@ console.log('\nThe fields follow the theme');
   ok('the disk picker takes the same fill', field(val(win(dd, 'background-color'))), val(win(dd, 'background-color')));
   const ddText = { tag: 'span', classes: ['ui-dropdownchecklist-text'], inside: ['#displaybox'], outside: ['.ui-dropdownchecklist-item'], html };
   ok('and the same ink', inked(val(win(ddText, 'color'))));
-  const trig = { tag: 'span', classes: ['cc-sel-trigger'], inside: ['#displaybox', '.cc-sel'], outside: ['.cc-open'], html };
+  const trig = { tag: 'span', classes: ['tt-sel-trigger'], inside: ['#displaybox', '.tt-sel'], outside: ['.tt-open'], html };
   ok('a single-select at rest too', field(val(win(trig, 'background'))) && inked(val(win(trig, 'color'))), val(win(trig, 'background')));
 }
 
@@ -36,12 +36,12 @@ console.log('\nThe ink reads on both pages');
   };
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
   const light = tokens(true), dark = tokens(false);
-  const lt = resolve('var(--cc-text)', light), dt = resolve('var(--cc-text)', dark);
+  const lt = resolve('var(--tt-text)', light), dt = resolve('var(--tt-text)', dark);
   ok('dark ink on the white page, 4.5:1 at the least', ratio(lt, '#f2f2f2') >= 4.5, lt);
   ok('light ink on the black page, 4.5:1 at the least', ratio(dt, '#1c1b1b') >= 4.5, dt);
 
   // "Keine nicht zugewiesenen Geräte" and the like sit in a grey pill, a 14% wash over the page.
-  const muted = { tag: 'span', classes: ['cc-muted'], inside: ['#displaybox'], html: ['cc-shares-on'] };
+  const muted = { tag: 'span', classes: ['tt-muted'], inside: ['#displaybox'], html: ['tt-shares-on'] };
   const mc = val(win(muted, 'color'));
   for (const [name, scope, pill] of [['white', light, '#e2e2e2'], ['black', dark, '#2a2a2a']]) {
     const ink = resolve(mc, scope);

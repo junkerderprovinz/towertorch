@@ -2,10 +2,10 @@
 // "stoppen", "pausieren" and "fortsetzen" fold into one "Alle Container" menu, "Container
 // hinzufügen" is the one filled button, and every label reads in sentence case. What can quietly
 // break it:
-//   · Unraid's uppercase transform on input[type=button] winning over CC's rule
+//   · Unraid's uppercase transform on input[type=button] winning over TowerTorch's rule
 //   · a folded native button showing again, since Unraid's loadlist() calls .show() on every one
 //   · the menu calling a native button Unraid has disabled while an action runs
-//   · CC's German or English labels written over another of Unraid's language packs
+//   · TowerTorch's German or English labels written over another of Unraid's language packs
 //   · a second filled button in the bar, or the filled one going grey in the reactive mode
 const fs = require('fs');
 const path = require('path');
@@ -46,7 +46,7 @@ class El {
   querySelector(sel) {
     let m = /^input\[type=button\]\[onclick\^="(\w+)\("\]$/.exec(sel);
     if (m) return this.kids.find((k) => k.tag === 'input' && (k.attrs.onclick || '').startsWith(m[1] + '(')) || null;
-    if (sel === '.cc-allct') return this.kids.find((k) => k.has('cc-allct')) || null;
+    if (sel === '.tt-allct') return this.kids.find((k) => k.has('tt-allct')) || null;
     throw new Error('unexpected selector ' + sel);
   }
 }
@@ -57,11 +57,11 @@ function bar(lang, values) {
   const T = { allContainers: 'Alle Container', barAdd: 'Container hinzufügen', barCheck: 'Nach Aktualisierungen suchen', barUpdateAll: 'Alle aktualisieren', barSizes: 'Containergröße', bulkStartAll: 'Alle starten', bulkStopAll: 'Alle stoppen', bulkPauseAll: 'Alle pausieren', bulkResumeAll: 'Alle fortsetzen' };
   const env = {
     document: { documentElement: { lang } },
-    window: { CCTheme: { menu: (anchor, items) => menus.push(items) } },
+    window: { TTTheme: { menu: (anchor, items) => menus.push(items) } },
   };
   const fold = new Function('document', 'window', 'T', 'El',
-    'var MARK = "data-cc"; function t(k) { return T[k]; } function el(tag, cls, txt) { var e = new El(tag, cls); if (txt) e.textContent = txt; return e; }\n' +
-    grabVar('BAR_LABELS') + '\n' + grabVar('BAR_FOLD') + '\n' + grab('barNative') + '\n' + grab('ccLabelled') + '\n' + grab('foldBar') + '\nreturn foldBar;')(env.document, env.window, T, El);
+    'var MARK = "data-tt"; function t(k) { return T[k]; } function el(tag, cls, txt) { var e = new El(tag, cls); if (txt) e.textContent = txt; return e; }\n' +
+    grabVar('BAR_LABELS') + '\n' + grabVar('BAR_FOLD') + '\n' + grab('barNative') + '\n' + grab('ttLabelled') + '\n' + grab('foldBar') + '\nreturn foldBar;')(env.document, env.window, T, El);
   return { b, fold, menus };
 }
 const UNRAID_DE = [['addContainer', 'Container hinzufügen'], ['startAll', 'Alle starten'], ['stopAll', 'Alle stoppen'], ['pauseAll', 'Alle pausieren'], ['resumeAll', 'Alle fortsetzen'], ['checkAll', 'Nach Aktualisierungen suchen'], ['updateAll', 'Alle Aktualisieren'], ['contSizes', 'Containergröße']];
@@ -70,12 +70,12 @@ console.log('\nThe four run-everything buttons fold into one menu');
 {
   const { b, fold, menus } = bar('de', UNRAID_DE);
   fold(b); fold(b);
-  const vis = b.kids.filter((k) => !k.has('cc-folded'));
-  ok('the four natives are folded away', b.kids.filter((k) => k.has('cc-folded')).map((k) => k.attrs.onclick).join(' ') === 'startAll() stopAll() pauseAll() resumeAll()');
-  ok('one menu button sits right after "Container hinzufügen", however often the pass runs', vis[1] && vis[1].has('cc-allct') && b.kids.filter((k) => k.has('cc-allct')).length === 1, vis.map((k) => k.value || k.textContent).join(' | '));
-  const btn = b.querySelector('.cc-allct');
+  const vis = b.kids.filter((k) => !k.has('tt-folded'));
+  ok('the four natives are folded away', b.kids.filter((k) => k.has('tt-folded')).map((k) => k.attrs.onclick).join(' ') === 'startAll() stopAll() pauseAll() resumeAll()');
+  ok('one menu button sits right after "Container hinzufügen", however often the pass runs', vis[1] && vis[1].has('tt-allct') && b.kids.filter((k) => k.has('tt-allct')).length === 1, vis.map((k) => k.value || k.textContent).join(' | '));
+  const btn = b.querySelector('.tt-allct');
   ok('it is a keyboard button that announces a menu', btn.attrs.role === 'button' && btn.attrs.tabindex === '0' && btn.attrs['aria-haspopup'] === 'menu');
-  ok('"Container hinzufügen" is the primary button', b.kids[0].has('cc-bar-primary') && b.kids.filter((k) => k.has('cc-bar-primary')).length === 1);
+  ok('"Container hinzufügen" is the primary button', b.kids[0].has('tt-bar-primary') && b.kids.filter((k) => k.has('tt-bar-primary')).length === 1);
   ok('Unraid\'s "Alle Aktualisieren" reads in sentence case', b.querySelector('input[type=button][onclick^="updateAll("]').value === 'Alle aktualisieren');
   btn.listeners.click({ preventDefault() {}, stopPropagation() {} });
   ok('a click opens the menu with the four actions', menus.length === 1 && menus[0].map((i) => i.label).join(', ') === 'Alle starten, Alle stoppen, Alle pausieren, Alle fortsetzen');
@@ -109,7 +109,7 @@ console.log('\nLabels');
   const fr = bar('fr', [['addContainer', 'Ajouter un conteneur'], ['startAll', 'Tout démarrer'], ['contSizes', 'Taille des conteneurs']]);
   fr.fold(fr.b);
   ok('another of Unraid\'s language packs keeps its own labels', fr.b.kids[0].value === 'Ajouter un conteneur' && fr.b.querySelector('input[type=button][onclick^="contSizes("]').value === 'Taille des conteneurs');
-  fr.b.querySelector('.cc-allct').listeners.click({ preventDefault() {}, stopPropagation() {} });
+  fr.b.querySelector('.tt-allct').listeners.click({ preventDefault() {}, stopPropagation() {} });
   ok('and so do the menu entries', fr.menus[0][0].label === 'Tout démarrer');
   ok('the view switch reads in sentence case', /function advWord\(on\) \{ return on \? \(LANG === "de" \? "Erweiterte Ansicht" : "Advanced view"\) : \(LANG === "de" \? "Einfache Ansicht" : "Basic view"\); \}/.test(js) && !/EINFACHE ANSICHT|BASIC VIEW/.test(js));
   ok('relocateTopBar folds the bar on every pass', /foldBar\(jsa\);\n\s*ensureBarToggle\(jsa\);/.test(js));
@@ -117,48 +117,48 @@ console.log('\nLabels');
 
 console.log('\nThe sheet');
 {
-  const html = ['cc-docker-on', 'cc-popups-on', 'cc-header-on'];
-  const reactive = html.concat(['cc-shares-rbneutral']);
+  const html = ['tt-docker-on', 'tt-popups-on', 'tt-header-on'];
+  const reactive = html.concat(['tt-shares-rbneutral']);
   const win = (el, prop) => { const c = candidates(withUnraid('docker'), el, prop); return c[c.length - 1]; };
-  // The bar sits outside CA's install panel, the user list and CC's windows, whose button rules the
+  // The bar sits outside CA's install panel, the user list and TowerTorch's windows, whose button rules the
   // helper cannot rule out by itself.
-  const away = ['.multi_installDiv', '#displaybox', '.cc-pop', '.cc-win', '#cc-settings'];
+  const away = ['.multi_installDiv', '#displaybox', '.tt-pop', '.tt-win', '#tt-settings'];
   const input = (cls, h, states) => ({ tag: 'input', classes: cls, attrs: { type: 'button' }, states: states || {}, html: h, inside: ['.js-actions'], outside: away });
   const span = (cls, h, states) => ({ tag: 'span', classes: cls, attrs: { role: 'button', tabindex: '0' }, states: states || {}, html: h, inside: ['.js-actions'], outside: away });
-  for (const [n, e] of [['a native button', input([], html)], ['the menu button', span(['cc-allct'], html)], ['the multi-select badge', span(['cc-bulkmode-badge'], html)]]) {
+  for (const [n, e] of [['a native button', input([], html)], ['the menu button', span(['tt-allct'], html)], ['the multi-select badge', span(['tt-bulkmode-badge'], html)]]) {
     const tt = win(e, 'text-transform');
     ok(n + ' keeps its sentence case against Unraid\'s uppercase', !!tt && tt.value === 'none' && tt.important, tt && tt.selector);
     const ls = win(e, 'letter-spacing');
     ok(n + ' drops the tracking', !!ls && ls.value === 'normal');
   }
-  const CHAIN = 'var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)))';
+  const CHAIN = 'var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)))';
   const bg = (e) => { const c = candidates(withUnraid('docker'), e, 'background').concat(candidates(withUnraid('docker'), e, 'background-color')); c.sort((a, b) => (a.important - b.important) || (a.spec[0] - b.spec[0]) || (a.spec[1] - b.spec[1]) || (a.spec[2] - b.spec[2]) || (a.order - b.order)); return c[c.length - 1]; };
-  ok('"Container hinzufügen" is filled with the colour chain', bg(input(['cc-bar-primary'], html)).value === CHAIN);
-  ok('and stays filled in the reactive mode', bg(input(['cc-bar-primary'], reactive)).value === CHAIN, bg(input(['cc-bar-primary'], reactive)).selector);
-  ok('every other button rests grey', /^var\(--cc-surface-3/.test(bg(input([], html)).value) && /^var\(--cc-surface-3/.test(bg(span(['cc-allct'], html)).value));
-  ok('and takes the mode colour under the pointer', bg(input([], html, { hover: true })).value === CHAIN && bg(span(['cc-allct'], html, { hover: true })).value === CHAIN);
-  const d = win(input(['cc-folded'], html), 'display');
+  ok('"Container hinzufügen" is filled with the colour chain', bg(input(['tt-bar-primary'], html)).value === CHAIN);
+  ok('and stays filled in the reactive mode', bg(input(['tt-bar-primary'], reactive)).value === CHAIN, bg(input(['tt-bar-primary'], reactive)).selector);
+  ok('every other button rests grey', /^var\(--tt-surface-3/.test(bg(input([], html)).value) && /^var\(--tt-surface-3/.test(bg(span(['tt-allct'], html)).value));
+  ok('and takes the mode colour under the pointer', bg(input([], html, { hover: true })).value === CHAIN && bg(span(['tt-allct'], html, { hover: true })).value === CHAIN);
+  const d = win(input(['tt-folded'], html), 'display');
   ok('a folded native stays hidden whatever Unraid\'s .show() writes inline', !!d && d.value === 'none' && d.important);
 }
 
 console.log('\nThe bar that appears once rows are picked');
 {
   const tokens = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8');
-  const island = /^\.cc-pop, \.cc-menu, \.cc-win, \.cc-rowmenu[^{]*\{/m.exec(tokens);
-  ok('it floats as a dark window on every theme, so its count stays readable on white', !!island && /\.cc-bulkbar\b/.test(island[0]), island && island[0]);
+  const island = /^\.tt-pop, \.tt-menu, \.tt-win, \.tt-rowmenu[^{]*\{/m.exec(tokens);
+  ok('it floats as a dark window on every theme, so its count stays readable on white', !!island && /\.tt-bulkbar\b/.test(island[0]), island && island[0]);
   const win = (el, prop) => { const c = candidates(withUnraid('docker'), el, prop); return c[c.length - 1]; };
-  const bar = { tag: 'div', classes: ['cc-bulkbar'], html: ['cc-docker-on', 'Theme--white'] };
-  ok('its ground is the window surface', /^var\(--cc-surface-window/.test((win(bar, 'background') || {}).value || ''), (win(bar, 'background') || {}).value);
-  const btn = (cls, states) => ({ tag: 'span', classes: ['cc-b', 'cc-bulkbtn'].concat(cls), attrs: { role: 'button', tabindex: '0' }, states: states || {}, inside: ['.cc-bulkbar'], html: ['cc-docker-on'] });
-  for (const [n, e] of [['Starten', btn([])], ['Entfernen', btn(['cc-bulkbtn-del'])]]) {
+  const bar = { tag: 'div', classes: ['tt-bulkbar'], html: ['tt-docker-on', 'Theme--white'] };
+  ok('its ground is the window surface', /^var\(--tt-surface-window/.test((win(bar, 'background') || {}).value || ''), (win(bar, 'background') || {}).value);
+  const btn = (cls, states) => ({ tag: 'span', classes: ['tt-b', 'tt-bulkbtn'].concat(cls), attrs: { role: 'button', tabindex: '0' }, states: states || {}, inside: ['.tt-bulkbar'], html: ['tt-docker-on'] });
+  for (const [n, e] of [['Starten', btn([])], ['Entfernen', btn(['tt-bulkbtn-del'])]]) {
     ok(n + ' reads in sentence case like the action bar', (win(e, 'text-transform') || {}).value === 'none' && (win(e, 'letter-spacing') || {}).value === 'normal');
-    ok(n + ' rests grey', /^var\(--cc-surface-3/.test((win(e, 'background') || {}).value || ''), (win(e, 'background') || {}).value);
+    ok(n + ' rests grey', /^var\(--tt-surface-3/.test((win(e, 'background') || {}).value || ''), (win(e, 'background') || {}).value);
     const hb = (win(btn(e.classes.slice(2), { hover: true }), 'background') || {}).value || '';
-    ok(n + ' takes its own palette slot or the accent under the pointer, never the area\'s rainbow accent', hb === 'var(--cc-rb-c, var(--cc-accent, #FCC419)) !important' || hb === 'var(--cc-rb-c, var(--cc-accent, #FCC419))', hb);
+    ok(n + ' takes its own palette slot or the accent under the pointer, never the area\'s rainbow accent', hb === 'var(--tt-rb-c, var(--tt-accent, #FCC419)) !important' || hb === 'var(--tt-rb-c, var(--tt-accent, #FCC419))', hb);
   }
-  const sync = grab('ccBulkBarSync');
-  ok('Entfernen is marked as the delete, so the palette passes its red on', /"cc-b cc-bulkbtn cc-bulkbtn-del"/.test(sync));
-  ok('the slots are stamped each time the bar shows, through the delete-aware palette', /colorBulkButtons\(ccBulkBarEl\)/.test(sync) && /deleteSlot/.test(grab('colorBulkButtons')));
+  const sync = grab('ttBulkBarSync');
+  ok('Entfernen is marked as the delete, so the palette passes its red on', /"tt-b tt-bulkbtn tt-bulkbtn-del"/.test(sync));
+  ok('the slots are stamped each time the bar shows, through the delete-aware palette', /colorBulkButtons\(ttBulkBarEl\)/.test(sync) && /deleteSlot/.test(grab('colorBulkButtons')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

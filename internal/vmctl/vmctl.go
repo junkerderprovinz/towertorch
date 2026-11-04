@@ -72,9 +72,9 @@ type Disk struct {
 type runner func(ctx context.Context, args ...string) (string, error)
 
 func virshRun(ctx context.Context, args ...string) (string, error) {
-	cctx, cancel := context.WithTimeout(ctx, callTimeout)
+	callCtx, cancel := context.WithTimeout(ctx, callTimeout)
 	defer cancel()
-	out, err := exec.CommandContext(cctx, "virsh", args...).CombinedOutput()
+	out, err := exec.CommandContext(callCtx, "virsh", args...).CombinedOutput()
 	if err != nil {
 		return string(out), fmt.Errorf("virsh %s: %w: %s", strings.Join(args, " "), err, strings.TrimSpace(string(out)))
 	}
@@ -327,9 +327,9 @@ func (c *Controller) ResizeDisk(ctx context.Context, name, target string, newByt
 		_, e := c.run(ctx, "blockresize", name, disk.Target, strconv.FormatInt(newBytes, 10)+"B")
 		return e
 	}
-	cctx, cancel := context.WithTimeout(ctx, callTimeout)
+	callCtx, cancel := context.WithTimeout(ctx, callTimeout)
 	defer cancel()
-	out, e := exec.CommandContext(cctx, "qemu-img", "resize", disk.Source, strconv.FormatInt(newBytes, 10)).CombinedOutput()
+	out, e := exec.CommandContext(callCtx, "qemu-img", "resize", disk.Source, strconv.FormatInt(newBytes, 10)).CombinedOutput()
 	if e != nil {
 		return fmt.Errorf("qemu-img resize %s: %w: %s", disk.Source, e, strings.TrimSpace(string(out)))
 	}
@@ -440,14 +440,14 @@ func allCores(vm VM) string {
 // The bandwidth rules rely on br_netfilter with bridge-nf-call-iptables on, so
 // bridged VM traffic passes the host's FORWARD chain.
 
-func vmDLChain(tap string) string { return "CC-VMBW-DL-" + tap }
-func vmULChain(tap string) string { return "CC-VMBW-UL-" + tap }
+func vmDLChain(tap string) string { return "TT-VMBW-DL-" + tap }
+func vmULChain(tap string) string { return "TT-VMBW-UL-" + tap }
 
 // ipt runs iptables on the host; -w waits for the xtables lock.
 func ipt(ctx context.Context, args ...string) error {
-	cctx, cancel := context.WithTimeout(ctx, callTimeout)
+	callCtx, cancel := context.WithTimeout(ctx, callTimeout)
 	defer cancel()
-	out, err := exec.CommandContext(cctx, "iptables", append([]string{"-w"}, args...)...).CombinedOutput()
+	out, err := exec.CommandContext(callCtx, "iptables", append([]string{"-w"}, args...)...).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("iptables %s: %w: %s", strings.Join(args, " "), err, strings.TrimSpace(string(out)))
 	}
@@ -486,7 +486,7 @@ func hashRule(hname string, kbit int) []string {
 // hName is a hashlimit table name of at most 15 characters, unique per tap and
 // direction.
 func hName(dir, tap string) string {
-	n := "ccvm" + dir + strings.TrimPrefix(tap, "vnet")
+	n := "ttvm" + dir + strings.TrimPrefix(tap, "vnet")
 	if len(n) > 15 {
 		n = n[:15]
 	}

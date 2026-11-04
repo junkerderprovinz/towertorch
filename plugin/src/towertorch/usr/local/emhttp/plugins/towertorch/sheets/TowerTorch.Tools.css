@@ -1,628 +1,628 @@
 /* TowerTorch: the Tools sub-pages, the native Settings sub-pages and the Docker and plugin
  * install log pages. Injected on every page through the Tools .page hook, but every rule is scoped
- * to html.cc-tools-on, which header.js sets only when
+ * to html.tt-tools-on, which header.js sets only when
  *   - the path starts with /Tools/ (System Information, System Devices, Diagnostics, ...),
- *   - the path is a native /Settings/<x> sub-page other than CC's own, or
+ *   - the path is a native /Settings/<x> sub-page other than TowerTorch's own, or
  *   - #displaybox holds a native <fieldset><legend> (the "Container hinzufügen" install log).
  *
  * Carbon dark surfaces (#161616/#1c1c1c), no borders or rings, focus shown as brightness, the
- * accent from --cc-accent (fallback #FCC419), content indented to the menu bar (--cc-align-left). */
+ * accent from --tt-accent (fallback #FCC419), content indented to the menu bar (--tt-align-left). */
 
-html.cc-tools-on { --cc-tl-surface: #1c1c1c; }
-/* The fieldsets and the Unraid API cards on --cc-tl-surface take the page's text, which a light
-   theme turns dark, so their surface turns light with it. --cc-tl-surface2, the fill of the form
+html.tt-tools-on { --tt-tl-surface: #1c1c1c; }
+/* The fieldsets and the Unraid API cards on --tt-tl-surface take the page's text, which a light
+   theme turns dark, so their surface turns light with it. --tt-tl-surface2, the fill of the form
    controls, is the field step of the surface ladder and flips with the theme as well, with the
    page's text on it. */
-html.cc-tools-on, html.cc-popups-on { --cc-tl-surface2: var(--cc-surface-3, #2e2e2e); }
+html.tt-tools-on, html.tt-popups-on { --tt-tl-surface2: var(--tt-surface-3, #2e2e2e); }
 /* A placeholder is a quiet hint, never the link blue Unraid gives it. */
-html.cc-tools-on #displaybox :is(input, textarea)::placeholder,
-html.cc-shares-on.cc-on-share-detail #displaybox :is(input, textarea)::placeholder { color: var(--cc-text-hint, #a3a3a3) !important; opacity: 1; }
-html.cc-tools-on.Theme--white,
-html.cc-tools-on.Theme--azure { --cc-tl-surface: var(--cc-surface-1, #ffffff); }
+html.tt-tools-on #displaybox :is(input, textarea)::placeholder,
+html.tt-shares-on.tt-on-share-detail #displaybox :is(input, textarea)::placeholder { color: var(--tt-text-hint, #a3a3a3) !important; opacity: 1; }
+html.tt-tools-on.Theme--white,
+html.tt-tools-on.Theme--azure { --tt-tl-surface: var(--tt-surface-1, #ffffff); }
 
-/* content column lines up with the menu bar, like every other CC area */
-html.cc-tools-on:not(.Theme--sidebar) #displaybox { padding-left: var(--cc-align-left, 15px); }
+/* content column lines up with the menu bar, like every other TowerTorch area */
+html.tt-tools-on:not(.Theme--sidebar) #displaybox { padding-left: var(--tt-align-left, 15px); }
 /* In boxed display width the centred content moves left to line up with the full-width menu bar
-   (header.js measureAlign sets --cc-box-shift to the menu's left edge). */
-html.cc-tools-on.Theme--width-boxed:not(.Theme--sidebar) #displaybox { margin-left: var(--cc-box-shift, 0) !important; margin-right: 0 !important; }
+   (header.js measureAlign sets --tt-box-shift to the menu's left edge). */
+html.tt-tools-on.Theme--width-boxed:not(.Theme--sidebar) #displaybox { margin-left: var(--tt-box-shift, 0) !important; margin-right: 0 !important; }
 
 /* fieldsets as borderless dark cards; the <legend> becomes an accent badge */
-html.cc-tools-on #displaybox fieldset {
-  background: var(--cc-tl-surface, #1c1c1c) !important;
+html.tt-tools-on #displaybox fieldset {
+  background: var(--tt-tl-surface, #1c1c1c) !important;
   border: none !important; outline: none !important;
-  border-radius: var(--cc-radius-card) !important;
+  border-radius: var(--tt-radius-card) !important;
   margin: 0 0 14px !important; padding: 16px 18px !important;
   box-shadow: none !important;
 }
-html.cc-tools-on #displaybox fieldset > legend,
-html.cc-tools-on #displaybox legend {
-  background: var(--cc-accent, #FCC419) !important; color: var(--cc-accent-text, #161616) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important;
-  font-weight: var(--cc-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--cc-sec-ls, 1.2px);
-  font-size: var(--cc-sec-fs) !important; line-height: 1;
-  padding: var(--cc-sec-pad, 0 12px) !important; min-height: var(--cc-sec-h, 22px); box-sizing: border-box;
+html.tt-tools-on #displaybox fieldset > legend,
+html.tt-tools-on #displaybox legend {
+  background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important;
+  font-weight: var(--tt-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px);
+  font-size: var(--tt-sec-fs) !important; line-height: 1;
+  padding: var(--tt-sec-pad, 0 12px) !important; min-height: var(--tt-sec-h, 22px); box-sizing: border-box;
   display: inline-flex; align-items: center; margin: 0 0 12px !important;
 }
 
 /* pre, code and log output as a dark, soft-wrapped block */
-html.cc-tools-on #displaybox pre,
-html.cc-tools-on #displaybox pre.text,
-html.cc-tools-on #displaybox textarea.wide {
+html.tt-tools-on #displaybox pre,
+html.tt-tools-on #displaybox pre.text,
+html.tt-tools-on #displaybox textarea.wide {
   background: #0f0f0f !important; color: #d6d6d6 !important;
-  border: none !important; outline: none !important; border-radius: var(--cc-radius-control) !important;
+  border: none !important; outline: none !important; border-radius: var(--tt-radius-control) !important;
   padding: 10px 12px !important; box-shadow: none !important;
   white-space: pre-wrap; word-break: break-word;
 }
 
 /* native tables: dark, borderless, comfortable rows */
-html.cc-tools-on #displaybox table:not(.cc-enh) { background: transparent !important; border: none !important; }
-html.cc-tools-on #displaybox table:not(.cc-enh) th,
-html.cc-tools-on #displaybox table:not(.cc-enh) td {
+html.tt-tools-on #displaybox table:not(.tt-enh) { background: transparent !important; border: none !important; }
+html.tt-tools-on #displaybox table:not(.tt-enh) th,
+html.tt-tools-on #displaybox table:not(.tt-enh) td {
   border: none !important;
   padding: 7px 10px !important; color: #d6d6d6;
 }
-html.cc-tools-on #displaybox table:not(.cc-enh) thead th { color: #9a9a9a; text-transform: uppercase; font-size: var(--cc-text-meta); letter-spacing: .6px; }
-html.cc-tools-on #displaybox table:not(.cc-enh) tr:hover td { background: rgba(255, 255, 255, .03) !important; }
+html.tt-tools-on #displaybox table:not(.tt-enh) thead th { color: #9a9a9a; text-transform: uppercase; font-size: var(--tt-text-meta); letter-spacing: .6px; }
+html.tt-tools-on #displaybox table:not(.tt-enh) tr:hover td { background: rgba(255, 255, 255, .03) !important; }
 /* The File Integrity disk table gives every disk column a fixed narrow width, so the tracked
    eyebrow heads ran into each other; the columns take the width of their head instead. */
-html.cc-tools-on #displaybox form[name="integrity_control"] table.share_status { table-layout: auto !important; width: auto !important; }
-html.cc-tools-on #displaybox form[name="integrity_control"] table.share_status :is(th, td) { width: auto !important; white-space: nowrap; }
+html.tt-tools-on #displaybox form[name="integrity_control"] table.share_status { table-layout: auto !important; width: auto !important; }
+html.tt-tools-on #displaybox form[name="integrity_control"] table.share_status :is(th, td) { width: auto !important; white-space: nowrap; }
 /* The disk sub-tab lists (Attributes, Self-Test, Identity) have no zebra and no line under the
-   header row. Each row shows its own palette colour on hover in rainbow mode (--cc-rb-c per row
-   from header.js ccPaintRotate), the accent otherwise, and value badges are flattened to plain
+   header row. Each row shows its own palette colour on hover in rainbow mode (--tt-rb-c per row
+   from header.js ttPaintRotate), the accent otherwise, and value badges are flattened to plain
    text so only the hover carries colour. */
-html.cc-diskpage #displaybox table.unraid tbody tr,
-html.cc-diskpage #displaybox table.unraid tbody tr > td { background: transparent !important; }
-html.cc-diskpage #displaybox table.unraid thead tr,
-html.cc-diskpage #displaybox table.unraid thead td,
-html.cc-diskpage #displaybox table.unraid thead th { border: none !important; box-shadow: none !important; }
-html.cc-diskpage #displaybox table.unraid td .cc-b,
-html.cc-diskpage #displaybox table.unraid td [class*="badge"] { background: transparent !important; color: inherit !important; padding: 0 !important; }
-html.cc-diskpage #displaybox table.unraid tbody tr:hover > td {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important;
+html.tt-diskpage #displaybox table.unraid tbody tr,
+html.tt-diskpage #displaybox table.unraid tbody tr > td { background: transparent !important; }
+html.tt-diskpage #displaybox table.unraid thead tr,
+html.tt-diskpage #displaybox table.unraid thead td,
+html.tt-diskpage #displaybox table.unraid thead th { border: none !important; box-shadow: none !important; }
+html.tt-diskpage #displaybox table.unraid td .tt-b,
+html.tt-diskpage #displaybox table.unraid td [class*="badge"] { background: transparent !important; color: inherit !important; padding: 0 !important; }
+html.tt-diskpage #displaybox table.unraid tbody tr:hover > td {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
+  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important;
 }
 /* The reka disk page sets #displaybox to the full viewport width plus margin-left:15px, which
    overshoots the right edge by 15px and adds a horizontal scrollbar. */
-html.cc-diskpage #displaybox { max-width: calc(100% - 15px) !important; }
+html.tt-diskpage #displaybox { max-width: calc(100% - 15px) !important; }
 /* The disk page's right edge lines up with the status island chips at a 16px gutter. The
    prev/next device button group is absolutely positioned at right:0 on <body> and its visible
    button stops about 12px inside the group, so right:4px puts the button edge on the gutter. */
-html.cc-diskpage #displaybox nav.tabs .tabs-container > span { right: 4px !important; }
+html.tt-diskpage #displaybox nav.tabs .tabs-container > span { right: 4px !important; }
 /* The table fills the content box (10px padding); 6px more puts its right edge on the same 16px
    gutter as the next-device button above it. */
-html.cc-diskpage #displaybox div.TableContainer { margin-right: 6px !important; }
+html.tt-diskpage #displaybox div.TableContainer { margin-right: 6px !important; }
 /* the row hover bar takes the control radius on its outer cells */
-html.cc-diskpage #displaybox table.unraid tbody tr:hover > td:first-child {
-  border-top-left-radius: var(--cc-radius-control) !important;
-  border-bottom-left-radius: var(--cc-radius-control) !important;
+html.tt-diskpage #displaybox table.unraid tbody tr:hover > td:first-child {
+  border-top-left-radius: var(--tt-radius-control) !important;
+  border-bottom-left-radius: var(--tt-radius-control) !important;
 }
-html.cc-diskpage #displaybox table.unraid tbody tr:hover > td:last-child {
-  border-top-right-radius: var(--cc-radius-control) !important;
-  border-bottom-right-radius: var(--cc-radius-control) !important;
+html.tt-diskpage #displaybox table.unraid tbody tr:hover > td:last-child {
+  border-top-right-radius: var(--tt-radius-control) !important;
+  border-bottom-right-radius: var(--tt-radius-control) !important;
 }
 /* The Boot Parameters .warning-box callouts already carry an amber shade, so the border goes and
    the tint is a little deeper to keep them readable. */
-html.cc-tools-on #displaybox .warning-box { border: none !important; background: rgba(240, 173, 78, .12) !important; }
-/* The SMB copy-settings rows overshot the container because the cc-tsel single-select was about
+html.tt-tools-on #displaybox .warning-box { border: none !important; background: rgba(240, 173, 78, .12) !important; }
+/* The SMB copy-settings rows overshot the container because the tt-tsel single-select was about
    240px wide. At the width of the ui-dropdownchecklist beside it (about 123px) the row fits on one
    line with its button, without touching the dd, whose width hacks broke the dropdownchecklist's
    jQuery panel. */
-html.cc-diskpage #displaybox dd > span.flex.flex-row > .cc-tsel { width: 124px !important; max-width: 124px !important; box-sizing: border-box !important; }
+html.tt-diskpage #displaybox dd > span.flex.flex-row > .tt-tsel { width: 124px !important; max-width: 124px !important; box-sizing: border-box !important; }
 /* The trigger's 240px min-width would slide it under the LESEN/KOPIEREN button inside the 124px
    wrapper, so it is clamped on these narrow rows only; the wide Exportieren and Sicherheit
    selectors sit outside this structure and keep 240px. */
-html.cc-diskpage #displaybox dd > span.flex.flex-row > .cc-tsel > .cc-tsel-trigger { min-width: 0 !important; width: 100% !important; max-width: 100% !important; }
+html.tt-diskpage #displaybox dd > span.flex.flex-row > .tt-tsel > .tt-tsel-trigger { min-width: 0 !important; width: 100% !important; max-width: 100% !important; }
 /* the native .shade boxes put the SMB form on a lighter #212121 surface; flatten them so the tab
    reads as one dark surface */
-html.cc-diskpage #displaybox div.shade { background: transparent !important; }
+html.tt-diskpage #displaybox div.shade { background: transparent !important; }
 /* the reka tab panel has a fixed height with an inner scrollbar; let it grow so the page scrolls */
-html.cc-diskpage #displaybox section.tab-content { height: auto !important; max-height: none !important; overflow: visible !important; }
+html.tt-diskpage #displaybox section.tab-content { height: auto !important; max-height: none !important; overflow: visible !important; }
 
 /* Boot Parameters reka editor: the h3.section-header headings (orange text, orange underline)
-   become badges that follow the colour mode like every other CC badge. */
-html.cc-diskpage #displaybox h3.section-header {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important;
-  font-weight: var(--cc-sec-fw, 500) !important; text-transform: uppercase; letter-spacing: var(--cc-sec-ls, 1.2px);
-  font-size: var(--cc-sec-fs) !important; line-height: 1 !important;
-  padding: var(--cc-sec-pad, 0 12px) !important; min-height: var(--cc-sec-h, 22px); box-sizing: border-box;
+   become badges that follow the colour mode like every other TowerTorch badge. */
+html.tt-diskpage #displaybox h3.section-header {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important;
+  font-weight: var(--tt-sec-fw, 500) !important; text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px);
+  font-size: var(--tt-sec-fs) !important; line-height: 1 !important;
+  padding: var(--tt-sec-pad, 0 12px) !important; min-height: var(--tt-sec-h, 22px); box-sizing: border-box;
   display: inline-flex !important; align-items: center; gap: 10px; width: auto !important; margin: 2px 0 14px !important;
 }
 /* the inner "Advanced" sub-badge stays readable as a dark inset chip on the accent badge */
-html.cc-diskpage #displaybox h3.section-header .section-badge { background: rgba(0, 0, 0, .22) !important; color: inherit !important; border: none !important; border-radius: var(--cc-radius-pill) !important; padding: 2px 9px !important; font-size: var(--cc-text-meta) !important; }
-/* Toggles and reka buttons rotate through the palette like every other CC control. ccPaintRotate
-   stamps --cc-rb-c on .switch-button-background and the badges; the reka buttons' hard-coded
+html.tt-diskpage #displaybox h3.section-header .section-badge { background: rgba(0, 0, 0, .22) !important; color: inherit !important; border: none !important; border-radius: var(--tt-radius-pill) !important; padding: 2px 9px !important; font-size: var(--tt-text-meta) !important; }
+/* Toggles and reka buttons rotate through the palette like every other TowerTorch control. ttPaintRotate
+   stamps --tt-rb-c on .switch-button-background and the badges; the reka buttons' hard-coded
    #FCC419 gives way to the same chain. */
-html.cc-diskpage #displaybox .main-content .switch-button-background.checked { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; }
-html.cc-diskpage #displaybox .main-content button:not(.switch-button-background),
-html.cc-diskpage #displaybox .main-content input[type="button"] { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; border-color: transparent !important; }
+html.tt-diskpage #displaybox .main-content .switch-button-background.checked { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; }
+html.tt-diskpage #displaybox .main-content button:not(.switch-button-background),
+html.tt-diskpage #displaybox .main-content input[type="button"] { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; border-color: transparent !important; }
 /* the clickable .parameter-code chips (the kernel argument each option inserts) get the same
-   rotating fill, stamped per chip by ccPaintRotate */
-html.cc-diskpage #displaybox .parameter-code {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important;
-  border: none !important; border-radius: var(--cc-radius-control) !important; padding: 2px 8px !important;
+   rotating fill, stamped per chip by ttPaintRotate */
+html.tt-diskpage #displaybox .parameter-code {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
+  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important;
+  border: none !important; border-radius: var(--tt-radius-control) !important; padding: 2px 8px !important;
 }
 /* the Raw View and syslinux config boxes separate cards with grey border lines; spacing keeps the
    groups apart without them */
-html.cc-diskpage #displaybox .main-content div,
-html.cc-diskpage #displaybox .main-content dl,
-html.cc-diskpage #displaybox .main-content section.section { border: none !important; box-shadow: none !important; }
+html.tt-diskpage #displaybox .main-content div,
+html.tt-diskpage #displaybox .main-content dl,
+html.tt-diskpage #displaybox .main-content section.section { border: none !important; box-shadow: none !important; }
 
 /* The label and value colours of a form row. Where forms.js lays the form out as a card,
    TowerTorch.Forms.css takes the row over: label at the start, control at the end. */
-html.cc-tools-on #displaybox dl > dt { color: var(--cc-text-chip, #cfcfcf); }
-html.cc-tools-on #displaybox dl > dd { color: var(--cc-text-chip, #cfcfcf); }
-html.cc-tools-on #displaybox dl > dd > .cc-tgl,
-html.cc-tools-on #displaybox dl > dd .switch-button-background { vertical-align: middle; }
-/* The native Help button shows the inline_help blocks CC otherwise replaces with (i) bubbles; shown,
+html.tt-tools-on #displaybox dl > dt { color: var(--tt-text-chip, #cfcfcf); }
+html.tt-tools-on #displaybox dl > dd { color: var(--tt-text-chip, #cfcfcf); }
+html.tt-tools-on #displaybox dl > dd > .tt-tgl,
+html.tt-tools-on #displaybox dl > dd .switch-button-background { vertical-align: middle; }
+/* The native Help button shows the inline_help blocks TowerTorch otherwise replaces with (i) bubbles; shown,
    they span the full grid width with a readable note look. */
-html.cc-tools-on #displaybox dl > blockquote.inline_help,
-html.cc-tools-on #displaybox dl > .inline-help { grid-column: 1 / -1; }
-html.cc-tools-on #displaybox blockquote.inline_help { background: #1c1c1c !important; border: none !important; border-radius: var(--cc-radius-control) !important; color: #b8b8b8 !important; padding: 8px 12px !important; margin: 2px 0 8px !important; font-size: var(--cc-text-subline) !important; }
+html.tt-tools-on #displaybox dl > blockquote.inline_help,
+html.tt-tools-on #displaybox dl > .inline-help { grid-column: 1 / -1; }
+html.tt-tools-on #displaybox blockquote.inline_help { background: #1c1c1c !important; border: none !important; border-radius: var(--tt-radius-control) !important; color: #b8b8b8 !important; padding: 8px 12px !important; margin: 2px 0 8px !important; font-size: var(--tt-text-subline) !important; }
 /* Stray <dt> elements (Mover and TRIM carry only a help icon, the boot device flyout on /Main has
-   empty ones) would break the dl grid's auto-flow. header.js ccToolsEnhance() hides every one of
+   empty ones) would break the dl grid's auto-flow. header.js ttToolsEnhance() hides every one of
    them, so the native flow places each row and no grid placement is needed here. */
 
 /* inputs, selects and textareas: dark fills and no focus ring */
-html.cc-tools-on #displaybox input[type="text"],
-html.cc-tools-on #displaybox input[type="number"],
-html.cc-tools-on #displaybox input[type="password"],
-html.cc-tools-on #displaybox input[type="search"],
-html.cc-tools-on #displaybox select,
-html.cc-tools-on #displaybox textarea {
-  background: var(--cc-tl-surface2, #232323) !important; color: var(--cc-text, #e6e6e6) !important;
-  border: none !important; outline: none !important; border-radius: var(--cc-radius-control) !important;
+html.tt-tools-on #displaybox input[type="text"],
+html.tt-tools-on #displaybox input[type="number"],
+html.tt-tools-on #displaybox input[type="password"],
+html.tt-tools-on #displaybox input[type="search"],
+html.tt-tools-on #displaybox select,
+html.tt-tools-on #displaybox textarea {
+  background: var(--tt-tl-surface2, #232323) !important; color: var(--tt-text, #e6e6e6) !important;
+  border: none !important; outline: none !important; border-radius: var(--tt-radius-control) !important;
   box-shadow: none !important;
 }
-html.cc-tools-on #displaybox input:focus,
-html.cc-tools-on #displaybox select:focus,
-html.cc-tools-on #displaybox textarea:focus { outline: none !important; box-shadow: none !important; background: color-mix(in srgb, var(--cc-tl-surface2) 85%, var(--cc-text, #e6e6e6)) !important; }
+html.tt-tools-on #displaybox input:focus,
+html.tt-tools-on #displaybox select:focus,
+html.tt-tools-on #displaybox textarea:focus { outline: none !important; box-shadow: none !important; background: color-mix(in srgb, var(--tt-tl-surface2) 85%, var(--tt-text, #e6e6e6)) !important; }
 
 /* buttons, including the install log's "VIEW CONTAINER LOG" and "FERTIG": accent, md size, no ring */
-html.cc-tools-on #displaybox input[type="button"],
-html.cc-tools-on #displaybox input[type="submit"],
-html.cc-tools-on #displaybox button:not([role="tab"]),
-html.cc-tools-on #displaybox a.button {
+html.tt-tools-on #displaybox input[type="button"],
+html.tt-tools-on #displaybox input[type="submit"],
+html.tt-tools-on #displaybox button:not([role="tab"]),
+html.tt-tools-on #displaybox a.button {
   /* form actions (ANWENDEN, FERTIG, SPEICHERN) share one colour, the rainbow or flag accent or
      else the base accent, rather than rotating per button */
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; outline: none !important; border-radius: var(--cc-radius-pill) !important;
-  height: var(--cc-md-h, 30px); padding: var(--cc-md-pad, 0 20px) !important;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; outline: none !important; border-radius: var(--tt-radius-pill) !important;
+  height: var(--tt-md-h, 30px); padding: var(--tt-md-pad, 0 20px) !important;
   font-weight: 600; box-shadow: none !important; text-decoration: none !important;
   transition: filter .12s;
 }
-html.cc-tools-on #displaybox input[type="button"]:hover:not(:disabled),
-html.cc-tools-on #displaybox input[type="submit"]:hover:not(:disabled),
-html.cc-tools-on #displaybox button:not([role="tab"]):hover:not(:disabled),
-html.cc-tools-on #displaybox a.button:hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
-html.cc-tools-on #displaybox input[type="button"]:focus-visible,
-html.cc-tools-on #displaybox button:focus-visible,
-html.cc-tools-on #displaybox a:focus-visible { outline: none !important; box-shadow: none !important; filter: brightness(1.18); }
+html.tt-tools-on #displaybox input[type="button"]:hover:not(:disabled),
+html.tt-tools-on #displaybox input[type="submit"]:hover:not(:disabled),
+html.tt-tools-on #displaybox button:not([role="tab"]):hover:not(:disabled),
+html.tt-tools-on #displaybox a.button:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-tools-on #displaybox input[type="button"]:focus-visible,
+html.tt-tools-on #displaybox button:focus-visible,
+html.tt-tools-on #displaybox a:focus-visible { outline: none !important; box-shadow: none !important; filter: brightness(1.18); }
 
 /* Settings > Management Access: the SSLSettings form does not sit inside #displaybox (its
    ancestors run straight to #joel-start-defaults), so it gets the same treatment on its own
    container. */
-html.cc-tools-on form[name="SSLSettings"] input[type="text"],
-html.cc-tools-on form[name="SSLSettings"] input[type="number"],
-html.cc-tools-on form[name="SSLSettings"] input[type="password"],
-html.cc-tools-on form[name="SSLSettings"] select {
-  background: var(--cc-tl-surface2, #232323) !important; color: var(--cc-text, #e6e6e6) !important;
-  border: none !important; outline: none !important; border-radius: var(--cc-radius-control) !important;
+html.tt-tools-on form[name="SSLSettings"] input[type="text"],
+html.tt-tools-on form[name="SSLSettings"] input[type="number"],
+html.tt-tools-on form[name="SSLSettings"] input[type="password"],
+html.tt-tools-on form[name="SSLSettings"] select {
+  background: var(--tt-tl-surface2, #232323) !important; color: var(--tt-text, #e6e6e6) !important;
+  border: none !important; outline: none !important; border-radius: var(--tt-radius-control) !important;
   box-shadow: none !important;
 }
-html.cc-tools-on form[name="SSLSettings"] input:focus,
-html.cc-tools-on form[name="SSLSettings"] select:focus { outline: none !important; box-shadow: none !important; background: color-mix(in srgb, var(--cc-tl-surface2) 85%, var(--cc-text, #e6e6e6)) !important; }
-html.cc-tools-on form[name="SSLSettings"] input[type="button"],
-html.cc-tools-on form[name="SSLSettings"] input[type="submit"] {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; outline: none !important; border-radius: var(--cc-radius-pill) !important;
-  height: var(--cc-md-h, 30px); padding: var(--cc-md-pad, 0 20px) !important;
+html.tt-tools-on form[name="SSLSettings"] input:focus,
+html.tt-tools-on form[name="SSLSettings"] select:focus { outline: none !important; box-shadow: none !important; background: color-mix(in srgb, var(--tt-tl-surface2) 85%, var(--tt-text, #e6e6e6)) !important; }
+html.tt-tools-on form[name="SSLSettings"] input[type="button"],
+html.tt-tools-on form[name="SSLSettings"] input[type="submit"] {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; outline: none !important; border-radius: var(--tt-radius-pill) !important;
+  height: var(--tt-md-h, 30px); padding: var(--tt-md-pad, 0 20px) !important;
   font-weight: 600; box-shadow: none !important; text-decoration: none !important;
   transition: filter .12s;
 }
-html.cc-tools-on form[name="SSLSettings"] input[type="button"]:hover:not(:disabled),
-html.cc-tools-on form[name="SSLSettings"] input[type="submit"]:hover:not(:disabled) { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
-html.cc-tools-on form[name="SSLSettings"] input[type="button"]:focus-visible,
-html.cc-tools-on form[name="SSLSettings"] input[type="submit"]:focus-visible { outline: none !important; box-shadow: none !important; filter: brightness(1.18); }
+html.tt-tools-on form[name="SSLSettings"] input[type="button"]:hover:not(:disabled),
+html.tt-tools-on form[name="SSLSettings"] input[type="submit"]:hover:not(:disabled) { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-tools-on form[name="SSLSettings"] input[type="button"]:focus-visible,
+html.tt-tools-on form[name="SSLSettings"] input[type="submit"]:focus-visible { outline: none !important; box-shadow: none !important; filter: brightness(1.18); }
 
 /* The Unraid API Settings, API Keys and API Status sub-tabs are Vue/Tailwind custom elements
    (<unraid-connect-settings>, <unraid-api-key-manager>, ...) that all carry class="unapi dark" in
-   the light DOM, so .unapi is the stable anchor. header.js ccSyncApiTheme maps their --primary,
-   --ring and --accent variables to the CC accent; the rules below give the shadcn button, input and
-   card recipes CC's shape. */
-html.cc-tools-on .unapi [class*="border-input"][class*="bg-background"] {
-  border-radius: var(--cc-radius-control) !important;
+   the light DOM, so .unapi is the stable anchor. header.js ttSyncApiTheme maps their --primary,
+   --ring and --accent variables to the TowerTorch accent; the rules below give the shadcn button, input and
+   card recipes TowerTorch's shape. */
+html.tt-tools-on .unapi [class*="border-input"][class*="bg-background"] {
+  border-radius: var(--tt-radius-control) !important;
 }
-html.cc-tools-on .unapi span[class*="cursor-pointer"][class*="border-input"],
-html.cc-tools-on .unapi span[class*="inline-flex"][class*="border-input"][class*="bg-background"] {
-  background: var(--cc-tl-surface2, #232323) !important; border-color: transparent !important;
+html.tt-tools-on .unapi span[class*="cursor-pointer"][class*="border-input"],
+html.tt-tools-on .unapi span[class*="inline-flex"][class*="border-input"][class*="bg-background"] {
+  background: var(--tt-tl-surface2, #232323) !important; border-color: transparent !important;
 }
 /* shadcn's button variants share this utility set, so matching it catches every button in the
-   tree. Height and padding use --cc-md-h and --cc-md-btnpad, since shadcn's h-10/h-9/h-8 vary per
+   tree. Height and padding use --tt-md-h and --tt-md-btnpad, since shadcn's h-10/h-9/h-8 vary per
    component. */
-html.cc-tools-on .unapi [class*="inline-flex"][class*="items-center"][class*="justify-center"][class*="font-medium"] {
-  height: auto !important; min-height: var(--cc-md-h, 30px) !important;
-  padding: var(--cc-md-btnpad, 0 14px) !important; box-sizing: border-box !important;
-  border-radius: var(--cc-radius-pill) !important; font-weight: 600 !important;
+html.tt-tools-on .unapi [class*="inline-flex"][class*="items-center"][class*="justify-center"][class*="font-medium"] {
+  height: auto !important; min-height: var(--tt-md-h, 30px) !important;
+  padding: var(--tt-md-btnpad, 0 14px) !important; box-sizing: border-box !important;
+  border-radius: var(--tt-radius-pill) !important; font-weight: 600 !important;
   transition: filter .12s !important;
 }
-html.cc-tools-on .unapi [class*="border-input"][class*="bg-background"][class*="hover:bg-accent"] {
-  background: var(--cc-tl-surface2, #232323) !important; border-color: rgba(255, 255, 255, .14) !important;
-  color: var(--cc-text, #eaeaea) !important;
+html.tt-tools-on .unapi [class*="border-input"][class*="bg-background"][class*="hover:bg-accent"] {
+  background: var(--tt-tl-surface2, #232323) !important; border-color: rgba(255, 255, 255, .14) !important;
+  color: var(--tt-text, #eaeaea) !important;
 }
-html.cc-tools-on .unapi [class*="inline-flex"][class*="items-center"][class*="justify-center"][class*="font-medium"]:hover {
-  box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important;
+html.tt-tools-on .unapi [class*="inline-flex"][class*="items-center"][class*="justify-center"][class*="font-medium"]:hover {
+  box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important;
 }
 /* Destructive buttons (Remove, Delete, the "Bist du sicher" confirm) take the colour of the buttons
    beside them rather than red: the confirmation says what is at stake, a colour cannot say more. */
-html.cc-tools-on .unapi [class*="bg-destructive"] {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; border-color: transparent !important;
+html.tt-tools-on .unapi [class*="bg-destructive"] {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
+  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; border-color: transparent !important;
 }
 /* The Developer Sandbox confirm button is transparent, and its red and orange ring comes from a
    sibling .from-unraid-red.to-orange layer placed 2px outside it. GlimStone uses shade, not rings,
    so the layer is hidden and the button gets the solid fill of the other buttons. */
-html.cc-tools-on .unapi span:has(> .from-unraid-red) {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; border: none !important; border-radius: var(--cc-radius-pill) !important;
+html.tt-tools-on .unapi span:has(> .from-unraid-red) {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; border: none !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-tools-on .unapi span:has(> .from-unraid-red) > .from-unraid-red { display: none !important; }
-html.cc-tools-on .unapi span:has(> .from-unraid-red):hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
+html.tt-tools-on .unapi span:has(> .from-unraid-red) > .from-unraid-red { display: none !important; }
+html.tt-tools-on .unapi span:has(> .from-unraid-red):hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 /* cards and list rows (OIDC providers, the Unraid.net row, rule cards): shade instead of a 1px grey
    border */
-html.cc-tools-on .unapi [class*="rounded-lg"][class*="border"]:not([class*="bg-warning"]):not([class*="bg-destructive"]) {
-  border-color: transparent !important; background: var(--cc-tl-surface, #1c1c1c) !important;
+html.tt-tools-on .unapi [class*="rounded-lg"][class*="border"]:not([class*="bg-warning"]):not([class*="bg-destructive"]) {
+  border-color: transparent !important; background: var(--tt-tl-surface, #1c1c1c) !important;
 }
-html.cc-tools-on .unapi [class*="rounded-md"][class*="border"][class*="px-3"] {
+html.tt-tools-on .unapi [class*="rounded-md"][class*="border"][class*="px-3"] {
   border-color: rgba(255, 255, 255, .14) !important;
 }
 
 /* the page heading bar on Tools and Settings sub-pages as a colour-mode badge */
-html.cc-tools-on #displaybox div.title {
+html.tt-tools-on #displaybox div.title {
   display: inline-flex !important; align-items: center; gap: 8px; width: fit-content !important;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; padding: var(--cc-sec-pad, 0 12px) !important; margin: 4px 0 16px !important;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; padding: var(--tt-sec-pad, 0 12px) !important; margin: 4px 0 16px !important;
   /* the section badge, as every other section head */
-  font-size: var(--cc-sec-fs) !important; font-weight: var(--cc-sec-fw, 500) !important; text-transform: uppercase; letter-spacing: var(--cc-sec-ls, 1.2px);
-  box-shadow: none !important; min-height: var(--cc-sec-h, 22px) !important; box-sizing: border-box !important;
+  font-size: var(--tt-sec-fs) !important; font-weight: var(--tt-sec-fw, 500) !important; text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px);
+  box-shadow: none !important; min-height: var(--tt-sec-h, 22px) !important; box-sizing: border-box !important;
 }
 /* When the heading carries a status (the Docker settings page) the title row goes transparent, the
    badge wraps only the name (.left), and the state dot sits to its right with the "Status:" label
    hidden, like a disk chip. Pages without a status keep the whole-title badge. */
-html.cc-tools-on #displaybox div.title:has(.cc-status-dot) {
+html.tt-tools-on #displaybox div.title:has(.tt-status-dot) {
   background: transparent !important; padding: 0 !important; gap: 10px;
 }
-html.cc-tools-on #displaybox div.title:has(.cc-status-dot) > .left {
+html.tt-tools-on #displaybox div.title:has(.tt-status-dot) > .left {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616));
-  border-radius: var(--cc-radius-pill); padding: var(--cc-sec-pad, 0 12px); min-height: var(--cc-sec-h, 22px); box-sizing: border-box;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616));
+  border-radius: var(--tt-radius-pill); padding: var(--tt-sec-pad, 0 12px); min-height: var(--tt-sec-h, 22px); box-sizing: border-box;
 }
-html.cc-tools-on #displaybox div.title:has(.cc-status-dot) .status { font-size: 0 !important; }   /* hide the "Status:" label; the dot child keeps its own 12px box */
-/* the CC (i) icon carrying the native help text, shown through the page-wide CC tip bubble */
-html.cc-tools-on #displaybox .cc-toolsinfo {
+html.tt-tools-on #displaybox div.title:has(.tt-status-dot) .status { font-size: 0 !important; }   /* hide the "Status:" label; the dot child keeps its own 12px box */
+/* the TowerTorch (i) icon carrying the native help text, shown through the page-wide TowerTorch tip bubble */
+html.tt-tools-on #displaybox .tt-toolsinfo {
   display: inline-flex; align-items: center; justify-content: center; margin-left: 7px;
-  width: 15px; height: 15px; border-radius: 50%; font-size: var(--cc-text-subline); line-height: 0;
+  width: 15px; height: 15px; border-radius: 50%; font-size: var(--tt-text-subline); line-height: 0;
   color: #9a9a9a; cursor: help; opacity: .85;
   /* vertical-align: middle centres on the x-height, which reads low next to the cap-height label,
      so it sits on text-bottom and is nudged up */
   vertical-align: text-bottom; position: relative; top: -1px;
 }
-html.cc-tools-on #displaybox .cc-toolsinfo:hover { color: var(--cc-accent-ink, #FCC419); opacity: 1; }
+html.tt-tools-on #displaybox .tt-toolsinfo:hover { color: var(--tt-accent-ink, #FCC419); opacity: 1; }
 /* The state dot: its colour is the live state (green running, red stopped, inline as
-   --cc-dotstate) like a disk chip, and it stays round in every shape. The native pill padding is
+   --tt-dotstate) like a disk chip, and it stays round in every shape. The native pill padding is
    removed so it reads as a dot. */
-html.cc-tools-on #displaybox div.title .cc-status-dot {
+html.tt-tools-on #displaybox div.title .tt-status-dot {
   display: inline-block; width: 12px; height: 12px; border-radius: 50%;
   margin: 0 !important; padding: 0 !important; vertical-align: middle; box-shadow: 0 0 0 2px rgba(0, 0, 0, .25);
-  background: var(--cc-dotstate, #8d8d8d) !important;
+  background: var(--tt-dotstate, #8d8d8d) !important;
 }
-/* A CC toggle standing in for a yes/no <select>, which stays hidden as the form value. Track and
+/* A TowerTorch toggle standing in for a yes/no <select>, which stays hidden as the form value. Track and
    knob take the pill radius. */
-html.cc-tools-on #displaybox .cc-tgl {
-  display: inline-flex; flex: 0 0 auto; width: 44px; height: 24px; border-radius: var(--cc-radius-pill); background: var(--cc-toggle-track-off, #3a3a3a);
+html.tt-tools-on #displaybox .tt-tgl {
+  display: inline-flex; flex: 0 0 auto; width: 44px; height: 24px; border-radius: var(--tt-radius-pill); background: var(--tt-toggle-track-off, #3a3a3a);
   position: relative; cursor: pointer; vertical-align: middle; transition: background .15s; box-sizing: border-box;
 }
-html.cc-tools-on #displaybox .cc-tgl.cc-tgl-on { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); }
-html.cc-tools-on #displaybox .cc-tgl .cc-tgl-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--cc-radius-pill); background: #fff; transition: left .15s; }
-html.cc-tools-on #displaybox .cc-tgl.cc-tgl-on .cc-tgl-knob { left: 23px; }
-/* native switch tracks (Docker aktivieren, for one) take the CC shape and rotate through the
-   colour mode via --cc-rb-c */
-html.cc-tools-on #displaybox .switch-button-background {
-  border: none !important; box-shadow: none !important; border-radius: var(--cc-radius-pill) !important; background: var(--cc-toggle-track-off, #3a3a3a) !important;
+html.tt-tools-on #displaybox .tt-tgl.tt-tgl-on { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
+html.tt-tools-on #displaybox .tt-tgl .tt-tgl-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--tt-radius-pill); background: #fff; transition: left .15s; }
+html.tt-tools-on #displaybox .tt-tgl.tt-tgl-on .tt-tgl-knob { left: 23px; }
+/* native switch tracks (Docker aktivieren, for one) take the TowerTorch shape and rotate through the
+   colour mode via --tt-rb-c */
+html.tt-tools-on #displaybox .switch-button-background {
+  border: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important; background: var(--tt-toggle-track-off, #3a3a3a) !important;
 }
-html.cc-tools-on #displaybox .switch-button-background .switch-button-button { border-radius: var(--cc-radius-pill) !important; }
-html.cc-tools-on #displaybox .switch-button-background.checked { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; }
+html.tt-tools-on #displaybox .switch-button-background .switch-button-button { border-radius: var(--tt-radius-pill) !important; }
+html.tt-tools-on #displaybox .switch-button-background.checked { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; }
 /* The native switch plugin draws a narrow 25x11 track (the boot editor, the VPN tunnel head, the
-   System Devices filters), so every one gets the full 44x24 CC geometry for track, knob and checked
+   System Devices filters), so every one gets the full 44x24 TowerTorch geometry for track, knob and checked
    position; !important beats the inline sizes. */
-html.cc-tools-on #displaybox .switch-button-background {
-  width: 44px !important; height: 24px !important; border-radius: var(--cc-radius-pill) !important;
+html.tt-tools-on #displaybox .switch-button-background {
+  width: 44px !important; height: 24px !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-tools-on #displaybox .switch-button-background .switch-button-button {
-  width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important; border-radius: var(--cc-radius-pill) !important;
+html.tt-tools-on #displaybox .switch-button-background .switch-button-button {
+  width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-tools-on #displaybox .switch-button-background.checked .switch-button-button { left: 23px !important; }
+html.tt-tools-on #displaybox .switch-button-background.checked .switch-button-button { left: 23px !important; }
 
-/* The Basic/Advanced view switch sits in the top-right corner of the content with a full-size CC
+/* The Basic/Advanced view switch sits in the top-right corner of the content with a full-size TowerTorch
    track. The knob's inline left is beaten by an !important rule keyed on .checked, so it snaps to
    the pill's ends. */
-html.cc-tools-on #displaybox .content { position: relative; }
-html.cc-tools-on #displaybox dl:has(.advancedview) {
+html.tt-tools-on #displaybox .content { position: relative; }
+html.tt-tools-on #displaybox dl:has(.advancedview) {
   position: absolute; top: 0; right: 0; z-index: 6; margin: 0 !important; width: auto !important; max-width: none !important;
   display: flex; align-items: center; justify-content: flex-end; gap: 8px;
 }
-html.cc-tools-on #displaybox dl:has(.advancedview) > dt { display: none !important; }
-html.cc-tools-on #displaybox dl:has(.advancedview) > dd { width: auto !important; margin: 0 !important; float: none !important; display: flex; align-items: center; gap: 8px; }
+html.tt-tools-on #displaybox dl:has(.advancedview) > dt { display: none !important; }
+html.tt-tools-on #displaybox dl:has(.advancedview) > dd { width: auto !important; margin: 0 !important; float: none !important; display: flex; align-items: center; gap: 8px; }
 /* the floated on/off labels get the toggle's 24px line box so their text centres against the pill */
-html.cc-tools-on #displaybox dl:has(.advancedview) .switch-button-label { color: var(--cc-text-chip, #cfcfcf); font-weight: 600; line-height: 24px; height: 24px; }
-html.cc-tools-on #displaybox dl:has(.advancedview) .switch-button-background {
-  width: 44px !important; height: 24px !important; border-radius: var(--cc-radius-pill) !important; flex: 0 0 auto;
+html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-label { color: var(--tt-text-chip, #cfcfcf); font-weight: 600; line-height: 24px; height: 24px; }
+html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-background {
+  width: 44px !important; height: 24px !important; border-radius: var(--tt-radius-pill) !important; flex: 0 0 auto;
 }
-html.cc-tools-on #displaybox dl:has(.advancedview) .switch-button-button {
-  width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important; border-radius: var(--cc-radius-pill) !important;
+html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-button {
+  width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-tools-on #displaybox dl:has(.advancedview) .switch-button-background.checked .switch-button-button { left: 23px !important; }
+html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-background.checked .switch-button-button { left: 23px !important; }
 
 /* links: no native blue / underline on tools pages */
-html.cc-tools-on #displaybox a:not(.button) { color: var(--cc-accent-ink, #FCC419); text-decoration: none; }
-html.cc-tools-on #displaybox a:not(.button):hover { filter: brightness(1.14); text-decoration: none; }
+html.tt-tools-on #displaybox a:not(.button) { color: var(--tt-accent-ink, #FCC419); text-decoration: none; }
+html.tt-tools-on #displaybox a:not(.button):hover { filter: brightness(1.14); text-decoration: none; }
 
-/* The CC overlay dropdown (header.js ccToolsWrapSelect): chips in a floating elevated panel,
-   accent when selected and on hover. ccPositionTsel makes the panel position:fixed when it opens,
-   so it escapes the page's overflow clip. ccToolsWrapSelect wraps every native <select> on every
-   page, so the rules also apply under html.cc-popups-on, which is set whenever CC theming is on. */
-html.cc-tools-on #displaybox .cc-tsel,
-html.cc-popups-on #displaybox .cc-tsel { position: relative; display: inline-block; vertical-align: middle; }
+/* The TowerTorch overlay dropdown (header.js ttToolsWrapSelect): chips in a floating elevated panel,
+   accent when selected and on hover. ttPositionTsel makes the panel position:fixed when it opens,
+   so it escapes the page's overflow clip. ttToolsWrapSelect wraps every native <select> on every
+   page, so the rules also apply under html.tt-popups-on, which is set whenever TowerTorch theming is on. */
+html.tt-tools-on #displaybox .tt-tsel,
+html.tt-popups-on #displaybox .tt-tsel { position: relative; display: inline-block; vertical-align: middle; }
 /* the trigger rests neutral and takes the colour mode only on hover; the coloured items live in
    the panel */
-html.cc-tools-on #displaybox .cc-tsel-trigger,
-html.cc-popups-on #displaybox .cc-tsel-trigger {
+html.tt-tools-on #displaybox .tt-tsel-trigger,
+html.tt-popups-on #displaybox .tt-tsel-trigger {
   display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
   min-width: 240px; min-height: 34px; box-sizing: border-box;
-  background: var(--cc-tl-surface2, #232323); border-radius: var(--cc-radius-control);
-  padding: 4px 12px; color: var(--cc-text, #e6e6e6); cursor: pointer; transition: background .12s, color .12s;
+  background: var(--tt-tl-surface2, #232323); border-radius: var(--tt-radius-control);
+  padding: 4px 12px; color: var(--tt-text, #e6e6e6); cursor: pointer; transition: background .12s, color .12s;
 }
 /* The Dashboard tiles' four dropdowns (CPU timescale, network interface, view and timescale) are
    inline controls in a tile header, where the native selects are 38-119px wide. 240px would push
    the header past its cell, so they size to content with a floor that keeps a comfortable target. */
-html.cc-popups-on #displaybox table.dashboard .cc-tsel-trigger {
+html.tt-popups-on #displaybox table.dashboard .tt-tsel-trigger {
   min-width: 76px; width: max-content; max-width: 100%;
 }
-html.cc-popups-on #displaybox table.dashboard .cc-tsel { max-width: 100%; }
-html.cc-tools-on #displaybox .cc-tsel-trigger:hover,
-html.cc-tools-on #displaybox .cc-tsel.cc-open .cc-tsel-trigger,
-html.cc-popups-on #displaybox .cc-tsel-trigger:hover,
-html.cc-popups-on #displaybox .cc-tsel.cc-open .cc-tsel-trigger {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616)));
+html.tt-popups-on #displaybox table.dashboard .tt-tsel { max-width: 100%; }
+html.tt-tools-on #displaybox .tt-tsel-trigger:hover,
+html.tt-tools-on #displaybox .tt-tsel.tt-open .tt-tsel-trigger,
+html.tt-popups-on #displaybox .tt-tsel-trigger:hover,
+html.tt-popups-on #displaybox .tt-tsel.tt-open .tt-tsel-trigger {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616)));
 }
-html.cc-tools-on #displaybox .cc-tsel-trigger::after,
-html.cc-popups-on #displaybox .cc-tsel-trigger::after {
+html.tt-tools-on #displaybox .tt-tsel-trigger::after,
+html.tt-popups-on #displaybox .tt-tsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 4px;
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor;
 }
-html.cc-tools-on #displaybox .cc-tsel-panel,
-html.cc-popups-on #displaybox .cc-tsel-panel {
+html.tt-tools-on #displaybox .tt-tsel-panel,
+html.tt-popups-on #displaybox .tt-tsel-panel {
   display: none; position: absolute; z-index: 9999; margin-top: 4px; flex-direction: column; gap: 6px;
   padding: 8px; width: max-content; min-width: 180px; max-width: min(92vw, 460px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
-  background: #303030; border: none; border-radius: var(--cc-radius-card); box-shadow: var(--cc-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
+  background: #303030; border: none; border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
 }
-html.cc-tools-on #displaybox .cc-tsel.cc-open .cc-tsel-panel,
-html.cc-popups-on #displaybox .cc-tsel.cc-open .cc-tsel-panel { display: flex; }
-html.cc-tools-on #displaybox .cc-tsel.cc-tsel-disabled .cc-tsel-trigger,
-html.cc-popups-on #displaybox .cc-tsel.cc-tsel-disabled .cc-tsel-trigger { opacity: .5; cursor: not-allowed; }
-html.cc-tools-on #displaybox .cc-tsel-group,
-html.cc-popups-on #displaybox .cc-tsel-group { font-size: var(--cc-text-meta); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #9a9a9a; padding: 4px 12px 0; }
+html.tt-tools-on #displaybox .tt-tsel.tt-open .tt-tsel-panel,
+html.tt-popups-on #displaybox .tt-tsel.tt-open .tt-tsel-panel { display: flex; }
+html.tt-tools-on #displaybox .tt-tsel.tt-tsel-disabled .tt-tsel-trigger,
+html.tt-popups-on #displaybox .tt-tsel.tt-tsel-disabled .tt-tsel-trigger { opacity: .5; cursor: not-allowed; }
+html.tt-tools-on #displaybox .tt-tsel-group,
+html.tt-popups-on #displaybox .tt-tsel-group { font-size: var(--tt-text-meta); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #9a9a9a; padding: 4px 12px 0; }
 /* An option rests neutral, and the hovered and the chosen one wear the dropdown's one colour: the
-   .cc-tsel wrapper's --cc-rb-c from ccPaintRotate under rainbow, the accent otherwise. The panel
+   .tt-tsel wrapper's --tt-rb-c from ttPaintRotate under rainbow, the accent otherwise. The panel
    is dark on every theme, so the resting grey is too. */
-html.cc-tools-on #displaybox .cc-tsel-opt,
-html.cc-popups-on #displaybox .cc-tsel-opt {
+html.tt-tools-on #displaybox .tt-tsel-opt,
+html.tt-popups-on #displaybox .tt-tsel-opt {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--cc-radius-pill);
+  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
   background: rgba(128, 128, 128, .16); border: none; color: #e4e4e4; white-space: nowrap;
   transition: background .12s, color .12s, filter .12s;
 }
-html.cc-tools-on #displaybox .cc-tsel-opt:hover,
-html.cc-tools-on #displaybox .cc-tsel-opt.is-selected,
-html.cc-popups-on #displaybox .cc-tsel-opt:hover,
-html.cc-popups-on #displaybox .cc-tsel-opt.is-selected {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)));
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); box-shadow: none !important;
+html.tt-tools-on #displaybox .tt-tsel-opt:hover,
+html.tt-tools-on #displaybox .tt-tsel-opt.is-selected,
+html.tt-popups-on #displaybox .tt-tsel-opt:hover,
+html.tt-popups-on #displaybox .tt-tsel-opt.is-selected {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)));
+  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); box-shadow: none !important;
 }
-html.cc-tools-on #displaybox .cc-tsel-opt.is-selected:hover,
-html.cc-popups-on #displaybox .cc-tsel-opt.is-selected:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); }
-html.cc-tools-on #displaybox .cc-tsel-opt.is-disabled,
-html.cc-popups-on #displaybox .cc-tsel-opt.is-disabled { opacity: .45; cursor: not-allowed; }
+html.tt-tools-on #displaybox .tt-tsel-opt.is-selected:hover,
+html.tt-popups-on #displaybox .tt-tsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+html.tt-tools-on #displaybox .tt-tsel-opt.is-disabled,
+html.tt-popups-on #displaybox .tt-tsel-opt.is-disabled { opacity: .45; cursor: not-allowed; }
 /* Languages that are not installed yet get a dimmer fill rather than a border. They carry no
-   data-i, so ccPaintRotate and ccToolsSyncSel skip them; the trailing download glyph says that
+   data-i, so ttPaintRotate and ttToolsSyncSel skip them; the trailing download glyph says that
    choosing one installs something. */
-html.cc-popups-on #displaybox .cc-tsel-opt-avail {
-  background: var(--cc-surface-1, rgba(255, 255, 255, .04)) !important;
-  color: var(--cc-text-dim, #8a8a8a) !important; justify-content: space-between !important;
+html.tt-popups-on #displaybox .tt-tsel-opt-avail {
+  background: var(--tt-surface-1, rgba(255, 255, 255, .04)) !important;
+  color: var(--tt-text-dim, #8a8a8a) !important; justify-content: space-between !important;
 }
-html.cc-popups-on #displaybox .cc-tsel-opt-avail:hover {
-  background: var(--cc-chip, rgba(128, 128, 128, .18)) !important; color: var(--cc-text-chip, #cfcfcf) !important; filter: none !important;
+html.tt-popups-on #displaybox .tt-tsel-opt-avail:hover {
+  background: var(--tt-chip, rgba(128, 128, 128, .18)) !important; color: var(--tt-text-chip, #cfcfcf) !important; filter: none !important;
 }
-html.cc-popups-on #displaybox .cc-tsel-avail-dl { opacity: .7; font-size: var(--cc-text-meta); }
+html.tt-popups-on #displaybox .tt-tsel-avail-dl { opacity: .7; font-size: var(--tt-text-meta); }
 /* The locale flag is a bundled SVG (images/flags/<iso>.svg) because Windows renders flag emoji as
-   two letters. Sized like settings.js's .cc-flag-img. */
-html.cc-tools-on #displaybox .cc-lang-flag,
-html.cc-popups-on #displaybox .cc-lang-flag {
+   two letters. Sized like settings.js's .tt-flag-img. */
+html.tt-tools-on #displaybox .tt-lang-flag,
+html.tt-popups-on #displaybox .tt-lang-flag {
   display: inline-block; width: 20px; height: 14px; flex: 0 0 auto; object-fit: cover;
-  border-radius: calc(var(--cc-radius-control) / 4); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+  border-radius: calc(var(--tt-radius-control) / 4); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
 }
-html.cc-popups-on #displaybox .cc-tsel-avail-flag { display: inline-flex; flex: 0 0 auto; }
+html.tt-popups-on #displaybox .tt-tsel-avail-flag { display: inline-flex; flex: 0 0 auto; }
 
 /* The Notification Agents page hides its native <select> (Betreff, Beschreibung) behind a jQuery
-   UI dropdownchecklist, which ccToolsWrapSelect never sees. The widget gets the CC dropdown look:
-   a dark rounded trigger with a CC caret instead of the underline and gradient arrow, and a
+   UI dropdownchecklist, which ttToolsWrapSelect never sees. The widget gets the TowerTorch dropdown look:
+   a dark rounded trigger with a TowerTorch caret instead of the underline and gradient arrow, and a
    borderless elevated panel. */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector-wrapper {
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector-wrapper {
   background: none !important; border: none !important; box-shadow: none !important; overflow: visible !important;
-  border-radius: var(--cc-radius-control) !important; width: auto !important; height: auto !important; vertical-align: middle;
+  border-radius: var(--tt-radius-control) !important; width: auto !important; height: auto !important; vertical-align: middle;
 }
 /* A fixed 30px, flex-centred selector matches the text inputs next to it; a min-height with
    padding would grow it past its 25px row. */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector {
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector {
   position: relative; box-sizing: border-box !important; display: inline-flex !important; align-items: center;
-  background: var(--cc-tl-surface2, #232323) !important; color: var(--cc-text, #e6e6e6) !important;
-  border: none !important; box-shadow: none !important; border-radius: var(--cc-radius-control) !important;
+  background: var(--tt-tl-surface2, #232323) !important; color: var(--tt-text, #e6e6e6) !important;
+  border: none !important; box-shadow: none !important; border-radius: var(--tt-radius-control) !important;
   min-height: 0 !important; height: 30px !important; line-height: 1 !important; padding: 0 30px 0 12px !important; transition: background .12s, color .12s;
 }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector.ui-state-hover,
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector:hover,
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector:focus {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important;
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector.ui-state-hover,
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector:hover,
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector:focus {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
+  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important;
 }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector .ui-dropdownchecklist-text { color: inherit !important; }
-/* CC caret replaces the widget's gradient-drawn arrow */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector::after {
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector .ui-dropdownchecklist-text { color: inherit !important; }
+/* TowerTorch caret replaces the widget's gradient-drawn arrow */
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector::after {
   content: ""; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor;
 }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-selector .ui-icon { display: none !important; }
-/* The panel matches .cc-tsel-panel: 8px padding, 180px min-width, a flex column with 6px gaps, wider
+html.tt-tools-on #displaybox .ui-dropdownchecklist-selector .ui-icon { display: none !important; }
+/* The panel matches .tt-tsel-panel: 8px padding, 180px min-width, a flex column with 6px gaps, wider
    than its selector. The widget sets overflow-y:auto and a fixed height inline at init, so
    height:auto lets the roomier spacing fit without a scrollbar. */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-dropcontainer {
-  background: #303030 !important; border: none !important; border-radius: var(--cc-radius-card) !important;
-  box-shadow: var(--cc-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important;
+html.tt-tools-on #displaybox .ui-dropdownchecklist-dropcontainer {
+  background: #303030 !important; border: none !important; border-radius: var(--tt-radius-card) !important;
+  box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important;
   display: flex !important; flex-direction: column !important; gap: 6px !important;
   padding: 8px !important; min-width: 180px !important; max-width: min(92vw, 460px) !important;
   height: auto !important; max-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important;
 }
-/* Each row is a twin of .cc-tsel-opt: neutral at rest, and the list's one colour (its trigger's
-   --cc-rb-c from ccPaintRotate) on hover and while checked. The native
+/* Each row is a twin of .tt-tsel-opt: neutral at rest, and the list's one colour (its trigger's
+   --tt-rb-c from ttPaintRotate) on hover and while checked. The native
    checkbox is hidden and the chip colour marks the checked state. The widget's toggle handler sits
    on the item div (the label's for= is broken by a trailing slash), so the label ignores pointer
    events and every click reaches the div. */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item {
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item {
   display: flex !important; align-items: center; gap: 8px; justify-content: flex-start;
   line-height: 1.3; margin: 0 !important; padding: 6px 12px !important; cursor: pointer; white-space: nowrap;
   /* a native rule pins the item to a 22px border-box height, swallowing the padding; height:auto
-     lets it match the cc-tsel options (about 29px) */
+     lets it match the tt-tsel options (about 29px) */
   height: auto !important; min-height: 0 !important; box-sizing: border-box !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important;
   background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
   transition: filter .12s, background .12s, color .12s;
 }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-text { color: inherit !important; }
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-text { color: inherit !important; }
 /* Only the checkbox rows pass clicks through. The "...schließen" row keeps its handler, because
    the widget has no outside-click close and that row is the only way to shut the panel. */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:not(.ui-dropdownchecklist-close) .ui-dropdownchecklist-text { pointer-events: none !important; }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-hover,
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:hover,
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-active,
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked) {
-  background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important;
-  color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; box-shadow: none !important;
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(.ui-dropdownchecklist-close) .ui-dropdownchecklist-text { pointer-events: none !important; }
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-hover,
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:hover,
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-active,
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked) {
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
+  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; box-shadow: none !important;
 }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked):hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; }
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked):hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)) !important; }
 /* the explicitClose "...schließen" row carries no checkbox -> a muted, centred footer link, never a coloured chip */
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])) {
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])) {
   background: transparent !important; color: #9a9a9a !important; justify-content: center;
-  border-radius: var(--cc-radius-control) !important; font-size: var(--cc-text-meta); margin-top: 4px !important; filter: none !important;
+  border-radius: var(--tt-radius-control) !important; font-size: var(--tt-text-meta); margin-top: 4px !important; filter: none !important;
 }
-html.cc-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])):hover {
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])):hover {
   background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
 }
 
-/* CC turns each inline_help into an (i) bubble and hides the block inline, but the native Help
+/* TowerTorch turns each inline_help into an (i) bubble and hides the block inline, but the native Help
    button's jQuery .show() sets an inline display:block that would bring it back. The !important
    hide keeps converted blocks in their bubble. */
-html.cc-tools-on #displaybox blockquote.inline_help[data-cc-help],
-html.cc-tools-on #displaybox .inline-help[data-cc-help] { display: none !important; }
+html.tt-tools-on #displaybox blockquote.inline_help[data-tt-help],
+html.tt-tools-on #displaybox .inline-help[data-tt-help] { display: none !important; }
 
-/* the swatch before a colour field, which opens TowerTorch's colour picker (CCTheme.colorSwatch) */
-html.cc-tools-on #displaybox .cc-colpick {
+/* the swatch before a colour field, which opens TowerTorch's colour picker (TTTheme.colorSwatch) */
+html.tt-tools-on #displaybox .tt-colpick {
   width: 30px; height: 30px; padding: 3px; margin-right: 8px; flex: 0 0 auto; box-sizing: border-box;
-  background: linear-gradient(var(--cc-cp, transparent), var(--cc-cp, transparent)) content-box, var(--cc-tl-surface2, #232323) !important;
+  background: linear-gradient(var(--tt-cp, transparent), var(--tt-cp, transparent)) content-box, var(--tt-tl-surface2, #232323) !important;
   border: none !important; outline: none !important;
-  border-radius: var(--cc-radius-control) !important; cursor: pointer; vertical-align: middle;
+  border-radius: var(--tt-radius-control) !important; cursor: pointer; vertical-align: middle;
 }
-html.cc-tools-on #displaybox .cc-colpick::-webkit-color-swatch-wrapper { padding: 0; }
-html.cc-tools-on #displaybox .cc-colpick::-webkit-color-swatch { border: none; border-radius: calc(var(--cc-radius-control) / 2); }
+html.tt-tools-on #displaybox .tt-colpick::-webkit-color-swatch-wrapper { padding: 0; }
+html.tt-tools-on #displaybox .tt-colpick::-webkit-color-swatch { border: none; border-radius: calc(var(--tt-radius-control) / 2); }
 /* The swatch and the hex field share one row: this dd inherits Unraid's dd{flex-direction:column}
    and has no sibling field, so it would stack and stretch. The row is capped at 240px, the
    min-width of every themed dropdown trigger, so the hex field ends where the dropdowns do. */
-html.cc-tools-on #displaybox dd:has(> .cc-colpick) { flex-direction: row !important; align-items: center; max-width: 240px; }
-html.cc-tools-on #displaybox dd:has(> .cc-colpick) input[type="text"][data-cc-colpick] { flex: 1 1 auto; width: auto; min-width: 0; }
+html.tt-tools-on #displaybox dd:has(> .tt-colpick) { flex-direction: row !important; align-items: center; max-width: 240px; }
+html.tt-tools-on #displaybox dd:has(> .tt-colpick) input[type="text"][data-tt-colpick] { flex: 1 1 auto; width: auto; min-width: 0; }
 
 /* Every native checkbox on these pages and on the share edit page is GlimStone's switch, drawn on
    the checkbox itself, so the form still posts it and Unraid's handlers still read .checked: the
-   44x24 track and 18px knob of .cc-cb. The knob takes the fill's ink, since a white knob vanishes
+   44x24 track and 18px knob of .tt-cb. The knob takes the fill's ink, since a white knob vanishes
    on a light palette slot. */
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb),
-html.cc-tools-on #joel-start-defaults input[type="checkbox"]:not(.cc-cb),
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb) {
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb),
+html.tt-tools-on #joel-start-defaults input[type="checkbox"]:not(.tt-cb),
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb) {
   -webkit-appearance: none !important; appearance: none !important; position: relative; flex: none;
   width: 44px !important; height: 24px !important; box-sizing: border-box; padding: 0; margin: 0 6px 0 0;
-  border: none !important; outline: none !important; box-shadow: none; border-radius: var(--cc-radius-pill) !important;
-  background: var(--cc-toggle-track-off, #3a3a3a); accent-color: auto;
+  border: none !important; outline: none !important; box-shadow: none; border-radius: var(--tt-radius-pill) !important;
+  background: var(--tt-toggle-track-off, #3a3a3a); accent-color: auto;
   cursor: pointer; vertical-align: middle; transition: background-color .12s;
 }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb)::before,
-html.cc-tools-on #joel-start-defaults input[type="checkbox"]:not(.cc-cb)::before,
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb)::before {
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb)::before,
+html.tt-tools-on #joel-start-defaults input[type="checkbox"]:not(.tt-cb)::before,
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb)::before {
   content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
-  border-radius: var(--cc-radius-pill); background: var(--cc-toggle-knob, #fff); transition: left .15s;
+  border-radius: var(--tt-radius-pill); background: var(--tt-toggle-knob, #fff); transition: left .15s;
 }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb):hover:not(:disabled),
-html.cc-tools-on #joel-start-defaults input[type="checkbox"]:not(.cc-cb):hover:not(:disabled),
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb):hover:not(:disabled) { background: color-mix(in srgb, var(--cc-toggle-track-off, #3a3a3a) 85%, var(--cc-text, #e6e6e6)); }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb):checked,
-html.cc-tools-on #joel-start-defaults input[type="checkbox"]:not(.cc-cb):checked,
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb):checked { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb):checked:hover:not(:disabled),
-html.cc-tools-on #joel-start-defaults input[type="checkbox"]:not(.cc-cb):checked:hover:not(:disabled),
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb):checked:hover:not(:disabled) { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb):checked::before,
-html.cc-tools-on #joel-start-defaults input[type="checkbox"]:not(.cc-cb):checked::before,
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb):checked::before { left: 23px; background: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb):disabled,
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb):disabled { opacity: .45; cursor: not-allowed; }
-html.cc-tools-on #displaybox input[type="checkbox"]:not(.cc-cb):focus-visible,
-html.cc-shares-on.cc-on-share-detail #displaybox input[type="checkbox"]:not(.cc-cb):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent) !important; }
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):hover:not(:disabled),
+html.tt-tools-on #joel-start-defaults input[type="checkbox"]:not(.tt-cb):hover:not(:disabled),
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):hover:not(:disabled) { background: color-mix(in srgb, var(--tt-toggle-track-off, #3a3a3a) 85%, var(--tt-text, #e6e6e6)); }
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):checked,
+html.tt-tools-on #joel-start-defaults input[type="checkbox"]:not(.tt-cb):checked,
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):checked { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):checked:hover:not(:disabled),
+html.tt-tools-on #joel-start-defaults input[type="checkbox"]:not(.tt-cb):checked:hover:not(:disabled),
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):checked:hover:not(:disabled) { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):checked::before,
+html.tt-tools-on #joel-start-defaults input[type="checkbox"]:not(.tt-cb):checked::before,
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):checked::before { left: 23px; background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):disabled,
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):disabled { opacity: .45; cursor: not-allowed; }
+html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):focus-visible,
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
 /* radio buttons (Energiemodus): dark, borderless, round, with an accent dot when checked */
-html.cc-tools-on #displaybox input[type="radio"] {
+html.tt-tools-on #displaybox input[type="radio"] {
   -webkit-appearance: none; appearance: none; width: 18px; height: 18px; box-sizing: border-box; flex: none;
-  background: var(--cc-tl-surface2, #232323); border: none !important; outline: none !important; border-radius: 50%;
+  background: var(--tt-tl-surface2, #232323); border: none !important; outline: none !important; border-radius: 50%;
   cursor: pointer; vertical-align: middle; position: relative; margin: 0 6px 0 0;
 }
-html.cc-tools-on #displaybox input[type="radio"]:checked { background: var(--cc-accent, #FCC419); }
-html.cc-tools-on #displaybox input[type="radio"]:checked::after {
+html.tt-tools-on #displaybox input[type="radio"]:checked { background: var(--tt-accent, #FCC419); }
+html.tt-tools-on #displaybox input[type="radio"]:checked::after {
   content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--cc-accent-text, #161616); transform: translate(-50%, -50%);
+  background: var(--tt-accent-text, #161616); transform: translate(-50%, -50%);
 }
-/* native Unraid toggle switch -> CC pill that follows the colour mode when on */
-html.cc-tools-on #displaybox .switch-button-background { background: var(--cc-toggle-track-off, #3a3a3a) !important; border: none !important; outline: none !important; box-shadow: none !important; }
-html.cc-tools-on #displaybox .switch-button-background.checked { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; }
-/* multi / list selects -> CC dark fill, borderless (they stay native selects) */
-html.cc-tools-on #displaybox select[multiple],
-html.cc-tools-on #displaybox select[size]:not([size="1"]) { background: var(--cc-tl-surface2, #232323) !important; color: var(--cc-text, #e6e6e6) !important; border: none !important; outline: none !important; border-radius: var(--cc-radius-control) !important; padding: 4px 6px !important; }
-html.cc-tools-on #displaybox select[multiple] option:checked,
-html.cc-tools-on #displaybox select[size] option:checked { background: var(--cc-accent, #FCC419) linear-gradient(0deg, var(--cc-accent, #FCC419), var(--cc-accent, #FCC419)); color: var(--cc-accent-text, #161616); }
+/* native Unraid toggle switch -> TowerTorch pill that follows the colour mode when on */
+html.tt-tools-on #displaybox .switch-button-background { background: var(--tt-toggle-track-off, #3a3a3a) !important; border: none !important; outline: none !important; box-shadow: none !important; }
+html.tt-tools-on #displaybox .switch-button-background.checked { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; }
+/* multi / list selects -> TowerTorch dark fill, borderless (they stay native selects) */
+html.tt-tools-on #displaybox select[multiple],
+html.tt-tools-on #displaybox select[size]:not([size="1"]) { background: var(--tt-tl-surface2, #232323) !important; color: var(--tt-text, #e6e6e6) !important; border: none !important; outline: none !important; border-radius: var(--tt-radius-control) !important; padding: 4px 6px !important; }
+html.tt-tools-on #displaybox select[multiple] option:checked,
+html.tt-tools-on #displaybox select[size] option:checked { background: var(--tt-accent, #FCC419) linear-gradient(0deg, var(--tt-accent, #FCC419), var(--tt-accent, #FCC419)); color: var(--tt-accent-text, #161616); }
 /* no border lines on tools content */
-html.cc-tools-on #displaybox .Panel,
-html.cc-tools-on #displaybox .box,
-html.cc-tools-on #displaybox .content,
-html.cc-tools-on #displaybox form { border: none !important; outline: none !important; }
+html.tt-tools-on #displaybox .Panel,
+html.tt-tools-on #displaybox .box,
+html.tt-tools-on #displaybox .content,
+html.tt-tools-on #displaybox form { border: none !important; outline: none !important; }
 /* orange hint and notice cards keep the card but lose the border */
-html.cc-tools-on #displaybox blockquote:not(.inline_help),
-html.cc-tools-on #displaybox .notice,
-html.cc-tools-on #displaybox .callout,
-html.cc-tools-on #displaybox p.notice { border: none !important; border-left: none !important; outline: none !important; }
-/* section heading with an orange underline (e.g. BootParams "VM PASSTHROUGH") -> CC accent section badge */
-html.cc-tools-on #displaybox h2:not(.cc-done),
-html.cc-tools-on #displaybox h3.section,
-html.cc-tools-on #displaybox .section-title {
+html.tt-tools-on #displaybox blockquote:not(.inline_help),
+html.tt-tools-on #displaybox .notice,
+html.tt-tools-on #displaybox .callout,
+html.tt-tools-on #displaybox p.notice { border: none !important; border-left: none !important; outline: none !important; }
+/* section heading with an orange underline (e.g. BootParams "VM PASSTHROUGH") -> TowerTorch accent section badge */
+html.tt-tools-on #displaybox h2:not(.tt-done),
+html.tt-tools-on #displaybox h3.section,
+html.tt-tools-on #displaybox .section-title {
   border: none !important; border-bottom: none !important;
   display: inline-flex; align-items: center; width: fit-content;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616));
-  border-radius: var(--cc-radius-pill); padding: var(--cc-sec-pad, 0 12px); font-size: var(--cc-sec-fs); min-height: var(--cc-sec-h, 22px); box-sizing: border-box;
-  font-weight: var(--cc-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--cc-sec-ls, 1.2px); margin: 8px 0 12px !important;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616));
+  border-radius: var(--tt-radius-pill); padding: var(--tt-sec-pad, 0 12px); font-size: var(--tt-sec-fs); min-height: var(--tt-sec-h, 22px); box-sizing: border-box;
+  font-weight: var(--tt-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px); margin: 8px 0 12px !important;
 }

@@ -63,24 +63,24 @@
     return n;
   }
   // A control in the window's own look: Unraid dresses every <button>, so these are spans.
-  function control(cls, text) { return window.CCTheme.pressable(el("span", cls, text)); }
+  function control(cls, text) { return window.TTTheme.pressable(el("span", cls, text)); }
 
   // Under the rainbow, one position per option as on the settings page's tabs; otherwise the
   // sheet's accent.
   function hue(node, i) {
-    var C = window.CCTheme;
-    if (i != null && get("cc.theming", "1") !== "0" && get("cc.rainbow", "0") === "1") {
-      var c = C.rbColor(i, get("cc.accent", "#FCC419"));
-      node.style.setProperty("--cc-rb-c", c);
-      node.style.setProperty("--cc-rb-ct", C.idealText(c));
+    var C = window.TTTheme;
+    if (i != null && get("tt.theming", "1") !== "0" && get("tt.rainbow", "0") === "1") {
+      var c = C.rbColor(i, get("tt.accent", "#FCC419"));
+      node.style.setProperty("--tt-rb-c", c);
+      node.style.setProperty("--tt-rb-ct", C.idealText(c));
     } else {
-      node.style.removeProperty("--cc-rb-c");
-      node.style.removeProperty("--cc-rb-ct");
+      node.style.removeProperty("--tt-rb-c");
+      node.style.removeProperty("--tt-rb-ct");
     }
   }
   // TowerTorch's label mode for the buttons it draws, which the coin tiles follow.
   function labelMode() {
-    var m = document.documentElement.getAttribute("data-cc-labels-buttons");
+    var m = document.documentElement.getAttribute("data-tt-labels-buttons");
     return ["text", "textGlyph", "glyph", "reactive"].indexOf(m) < 0 ? "textGlyph" : m;
   }
 
@@ -88,24 +88,24 @@
      content. o.build fills the card and returns what takes the focus; o.onClose runs on every way
      out. */
   function openWindow(o) {
-    var win = el("div", "cc-win cc-dlg cc-give " + o.cls);
-    win.setAttribute("data-cc-give-labels", labelMode());
-    win.appendChild(el("div", "cc-win-title", o.title));
-    var card = el("div", "cc-win-card cc-give-body");
-    card.appendChild(el("p", "cc-win-text", T("Wirf deinem Ritter eine Münze zu: Sie deckt einen Teil der Kosten und hält das Projekt am Leben. Alles, was ich baue, kostet nichts und zeigt keine Werbung.", "Toss a coin to your knight: it covers part of the costs and keeps the project alive. Everything I build costs nothing and shows no ads.")));
-    card.appendChild(el("p", "cc-win-text cc-give-sub", o.intro));
+    var win = el("div", "tt-win tt-dlg tt-give " + o.cls);
+    win.setAttribute("data-tt-give-labels", labelMode());
+    win.appendChild(el("div", "tt-win-title", o.title));
+    var card = el("div", "tt-win-card tt-give-body");
+    card.appendChild(el("p", "tt-win-text", T("Wirf deinem Ritter eine Münze zu: Sie deckt einen Teil der Kosten und hält das Projekt am Leben. Alles, was ich baue, kostet nichts und zeigt keine Werbung.", "Toss a coin to your knight: it covers part of the costs and keeps the project alive. Everything I build costs nothing and shows no ads.")));
+    card.appendChild(el("p", "tt-win-text tt-give-sub", o.intro));
     win.appendChild(card);
     document.body.appendChild(win);
     var into = o.build(card, win);
-    var h = window.CCTheme.modal(win, { opener: o.opener, focus: into, onDismiss: function () { if (o.onClose) o.onClose(); h.close(); } });
+    var h = window.TTTheme.modal(win, { opener: o.opener, focus: into, onDismiss: function () { if (o.onClose) o.onClose(); h.close(); } });
   }
 
   function openCoffee(opener) {
     openWindow({
-      cls: "cc-give-coffee", title: "Buy Me a Coffee", opener: opener,
+      cls: "tt-give-coffee", title: "Buy Me a Coffee", opener: opener,
       intro: T("Die Zahlung läuft direkt bei Buy Me a Coffee. Ein Konto brauchst du nicht.", "The payment runs through Buy Me a Coffee. You do not need an account."),
       build: function (card) {
-        var frame = el("div", "cc-give-frame"), f = el("iframe");
+        var frame = el("div", "tt-give-frame"), f = el("iframe");
         f.src = COFFEE_WIDGET;
         f.title = "Buy Me a Coffee";
         f.allow = "payment";
@@ -118,11 +118,11 @@
   /* The house's horizontal selector: one option is picked, the arrow keys move the pick, and only
      the picked option is a tab stop. */
   function selector(label, items, pick) {
-    var node = el("div", "cc-give-seg"), opts = [];
+    var node = el("div", "tt-give-seg"), opts = [];
     node.setAttribute("role", "radiogroup");
     node.setAttribute("aria-label", label);
     items.forEach(function (it, i) {
-      var b = control("cc-give-opt", it[1]);
+      var b = control("tt-give-opt", it[1]);
       b.setAttribute("role", "radio");
       b.addEventListener("click", function () { set(it[0]); pick(it[0]); });
       b.addEventListener("keydown", function (e) {
@@ -152,8 +152,8 @@
     return { node: node, set: set, first: function () { return opts[0]; } };
   }
   function group(label, node) {
-    var g = el("div", "cc-give-group");
-    g.appendChild(el("div", "cc-give-lbl", label));
+    var g = el("div", "tt-give-group");
+    g.appendChild(el("div", "tt-give-lbl", label));
     g.appendChild(node);
     return g;
   }
@@ -166,7 +166,7 @@
   var DISABLED_FUNDING = "sepa,paylater,venmo,bancontact,blik,eps,giropay,ideal,mybank,p24,sofort";
   var paypalLoads = {};
   function loadPaypal(recurring) {
-    var ns = recurring ? "ccPaypalRecurring" : "ccPaypalOnce";
+    var ns = recurring ? "ttPaypalRecurring" : "ttPaypalOnce";
     if (paypalLoads[ns]) return paypalLoads[ns];
     var q = "client-id=" + encodeURIComponent(PAYPAL.clientId) + "&currency=" + PAYPAL.currency +
       "&intent=" + (recurring ? "subscription&vault=true" : "capture") + "&components=buttons&disable-funding=" + DISABLED_FUNDING;
@@ -193,7 +193,7 @@
     var freq = "once", preset = DEFAULT_AMOUNT, typed = "", buttons = null, run = 0;
     function amount() { return typed === "" ? preset : parseAmount(typed); }
     openWindow({
-      cls: "cc-give-paypal", title: "PayPal", opener: opener,
+      cls: "tt-give-paypal", title: "PayPal", opener: opener,
       intro: T("Die Zahlung läuft direkt bei PayPal, mit deinem PayPal-Konto oder mit Karte ohne Konto.", "The payment runs through PayPal, with your PayPal account or by card without one."),
       onClose: function () { run++; if (buttons) buttons.close().catch(function () {}); },
       build: function (card) {
@@ -212,7 +212,7 @@
           field.value = "";
           mark();
         });
-        var field = el("input", "cc-win-in cc-give-amount");
+        var field = el("input", "tt-win-in tt-give-amount");
         field.type = "text";
         field.inputMode = "decimal";
         field.autocomplete = "off";
@@ -231,28 +231,28 @@
         field.addEventListener("blur", function () {
           if (typed === "") return;
           var v = parseAmount(typed);
-          if (!v) { window.CCTheme.shake(field); return; }
+          if (!v) { window.TTTheme.shake(field); return; }
           if (AMOUNTS.indexOf(v) >= 0) { preset = v; typed = ""; }
           else typed = v;
           field.value = typed;
           mark();
         });
-        var col = el("div", "cc-give-amounts");
+        var col = el("div", "tt-give-amounts");
         col.appendChild(sums.node);
         col.appendChild(field);
         card.appendChild(group(amountLbl, col));
         function mark() {
           sums.set(preset);
           var ok = !!parseAmount(typed);
-          field.classList.toggle("cc-give-amount-ok", ok);
+          field.classList.toggle("tt-give-amount-ok", ok);
           field.setAttribute("aria-invalid", typed !== "" && !ok ? "true" : "false");
         }
         mark();
 
-        var box = el("div", "cc-give-pp"), state = el("p", "cc-give-state");
+        var box = el("div", "tt-give-pp"), state = el("p", "tt-give-state");
         card.appendChild(box);
         card.appendChild(state);
-        function say(cls, text) { state.className = "cc-give-state" + (cls ? " " + cls : ""); state.textContent = text; }
+        function say(cls, text) { state.className = "tt-give-state" + (cls ? " " + cls : ""); state.textContent = text; }
 
         function render() {
           var mine = ++run;
@@ -291,8 +291,8 @@
             }, handlers));
             return buttons.render(box).then(function () { if (mine === run) say("", ""); });
           }).catch(failed);
-          function thanks() { if (mine === run) say("cc-give-ok", T("Danke, deine Spende ist angekommen.", "Thank you, your donation went through.")); }
-          function failed() { if (mine === run) say("cc-give-err", T("PayPal ist gerade nicht erreichbar. Versuch es später noch einmal oder nimm einen anderen Weg.", "PayPal cannot be reached right now. Try again later or pick another way to give.")); }
+          function thanks() { if (mine === run) say("tt-give-ok", T("Danke, deine Spende ist angekommen.", "Thank you, your donation went through.")); }
+          function failed() { if (mine === run) say("tt-give-err", T("PayPal ist gerade nicht erreichbar. Versuch es später noch einmal oder nimm einen anderen Weg.", "PayPal cannot be reached right now. Try again later or pick another way to give.")); }
         }
         render();
         return often.first();
@@ -355,7 +355,7 @@
   function copyText(text, host) {
     if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
     return new Promise(function (resolve, reject) {
-      var ta = el("textarea", "cc-give-copysrc");
+      var ta = el("textarea", "tt-give-copysrc");
       ta.value = text;
       ta.setAttribute("readonly", "");
       host.appendChild(ta);
@@ -371,35 +371,35 @@
     var coin = COINS[0], net = coin.networks[0], copiedTimer = 0;
     var copyLbl = T("Kopieren", "Copy"), title = T("Mit Krypto spenden", "Donate with crypto");
     openWindow({
-      cls: "cc-give-crypto", title: title, opener: opener,
+      cls: "tt-give-crypto", title: title, opener: opener,
       intro: T("Wähle eine Währung und ein Netzwerk, dann scanne den Code oder kopiere die Adresse.", "Pick a currency and a network, then scan the code or copy the address."),
       onClose: function () { clearTimeout(copiedTimer); },
       build: function (card, win) {
-        var well = el("div", "cc-give-well");
-        var plate = el("div", "cc-give-qr");
-        var addr = el("p", "cc-give-addr");
+        var well = el("div", "tt-give-well");
+        var plate = el("div", "tt-give-qr");
+        var addr = el("p", "tt-give-addr");
         addr.dir = "ltr";
-        var nets = el("div", "cc-give-nets");
+        var nets = el("div", "tt-give-nets");
         nets.setAttribute("role", "listbox");
         nets.setAttribute("aria-label", T("Netzwerke", "Networks"));
-        var note = el("p", "cc-give-note", T("Kein Destination Tag und kein Memo nötig.", "No destination tag and no memo needed."));
-        var copy = window.CCTheme.labelled(control("cc-win-btn cc-give-copy"), "Copy", copyLbl);
+        var note = el("p", "tt-give-note", T("Kein Destination Tag und kein Memo nötig.", "No destination tag and no memo needed."));
+        var copy = window.TTTheme.labelled(control("tt-win-btn tt-give-copy"), "Copy", copyLbl);
         [plate, addr, nets, note, copy].forEach(function (n) { well.appendChild(n); });
-        var grid = el("div", "cc-give-coins");
+        var grid = el("div", "tt-give-coins");
         grid.setAttribute("role", "listbox");
         grid.setAttribute("aria-label", title);
         var tiles = COINS.map(function (c) {
-          var b = control("cc-give-coin");
+          var b = control("tt-give-coin");
           b.setAttribute("role", "option");
           b.setAttribute("aria-label", c.name + " (" + c.symbol + ")");
           b.setAttribute("data-tip", c.name);
-          b.style.setProperty("--cc-give-tile", c.tile[0]);
-          b.style.setProperty("--cc-give-tile-ink", c.tile[1]);
-          b.style.setProperty("--cc-give-mark", c.rest || c.tile[0]);
-          var m = el("span", "cc-give-coinmark");
+          b.style.setProperty("--tt-give-tile", c.tile[0]);
+          b.style.setProperty("--tt-give-tile-ink", c.tile[1]);
+          b.style.setProperty("--tt-give-mark", c.rest || c.tile[0]);
+          var m = el("span", "tt-give-coinmark");
           m.appendChild(coinMark(c.id));
           b.appendChild(m);
-          b.appendChild(el("span", "cc-give-tick", c.symbol));
+          b.appendChild(el("span", "tt-give-tick", c.symbol));
           // Always the new coin's first network, never a chain carried over.
           b.addEventListener("click", function () { coin = c; net = c.networks[0]; show(); });
           grid.appendChild(b);
@@ -411,15 +411,15 @@
         copy.addEventListener("click", function () {
           copyText(net.address, win).then(function () {
             // A copy that landed wears the tick of a passed test until it turns back.
-            window.CCTheme.labelled(copy, "Check", T("Kopiert", "Copied"));
+            window.TTTheme.labelled(copy, "Check", T("Kopiert", "Copied"));
             clearTimeout(copiedTimer);
-            copiedTimer = setTimeout(function () { window.CCTheme.labelled(copy, "Copy", copyLbl); }, 1500);
-          }, function () { window.CCTheme.shake(copy); });
+            copiedTimer = setTimeout(function () { window.TTTheme.labelled(copy, "Copy", copyLbl); }, 1500);
+          }, function () { window.TTTheme.shake(copy); });
         });
 
         function show() {
           clearTimeout(copiedTimer);
-          window.CCTheme.labelled(copy, "Copy", copyLbl);
+          window.TTTheme.labelled(copy, "Copy", copyLbl);
           // The address is never shortened: it is read back by eye before sending.
           addr.textContent = net.address;
           var shownFor = net.address;
@@ -431,7 +431,7 @@
           // Shown for a single network too, since it names the address's chain.
           nets.textContent = "";
           coin.networks.forEach(function (n, i) {
-            var chip = control("cc-give-net", n.name);
+            var chip = control("tt-give-net", n.name);
             chip.setAttribute("role", "option");
             chip.setAttribute("aria-selected", n === net ? "true" : "false");
             hue(chip, i);
@@ -451,5 +451,5 @@
     });
   }
 
-  window.CCGive = { coffee: openCoffee, paypal: openPaypal, crypto: openCrypto };
+  window.TTGive = { coffee: openCoffee, paypal: openPaypal, crypto: openCrypto };
 })();

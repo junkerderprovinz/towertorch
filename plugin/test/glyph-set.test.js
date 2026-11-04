@@ -1,5 +1,5 @@
 // Every glyph TowerTorch puts on a control of its own is a drawing from GlimStone's set
-// (reference/glyphs.json, the "Icon glyphs" section), rendered as inline SVG by CCTheme.glyph.
+// (reference/glyphs.json, the "Icon glyphs" section), rendered as inline SVG by TTTheme.glyph.
 // Unraid's and CA's own icons keep their Font Awesome, and so does the spinner in the process
 // window, which matches the one Unraid shows over a busy container. What can quietly break it:
 //   · a name asked for that the set does not hold, which renders an empty button
@@ -14,7 +14,7 @@ const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
-const theme = read('scripts/cc-theme.js');
+const theme = read('scripts/tt-theme.js');
 const start = theme.indexOf('var GLYPHS = {'), end = theme.indexOf('\n  };', start);
 const GLYPHS = new Function('return ' + theme.slice(start + 'var GLYPHS = '.length, end + 4) + ';')();
 const glyph = new Function('GLYPHS', /function glyph\(name\) \{[\s\S]*?\n  \}/.exec(theme)[0] + '\nreturn glyph;')(GLYPHS);
@@ -22,7 +22,7 @@ const glyph = new Function('GLYPHS', /function glyph\(name\) \{[\s\S]*?\n  \}/.e
 console.log('\nThe set');
 {
   const names = Object.keys(GLYPHS);
-  ok('cc-theme.js carries a set of drawings', names.length >= 20, names.length);
+  ok('tt-theme.js carries a set of drawings', names.length >= 20, names.length);
   for (const n of names) {
     const [vb, svg] = GLYPHS[n];
     const p = vb.split(/\s+/).map(Number);
@@ -30,20 +30,20 @@ console.log('\nThe set');
     ok(n + ': filled, never stroked', !/stroke/.test(svg) && !/fill="none"/.test(svg) && /^<(path|rect|circle)\b/.test(svg), svg.slice(0, 60));
   }
   const out = glyph('Play');
-  ok('glyph() draws in currentColor, so a glyph takes its control\'s ink', /^<svg class="cc-glyph" viewBox="0\.01 0\.019 13\.981 13\.981" fill="currentColor"/.test(out), out.slice(0, 90));
+  ok('glyph() draws in currentColor, so a glyph takes its control\'s ink', /^<svg class="tt-glyph" viewBox="0\.01 0\.019 13\.981 13\.981" fill="currentColor"/.test(out), out.slice(0, 90));
   ok('and hides it from a screen reader, which reads the control\'s own name', /aria-hidden="true"/.test(out) && /focusable="false"/.test(out));
   ok('an unknown name draws nothing rather than a broken image', glyph('Nope') === '');
   ok('glyph() is published for the area scripts', /glyph: glyph,/.test(theme));
   const tokens = read('sheets/TowerTorch.Tokens.css');
-  ok('a glyph is as tall as the text of what holds it', /\.cc-glyph \{[^}]*width: 1em; height: 1em;[^}]*fill: currentColor;/.test(tokens));
+  ok('a glyph is as tall as the text of what holds it', /\.tt-glyph \{[^}]*width: 1em; height: 1em;[^}]*fill: currentColor;/.test(tokens));
 }
 
 console.log('\nEvery name the scripts ask for is in the set');
 {
-  const files = ['scripts/docker.js', 'scripts/vms.js', 'scripts/header.js', 'scripts/settings.js', 'scripts/shares.js', 'scripts/cc-theme.js', 'scripts/sortreset.js'];
+  const files = ['scripts/docker.js', 'scripts/vms.js', 'scripts/header.js', 'scripts/settings.js', 'scripts/shares.js', 'scripts/tt-theme.js', 'scripts/sortreset.js'];
   const asked = new Map();
   const patterns = [
-    /\b(?:ccGlyph|glyph|ccGlyphEl)\("([A-Za-z]+)"/g,
+    /\b(?:ttGlyph|glyph|ttGlyphEl)\("([A-Za-z]+)"/g,
     /\bactBtn(?:Off)?\((?:[^"()]*\? )?"([A-Za-z]+)"(?: : "([A-Za-z]+)")?/g,
     /\bfolderActBtn\([^\n]*?, (?:hsOn \? )?"([A-Za-z]+)"(?: : "([A-Za-z]+)")?, t\(/g,
     /\bglyph: "([A-Za-z]+)"/g,
@@ -78,22 +78,22 @@ console.log('\nNo script builds a Font Awesome glyph of its own');
   }
   const tokens = read('sheets/TowerTorch.Tokens.css');
   ok('CA\'s pin button wears GlimStone\'s Pin as a mask, not a Font Awesome codepoint', !/fontAwesome/i.test(tokens.replace(/\/\*[\s\S]*?\*\//g, '')) && /\.pinPopup::before \{[^}]*mask: url\("data:image\/svg\+xml;utf8,<svg [^"]*viewBox='2\.25 2\.5 15\.5 15\.5'><path d='M6 2\.5h8v2/.test(tokens));
-  ok('the process window keeps the spinner that matches Unraid\'s', /\.cc-nchan-loader \.cc-nchan-fa \{/.test(read('sheets/TowerTorch.Header.css')));
+  ok('the process window keeps the spinner that matches Unraid\'s', /\.tt-nchan-loader \.tt-nchan-fa \{/.test(read('sheets/TowerTorch.Header.css')));
 }
 
 // An emoji draws its own colours and shape, so it ignores the control's ink and every colour mode.
 console.log('\nNo control wears an emoji');
 {
   const docker = read('scripts/docker.js');
-  ok('the move-to-folder button wears GlimStone\'s Folder', /btn\.innerHTML = ccGlyph\("Folder"\); btn\.setAttribute\("aria-label", t\("moveToFolder"\)\);/.test(docker));
+  ok('the move-to-folder button wears GlimStone\'s Folder', /btn\.innerHTML = ttGlyph\("Folder"\); btn\.setAttribute\("aria-label", t\("moveToFolder"\)\);/.test(docker));
   for (const f of ['scripts/docker.js', 'scripts/vms.js', 'scripts/header.js', 'scripts/settings.js', 'scripts/shares.js', 'scripts/plugins.js']) {
     const hits = read(f).split('\n').filter((l) => /el\("(button|span|a)", [^;]*"[^"]*[\u{1F300}-\u{1FAFF}]/u.test(l));
     ok(path.basename(f) + ': no emoji as a control\'s text', hits.length === 0, hits.map((l) => l.trim().slice(0, 90)).join(' | '));
   }
   // The text gear is a font's character, drawn in whatever shape and weight that font has.
-  ok('the gear button wears GlimStone\'s Gear', /function makeGear\(extra\) \{[^\n]*g\.innerHTML = ccGlyph\("Gear"\);/.test(docker));
+  ok('the gear button wears GlimStone\'s Gear', /function makeGear\(extra\) \{[^\n]*g\.innerHTML = ttGlyph\("Gear"\);/.test(docker));
   ok('with a name of its own, since its picture is hidden from a screen reader', /function makeGear\(extra\) \{[^\n]*g\.setAttribute\("aria-label", tip\);/.test(docker));
-  ok('so does the settings button in the gear menu', /var link = ccLabelled\(el\("a", "cc-btn cc-menu-settings"\), "Gear", /.test(docker));
+  ok('so does the settings button in the gear menu', /var link = ttLabelled\(el\("a", "tt-btn tt-menu-settings"\), "Gear", /.test(docker));
   for (const f of ['scripts/docker.js', 'scripts/vms.js', 'scripts/header.js', 'scripts/settings.js', 'scripts/shares.js', 'scripts/plugins.js']) {
     const hits = read(f).split('\n').filter((l) => /"[^"\n]*⚙/.test(l));
     ok(path.basename(f) + ': no text gear in a string', hits.length === 0, hits.map((l) => l.trim().slice(0, 90)).join(' | '));

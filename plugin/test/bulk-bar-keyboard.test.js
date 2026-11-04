@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { DIR } = require('./cascade');
 const src = fs.readFileSync(path.join(DIR, 'scripts/docker.js'), 'utf8');
-const theme = fs.readFileSync(path.join(DIR, 'scripts/cc-theme.js'), 'utf8');
+const theme = fs.readFileSync(path.join(DIR, 'scripts/tt-theme.js'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -37,23 +37,23 @@ function node(tag, cls, txt) {
 const body = node('body'); body.inDoc = true; doc.body = body;
 const markIn = (n) => { n.inDoc = true; n.children.forEach(markIn); };
 body.appendChild = function (c) { c.parent = body; body.children.push(c); markIn(c); return c; };
-const badge = node('span', 'cc-bulkmode-badge'); badge.inDoc = true; badge.parent = body;
-doc.querySelector = (sel) => (sel === '.cc-bulkmode-badge' ? badge : null);
+const badge = node('span', 'tt-bulkmode-badge'); badge.inDoc = true; badge.parent = body;
+doc.querySelector = (sel) => (sel === '.tt-bulkmode-badge' ? badge : null);
 doc.querySelectorAll = () => [];
 doc.documentElement = { classList: { toggle() {} } };
 
 const pressable = new Function(grabFn(theme, 'pressable') + '\nreturn pressable;')();
 const ran = [];
-const bulk = new Function('document', 'el', 'window', 'LANG', 'ccBulkRun', 'ccBulkRemove', 'ccBulkClearMarks',
-  'var ccBulkBarEl = null, ccBulkSel = {}, colorBulkButtons = function () {};\n' + grabFn(src, 'ccLabelled') + '\n' + grabFn(src, 'ccBulkBarSync') + '\nreturn { sync: ccBulkBarSync, pick: function (s) { ccBulkSel = s; } };')(
-  doc, node, { CCTheme: { pressable } }, 'de', (a) => ran.push(a), () => ran.push('remove'), () => {});
+const bulk = new Function('document', 'el', 'window', 'LANG', 'ttBulkRun', 'ttBulkRemove', 'ttBulkClearMarks',
+  'var ttBulkBarEl = null, ttBulkSel = {}, colorBulkButtons = function () {};\n' + grabFn(src, 'ttLabelled') + '\n' + grabFn(src, 'ttBulkBarSync') + '\nreturn { sync: ttBulkBarSync, pick: function (s) { ttBulkSel = s; } };')(
+  doc, node, { TTTheme: { pressable } }, 'de', (a) => ran.push(a), () => ran.push('remove'), () => {});
 const sync = bulk.sync;
 bulk.pick({ web: {}, db: {} });
 
 console.log('\nThe buttons answer the keyboard');
 sync();
-const bar = body.children.find((c) => c.className === 'cc-bulkbar');
-const btns = bar.children.filter((c) => /cc-bulkbtn/.test(c.className));
+const bar = body.children.find((c) => c.className === 'tt-bulkbar');
+const btns = bar.children.filter((c) => /tt-bulkbtn/.test(c.className));
 ok('four buttons', btns.length === 4, btns.map((b) => b.textContent).join(', '));
 ok('each is a button with a tab stop', btns.every((b) => b.attrs.role === 'button' && b.attrs.tabindex === '0'));
 btns[0].dispatch('keydown', { key: 'Enter' });

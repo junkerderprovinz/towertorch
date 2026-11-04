@@ -2,114 +2,114 @@
  *
  * Injected into every Unraid page through the Buttons hook, so every rule is scoped to one of two
  * classes that settingsgrid.js sets only on those two pages while the area is enabled:
- *   cc-settingsgrid-on        the tile badges (also gated on ccs.iconbg)
- *   cc-settingsgrid-heads-on  the category heading badges, which show in tint mode too
+ *   tt-settingsgrid-on        the tile badges (also gated on tts.iconbg)
+ *   tt-settingsgrid-heads-on  the category heading badges, which show in tint mode too
  *
  * Each tile's icon wrapper
  *   <div class="Panel"><a><span><i class="icon-x PanelIcon"></i></span>
  *                          <div class="PanelText">Label</div></a></div>
  * becomes a large tile with a centred contrast glyph, at the control radius. Colours come from
- * --cc-accent and --cc-accent-text (rainbow mode paints each badge inline); the native .Panels
+ * --tt-accent and --tt-accent-text (rainbow mode paints each badge inline); the native .Panels
  * grid stays. */
 
-/* Defaults for the cc.sgsize=m step (78px, Docker's logo tile: 62px content plus 8px padding);
+/* Defaults for the tt.sgsize=m step (78px, Docker's logo tile: 62px content plus 8px padding);
    settingsgrid.js paintGrid sets s (64/32), m (78/38) or l (96/46). */
-:root { --cc-sg-size: 78px; --cc-sg-glyph: 38px; }
+:root { --tt-sg-size: 78px; --tt-sg-glyph: 38px; }
 
 /* Align the content with the main menu bar. Each sheet injected through Buttons defines its own
-   --cc-align-left, because docker.css, which also has it, loads only on Docker and Plugins. 10px is
+   --tt-align-left, because docker.css, which also has it, loads only on Docker and Plugins. 10px is
    the native menu text edge, 15px the Header area's pill edge (12px tile padding plus the 3px
    margin of nav-item > a). Keyed on -heads-on so it applies in every tile mode; the heading reset
    below already zeroes div.title's own padding. */
-html.cc-settingsgrid-heads-on { --cc-align-left: 10px; }
-html.cc-settingsgrid-heads-on.cc-header-on { --cc-align-left: 15px; }
-html.cc-settingsgrid-heads-on:not(.Theme--sidebar) #displaybox { padding-left: var(--cc-align-left, 10px); }
+html.tt-settingsgrid-heads-on { --tt-align-left: 10px; }
+html.tt-settingsgrid-heads-on.tt-header-on { --tt-align-left: 15px; }
+html.tt-settingsgrid-heads-on:not(.Theme--sidebar) #displaybox { padding-left: var(--tt-align-left, 10px); }
 
 /* the tile's icon wrapper <span> -> the big square badge */
-html.cc-settingsgrid-on #displaybox .Panel > a > span {
+html.tt-settingsgrid-on #displaybox .Panel > a > span {
   display: inline-flex !important; align-items: center; justify-content: center;
   box-sizing: border-box !important; position: relative;
-  width: var(--cc-sg-size, 78px) !important; height: var(--cc-sg-size, 78px) !important;
+  width: var(--tt-sg-size, 78px) !important; height: var(--tt-sg-size, 78px) !important;
   margin: 0 auto !important; padding: 0 !important;
-  border-radius: var(--cc-radius-control) !important;
-  background: var(--cc-iconbg-color, var(--cc-accent, #FCC419)) !important;
+  border-radius: var(--tt-radius-control) !important;
+  background: var(--tt-iconbg-color, var(--tt-accent, #FCC419)) !important;
   transition: filter .12s;
 }
-html.cc-settingsgrid-on #displaybox .Panel > a:hover > span { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
+html.tt-settingsgrid-on #displaybox .Panel > a:hover > span { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 
 /* the icon-font glyph (icon-* / fa-*) inside the badge: big, contrast colour */
-html.cc-settingsgrid-on #displaybox .Panel > a > span > i.PanelIcon {
-  font-size: var(--cc-sg-glyph, 38px) !important; line-height: 1 !important;
-  color: var(--cc-iconbg-text, var(--cc-accent-text, #161616)) !important; margin: 0 !important; padding: 0 !important;
+html.tt-settingsgrid-on #displaybox .Panel > a > span > i.PanelIcon {
+  font-size: var(--tt-sg-glyph, 38px) !important; line-height: 1 !important;
+  color: var(--tt-iconbg-text, var(--tt-accent-text, #161616)) !important; margin: 0 !important; padding: 0 !important;
 }
 /* The tailscale ::after mask paints with currentColor, so the span carries the same ink as
    i.PanelIcon, and every i.PanelIcon colour rule in this sheet has a span twin next to it. Glyph
    tiles are unaffected because their i sets its own colour. */
-html.cc-settingsgrid-on #displaybox .Panel > a > span { color: var(--cc-iconbg-text, var(--cc-accent-text, #161616)) !important; }
+html.tt-settingsgrid-on #displaybox .Panel > a > span { color: var(--tt-iconbg-text, var(--tt-accent-text, #161616)) !important; }
 /* A raster logo cannot be tinted, so it is only scaled to the badge. This covers img.PanelImg and
    img.icon, which a category whose Tag= is a .png renders (PageBuilder.php:97). */
-html.cc-settingsgrid-on #displaybox .Panel > a > span > img {
-  width: var(--cc-sg-glyph, 38px) !important; height: var(--cc-sg-glyph, 38px) !important;
+html.tt-settingsgrid-on #displaybox .Panel > a > span > img {
+  width: var(--tt-sg-glyph, 38px) !important; height: var(--tt-sg-glyph, 38px) !important;
   max-width: none !important; object-fit: contain !important; margin: 0 !important;
 }
 /* Tailscale: the shipped tailscale.png flattens to a white blob on the badge, so it is replaced by
    the dots SVG as an alpha mask. The dots take the badge's contrast colour and the corner dots keep
    their 20% opacity. [href*="ailscale"] matches either case. */
-html.cc-settingsgrid-on #displaybox .Panel > a[href*="ailscale"] > span > img { display: none !important; }
-html.cc-settingsgrid-on #displaybox .Panel > a[href*="ailscale"] > span::after {
+html.tt-settingsgrid-on #displaybox .Panel > a[href*="ailscale"] > span > img { display: none !important; }
+html.tt-settingsgrid-on #displaybox .Panel > a[href*="ailscale"] > span::after {
   content: ""; display: block;   /* centred by the span's flex box */
-  width: var(--cc-sg-glyph, 38px); height: var(--cc-sg-glyph, 38px);
+  width: var(--tt-sg-glyph, 38px); height: var(--tt-sg-glyph, 38px);
   background-color: currentColor;   /* the span's ink, which matches i.PanelIcon in every mode */
   -webkit-mask: url(/plugins/towertorch/images/tailscale-dots.svg) center / contain no-repeat;
   mask: url(/plugins/towertorch/images/tailscale-dots.svg) center / contain no-repeat;
 }
 /* the favourites heart that Settings.page injects into the span on hover -> pin it to a
    corner so it doesn't sit under the glyph, and keep it readable on the accent badge */
-html.cc-settingsgrid-on #displaybox .Panel > a > span > i.favo {
+html.tt-settingsgrid-on #displaybox .Panel > a > span > i.favo {
   position: absolute !important; top: 3px !important; right: 4px !important; left: auto !important;
-  font-size: var(--cc-text-meta) !important; line-height: 1 !important; color: var(--cc-accent-text, #161616) !important; opacity: .8;
+  font-size: var(--tt-text-meta) !important; line-height: 1 !important; color: var(--tt-accent-text, #161616) !important; opacity: .8;
 }
 /* tile labels show on hover only, muted and not underlined; the fade keeps the grid calm and the
    reserved line height stops it from jumping */
-html.cc-settingsgrid-on #displaybox .Panel .PanelText {
+html.tt-settingsgrid-on #displaybox .Panel .PanelText {
   margin-top: 4px; opacity: 0; transition: opacity .12s;
-  color: var(--cc-text-chip, #cfcfcf) !important; text-decoration: none !important;
+  color: var(--tt-text-chip, #cfcfcf) !important; text-decoration: none !important;
 }
-html.cc-settingsgrid-on #displaybox .Panel:hover .PanelText,
-html.cc-settingsgrid-on #displaybox .Panel > a:focus-visible .PanelText { opacity: 1; }
-html.cc-settingsgrid-on #displaybox .Panel .PanelText a,
-html.cc-settingsgrid-on #displaybox .Panel a .PanelText,
-html.cc-settingsgrid-on #displaybox .Panel > a { color: var(--cc-text-chip, #cfcfcf) !important; text-decoration: none !important; }
+html.tt-settingsgrid-on #displaybox .Panel:hover .PanelText,
+html.tt-settingsgrid-on #displaybox .Panel > a:focus-visible .PanelText { opacity: 1; }
+html.tt-settingsgrid-on #displaybox .Panel .PanelText a,
+html.tt-settingsgrid-on #displaybox .Panel a .PanelText,
+html.tt-settingsgrid-on #displaybox .Panel > a { color: var(--tt-text-chip, #cfcfcf) !important; text-decoration: none !important; }
 
-/* Rainbow "active only" (cc.rbmode=active, html.cc-settingsgrid-rbneutral from paintGrid): there is
-   no active tile, so idle badges go grey and take the per-tile --cc-rb-c/--cc-rb-ct colour on
+/* Rainbow "active only" (tt.rbmode=active, html.tt-settingsgrid-rbneutral from paintGrid): there is
+   no active tile, so idle badges go grey and take the per-tile --tt-rb-c/--tt-rb-ct colour on
    hover. Same specificity as the base rules but later, so it wins once paintGrid clears the inline
-   background. Paired with .cc-settingsgrid-on because paintGrid does not clear -rbneutral when the
+   background. Paired with .tt-settingsgrid-on because paintGrid does not clear -rbneutral when the
    badges or the area turn off. A configured logo background colour wins over the rainbow colour on
    hover, for the background and the glyph alike. */
-html.cc-settingsgrid-on.cc-settingsgrid-rbneutral #displaybox .Panel > a > span { background: rgba(128, 128, 128, .18) !important; }
-html.cc-settingsgrid-on.cc-settingsgrid-rbneutral #displaybox .Panel > a > span > i.PanelIcon,
-html.cc-settingsgrid-on.cc-settingsgrid-rbneutral #displaybox .Panel > a > span { color: var(--cc-text-chip, #cfcfcf) !important; }   /* span = tailscale-mask ink twin */
-html.cc-settingsgrid-on.cc-settingsgrid-rbneutral #displaybox .Panel > a:hover > span {
-  background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-accent, #FCC419))) !important; filter: none !important;
+html.tt-settingsgrid-on.tt-settingsgrid-rbneutral #displaybox .Panel > a > span { background: rgba(128, 128, 128, .18) !important; }
+html.tt-settingsgrid-on.tt-settingsgrid-rbneutral #displaybox .Panel > a > span > i.PanelIcon,
+html.tt-settingsgrid-on.tt-settingsgrid-rbneutral #displaybox .Panel > a > span { color: var(--tt-text-chip, #cfcfcf) !important; }   /* span = tailscale-mask ink twin */
+html.tt-settingsgrid-on.tt-settingsgrid-rbneutral #displaybox .Panel > a:hover > span {
+  background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; filter: none !important;
 }
-html.cc-settingsgrid-on.cc-settingsgrid-rbneutral #displaybox .Panel > a:hover > span > i.PanelIcon,
-html.cc-settingsgrid-on.cc-settingsgrid-rbneutral #displaybox .Panel > a:hover > span {   /* span = tailscale-mask ink twin */
-  color: var(--cc-iconbg-text, var(--cc-rb-ct, var(--cc-accent-text, #161616))) !important;
+html.tt-settingsgrid-on.tt-settingsgrid-rbneutral #displaybox .Panel > a:hover > span > i.PanelIcon,
+html.tt-settingsgrid-on.tt-settingsgrid-rbneutral #displaybox .Panel > a:hover > span {   /* span = tailscale-mask ink twin */
+  color: var(--tt-iconbg-text, var(--tt-rb-ct, var(--tt-accent-text, #161616))) !important;
 }
 
 /* The same grey-at-rest, colour-on-hover behaviour for the global signal (shares.js sets
-   html.cc-shares-rbneutral on every page for cc.rbmode=active), so the tiles react when only that
+   html.tt-shares-rbneutral on every page for tt.rbmode=active), so the tiles react when only that
    class is present. Category headings are exempt: section heads always keep their colour. */
-html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a > span { background: rgba(128, 128, 128, .18) !important; }
-html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a > span > i.PanelIcon,
-html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a > span { color: var(--cc-text-chip, #cfcfcf) !important; }   /* span = tailscale-mask ink twin */
-html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a:hover > span {
-  background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-accent, #FCC419))) !important; filter: none !important;
+html.tt-shares-rbneutral.tt-settingsgrid-on #displaybox .Panel > a > span { background: rgba(128, 128, 128, .18) !important; }
+html.tt-shares-rbneutral.tt-settingsgrid-on #displaybox .Panel > a > span > i.PanelIcon,
+html.tt-shares-rbneutral.tt-settingsgrid-on #displaybox .Panel > a > span { color: var(--tt-text-chip, #cfcfcf) !important; }   /* span = tailscale-mask ink twin */
+html.tt-shares-rbneutral.tt-settingsgrid-on #displaybox .Panel > a:hover > span {
+  background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; filter: none !important;
 }
-html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a:hover > span > i.PanelIcon,
-html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a:hover > span {   /* span = tailscale-mask ink twin */
-  color: var(--cc-iconbg-text, var(--cc-rb-ct, var(--cc-accent-text, #161616))) !important;
+html.tt-shares-rbneutral.tt-settingsgrid-on #displaybox .Panel > a:hover > span > i.PanelIcon,
+html.tt-shares-rbneutral.tt-settingsgrid-on #displaybox .Panel > a:hover > span {   /* span = tailscale-mask ink twin */
+  color: var(--tt-iconbg-text, var(--tt-rb-ct, var(--tt-accent-text, #161616))) !important;
 }
 
 /* Category headings become filled accent badges. Both pages render through the tabless template
@@ -122,7 +122,7 @@ html.cc-shares-rbneutral.cc-settingsgrid-on #displaybox .Panel > a:hover > span 
    label is a bare text node, so span.left is the badge box. The <i> also carries class "title"
    (PageBuilder.php:99), hence div.title in every selector. Scoped to -heads-on, which stays set in
    both tile modes. */
-html.cc-settingsgrid-heads-on #displaybox div.title {
+html.tt-settingsgrid-heads-on #displaybox div.title {
   background: none !important; background-color: transparent !important;
   border-bottom: 0 !important; padding: 0 !important;
   letter-spacing: normal !important; font-size: inherit !important;
@@ -130,38 +130,38 @@ html.cc-settingsgrid-heads-on #displaybox div.title {
   margin: 13px 0 12px !important;
 }
 /* native .Panels bottom margin must not stack extra air onto the next title's top margin */
-html.cc-settingsgrid-heads-on #displaybox .Panels { margin-bottom: 0 !important; }
-html.cc-settingsgrid-heads-on #displaybox div.title:first-of-type { margin-top: 0 !important; }
-html.cc-settingsgrid-heads-on #displaybox div.title > span.right { flex: 0 0 auto; }   /* the empty right slot must not stretch the space-between row */
+html.tt-settingsgrid-heads-on #displaybox .Panels { margin-bottom: 0 !important; }
+html.tt-settingsgrid-heads-on #displaybox div.title:first-of-type { margin-top: 0 !important; }
+html.tt-settingsgrid-heads-on #displaybox div.title > span.right { flex: 0 0 auto; }   /* the empty right slot must not stretch the space-between row */
 
-/* span.left (glyph + label) -> the filled accent badge; same recipe as Shares' .cc-card-head */
-html.cc-settingsgrid-heads-on #displaybox div.title > span.left {
+/* span.left (glyph + label) -> the filled accent badge; same recipe as Shares' .tt-card-head */
+html.tt-settingsgrid-heads-on #displaybox div.title > span.left {
   display: inline-flex !important; align-items: center; gap: 6px !important;
   /* a category heading is a section badge, like every heading in the WebGUI */
-  min-height: var(--cc-sec-h, 22px) !important; box-sizing: border-box;
-  font-weight: var(--cc-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--cc-sec-ls, 1.2px); font-size: var(--cc-sec-fs); line-height: 1;
-  background: var(--cc-accent, #FCC419) !important; color: var(--cc-accent-text, #161616) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important;
-  padding: var(--cc-sec-pad, 0 12px) !important; margin: 0 !important;
+  min-height: var(--tt-sec-h, 22px) !important; box-sizing: border-box;
+  font-weight: var(--tt-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px); font-size: var(--tt-sec-fs); line-height: 1;
+  background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important;
+  padding: var(--tt-sec-pad, 0 12px) !important; margin: 0 !important;
   text-decoration: none !important; transition: filter .12s;
 }
 /* The glyph takes the badge ink and the gap replaces the native i.title margin. img.icon is what
    tab_title() renders for a category whose Tag= is a .png. */
-html.cc-settingsgrid-heads-on #displaybox div.title > span.left > i,
-html.cc-settingsgrid-heads-on #displaybox div.title > span.left > img.icon {
+html.tt-settingsgrid-heads-on #displaybox div.title > span.left > i,
+html.tt-settingsgrid-heads-on #displaybox div.title > span.left > img.icon {
   color: inherit !important; margin: 0 !important;
   display: inline-block !important;   /* the sidebar themes set .Theme--sidebar i.title{display:none};
                                          this selector's (1,3,3) beats their (0,2,1) */
 }
 /* A raster heading icon is as large as the glyphs beside it; paintHeads flattens it to the
    heading's ink, since color: inherit cannot reach a picture. */
-html.cc-settingsgrid-heads-on #displaybox div.title > span.left > img.icon {
+html.tt-settingsgrid-heads-on #displaybox div.title > span.left > img.icon {
   width: 1em !important; height: 1em !important; max-width: none !important; max-height: none !important; object-fit: contain !important;
 }
 /* System Information's 16px binoculars blur into a blob at glyph size, so Font Awesome's binoculars
    take their place, a glyph like every other heading carries. */
-html.cc-settingsgrid-heads-on #displaybox div.title > span.left > img.icon[src$="/systeminformation.png"] { display: none !important; }
-html.cc-settingsgrid-heads-on #displaybox div.title > span.left:has(> img.icon[src$="/systeminformation.png"])::before {
+html.tt-settingsgrid-heads-on #displaybox div.title > span.left > img.icon[src$="/systeminformation.png"] { display: none !important; }
+html.tt-settingsgrid-heads-on #displaybox div.title > span.left:has(> img.icon[src$="/systeminformation.png"])::before {
   content: "\f1e5"; font: normal normal normal 1em/1 FontAwesome;
 }
 
@@ -171,19 +171,19 @@ html.cc-settingsgrid-heads-on #displaybox div.title > span.left:has(> img.icon[s
 /* With the badges off, as tinted or as Unraid's own icons, the tile keeps its icon, and its name is
    not a blue text link standing under it: the whole tile is one button, its name in the neutral ink
    at rest, filled one step up under the pointer like any tile without a fill of its own. */
-html.cc-settingsgrid-heads-on:not(.cc-settingsgrid-on) #displaybox .Panel > a {
-  display: block; border-radius: var(--cc-radius-control); text-decoration: none !important;
-  color: var(--cc-text-chip, #cfcfcf) !important; transition: background-color .12s, color .12s;
+html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a {
+  display: block; border-radius: var(--tt-radius-control); text-decoration: none !important;
+  color: var(--tt-text-chip, #cfcfcf) !important; transition: background-color .12s, color .12s;
 }
-html.cc-settingsgrid-heads-on:not(.cc-settingsgrid-on) #displaybox .Panel > a .PanelText { color: inherit !important; text-decoration: none !important; }
-html.cc-settingsgrid-heads-on:not(.cc-settingsgrid-on) #displaybox .Panel > a:hover { background: var(--cc-hover-wash, rgba(128, 128, 128, .18)); color: var(--cc-text, #e6e6e6) !important; }
+html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a .PanelText { color: inherit !important; text-decoration: none !important; }
+html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a:hover { background: var(--tt-hover-wash, rgba(128, 128, 128, .18)); color: var(--tt-text, #e6e6e6) !important; }
 
-/* keyboard focus is the accent halo, as on every CC control: around the badge, or around the
+/* keyboard focus is the accent halo, as on every TowerTorch control: around the badge, or around the
    whole tile when there is none */
-html.cc-settingsgrid-on #displaybox .Panel > a:focus-visible { outline: none !important; box-shadow: none !important; }
-html.cc-settingsgrid-on #displaybox .Panel > a:focus-visible > span,
-html.cc-settingsgrid-heads-on:not(.cc-settingsgrid-on) #displaybox .Panel > a:focus-visible,
-html.cc-settingsgrid-heads-on #displaybox div.title a:focus-visible {
-  outline: none !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent) !important;
+html.tt-settingsgrid-on #displaybox .Panel > a:focus-visible { outline: none !important; box-shadow: none !important; }
+html.tt-settingsgrid-on #displaybox .Panel > a:focus-visible > span,
+html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a:focus-visible,
+html.tt-settingsgrid-heads-on #displaybox div.title a:focus-visible {
+  outline: none !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
 }
 

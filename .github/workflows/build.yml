@@ -35,16 +35,16 @@ jobs:
           set -euo pipefail
           BIN=plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/bin/towertorch
           echo "version: $("$BIN" version)"
-          CC_SOCK=/tmp/cc.sock CC_DATA_DIR=/tmp/ccdata CC_DOCKER_SOCK=/tmp/nope.sock "$BIN" serve &
+          TT_SOCK=/tmp/tt.sock TT_DATA_DIR=/tmp/ttdata TT_DOCKER_SOCK=/tmp/nope.sock "$BIN" serve &
           PID=$!
-          for _ in $(seq 1 20); do [ -S /tmp/cc.sock ] && break; sleep 0.5; done
+          for _ in $(seq 1 20); do [ -S /tmp/tt.sock ] && break; sleep 0.5; done
           # Matched on a captured copy: a pipe into `grep -q` dies of SIGPIPE under
           # pipefail when grep exits before curl has finished writing.
-          if ! grep -q ok <<< "$(curl -fsS --unix-socket /tmp/cc.sock http://localhost/api/health)"; then
+          if ! grep -q ok <<< "$(curl -fsS --unix-socket /tmp/tt.sock http://localhost/api/health)"; then
             echo "health check failed"; kill "$PID" || true; exit 1
           fi
           # The docker socket is bogus, so /api/state answers with a docker_error.
-          grep -q docker_error <<< "$(curl -fsS --unix-socket /tmp/cc.sock http://localhost/api/state)"
+          grep -q docker_error <<< "$(curl -fsS --unix-socket /tmp/tt.sock http://localhost/api/state)"
           echo "supervisor booted and served /api/health and /api/state"
           kill "$PID" || true
 
@@ -55,28 +55,28 @@ jobs:
         run: |
           set -euo pipefail
           BIN=plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/bin/towertorch
-          CC_SOCK=/tmp/cc-int.sock CC_DATA_DIR=/tmp/ccdata-int "$BIN" serve &
-          for _ in $(seq 1 20); do [ -S /tmp/cc-int.sock ] && break; sleep 0.5; done
-          CURL="curl -fsS --unix-socket /tmp/cc-int.sock"
-          docker run -d --name cc_mem --memory 1g busybox sleep 300
-          docker run -d --name cc_quota --cpu-quota 150000 --cpu-period 100000 busybox sleep 300
-          docker run -d --name cc_plain busybox sleep 300
+          TT_SOCK=/tmp/tt-int.sock TT_DATA_DIR=/tmp/ttdata-int "$BIN" serve &
+          for _ in $(seq 1 20); do [ -S /tmp/tt-int.sock ] && break; sleep 0.5; done
+          CURL="curl -fsS --unix-socket /tmp/tt-int.sock"
+          docker run -d --name tt_mem --memory 1g busybox sleep 300
+          docker run -d --name tt_quota --cpu-quota 150000 --cpu-period 100000 busybox sleep 300
+          docker run -d --name tt_plain busybox sleep 300
           # 4G clears the auto swap cap docker stored for the 1g container.
-          $CURL -X POST -d '{"name":"cc_mem","mem_bytes":4294967296}' http://localhost/api/limits
-          [ "$(docker inspect -f '{{.HostConfig.Memory}}' cc_mem)" = "4294967296" ] || { echo "RAM raise failed"; exit 1; }
+          $CURL -X POST -d '{"name":"tt_mem","mem_bytes":4294967296}' http://localhost/api/limits
+          [ "$(docker inspect -f '{{.HostConfig.Memory}}' tt_mem)" = "4294967296" ] || { echo "RAM raise failed"; exit 1; }
           # Removing the cap sets host RAM, which has to exceed any stored swap cap.
-          $CURL -X POST -d '{"name":"cc_mem","remove_mem":true}' http://localhost/api/limits
-          M=$(docker inspect -f '{{.HostConfig.Memory}}' cc_mem); [ "$M" -gt 4294967296 ] || { echo "RAM remove failed (Memory=$M)"; exit 1; }
+          $CURL -X POST -d '{"name":"tt_mem","remove_mem":true}' http://localhost/api/limits
+          M=$(docker inspect -f '{{.HostConfig.Memory}}' tt_mem); [ "$M" -gt 4294967296 ] || { echo "RAM remove failed (Memory=$M)"; exit 1; }
           # A quota-family container takes the CPU limit as quota = cpus × period.
-          $CURL -X POST -d '{"name":"cc_quota","nano_cpus":2500000000}' http://localhost/api/limits
-          [ "$(docker inspect -f '{{.HostConfig.CpuQuota}}' cc_quota)" = "250000" ] || { echo "CPU quota-family failed"; exit 1; }
+          $CURL -X POST -d '{"name":"tt_quota","nano_cpus":2500000000}' http://localhost/api/limits
+          [ "$(docker inspect -f '{{.HostConfig.CpuQuota}}' tt_quota)" = "250000" ] || { echo "CPU quota-family failed"; exit 1; }
           # A plain container takes NanoCpus and the cpuset.
-          $CURL -X POST -d '{"name":"cc_plain","nano_cpus":1500000000,"cpuset_cpus":"0-1"}' http://localhost/api/limits
-          [ "$(docker inspect -f '{{.HostConfig.NanoCpus}}' cc_plain)" = "1500000000" ] || { echo "CPU NanoCpus failed"; exit 1; }
-          [ "$(docker inspect -f '{{.HostConfig.CpusetCpus}}' cc_plain)" = "0-1" ] || { echo "cpuset failed"; exit 1; }
+          $CURL -X POST -d '{"name":"tt_plain","nano_cpus":1500000000,"cpuset_cpus":"0-1"}' http://localhost/api/limits
+          [ "$(docker inspect -f '{{.HostConfig.NanoCpus}}' tt_plain)" = "1500000000" ] || { echo "CPU NanoCpus failed"; exit 1; }
+          [ "$(docker inspect -f '{{.HostConfig.CpusetCpus}}' tt_plain)" = "0-1" ] || { echo "cpuset failed"; exit 1; }
           # A container that was never capped has a stored swap of 0, which a raw compare misreads.
-          $CURL -X POST -d '{"name":"cc_plain","mem_bytes":2147483648}' http://localhost/api/limits
-          [ "$(docker inspect -f '{{.HostConfig.Memory}}' cc_plain)" = "2147483648" ] || { echo "first RAM cap failed"; exit 1; }
+          $CURL -X POST -d '{"name":"tt_plain","mem_bytes":2147483648}' http://localhost/api/limits
+          [ "$(docker inspect -f '{{.HostConfig.Memory}}' tt_plain)" = "2147483648" ] || { echo "first RAM cap failed"; exit 1; }
           echo "limits set, raised and removed against real dockerd"
 
       - name: Download policing in a real netns
@@ -84,30 +84,30 @@ jobs:
           set -e
           CID=$(docker run -d --rm alpine:3 sleep 120)
           PID=$(docker inspect -f '{{.State.Pid}}' "$CID")
-          sudo nsenter -t "$PID" -n iptables -w -N CC_DL
-          sudo nsenter -t "$PID" -n iptables -w -A CC_DL -m hashlimit --hashlimit-above 5000000b/s --hashlimit-burst 10000000b --hashlimit-name ccdl -j DROP
-          sudo nsenter -t "$PID" -n iptables -w -I INPUT -i eth0 -j CC_DL
-          sudo nsenter -t "$PID" -n iptables -w -S CC_DL | grep -q hashlimit
-          sudo nsenter -t "$PID" -n iptables -w -S INPUT | grep -q CC_DL
-          sudo nsenter -t "$PID" -n iptables -w -D INPUT -i eth0 -j CC_DL
-          sudo nsenter -t "$PID" -n iptables -w -F CC_DL
-          sudo nsenter -t "$PID" -n iptables -w -X CC_DL
+          sudo nsenter -t "$PID" -n iptables -w -N TT_DL
+          sudo nsenter -t "$PID" -n iptables -w -A TT_DL -m hashlimit --hashlimit-above 5000000b/s --hashlimit-burst 10000000b --hashlimit-name ttdl -j DROP
+          sudo nsenter -t "$PID" -n iptables -w -I INPUT -i eth0 -j TT_DL
+          sudo nsenter -t "$PID" -n iptables -w -S TT_DL | grep -q hashlimit
+          sudo nsenter -t "$PID" -n iptables -w -S INPUT | grep -q TT_DL
+          sudo nsenter -t "$PID" -n iptables -w -D INPUT -i eth0 -j TT_DL
+          sudo nsenter -t "$PID" -n iptables -w -F TT_DL
+          sudo nsenter -t "$PID" -n iptables -w -X TT_DL
           docker rm -f "$CID"
           echo "hashlimit rules held in a container netns on a real kernel"
 
       - name: Download policing throughput
         run: |
           set -e
-          mkdir -p /tmp/ccserve && head -c 8000000 /dev/urandom > /tmp/ccserve/blob
-          (cd /tmp/ccserve && python3 -m http.server 8099 >/dev/null 2>&1 &)
+          mkdir -p /tmp/ttserve && head -c 8000000 /dev/urandom > /tmp/ttserve/blob
+          (cd /tmp/ttserve && python3 -m http.server 8099 >/dev/null 2>&1 &)
           sleep 1
           CID=$(docker run -d --rm alpine:3 sleep 300)
           PID=$(docker inspect -f '{{.State.Pid}}' "$CID")
           HOSTIP=$(docker network inspect bridge -f '{{(index .IPAM.Config 0).Gateway}}')
           docker exec "$CID" wget -q -O /dev/null "http://$HOSTIP:8099/blob"
-          sudo nsenter -t "$PID" -n iptables -w -N CC_DL
-          sudo nsenter -t "$PID" -n iptables -w -A CC_DL -m hashlimit --hashlimit-above 250000b/s --hashlimit-burst 500000b --hashlimit-name ccdl -j DROP
-          sudo nsenter -t "$PID" -n iptables -w -I INPUT -i eth0 -j CC_DL
+          sudo nsenter -t "$PID" -n iptables -w -N TT_DL
+          sudo nsenter -t "$PID" -n iptables -w -A TT_DL -m hashlimit --hashlimit-above 250000b/s --hashlimit-burst 500000b --hashlimit-name ttdl -j DROP
+          sudo nsenter -t "$PID" -n iptables -w -I INPUT -i eth0 -j TT_DL
           T0=$(date +%s%N)
           docker exec "$CID" timeout 120 wget -q -O /dev/null "http://$HOSTIP:8099/blob"
           T1=$(date +%s%N)

@@ -52,11 +52,11 @@ function grabFn(name) {
   for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } }
   throw new Error('unbalanced function: ' + name);
 }
-// The colour field comes from cc-theme.js, which the page reads as window.CCTheme.colorPicker.
-const theme = fs.readFileSync(path.join(DIR, 'cc-theme.js'), 'utf8');
+// The colour field comes from tt-theme.js, which the page reads as window.TTTheme.colorPicker.
+const theme = fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8');
 function grabTheme(name) {
   const i = theme.indexOf('function ' + name + '(');
-  if (i < 0) throw new Error('function not found in cc-theme.js: ' + name);
+  if (i < 0) throw new Error('function not found in tt-theme.js: ' + name);
   let d = 0;
   for (let k = theme.indexOf('{', i); k < theme.length; k++) { if (theme[k] === '{') d++; else if (theme[k] === '}') { d--; if (!d) return theme.slice(i, k + 1); } }
   throw new Error('unbalanced function: ' + name);
@@ -70,7 +70,7 @@ const build = new Function('document', 'window', 'jumpTo',
   'var PRESETS = ["#FCC419", "#1D99F3"], colourField = colorPicker;\n' + grabFn('logoToggles') + '\n' +
   'return { logoToggles: logoToggles };'
 )(document, {}, (sec, title) => jumps.push([sec, title]));
-const lockOf = (into) => into.children.find((c) => c.classList.contains('cc-set-locked'));
+const lockOf = (into) => into.children.find((c) => c.classList.contains('tt-set-locked'));
 
 // An in-memory io in the shape the real call sites pass.
 function makeIo(extra) {
@@ -103,7 +103,7 @@ console.log('\nAdopting takes over the colours, and the switches stay');
   const io = makeIo({ hideAdoptRow: true });
   const h = build.logoToggles(into, io);
   const lock = lockOf(into);
-  const fields = into.children.filter((c) => c.classList.contains('cc-set-fieldrow'));
+  const fields = into.children.filter((c) => c.classList.contains('tt-set-fieldrow'));
 
   ok('not adopting: the Logo tiles and Tint icons rows show', !h.bgToggle.parentNode.hidden && !h.tintToggle.parentNode.hidden);
   ok('not adopting: the line is hidden', lock && lock.hidden === true);
@@ -137,7 +137,7 @@ console.log('\nA picker or the strength under a switch that is off is left out')
   const io = makeIo();
   const h = build.logoToggles(into, io);
   // each colour field stands in a row of its own beside its name
-  const pickers = into.children.filter((c) => c.classList.contains('cc-set-fieldrow') && c.children.some((k) => k.classList.contains('cc-set-pickrow')));
+  const pickers = into.children.filter((c) => c.classList.contains('tt-set-fieldrow') && c.children.some((k) => k.classList.contains('tt-set-pickrow')));
   ok('both colour fields are built, each with the presets and the hex field', pickers.length === 2 && pickers.every((p) => p.children[1].children[1].children.length === 3));
   ok('both switches off: no picker and no strength', pickers.every((p) => p.hidden) && h.strInput.parentNode.hidden);
   io._state.tint = true; h.sync();

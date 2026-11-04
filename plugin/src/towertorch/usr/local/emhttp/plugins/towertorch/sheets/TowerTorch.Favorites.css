@@ -1,46 +1,46 @@
 /* TowerTorch: the /Favorites tiles, matching the Docker and Settings tiles.
  *
  * Loaded globally through the Buttons hook (TowerTorch.Favorites.page) and gated on
- * html.cc-favorites-on, which favorites.js sets only on /Favorites. MyFavorites.page uses the same
+ * html.tt-favorites-on, which favorites.js sets only on /Favorites. MyFavorites.page uses the same
  * .Panel > a > span, .PanelText and i.favo markup as the settings grid, so these are scoped copies
  * of the tile rules in TowerTorch.SettingsGrid.css.
  */
 
-/* The cc.sgsize=m step (78px, Docker's logo tile). favorites.js sets s (64/32), m (78/38) or
-   l (96/46) from the same cc.sgsize key settingsgrid.js uses. */
-:root { --cc-fav-size: 78px; --cc-fav-glyph: 38px; }
+/* The tt.sgsize=m step (78px, Docker's logo tile). favorites.js sets s (64/32), m (78/38) or
+   l (96/46) from the same tt.sgsize key settingsgrid.js uses. */
+:root { --tt-fav-size: 78px; --tt-fav-glyph: 38px; }
 
 /* align with the main menu bar, as in SettingsGrid.css */
-html.cc-favorites-on { --cc-align-left: 10px; }
-html.cc-favorites-on.cc-header-on { --cc-align-left: 15px; }
-html.cc-favorites-on:not(.Theme--sidebar) #displaybox { padding-left: var(--cc-align-left, 10px); }
+html.tt-favorites-on { --tt-align-left: 10px; }
+html.tt-favorites-on.tt-header-on { --tt-align-left: 15px; }
+html.tt-favorites-on:not(.Theme--sidebar) #displaybox { padding-left: var(--tt-align-left, 10px); }
 /* hide the "❤ Meine Favoriten" title bar; the tiles speak for themselves */
-html.cc-favorites-on #displaybox .content > div.title { display: none !important; }
+html.tt-favorites-on #displaybox .content > div.title { display: none !important; }
 
 /* each favourite tile's icon wrapper <span> -> big square accent badge */
-html.cc-favorites-on #displaybox .Panel > a > span {
+html.tt-favorites-on #displaybox .Panel > a > span {
   display: inline-flex !important; align-items: center; justify-content: center;
   box-sizing: border-box !important; position: relative;
-  width: var(--cc-fav-size, 78px) !important; height: var(--cc-fav-size, 78px) !important;
+  width: var(--tt-fav-size, 78px) !important; height: var(--tt-fav-size, 78px) !important;
   margin: 0 auto !important; padding: 0 !important;
-  border-radius: var(--cc-radius-control) !important;
-  background: var(--cc-iconbg-color, var(--cc-accent, #FCC419)) !important;
+  border-radius: var(--tt-radius-control) !important;
+  background: var(--tt-iconbg-color, var(--tt-accent, #FCC419)) !important;
   transition: filter .12s;
 }
-html.cc-favorites-on #displaybox .Panel > a:hover > span { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
-html.cc-favorites-on #displaybox .Panel > a > span > i.PanelIcon {
-  font-size: var(--cc-fav-glyph, 38px) !important; line-height: 1 !important;
-  color: var(--cc-iconbg-text, var(--cc-accent-text, #161616)) !important; margin: 0 !important; padding: 0 !important;
+html.tt-favorites-on #displaybox .Panel > a:hover > span { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-favorites-on #displaybox .Panel > a > span > i.PanelIcon {
+  font-size: var(--tt-fav-glyph, 38px) !important; line-height: 1 !important;
+  color: var(--tt-iconbg-text, var(--tt-accent-text, #161616)) !important; margin: 0 !important; padding: 0 !important;
 }
-html.cc-favorites-on #displaybox .Panel > a > span > img {
-  width: var(--cc-fav-glyph, 38px) !important; height: var(--cc-fav-glyph, 38px) !important;
+html.tt-favorites-on #displaybox .Panel > a > span > img {
+  width: var(--tt-fav-glyph, 38px) !important; height: var(--tt-fav-glyph, 38px) !important;
   max-width: none !important; object-fit: contain !important; margin: 0 !important;
 }
 /* the fa-trash-o 'remove favorite' icon MyFavorites.page injects into the span on hover */
-html.cc-favorites-on #displaybox .Panel > a > span > i.favo {
+html.tt-favorites-on #displaybox .Panel > a > span > i.favo {
   position: absolute !important; top: 3px !important; right: 4px !important; left: auto !important;
-  font-size: var(--cc-text-meta) !important; line-height: 1 !important; color: var(--cc-accent-text, #161616) !important; opacity: .8;
+  font-size: var(--tt-text-meta) !important; line-height: 1 !important; color: var(--tt-accent-text, #161616) !important; opacity: .8;
 }
-html.cc-favorites-on #displaybox .Panel .PanelText { margin-top: 4px; }
+html.tt-favorites-on #displaybox .Panel .PanelText { margin-top: 4px; }
 /* empty state (MyFavorites.page #nofavs h3) */
-html.cc-favorites-on #displaybox #nofavs { color: var(--cc-accent-ink, #FCC419); }
+html.tt-favorites-on #displaybox #nofavs { color: var(--tt-accent-ink, #FCC419); }

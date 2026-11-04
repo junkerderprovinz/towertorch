@@ -48,7 +48,7 @@ function fnBody(name) {
 }
 
 console.log('\nThe two-toggle keys are gone from settings.js');
-ok('no reference to cc.icontintrainbow is left', !/icontintrainbow/.test(code));
+ok('no reference to tt.icontintrainbow is left', !/icontintrainbow/.test(code));
 ok('no reference to the per-control getters and setters is left', !/getBgRainbow|setBgRainbow|getTintRainbow|setTintRainbow/.test(code));
 
 console.log('\nThe two switches are named for what they do, in both languages');
@@ -132,12 +132,12 @@ console.log('\nAll three logoToggles() call sites wire real getters and setters'
   // All three read the global key, without the per-area gate, which is what makes
   // sync()'s dimming mean the same thing on every card.
   sites.forEach((body, i) => {
-    ok(labels[i] + ': getAdopt reads the global cc.iconbgrainbow key', /getAdopt: function \(\) \{ return get\("cc\.iconbgrainbow", "0"\) === "1"; \}/.test(body), body);
+    ok(labels[i] + ': getAdopt reads the global tt.iconbgrainbow key', /getAdopt: function \(\) \{ return get\("tt\.iconbgrainbow", "0"\) === "1"; \}/.test(body), body);
   });
   // and marks the one-time tile step done, so a later flip never has its switches turned on
-  const setsAdopt = /setAdopt: function \(v\) \{ set\("cc\.iconbgrainbow", v \? "1" : "0"\); set\("cc\.iconadoptsplit", "1"\); \}/;
-  ok(labels[0] + ': setAdopt writes the global cc.iconbgrainbow key', setsAdopt.test(sites[0]), sites[0]);
-  ok(labels[1] + ': setAdopt writes the global cc.iconbgrainbow key', setsAdopt.test(sites[1]), sites[1]);
+  const setsAdopt = /setAdopt: function \(v\) \{ set\("tt\.iconbgrainbow", v \? "1" : "0"\); set\("tt\.iconadoptsplit", "1"\); \}/;
+  ok(labels[0] + ': setAdopt writes the global tt.iconbgrainbow key', setsAdopt.test(sites[0]), sites[0]);
+  ok(labels[1] + ': setAdopt writes the global tt.iconbgrainbow key', setsAdopt.test(sites[1]), sites[1]);
   ok(labels[2] + ': setAdopt is a no-op, no UI reaching it', /setAdopt: function \(\) \{\}/.test(sites[2]), sites[2]);
   ok(labels[2] + ': setAdopt writes no area-local key', !/set\(P \+ "iconbgrainbow"/.test(sites[2]), sites[2]);
 
@@ -156,12 +156,12 @@ console.log('\nThe live preview follows the adopt state rather than the colour u
     const b = fnBody(name);
     ok(name + '() is found in source', !!b, name);
     ok(name + '() reads the master adopt state', /iconbgrainbow/.test(b || ''), name);
-    ok(name + '() hands the adopt state to the preview', /adopt: (adopt9|get\("cc\.iconbgrainbow", "0"\) === "1")/.test(b || ''), name);
+    ok(name + '() hands the adopt state to the preview', /adopt: (adopt9|get\("tt\.iconbgrainbow", "0"\) === "1")/.test(b || ''), name);
     ok(name + '() leaves the tint to its switch', !/tint: adopt9/.test(b || ''), name);
     ok(name + '() references no icontintrainbow key', !/icontintrainbow/.test(b || ''), name);
   });
   const tpBody = fnBody('tp') || '';
-  ok('tp() reads cc.iconbgrainbow without the ga() gate, as the getAdopt above it does', /adopt: get\("cc\.iconbgrainbow", "0"\) === "1"/.test(tpBody), tpBody);
+  ok('tp() reads tt.iconbgrainbow without the ga() gate, as the getAdopt above it does', /adopt: get\("tt\.iconbgrainbow", "0"\) === "1"/.test(tpBody), tpBody);
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

@@ -1,7 +1,7 @@
 /* TowerTorch: restyles Unraid's Docker tab.
  *
  * Every datum in a native container row becomes a uniform badge, and the native clutter goes,
- * without a bar or section of CC's own. The CSS does the work: this file adds classes to the
+ * without a bar or section of TowerTorch's own. The CSS does the work: this file adds classes to the
  * persistent <table id=docker_containers> and docker.css restyles the native cells for the update
  * status, force update, image tag, network, IP, port, LAN and CPU/RAM into pills in place. The
  * native elements stay live, so Unraid's nchan websocket keeps the figures ticking, clickable and
@@ -21,24 +21,24 @@
 (function () {
   "use strict";
 
-  var PROXY = "/plugins/towertorch/server/ccapi.php";
+  var PROXY = "/plugins/towertorch/server/ttapi.php";
   var SHIPLOG = "/plugins/shiplog/server/status.php";
-  var VIEW_KEY = "cc.view", COLS_KEY = "cc.colview2";
-  var MARK = "data-cc", ROWMARK = "data-cc-row";
+  var VIEW_KEY = "tt.view", COLS_KEY = "tt.colview2";
+  var MARK = "data-tt", ROWMARK = "data-tt-row";
   // A filled gear, tabler-icons (MIT) icons/filled/settings.svg, inheriting currentColor so it
   // follows the colour mode like every other control. Tabler because the main nav bar uses its
   // filled set too, and lucide ships none. The centre hole is a reverse-wound subpath, which plain
   // fill-rule:nonzero knocks out, and it stays legible at the 12px this button renders.
-  var CC_GEAR_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>';
-  // The trash can and the other glyphs belong to cc-theme.js, which loads on every page before this
+  var TT_GEAR_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>';
+  // The trash can and the other glyphs belong to tt-theme.js, which loads on every page before this
   // script; without it a control keeps its tooltip and its name and only loses the drawing.
-  var CC_TRASH_SVG = (window.CCTheme && window.CCTheme.CC_TRASH_SVG) || "";
-  function ccGlyph(name) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(name) : ""; }
-  function ccLabelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
+  var TT_TRASH_SVG = (window.TTTheme && window.TTTheme.TT_TRASH_SVG) || "";
+  function ttGlyph(name) { return window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph(name) : ""; }
+  function ttLabelled(b, name, text) { if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(b, name, text); else b.textContent = text; return b; }
   // A dropdown's trigger takes the focus on a click and from Tab, which is what lets the wheel step
   // its value (GlimStone rule 14), and Enter or Space opens it.
   function selTrigger(trig) {
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(trig);
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(trig);
     trig.setAttribute("aria-haspopup", "listbox");
     return trig;
   }
@@ -46,45 +46,45 @@
   var SCHED_ACTIONS = ["start", "stop", "restart"];
   // Docker's four restart-policy names, in the order they appear in the editor dropdown.
   var RESTART_POLICIES = ["no", "unless-stopped", "always", "on-failure"];
-  // With the adopt toggle on, the default, the Docker badges follow the global cc.accent;
-  // otherwise they use the tab's own ccd.accent. The rainbow stays global and the icon tint and
+  // With the adopt toggle on, the default, the Docker badges follow the global tt.accent;
+  // otherwise they use the tab's own ttd.accent. The rainbow stays global and the icon tint and
   // density stay Docker-owned.
-  function effc(k) { return localStorage.getItem("cc.styledocker") !== "0" ? localStorage.getItem("cc." + k) : localStorage.getItem("ccd." + k); }
+  function effc(k) { return localStorage.getItem("tt.styledocker") !== "0" ? localStorage.getItem("tt." + k) : localStorage.getItem("ttd." + k); }
   // Whether the icons follow the colour mode is a global decision, so it bypasses effc(): an area
   // using its own background and tint colours can still follow the rainbow, like one adopting the
   // global colours.
-  function iconBgAdopts() { return localStorage.getItem("cc.iconbgrainbow") === "1"; }
+  function iconBgAdopts() { return localStorage.getItem("tt.iconbgrainbow") === "1"; }
   // The logo tile has its own switch whether or not the colours are adopted, and the three
-  // .cc-docker-iconbg gates below share this helper so they cannot drift apart.
+  // .tt-docker-iconbg gates below share this helper so they cannot drift apart.
   function iconBgOn() { return effc("iconbg") === "1"; }
-  // cc.sgsize to [--cc-logo-img, --cc-logo-box]; vms.js and plugins.js keep their own copy. Both
+  // tt.sgsize to [--tt-logo-img, --tt-logo-box]; vms.js and plugins.js keep their own copy. Both
   // applySettings() and applyIconTint()'s inline writes read it, so the two cannot disagree.
-  function ccLogoSizes() { return ({ s: ["48px", "62px"], m: ["62px", "78px"], l: ["76px", "94px"] })[localStorage.getItem("cc.sgsize") || "m"] || ["62px", "78px"]; }
-  // cc.theming defaults to on. Off strips the visual layer alone, the native-cell restyle, the
+  function ttLogoSizes() { return ({ s: ["48px", "62px"], m: ["62px", "78px"], l: ["76px", "94px"] })[localStorage.getItem("tt.sgsize") || "m"] || ["62px", "78px"]; }
+  // tt.theming defaults to on. Off strips the visual layer alone, the native-cell restyle, the
   // decorative row badges, the icon tint, the rainbow, the grid view and the theming menu rows,
   // while every orchestration control stays: the actions column, the state toggle, the limit
   // gears, the plan chip with its editor, the save and start-in-order actions and the heartbeat.
   // It is read at the presentational chokepoints only, never near boot(), the timers or the API.
-  function themingOn() { return localStorage.getItem("cc.theming") !== "0"; }
+  function themingOn() { return localStorage.getItem("tt.theming") !== "0"; }
   // Skip jQuery's switchButton() widget for the per-row autostart toggle. Unraid's loadlist()
   // replaces the whole #docker_list after every action and then calls
   // $('.autostart').switchButton(), a jQuery UI widget that builds four DOM nodes and an event
   // layer per row, which on a host with dozens of containers blocks the main thread for seconds.
   // docker.css restyles the widget's own output past recognition anyway, so with theming on none
   // of that work is visible: the bare <input class=autostart> is styled directly instead as a
-  // CSS-only toggle (.cc-noswitch). Saving is unaffected, because loadlist()'s own
+  // CSS-only toggle (.tt-noswitch). Saving is unaffected, because loadlist()'s own
   // $('.autostart').change() binding listens to the checkbox's native change event, which a bare
   // checkbox fires on click. The patch runs once, before boot() and before the page's first
   // loadlist(), and is scoped to .autostart, so the Basic/Advanced view toggle keeps the real
   // widget.
   (function () {
-    if (!window.jQuery || !jQuery.fn.switchButton || jQuery.fn.switchButton.__ccPatched) return;
+    if (!window.jQuery || !jQuery.fn.switchButton || jQuery.fn.switchButton.__ttPatched) return;
     var realSwitchButton = jQuery.fn.switchButton;
     jQuery.fn.switchButton = function (opts) {
-      if (themingOn() && this.length && this.hasClass("autostart")) { this.addClass("cc-noswitch"); return this; }
+      if (themingOn() && this.length && this.hasClass("autostart")) { this.addClass("tt-noswitch"); return this; }
       return realSwitchButton.apply(this, arguments);
     };
-    jQuery.fn.switchButton.__ccPatched = true;
+    jQuery.fn.switchButton.__ttPatched = true;
   })();
   // readmore.js is skipped for the Docker list's "read more" spans. On a host with 55 containers
   // (223 .docker_readmore spans) a Basic/Advanced switch froze the tab for over seven seconds in one
@@ -94,7 +94,7 @@
   //   -> outerHeight(true)
   // a write, a read, a write and a read, where each read forces a synchronous style and layout
   // recalculation of the whole table. Across a couple of hundred spans that is seconds of layout
-  // thrash, and it is wasted work here: CC reads those cells only as a text source, through
+  // thrash, and it is wasted work here: TowerTorch reads those cells only as a text source, through
   // readmoreText, and then hides them or replaces the cell with its own badges, so readmore's
   // collapse UI never appears and it renders no nodes at all. listview() runs at the end of every
   // loadlist(), so this cost the same seconds on the first page load and after every container
@@ -102,13 +102,13 @@
   // theming is on, and scoped to .docker_readmore, so the Apps page's .popup_readmore and the
   // Plugins page's .desc_readmore keep the real plugin.
   (function () {
-    if (!window.jQuery || !jQuery.fn.readmore || jQuery.fn.readmore.__ccPatched) return;
+    if (!window.jQuery || !jQuery.fn.readmore || jQuery.fn.readmore.__ttPatched) return;
     var realReadmore = jQuery.fn.readmore;
     jQuery.fn.readmore = function () {
       if (themingOn() && this.length && this.hasClass("docker_readmore")) return this;
       return realReadmore.apply(this, arguments);
     };
-    jQuery.fn.readmore.__ccPatched = true;
+    jQuery.fn.readmore.__ttPatched = true;
   })();
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
   // Mon-first day toggles; value is Go's time.Weekday (0=Sun..6=Sat).
@@ -117,8 +117,8 @@
     : [["Mo", 1], ["Tu", 2], ["We", 3], ["Th", 4], ["Fr", 5], ["Sa", 6], ["Su", 0]];
 
   // Every string in this table is read by a user, so it spells the product out as
-  // "TowerTorch" in both halves. "CC" is a source-code prefix, the cc- class namespace, the
-  // CC_* constants and the cc.* keys, and it never leaves the source.
+  // "TowerTorch" in both halves. "TT" is a source-code prefix, the tt- class namespace, the
+  // TT_* constants and the tt.* keys, and it never leaves the source.
   var T = {
     de: { uptodate: "Aktuell", update: "Update", start: "Starten", stop: "Stoppen", restart: "Neustart", pause: "Pause", resume: "Fortsetzen", force: "Update erzwingen", save: "Startplan speichern", startorder: "In Reihenfolge starten", filter: "filtern…", search: "Suche", cols: "Badges", view: "Ansicht", list: "Liste", grid: "Raster", plan: "Startplan", done: "erledigt", saving: "speichere…", saved: "gespeichert", after: "nach", active: "aktiv", watchdog: "Auto-Start", wUnhealthy: "bei „unhealthy“", wExit: "bei Absturz (nicht bei normalem Stopp)", wMax: "max./Std.", schedules: "Zeitpläne", addsched: "+ Zeitplan", remove: "entfernen", manage: "Im Startplan verwalten", dependsOn: "Hängt ab von", commaSep: "kommagetrennt", dependsOnInfo: "Container, die laufen müssen, bevor dieser startet. TowerTorch startet sie zuerst, wartet, bis jeder von ihnen bereit meldet (womit „bereit“ gemeint ist, legst du unten unter „Bereit wenn“ fest), und startet erst danach diesen hier. Das Feld ist eine Auswahlliste: hineinklicken öffnet sie, jeder Klick nimmt einen Container auf oder wieder heraus, Tippen geht auch. Leer heißt: dieser Container wartet auf nichts und startet sofort.", startDelay: "Startverzögerung", startOrder: "Startnummer", startOrderPh: "Nr.", startOrderInfo: "Kleinere Zahl startet früher; leer/0 = ohne Nummer und startet zuletzt in Listenreihenfolge. Priorität, keine feste Reihenfolge; Doppelte sind erlaubt. Abhängigkeiten und Health-Gates gehen weiterhin vor.", secWait: "Sek. vor dem Start warten", readyWhen: "Bereit wenn", onFail: "Bei Fehlschlag", failhint: "abort überspringt Abhängige · continue/degrade starten sie trotzdem.", ramLimit: "RAM-Limit", cpuLimit: "CPU-Limit", cpuram: "CPU/RAM-Limits", ramPh: "z. B. 2G · 512M · leer = unverändert", cpuPh: "z. B. 1.5 · leer = unverändert", limitsFoot: "Sofort per Docker-Update angewendet, kein Neustart. Leeres Feld lässt den Wert unverändert. „Limit entfernen“ setzt auf unbegrenzt (Docker kann ein Limit live nicht ganz löschen, restlos weg erst durch Neu-Erstellen des Containers).", invalid: "Ungültige Eingabe", saveShort: "Speichern", ramNum: "z. B. 2 · leer = unverändert", cpuNum: "z. B. 1.5 · leer", cpuPin: "CPU-Pinning", cpuPinPh: "z. B. 0-3,6  (leer = alle)", cfgSet: "eingestellt", cfgUnset: "nicht eingestellt (Standard)", removeLim: "Limit entfernen", execPh: "Befehl im Container, z. B. pg_isready", logPh: "Text im Log, z. B. ready", bandwidth: "Bandbreite", egress: "Egress (Upload)", upload: "↑ Upload", download: "↓ Download", bwFoot: "Upload = tbf-Shaper, Download = Netfilter-Policing (hashlimit) im Container, kein Kernel-Qdisc. Wird laufend angewendet; nach einem Container-Neustart erst im nächsten Zyklus wieder. Braucht nsenter + tc/iptables auf dem Host; die Schnittstelle stellst du in den Einstellungen ein.", idleStop: "Auto-Stop bei Leerlauf", idleMin: "Leerlauf-Minuten", idleCpu: "CPU-Schwelle %", idleFoot: "Stoppt den Container, wenn er längere Zeit nichts zu tun hat: CPU unter der Schwelle und kaum Netzwerkverkehr, beides gleichzeitig und ohne Unterbrechung. „Leerlauf-Minuten“ ist, wie lange das so bleiben muss, bevor TowerTorch stoppt; „CPU-Schwelle %“ ist, ab welcher Auslastung der Container als beschäftigt gilt. Ein beschäftigter Container wird nie gestoppt, und TowerTorch startet ihn danach auch nicht von selbst wieder.", restartPolicy: "Restart-Policy", rpNo: "Nein (kein Auto-Start)", rpUnlessStopped: "Außer wenn gestoppt", rpAlways: "Immer", rpOnFailure: "Bei Fehler", rpWarn: "kein Auto-Start", rpWarnTip: "Restart-Policy „no“: dieser Container startet nach einem Host-Neustart nicht automatisch.", depsOk: "Alle Abhängigkeiten bereit", depsBad: "Abhängigkeit nicht bereit:", depNotRun: "noch nicht geprüft", newFolder: "Neuer Ordner", editFolder: "Ordner bearbeiten", deleteFolder: "Ordner löschen", moveToFolder: "In Ordner verschieben", rootLevel: "(Wurzelebene)", iconMode: "Icon-Färbung", iconInherit: "folgt globaler Einstellung", iconAuto: "Automatisch", iconNative: "Natives Icon", iconFlat: "Nachzeichnen", iconTint: "Tönen", iconOriginal: "Original-Logo", hideStopped: "Gestoppte ausblenden", bulkStartAll: "Alle starten", bulkStopAll: "Alle stoppen", bulkRestartAll: "Alle neu starten", bulkUpdateAll: "Alle aktualisieren", bulkPauseAll: "Alle pausieren", bulkResumeAll: "Alle fortsetzen", allContainers: "Alle Container", barAdd: "Container hinzufügen", barCheck: "Nach Aktualisierungen suchen", barUpdateAll: "Alle aktualisieren", barSizes: "Containergröße", updateCt: "Aktualisieren", discardTitle: "Ungespeicherte Änderungen verwerfen?", discard: "Verwerfen", keepEditing: "Weiter bearbeiten", cancel: "Abbrechen", newFolderTitle: "Neuen Ordner anlegen", folderName: "Name des Ordners", create: "Anlegen", folderColour: "Farbe", folderIcon: "Symbol", folderMembers: "Container", deleteFolderTitle: "Ordner „%s“ löschen?", deleteShort: "Löschen", thirdParty: "Drittanbieter", daemonDown: "Dienst nicht erreichbar, Limits und Bandbreite ruhen", manageInfo: "Nimmt den Container in den Startplan auf. TowerTorch startet ihn nach seinen Abhängigkeiten und wartet, bis er bereit ist.", watchdogInfo: "Startet den Container neu, wenn er abstürzt oder als unhealthy gemeldet wird.", sceneTitle: "Startablauf", sceneInfo: "So startet TowerTorch diesen Container zusammen mit denen, auf die er wartet, und denen, die auf ihn warten. Wer auf andere wartet, kommt nach ihnen dran, und ein Pfeil zeigt, auf wen. Ein Haken heißt bereit. Wartezeiten sind verkürzt, stehen aber im richtigen Verhältnis zueinander.", sceneAlone: "Dieser Container wartet auf niemanden, und niemand wartet auf ihn.", sceneCycle: "Diese Container warten im Kreis aufeinander. So startet der Plan nicht." },
     en: { uptodate: "up to date", update: "Update", start: "Start", stop: "Stop", restart: "Restart", pause: "Pause", resume: "Resume", force: "Force update", save: "Save start plan", startorder: "Start in order", filter: "filter…", search: "Search", cols: "Badges", view: "View", list: "List", grid: "Grid", plan: "Start plan", done: "done", saving: "saving…", saved: "saved", after: "after", active: "active", watchdog: "Auto-start", wUnhealthy: "when unhealthy", wExit: "on crash (not on a normal stop)", wMax: "max/hour", schedules: "Schedules", addsched: "+ schedule", remove: "remove", manage: "Manage in the start plan", dependsOn: "Depends on", commaSep: "comma-separated", dependsOnInfo: "Containers that have to be running before this one starts. TowerTorch starts them first, waits until each of them reports ready (what “ready” means is set below under “Ready when”), and only then starts this one. The field is a picker: click it to open the list, each click adds or removes a container, and typing works too. Empty means this container waits for nothing and starts right away.", startDelay: "Start delay", startOrder: "Start order", startOrderPh: "no.", startOrderInfo: "Lower number starts earlier; empty/0 = unnumbered and starts last in list order. A priority, not a strict order; duplicates are fine. Dependencies and health-gates still take precedence.", secWait: "sec to wait before starting", readyWhen: "Ready when", onFail: "On fail", failhint: "abort skips dependents · continue/degrade start them anyway.", ramLimit: "RAM limit", cpuLimit: "CPU limit", cpuram: "CPU/RAM limits", ramPh: "e.g. 2G · 512M · empty = unchanged", cpuPh: "e.g. 1.5 · empty = unchanged", limitsFoot: "Applied instantly via Docker update, no restart. An empty field leaves the value unchanged. “Remove limit” sets it to unlimited (Docker can't fully unset a limit live, gone for good only by recreating the container).", invalid: "invalid value", saveShort: "Save", ramNum: "e.g. 2 · empty = unchanged", cpuNum: "e.g. 1.5 · empty", cpuPin: "CPU pinning", cpuPinPh: "e.g. 0-3,6  (empty = all)", cfgSet: "configured", cfgUnset: "not set (default)", removeLim: "Remove limit", execPh: "command in the container, e.g. pg_isready", logPh: "text in the log, e.g. ready", bandwidth: "Bandwidth", egress: "Egress (upload)", upload: "↑ Upload", download: "↓ Download", bwFoot: "Upload = tbf shaper, download = netfilter policing (hashlimit) inside the container, no kernel qdisc. Re-applied while running; after a container restart it returns on the next cycle. Needs nsenter + tc/iptables on the host; set the interface on the Settings page.", idleStop: "Auto-stop when idle", idleMin: "Idle minutes", idleCpu: "CPU threshold %", idleFoot: "Stops the container once it has had nothing to do for a while: CPU below the threshold and barely any network traffic, both at once and without a break. “Idle minutes” is how long that has to hold before TowerTorch stops it; “CPU threshold %” is the load above which the container counts as busy. A busy container is never stopped, and TowerTorch does not start it again by itself afterwards.", restartPolicy: "Restart policy", rpNo: "No (never)", rpUnlessStopped: "Unless stopped", rpAlways: "Always", rpOnFailure: "On failure", rpWarn: "no auto-start", rpWarnTip: "Restart policy “no”: this container will not auto-start after a host reboot.", depsOk: "All dependencies ready", depsBad: "Dependency not ready:", depNotRun: "not checked yet", newFolder: "New folder", editFolder: "Edit folder", deleteFolder: "Delete folder", moveToFolder: "Move to folder", rootLevel: "(Root level)", iconMode: "Icon colouring", iconInherit: "follows the global setting", iconAuto: "Automatic", iconNative: "Native icon", iconFlat: "Redraw", iconTint: "Tone", iconOriginal: "Original logo", hideStopped: "Hide stopped", bulkStartAll: "Start all", bulkStopAll: "Stop all", bulkRestartAll: "Restart all", bulkUpdateAll: "Update all", bulkPauseAll: "Pause all", bulkResumeAll: "Resume all", allContainers: "All containers", barAdd: "Add container", barCheck: "Check for updates", barUpdateAll: "Update all", barSizes: "Container size", updateCt: "Update", discardTitle: "Discard unsaved changes?", discard: "Discard", keepEditing: "Keep editing", cancel: "Cancel", newFolderTitle: "Create a folder", folderName: "Folder name", create: "Create", folderColour: "Colour", folderIcon: "Icon", folderMembers: "Containers", deleteFolderTitle: "Delete folder “%s”?", deleteShort: "Delete", thirdParty: "Third party", daemonDown: "Service not reachable, limits and bandwidth are paused", manageInfo: "Adds the container to the start plan. TowerTorch starts it after its dependencies and waits until it is ready.", watchdogInfo: "Restarts the container when it crashes or reports unhealthy.", sceneTitle: "Start sequence", sceneInfo: "How TowerTorch starts this container together with the ones it waits for and the ones that wait for it. A container that waits for others comes after them, and an arrow shows which ones. A check means ready. Delays are shortened but keep their proportions.", sceneAlone: "This container waits for no one, and no one waits for it.", sceneCycle: "These containers wait for each other in a circle, so the plan will not start." },
@@ -139,7 +139,7 @@
   function runLabel(s) { var m = RUN_LABELS[LANG] || RUN_LABELS.en; return m[s] || s || "?"; }
 
   var mode = (localStorage.getItem(VIEW_KEY) === "grid" && themingOn()) ? "grid" : "list"; // the grid is part of the theming, so it never starts with theming off
-  var ccOrgView = null, ccOrgAvailable = false; // the cached docker.organizer GraphQL result; null while it is unloaded or unreachable
+  var ttOrgView = null, ttOrgAvailable = false; // the cached docker.organizer GraphQL result; null while it is unloaded or unreachable
   var containers = [], containerNames = [], containersByName = {}, stats = {}, shiplog = {}, workingPlan = {}, lastRun = {}, iconCache = {};
   var netPrev = {}; // name to {rx,tx,t}, the previous cumulative counters, for the live rate
   var netSeen = {}; // names whose live rate has been above zero since the page loaded
@@ -156,12 +156,12 @@
   var hostPCores = [], hostECores = []; // the P and E core lists of an Intel hybrid CPU, empty elsewhere
   var filterText = "", gridHolder = null, openPop = null, openPopAnchor = null, menu = null, menuAnchor = null, flashToast = null;
   var mo = null, dead = false, lastAdv = false, timers = [], moPending = false, moTimer = null, lastObsLoad = 0, moTrail = false;
-  var ccFirstPaintDone = false;   // cleared once, in moSweep()
-  var ccUpBg = "", ccUpFg = "";   // the update-pill colours, computed once per pass rather than per row
-  var ccAdvCache = null;          // the advanced/basic view, cached for one pass rather than per call
-  var ccBulkSel = {};             // bulk select: name to {id, image}, cleared after every bulk action
-  var ccEnhBusyStart = 0;   // when cc-enh-busy was set, so the clear can hold it for a minimum time
-  var ccEnhanceAt = 0;      // when the last full row-enhancement pass ran, so a scheduled fallback repaint
+  var ttFirstPaintDone = false;   // cleared once, in moSweep()
+  var ttUpBg = "", ttUpFg = "";   // the update-pill colours, computed once per pass rather than per row
+  var ttAdvCache = null;          // the advanced/basic view, cached for one pass rather than per call
+  var ttBulkSel = {};             // bulk select: name to {id, image}, cleared after every bulk action
+  var ttEnhBusyStart = 0;   // when tt-enh-busy was set, so the clear can hold it for a minimum time
+  var ttEnhanceAt = 0;      // when the last full row-enhancement pass ran, so a scheduled fallback repaint
                             // can tell whether the observer got there first
 
   // csrf_token: the JS global, else any form field, else the cookie
@@ -223,8 +223,8 @@
   // getComputedStyle() that forces a synchronous style recalculation, and colOn() calls this once
   // per column on top of injectRowBadges' own call, so a full tbody replace costs a dozen scans
   // per row. The answer cannot change mid-pass, since nothing here touches the view toggle while
-  // the rows are being enhanced, so injectAllRowBadges() caches it in ccAdvCache for one pass.
-  function isAdvancedView() { return ccAdvCache !== null ? ccAdvCache : isAdvancedViewReal(); }
+  // the rows are being enhanced, so injectAllRowBadges() caches it in ttAdvCache for one pass.
+  function isAdvancedView() { return ttAdvCache !== null ? ttAdvCache : isAdvancedViewReal(); }
   function isAdvancedViewReal() {
     try { var m = document.cookie.match(/(?:^|;\s*)docker_listview_mode=([^;]+)/); if (m) return decodeURIComponent(m[1]) === "advanced"; var a = document.querySelector("#docker_list .advanced"); return a ? getComputedStyle(a).display !== "none" : false; } catch (e) { return false; }
   }
@@ -255,7 +255,7 @@
     }).catch(function () { shiplog = {}; });
   }
   // localStorage is per origin, so a toggle set while browsing by IP never reaches the domain
-  // origin. Every cc.* write is mirrored into the engine config's ui_settings and adopted back on
+  // origin. Every tt.* write is mirrored into the engine config's ui_settings and adopted back on
   // every origin.
   var uiSyncT = null, uiSeeded = false, uiPending = {};
   // One push at a time, and the keys a push carries stay unsynced until its PUT has landed, so a
@@ -263,9 +263,9 @@
   var uiSending = {}, uiPushing = false, uiQueued = false;
   (function () {
     try {
-      var protoSet = window.__ccNativeSet || (window.__ccNativeSet = Storage.prototype.setItem);
+      var protoSet = window.__ttNativeSet || (window.__ttNativeSet = Storage.prototype.setItem);
       var orig = function (k, v) { protoSet.call(localStorage, k, v); };
-      window.__ccLS = orig;
+      window.__ttLS = orig;
       // Firefox keeps an assignment to localStorage.setItem as an item named "setItem" and never
       // calls it, so the hook sits on the prototype and lets sessionStorage through.
       Storage.prototype.setItem = function (k, v) {
@@ -274,7 +274,7 @@
         // some keys unchanged on every render, the settings tab among them.
         var same = false; try { same = localStorage.getItem(k) === String(v); } catch (e) {}
         orig(k, v);
-        try { if (!same && /^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
+        try { if (!same && /^tt[a-z]*\./.test(String(k)) && k !== "tt.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
       };
     } catch (e) {}
     // removeItem is intercepted as well as setItem: a toggle turned off by removing its key would
@@ -282,22 +282,22 @@
     // come back through adoptUISettings() on the next reload. pushUISettings() already deletes a
     // server key whose local value is null.
     try {
-      var protoRm = window.__ccNativeRemove || (window.__ccNativeRemove = Storage.prototype.removeItem);
+      var protoRm = window.__ttNativeRemove || (window.__ttNativeRemove = Storage.prototype.removeItem);
       var origRm = function (k) { protoRm.call(localStorage, k); };
-      window.__ccLSRemove = origRm;
+      window.__ttLSRemove = origRm;
       Storage.prototype.removeItem = function (k) {
         if (this !== localStorage) return protoRm.call(this, k);
         origRm(k);
-        try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
+        try { if (/^tt[a-z]*\./.test(String(k)) && k !== "tt.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
       };
     } catch (e) {}
     // the writes header.js made before this wrapper existed, see syncedSet() there
-    var early = Object.keys(window.__ccLSEarly || {});
+    var early = Object.keys(window.__ttLSEarly || {});
     early.forEach(function (k) { uiPending[k] = 1; });
     if (early.length) uiSyncT = setTimeout(pushUISettings, 800);
-    delete window.__ccLSEarly;
+    delete window.__ttLSEarly;
   })();
-  function collectUISettings() { var o = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^cc[a-z]*\./.test(k) && k !== "cc.stateCache") o[k] = localStorage.getItem(k); } return o; }
+  function collectUISettings() { var o = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^tt[a-z]*\./.test(k) && k !== "tt.stateCache") o[k] = localStorage.getItem(k); } return o; }
   // Only the changed keys go out, and the engine merges them into its copy, so a browser that has
   // not adopted that copy yet cannot write its own defaults over the rest of it.
   function pushUISettings() {
@@ -334,20 +334,20 @@
   function adoptUISettings(u, busy) {
     var changed = false, skip = uiUnsynced();
     Object.keys(busy || {}).forEach(function (k) { skip[k] = 1; });
-    try { Object.keys(u || {}).forEach(function (k) { if (/^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ccLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
+    try { Object.keys(u || {}).forEach(function (k) { if (/^tt[a-z]*\./.test(k) && k !== "tt.stateCache" && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ttLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
     return changed;
   }
-  var ccConfigFirstLoad = true; // see loadConfig()'s forced first repaint below
+  var ttConfigFirstLoad = true; // see loadConfig()'s forced first repaint below
   function loadConfig() {
     var busy = uiUnsynced();
     return api("GET", "config").then(function (c) {
       if (c && typeof c === "object") {
         config = { schedules: c.schedules || [], watchdogs: c.watchdogs || [], bandwidths: c.bandwidths || [], idle_stops: c.idle_stops || [], notify: c.notify || { unraid: false, webhook: "" }, shape_iface: c.shape_iface || "", ui_settings: c.ui_settings || undefined };
-        // Adopt the server-side cc.* mirror, then repaint. adoptUISettings() returns true only
+        // Adopt the server-side tt.* mirror, then repaint. adoptUISettings() returns true only
         // when it wrote a differing key, while boot does not wait on this promise, so the paints
         // that already ran used whatever localStorage held before it resolved. The first
         // loadConfig() therefore repaints unconditionally.
-        var forceFirst = ccConfigFirstLoad; ccConfigFirstLoad = false;
+        var forceFirst = ttConfigFirstLoad; ttConfigFirstLoad = false;
         if (adoptUISettings(c.ui_settings, busy) || forceFirst) { applySettings(); if (mode === "list") { if (themingOn()) applyEnhanceClasses(); else removeEnhanceClasses(); reinjectRowBadges(); } else renderCurrentView(); }
         // on the first run against this engine, seed the server mirror from this browser, so the
         // settings survive an origin switch and cleared browser data
@@ -400,7 +400,7 @@
   }
 
   // A paused container cannot run its healthchecks, so right after an unpause Docker often still
-  // reports unhealthy until the next check passes. After an unpause CC itself performed, the
+  // reports unhealthy until the next check passes. After an unpause TowerTorch itself performed, the
   // health gets a grace period before the badge alarms; a genuinely sick container turns red
   // after it anyway.
   var unpauseGrace = {};
@@ -408,9 +408,9 @@
   var UNHEALTHY_TIP_D = "Healthcheck meldet unhealthy. Nach einer Pause ist das normal; es erholt sich mit dem nächsten erfolgreichen Check.";
   var UNHEALTHY_TIP_E = "Healthcheck reports unhealthy. That is normal right after a pause; it recovers with the next passing check.";
   function unhealthyTip() { return LANG === "de" ? UNHEALTHY_TIP_D : UNHEALTHY_TIP_E; }
-  function stateBadge(c) { var s = (c && c.state) || "unknown", b = el("span", "cc-badge cc-badge-" + s, stateLabel(s)); b.dataset.name = (c && c.name) || ""; if (showUnhealthy(c)) { b.classList.add("cc-badge-alert"); b.textContent = stateLabel(s) + " ✕"; b.setAttribute("data-tip", unhealthyTip()); } else if (c && c.health === "starting") b.textContent = stateLabel(s) + " …"; return b; }
+  function stateBadge(c) { var s = (c && c.state) || "unknown", b = el("span", "tt-badge tt-badge-" + s, stateLabel(s)); b.dataset.name = (c && c.name) || ""; if (showUnhealthy(c)) { b.classList.add("tt-badge-alert"); b.textContent = stateLabel(s) + " ✕"; b.setAttribute("data-tip", unhealthyTip()); } else if (c && c.health === "starting") b.textContent = stateLabel(s) + " …"; return b; }
   function stateToggle(name, state) {
-    var s = state || "unknown", b = el("span", "cc-badge cc-badge-" + s + " cc-badge-toggle", stateLabel(s)); b.dataset.name = name;
+    var s = state || "unknown", b = el("span", "tt-badge tt-badge-" + s + " tt-badge-toggle", stateLabel(s)); b.dataset.name = name;
     var action = s === "running" ? "stop" : (s === "paused" ? "unpause" : "start");
     b.setAttribute("data-tip", t(action === "stop" ? "stop" : action === "unpause" ? "resume" : "start"));
     // The action comes from the current state at click time, not from the state the badge was
@@ -428,24 +428,24 @@
   // label for good; it also replaces a transient badge with the confirmed state on the next load.
   function syncStateBadges() {
     try {
-      Array.prototype.slice.call(document.querySelectorAll(".cc-badge[data-name]")).forEach(function (b) {
+      Array.prototype.slice.call(document.querySelectorAll(".tt-badge[data-name]")).forEach(function (b) {
         if (pendingAction[b.dataset.name]) return; // an action is in flight, so the transient badge stays
         var c = containerByName(b.dataset.name);
         if (!c) return;
         var s = c.state || "unknown", label = stateLabel(s);
         var unh = showUnhealthy(c);
         if (unh) label += " ✕"; else if (c.health === "starting") label += " …";
-        var isToggle = b.classList.contains("cc-badge-toggle");
+        var isToggle = b.classList.contains("tt-badge-toggle");
         // Only the state and alert classes are rewritten: the hide rule for a running container
-        // is keyed on the dot's own class (cc-ct-statedot, cc-tile-dot), which has to survive.
-        var cls = Array.prototype.filter.call(b.classList, function (k) { return k === "cc-badge-toggle" || !/^cc-badge-/.test(k); })
-          .concat("cc-badge-" + s, unh ? ["cc-badge-alert"] : []).join(" ");
+        // is keyed on the dot's own class (tt-ct-statedot, tt-tile-dot), which has to survive.
+        var cls = Array.prototype.filter.call(b.classList, function (k) { return k === "tt-badge-toggle" || !/^tt-badge-/.test(k); })
+          .concat("tt-badge-" + s, unh ? ["tt-badge-alert"] : []).join(" ");
         if (unh) b.setAttribute("data-tip", unhealthyTip());
         if (b.textContent !== label) b.textContent = label;
         if (b.className !== cls) b.className = cls;
         // the toggle's tooltip follows the new state; its click handler re-derives the action
         if (isToggle) b.setAttribute("data-tip", t(s === "running" ? "stop" : s === "paused" ? "resume" : "start"));
-        else if (b.classList.contains("cc-ct-statedot")) b.setAttribute("data-tip", unh ? unhealthyTip() : stateLabel(s));   // the dot's tooltip is the state, not an action
+        else if (b.classList.contains("tt-ct-statedot")) b.setAttribute("data-tip", unh ? unhealthyTip() : stateLabel(s));   // the dot's tooltip is the state, not an action
       });
       syncActionBars(); // the action bar's icons need the same live sync
     } catch (e) {}
@@ -453,37 +453,37 @@
   // The action bar's counterpart to syncStateBadges. The bar is built once per row in
   // injectActionCell, and its rebuild guard does not look at the state, so a row whose state
   // changed gets a fresh bar here on every load and observer cycle: WebUI, console, pause and the
-  // start or stop slot all follow the state. The source is CC's own c.state, a fresh docker ps on
+  // start or stop slot all follow the state. The source is TowerTorch's own c.state, a fresh docker ps on
   // each /api/state, rather than Unraid's status glyph: nchan updates only CPU and RAM, and the
   // glyph is refreshed by loadlist() every few seconds, so it is stale in the moment right after a
-  // start or stop. The glyph is the fallback for a row CC has not indexed.
+  // start or stop. The glyph is the fallback for a row TowerTorch has not indexed.
   function syncActionBars() {
     try {
       findRows().forEach(function (tr) {
-        var bar = tr.querySelector(".cc-actbar"); if (!bar) return;
+        var bar = tr.querySelector(".tt-actbar"); if (!bar) return;
         var name = rowName(tr);
         if (pendingAction[name]) return; // an action is in flight, so the transient look stays
         var glyph = tr.querySelector("td.ct-name .inner i[id^='load-']");
         var c = containerByName(name);
         var st = (c && c.state) || glyphState(glyph) || "unknown";
-        if (bar.dataset.ccState === st) return; // unchanged, so no DOM churn
+        if (bar.dataset.ttState === st) return; // unchanged, so no DOM churn
         var fresh = actionBars(name, c, tr, st).bar;
         // A keyboard user keeps the slot they were on.
-        var btns = Array.prototype.slice.call(bar.querySelectorAll(".cc-actbtn")), at = btns.indexOf(document.activeElement);
+        var btns = Array.prototype.slice.call(bar.querySelectorAll(".tt-actbtn")), at = btns.indexOf(document.activeElement);
         bar.parentNode.replaceChild(fresh, bar);
-        if (at >= 0) { var again = fresh.querySelectorAll(".cc-actbtn")[at]; if (again) again.focus(); }
+        if (at >= 0) { var again = fresh.querySelectorAll(".tt-actbtn")[at]; if (again) again.focus(); }
       });
     } catch (e) {}
   }
   function badgeInfo(label, value, kind) {
-    var b = el("span", "cc-b cc-b-info" + (kind ? " cc-b-" + kind : ""));
-    b.appendChild(el("span", "cc-b-k", label)); b.appendChild(el("span", "cc-b-v", value));
+    var b = el("span", "tt-b tt-b-info" + (kind ? " tt-b-" + kind : ""));
+    b.appendChild(el("span", "tt-b-k", label)); b.appendChild(el("span", "tt-b-v", value));
     if (kind === "ip" || kind === "lan") { // IPs copy themselves on click
-      b.classList.add("cc-b-copy"); b.setAttribute("data-tip", LANG === "de" ? "Klicken zum Kopieren" : "Click to copy");
+      b.classList.add("tt-b-copy"); b.setAttribute("data-tip", LANG === "de" ? "Klicken zum Kopieren" : "Click to copy");
       b.addEventListener("click", function (e) {
         e.preventDefault(); e.stopPropagation();
         var txt = String(value).trim();
-        var done = function () { b.classList.add("cc-copied"); setTimeout(function () { try { b.classList.remove("cc-copied"); } catch (x) {} }, 600); flash((LANG === "de" ? "kopiert: " : "copied: ") + txt); }; // in-place pulse on the copied pill + toast
+        var done = function () { b.classList.add("tt-copied"); setTimeout(function () { try { b.classList.remove("tt-copied"); } catch (x) {} }, 600); flash((LANG === "de" ? "kopiert: " : "copied: ") + txt); }; // in-place pulse on the copied pill + toast
         try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, function () { fallbackCopy(txt); done(); }); return; } } catch (e2) {}
         fallbackCopy(txt); done();
       });
@@ -492,19 +492,19 @@
   }
   function fallbackCopy(txt) { try { var ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); } catch (e) {} }
   // one resource line: a badge + its gear, side by side; the res-group stacks these.
-  function resLine(badge, gear) { var line = el("div", "cc-resline"); line.appendChild(badge); line.appendChild(gear); return line; }
+  function resLine(badge, gear) { var line = el("div", "tt-resline"); line.appendChild(badge); line.appendChild(gear); return line; }
   function planBadge(name) {
     var node = workingPlan[name], wdOn = !!watchdogFor(name), schedN = schedulesFor(name).length, idleOn = !!idleStopFor(name), auto = wdOn || schedN > 0 || idleOn;
-    var chip = el("a", "cc-b cc-plan" + (node ? " cc-plan-on" : "") + (auto ? " cc-plan-auto" : ""));
-    chip.href = "#"; chip.innerHTML = '<span class="cc-b-k"></span><span class="cc-b-v"></span>';
-    chip.querySelector(".cc-b-k").textContent = t("plan");
+    var chip = el("a", "tt-b tt-plan" + (node ? " tt-plan-on" : "") + (auto ? " tt-plan-auto" : ""));
+    chip.href = "#"; chip.innerHTML = '<span class="tt-b-k"></span><span class="tt-b-v"></span>';
+    chip.querySelector(".tt-b-k").textContent = t("plan");
     showPlanState(chip, name);
     chip.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openEditor(chip, name); });
     return chip;
   }
   // The plan's last verdict on this container, shown only when it went wrong: a container that came
   // up ready is the normal case, and its plan badge already reads "Startplan bereit".
-  function lastRunPill(name) { var lr = lastRun[name]; if (!lr || lr.state === "ready") return null; var p = el("span", "cc-pill cc-pill-" + lr.state, runLabel(lr.state)); if (lr.reason) p.setAttribute("data-tip", lr.reason); return p; }
+  function lastRunPill(name) { var lr = lastRun[name]; if (!lr || lr.state === "ready") return null; var p = el("span", "tt-pill tt-pill-" + lr.state, runLabel(lr.state)); if (lr.reason) p.setAttribute("data-tip", lr.reason); return p; }
   // Where this container stands in the start plan, as far as its dependencies decide it: failed
   // when one of them failed or was skipped, ready when all of them are, waiting otherwise. Only a
   // node with dependencies of its own has a state; one that waits for nothing has nothing to say.
@@ -535,13 +535,13 @@
   var PLAN_STATES = ["ready", "pending", "failed"];
   function showPlanState(chip, name) {
     var st = planState(name);
-    PLAN_STATES.forEach(function (s) { chip.classList.toggle("cc-plan-" + s, !!st && st.state === s); });
-    chip.querySelector(".cc-b-v").textContent = st ? runLabel(st.state) : depsTxt(workingPlan[name]);
+    PLAN_STATES.forEach(function (s) { chip.classList.toggle("tt-plan-" + s, !!st && st.state === s); });
+    chip.querySelector(".tt-b-v").textContent = st ? runLabel(st.state) : depsTxt(workingPlan[name]);
     if (st) chip.setAttribute("data-tip", st.tip); else chip.removeAttribute("data-tip");
   }
   // A dot on a badge: filled when a value is configured here, hollow otherwise, so a row with a
   // CPU or RAM limit or a custom network reads apart from one on the defaults.
-  function cfgDot(on) { var d = el("span", "cc-cfg " + (on ? "cc-cfg-on" : "cc-cfg-off")); d.setAttribute("data-tip", on ? t("cfgSet") : t("cfgUnset")); return d; }
+  function cfgDot(on) { var d = el("span", "tt-cfg " + (on ? "tt-cfg-on" : "tt-cfg-off")); d.setAttribute("data-tip", on ? t("cfgSet") : t("cfgUnset")); return d; }
   // whether a container is on a chosen network, a custom docker network or a static IP, rather
   // than on the stock bridge or host defaults
   function netConfigured(c) { if (!c) return false; var n = String(c.network || "").toLowerCase(); return !!n && n !== "bridge" && n !== "host" && n !== "none"; }
@@ -602,8 +602,8 @@
   // original. The icon itself is `td.ct-name span.hand > .img`.
   //
   // The background badge and the tint are two independent controls, with a key each for their
-  // own on/off state and colour: cc.iconbg with cc.iconbgcolor for the box, cc.icontint with
-  // cc.iconcolor for the tint. Older installs only ever set cc.iconbg and cc.iconcolor, where the
+  // own on/off state and colour: tt.iconbg with tt.iconbgcolor for the box, tt.icontint with
+  // tt.iconcolor for the tint. Older installs only ever set tt.iconbg and tt.iconcolor, where the
   // presence of a colour doubled as "tint on" and as the badge's colour, so tintOn() and
   // bgColor() below fall back to that reading whenever the newer key was never touched and an
   // existing install looks the same after an update.
@@ -611,13 +611,13 @@
     var v = effc("icontint");
     return v == null ? !!effc("iconcolor") : v === "1";
   }
-  // cc.iconbgrainbow lets the background badge and the tint step aside from their own colours and
+  // tt.iconbgrainbow lets the background badge and the tint step aside from their own colours and
   // follow what a generic badge shows: the rotating palette while the rainbow is on, the plain
   // accent otherwise.
   //
-  // With it on, bgColor() answers "", so applyIconTint() never stamps --cc-iconbg-color and
-  // docker.css's own var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-accent))) chain falls through
-  // to --cc-rb-c, which card() stamps per grid card and applyRainbowPalette() per list row, so
+  // With it on, bgColor() answers "", so applyIconTint() never stamps --tt-iconbg-color and
+  // docker.css's own var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent))) chain falls through
+  // to --tt-rb-c, which card() stamps per grid card and applyRainbowPalette() per list row, so
   // the badge rotates per container.
   //
   // The tint then adopts no hue of its own: iconInk() answers the black or white contrast colour
@@ -626,18 +626,18 @@
   // the same colour and look nothing like a rainbow, while a contrast colour has no rotation to
   // lose. iconAdoptTint() below resolves the colour that contrast is computed from: the plain
   // accent while the rainbow is off, where every badge really is that one colour, or the single
-  // action slot already stamped for the buttons and toggles while it is on. ccRbColor()
+  // action slot already stamped for the buttons and toggles while it is on. ttRbColor()
   // recomputes it on every repaint.
   function iconAdoptTint() {
-    if (!themingOn() || localStorage.getItem("cc.rainbow") !== "1") return effc("accent") || "#FCC419";
-    return ccRbColor(5);
+    if (!themingOn() || localStorage.getItem("tt.rainbow") !== "1") return effc("accent") || "#FCC419";
+    return ttRbColor(5);
   }
   function bgColor() {
     if (iconBgAdopts()) return "";   // adopting: defer to the CSS rainbow/accent chain
     var c = effc("iconbgcolor");
-    if (c && /^#?[0-9a-f]{6}$/i.test(c)) return ccHex6(c);
+    if (c && /^#?[0-9a-f]{6}$/i.test(c)) return ttHex6(c);
     var ic = effc("iconcolor");
-    if (ic && /^#?[0-9a-f]{6}$/i.test(ic)) return ccHex6(ic);
+    if (ic && /^#?[0-9a-f]{6}$/i.test(ic)) return ttHex6(ic);
     return effc("accent") || "#FCC419";
   }
   // The one colour both icon treatments paint with. It is "" while the tint is off, whatever the
@@ -657,21 +657,21 @@
     var pick = iconBgAdopts() ? iconAdoptTint() : effc("iconcolor");
     var valid = pick && /^#?[0-9a-f]{6}$/i.test(pick);
     if (!valid) return "";
-    if (!window.CCTheme || !window.CCTheme.liftSurface) return ccHex6(pick);
-    var floor = window.CCTheme.LUM_FLOOR * (forTint ? 2 : 1);
-    return ccHex6(window.CCTheme.liftSurface(pick, effc("accent") || "#FCC419", floor));
+    if (!window.TTTheme || !window.TTTheme.liftSurface) return ttHex6(pick);
+    var floor = window.TTTheme.LUM_FLOOR * (forTint ? 2 : 1);
+    return ttHex6(window.TTTheme.liftSurface(pick, effc("accent") || "#FCC419", floor));
   }
   // The per-item contrast ink. Under the adopt toggle iconInk() answers one representative
   // colour for the whole page, but with the rainbow on the badge each icon sits on rotates per
   // item, so an item whose own colour needs the opposite ink gets an illegible one. This reuses
-  // the --cc-rb-ct that stampCardRainbow() or applyRainbowPalette() already stamped on the owning
+  // the --tt-rb-ct that stampCardRainbow() or applyRainbowPalette() already stamped on the owning
   // card or row, rather than recomputing it, so the two cannot drift apart. It falls back to the
   // uniform ink while the rainbow is off, where the badge really is one flat colour, or when the
   // owner or its stamp is missing, which a repaint that outran the last rainbow pass heals on the
   // next one.
   function itemAdoptInk(ownerEl) {
-    if (ownerEl && ownerEl.style && themingOn() && localStorage.getItem("cc.rainbow") === "1") {
-      var v = ownerEl.style.getPropertyValue ? ownerEl.style.getPropertyValue("--cc-rb-ct") : "";
+    if (ownerEl && ownerEl.style && themingOn() && localStorage.getItem("tt.rainbow") === "1") {
+      var v = ownerEl.style.getPropertyValue ? ownerEl.style.getPropertyValue("--tt-rb-ct") : "";
       if (v) return v.trim();
     }
     return idealText(iconAdoptTint());
@@ -703,7 +703,7 @@
     }
     return true;
   }
-  function ensureTintFilter() { return ensureTintFilterAs("cc-tint-svg", "cc-icon-tint", iconInk(true)); }
+  function ensureTintFilter() { return ensureTintFilterAs("tt-tint-svg", "tt-icon-tint", iconInk(true)); }
   // Ink-flattening: every opaque pixel becomes one colour with its alpha untouched, the crisp
   // badge silhouette. It is used on a real glyph, or on an icon the heuristic showed is already
   // one tone, never on full-colour artwork, where it would merge the background and the mark into
@@ -711,13 +711,13 @@
   // identical <filter> in a loop.
   // Expands #rgb to #rrggbb: idealText answers "#fff", while every filter builder and colour
   // regex here wants six digits.
-  function ccHex6(c) {
+  function ttHex6(c) {
     c = String(c == null ? "" : c).trim();
     return /^#[0-9a-f]{3}$/i.test(c) ? "#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3] : c;
   }
   function ensureFlatFilter(hostId, filtId, hex, strength) {
     var host = document.getElementById(hostId);
-    var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(ccHex6(hex) || "");
+    var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(ttHex6(hex) || "");
     if (!m) { if (host) host.remove(); return ""; }
     var s = Math.max(10, Math.min(100, strength || 100)) / 100, keep = s === 1 ? "0" : (1 - s).toFixed(4);
     var r = (parseInt(m[1], 16) / 255 * s).toFixed(4), g2 = (parseInt(m[2], 16) / 255 * s).toFixed(4), b = (parseInt(m[3], 16) / 255 * s).toFixed(4);
@@ -737,7 +737,7 @@
     if (!m) return ensureFlatFilter(hostId, filtId, "");
     return ensureFlatFilter(hostId, filtId, idealText("#" + m[1]));
   }
-  function iconFilter() { return ensureTintFilter() ? "url(#cc-icon-tint)" : ""; }
+  function iconFilter() { return ensureTintFilter() ? "url(#tt-icon-tint)" : ""; }
   // every row's icon element with the container name behind it, which the pipeline needs to look
   // the app up and to find its per-item pin
   function tintTargetsNamed() {
@@ -750,16 +750,16 @@
   }
   function tintTargets() { return tintTargetsNamed().map(function (t) { return t.el; }); }
   // Swaps an <img>'s source to a resolved icon, or back to the one it shipped with. The native
-  // src is remembered once and the write is guarded on data-cc-isrc, so a repaint that changes
+  // src is remembered once and the write is guarded on data-tt-isrc, so a repaint that changes
   // nothing writes no attribute.
   function setIconSrc(img, url) {
-    if (!img.getAttribute("data-cc-osrc")) img.setAttribute("data-cc-osrc", img.getAttribute("src") || "");
-    var want = url || img.getAttribute("data-cc-osrc") || "";
-    if (!want || img.getAttribute("data-cc-isrc") === want) return;
-    img.setAttribute("data-cc-isrc", want);
+    if (!img.getAttribute("data-tt-osrc")) img.setAttribute("data-tt-osrc", img.getAttribute("src") || "");
+    var want = url || img.getAttribute("data-tt-osrc") || "";
+    if (!want || img.getAttribute("data-tt-isrc") === want) return;
+    img.setAttribute("data-tt-isrc", want);
     if (img.getAttribute("src") !== want) img.setAttribute("src", want);
   }
-  function nativeIconSrc(img) { return img.getAttribute("data-cc-osrc") || img.getAttribute("src") || ""; }
+  function nativeIconSrc(img) { return img.getAttribute("data-tt-osrc") || img.getAttribute("src") || ""; }
   // A glyph's css colour and the luminance tint filter never apply together: once a glyph has a
   // direct colour, running the filter over it would process the same hue twice, since a glyph
   // always plans as a glyph element and iconPlan() returns a tint in that mode. A separate
@@ -777,7 +777,7 @@
   //  · treat "flat"/"tint" fall back to native when there is no ink colour at all, which
   //    is how a user who never enabled the tint keeps untouched icons.
   function iconTreatment(scope, name, isGlyphEl, nativeSrc) {
-    var CI = window.CCTheme && window.CCTheme.icons;
+    var CI = window.TTTheme && window.TTTheme.icons;
     if (!CI) return { treat: "tint", url: "" };
     var res = CI.result(name), kind = res ? res.kind : "";
     var mode = CI.mode(scope, name);
@@ -804,43 +804,43 @@
           if (z.parentNode && z.parentNode.style) ["display", "align-items", "align-self", "margin"].forEach(function (p) { z.parentNode.style.removeProperty(p); });
           if (z.tagName === "IMG") setIconSrc(z, "");   // back to the icon the container shipped with
         }
-        document.documentElement.style.removeProperty("--cc-iconbg-color");
-        ["cc-tint-svg", "cc-mono-svg", "cc-tint-svg-blk", "cc-tint-svg-wht", "cc-mono-svg-blk", "cc-mono-svg-wht"].forEach(function (id) { var h = document.getElementById(id); if (h) h.remove(); });
+        document.documentElement.style.removeProperty("--tt-iconbg-color");
+        ["tt-tint-svg", "tt-mono-svg", "tt-tint-svg-blk", "tt-tint-svg-wht", "tt-mono-svg-blk", "tt-mono-svg-wht"].forEach(function (id) { var h = document.getElementById(id); if (h) h.remove(); });
         return;
       }
       var named = tintTargetsNamed(), imgs = named.map(function (x) { return x.el; });
-      // With cc.iconbg on, the icon sits on an accent-coloured box and is flattened to mono ink,
+      // With tt.iconbg on, the icon sits on an accent-coloured box and is flattened to mono ink,
       // dark or white by the accent. An <img> takes the filter, a font glyph an !important text
       // colour, so the glyph itself inks.
       var ibgAcc = bgColor();
       var ibgOn = effc("iconbg") === "1";
-      if (ibgOn && ibgAcc) document.documentElement.style.setProperty("--cc-iconbg-color", ibgAcc); else document.documentElement.style.removeProperty("--cc-iconbg-color");
+      if (ibgOn && ibgAcc) document.documentElement.style.setProperty("--tt-iconbg-color", ibgAcc); else document.documentElement.style.removeProperty("--tt-iconbg-color");
       // With the adopt toggle on over a tinted badge, idealText() answers only #161616 or #fff, so
       // both ink filters are built once, page-wide rather than per item, and each icon below picks
       // whichever matches its own resolved background through itemAdoptInk(), which reads the
-      // --cc-rb-ct its card or row already carries. Otherwise there is one filter, built from
+      // --tt-rb-ct its card or row already carries. Otherwise there is one filter, built from
       // iconInk()'s own colour, which may be any hue.
       var f, flat, fBlk, fWht, flatBlk, flatWht, adopt = iconBgAdopts() && iconBgOn() && tintOn();
       var str = parseInt(effc("iconstrength") || "100", 10);
       if (adopt) {
-        flatBlk = ensureFlatFilter("cc-mono-svg-blk", "cc-mono-tint-blk", "#161616", str);
-        flatWht = ensureFlatFilter("cc-mono-svg-wht", "cc-mono-tint-wht", "#fff", str);
-        fBlk = ensureTintFilterAs("cc-tint-svg-blk", "cc-icon-tint-blk", "#161616") ? "url(#cc-icon-tint-blk)" : "";
-        fWht = ensureTintFilterAs("cc-tint-svg-wht", "cc-icon-tint-wht", "#fff") ? "url(#cc-icon-tint-wht)" : "";
+        flatBlk = ensureFlatFilter("tt-mono-svg-blk", "tt-mono-tint-blk", "#161616", str);
+        flatWht = ensureFlatFilter("tt-mono-svg-wht", "tt-mono-tint-wht", "#fff", str);
+        fBlk = ensureTintFilterAs("tt-tint-svg-blk", "tt-icon-tint-blk", "#161616") ? "url(#tt-icon-tint-blk)" : "";
+        fWht = ensureTintFilterAs("tt-tint-svg-wht", "tt-icon-tint-wht", "#fff") ? "url(#tt-icon-tint-wht)" : "";
       } else {
         f = iconFilter();
         var ink = iconInk(false);
-        flat = ensureFlatFilter("cc-mono-svg", "cc-mono-tint", ink, str);
+        flat = ensureFlatFilter("tt-mono-svg", "tt-mono-tint", ink, str);
       }
       // Every name on the page goes to the engine in one batch, which it answers from its cache
       // without blocking. A name it has not looked up yet stays native for this pass and repaints
       // through the callback init() wires.
-      var CI = window.CCTheme && window.CCTheme.icons;
+      var CI = window.TTTheme && window.TTTheme.icons;
       if (CI) CI.want(named.map(function (x) { return x.name; }));
-      // The same size contract as applySettings()'s --cc-logo-img: cc.sgsize through the shared
+      // The same size contract as applySettings()'s --tt-logo-img: tt.sgsize through the shared
       // map, not a literal, because the inline !important write below outranks docker.css's own
-      // --cc-logo-img rules.
-      var lgImg = ccLogoSizes()[0];
+      // --tt-logo-img rules.
+      var lgImg = ttLogoSizes()[0];
       for (var i = 0; i < imgs.length; i++) {
         var n = imgs[i];
         var isGlyphEl = n.tagName !== "IMG";
@@ -864,7 +864,7 @@
           n.style.filter = gif.filter;
         }
         // The size is written inline, because Unraid's theme beats this sheet on the real page
-        // and the icons shrink back. It comes from cc.sgsize through ccLogoSizes(), so the list
+        // and the icons shrink back. It comes from tt.sgsize through ttLogoSizes(), so the list
         // follows the tile size like the grid, vms.js and plugins.js do.
         n.style.setProperty("width", lgImg, "important");
         n.style.setProperty("height", lgImg, "important");
@@ -878,16 +878,16 @@
       // covers every layout.
       [gridHolder, sceneRoot].forEach(function (root) {
         if (!root || !root.isConnected) return;
-        var g = root.querySelectorAll("img.cc-card-ico");
+        var g = root.querySelectorAll("img.tt-card-ico");
         var gnames = [];
         for (var j = 0; j < g.length; j++) {
-          var gn = g[j].getAttribute("data-cc-name") || "";
+          var gn = g[j].getAttribute("data-tt-name") || "";
           gnames.push(gn);
           var gp = CI ? iconTreatment("docker", gn, false, nativeIconSrc(g[j])) : { treat: "tint", url: "" };
           setIconSrc(g[j], gp.url);
           var gFlat = flat, gTint = f, gInk = ink;
           if (adopt) {
-            gInk = itemAdoptInk(g[j].closest(".cc-card, .cc-sn"));
+            gInk = itemAdoptInk(g[j].closest(".tt-card, .tt-sn"));
             var cardBlk = gInk !== "#fff";
             gFlat = cardBlk ? flatBlk : flatWht;
             gTint = cardBlk ? fBlk : fWht;
@@ -902,63 +902,63 @@
   // every area starts the palette on the same hue.
   var RB_KINDS = ["net", "ip", "lan", "port", "id", "von", "cpu", "ram", "bw", "version", "vol", "plan"];
   var RB_PAL = ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"]; // red through to pink
-  if (window.CCTheme) { idealText = window.CCTheme.idealText; RB_PAL = window.CCTheme.RB; }  /* the shared palette and contrast when CCTheme is loaded; the local copies are the fallback */
-  var RB_OFFSET = window.CCTheme ? window.CCTheme.rbSeed(RB_PAL.length) : Math.floor(Math.random() * RB_PAL.length);
-  // Flag mode reads the flag's own cc.flagpal and never cc.rbpal, so a flag does not repaint the
+  if (window.TTTheme) { idealText = window.TTTheme.idealText; RB_PAL = window.TTTheme.RB; }  /* the shared palette and contrast when TTTheme is loaded; the local copies are the fallback */
+  var RB_OFFSET = window.TTTheme ? window.TTTheme.rbSeed(RB_PAL.length) : Math.floor(Math.random() * RB_PAL.length);
+  // Flag mode reads the flag's own tt.flagpal and never tt.rbpal, so a flag does not repaint the
   // rainbow swatches and its colours do not leak onto the page once it is off. Every rainbow
   // reader below goes through this.
-  function ccPalStored(def) { try { if (localStorage.getItem("cc.flagmode") === "1") { var f = JSON.parse(localStorage.getItem("cc.flagpal") || "null"); if (f && f.length) return f; } var p = JSON.parse(localStorage.getItem("cc.rbpal") || "null"); if (p && p.length) return p; } catch (e) {} return def; }
-  // On a light theme the near-white slots are swapped, see CCTheme.surfacePalette.
-  function ccPalActive(def) { var p = ccPalStored(def); return (window.CCTheme && window.CCTheme.surfacePalette) ? window.CCTheme.surfacePalette(p, effc("accent") || "#FCC419") : p; }
+  function ttPalStored(def) { try { if (localStorage.getItem("tt.flagmode") === "1") { var f = JSON.parse(localStorage.getItem("tt.flagpal") || "null"); if (f && f.length) return f; } var p = JSON.parse(localStorage.getItem("tt.rbpal") || "null"); if (p && p.length) return p; } catch (e) {} return def; }
+  // On a light theme the near-white slots are swapped, see TTTheme.surfacePalette.
+  function ttPalActive(def) { var p = ttPalStored(def); return (window.TTTheme && window.TTTheme.surfacePalette) ? window.TTTheme.surfacePalette(p, effc("accent") || "#FCC419") : p; }
   function applyRainbowPalette() {
     var rt = document.documentElement;
-    if (!themingOn() || localStorage.getItem("cc.rainbow") !== "1") { rt.style.removeProperty("--cc-btn-accent"); RB_KINDS.forEach(function (k) { rt.style.removeProperty("--cc-rb-" + k); rt.style.removeProperty("--cc-rb-" + k + "-t"); }); try { document.querySelectorAll("#docker_list tr.sortable").forEach(function (tr) { tr.style.removeProperty("--cc-rb-c"); tr.style.removeProperty("--cc-rb-ct"); }); } catch (e0) {} return; }
-    // cc.rainbowrot, on by default; off pins the offset to 0 and the colours stay put
-    var off = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET;
+    if (!themingOn() || localStorage.getItem("tt.rainbow") !== "1") { rt.style.removeProperty("--tt-btn-accent"); RB_KINDS.forEach(function (k) { rt.style.removeProperty("--tt-rb-" + k); rt.style.removeProperty("--tt-rb-" + k + "-t"); }); try { document.querySelectorAll("#docker_list tr.sortable").forEach(function (tr) { tr.style.removeProperty("--tt-rb-c"); tr.style.removeProperty("--tt-rb-ct"); }); } catch (e0) {} return; }
+    // tt.rainbowrot, on by default; off pins the offset to 0 and the colours stay put
+    var off = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET;
     // a palette edited on the settings page overrides the default
-    var pal = ccPalActive(RB_PAL);
+    var pal = ttPalActive(RB_PAL);
     // the toggles and the primary buttons share one palette slot
-    rt.style.setProperty("--cc-btn-accent", pal[(5 + off) % pal.length]);
+    rt.style.setProperty("--tt-btn-accent", pal[(5 + off) % pal.length]);
     RB_KINDS.forEach(function (k, i) {
       var c = pal[(i + off) % pal.length];
-      rt.style.setProperty("--cc-rb-" + k, c);
-      rt.style.setProperty("--cc-rb-" + k + "-t", idealText(c));
+      rt.style.setProperty("--tt-rb-" + k, c);
+      rt.style.setProperty("--tt-rb-" + k + "-t", idealText(c));
     });
     // Docker rows are coloured per kind (above), so a row carries no single colour for its logo tile.
-    // A per-row rotating --cc-rb-c lets the tile join the rainbow (docker.css gates the tile on
-    // .cc-docker-iconbg.cc-rainbow). Mirrors the Plugins tab (plugins.js stamps --cc-rb-c per row).
+    // A per-row rotating --tt-rb-c lets the tile join the rainbow (docker.css gates the tile on
+    // .tt-docker-iconbg.tt-rainbow). Mirrors the Plugins tab (plugins.js stamps --tt-rb-c per row).
     try {
       var rows2 = document.querySelectorAll("#docker_list tr.sortable");
       for (var ri = 0; ri < rows2.length; ri++) {
         var rc = pal[(ri + off) % pal.length];
-        rows2[ri].style.setProperty("--cc-rb-c", rc); rows2[ri].style.setProperty("--cc-rb-ct", idealText(rc));
+        rows2[ri].style.setProperty("--tt-rb-c", rc); rows2[ri].style.setProperty("--tt-rb-ct", idealText(rc));
       }
     } catch (e1) {}
   }
-  // The shared dropdown painter (cc-theme.js paintSelects): stamps the rotating --cc-rb-c/--cc-rb-ct on
-  // every .cc-dsel/.cc-sel/.cc-drop option so the sheets' colour-mode chains have something to read.
+  // The shared dropdown painter (tt-theme.js paintSelects): stamps the rotating --tt-rb-c/--tt-rb-ct on
+  // every .tt-dsel/.tt-sel/.tt-drop option so the sheets' colour-mode chains have something to read.
   // A missed load order degrades to a flat-accent dropdown rather than throwing inside
   // applySettings().
-  function paintSelects(root) { try { if (window.CCTheme && window.CCTheme.paintSelects) window.CCTheme.paintSelects(root); } catch (e) {} }
+  function paintSelects(root) { try { if (window.TTTheme && window.TTTheme.paintSelects) window.TTTheme.paintSelects(root); } catch (e) {} }
   function applySettings() {
     applyRainbowPalette();
     paintSelects();   // the dropdowns are painted from the same chokepoint as every other control
     try {
       // The page gate for docker.css's list rules. ctApply stamps it on the add and update forms,
-      // so the list page has to stamp it too, or html.cc-docker-on never matches and the reactive
+      // so the list page has to stamp it too, or html.tt-docker-on never matches and the reactive
       // rest-grey never applies.
-      document.documentElement.classList.toggle("cc-docker-on", themingOn() && localStorage.getItem("cc.enable.docker") !== "0");
+      document.documentElement.classList.toggle("tt-docker-on", themingOn() && localStorage.getItem("tt.enable.docker") !== "0");
       var root = document.documentElement.style;
-      var accent = effc("accent"); if (accent) { root.setProperty("--cc-accent", accent); root.setProperty("--cc-accent-text", idealText(accent)); }
-      var dens = localStorage.getItem("cc.density"); root.setProperty("--cc-density", { compact: "5px", normal: "9px", airy: "14px" }[dens] || "9px");
-      // cc.sgsize, shared with the settings grid, drives the logo tile as [img, box] per step,
+      var accent = effc("accent"); if (accent) { root.setProperty("--tt-accent", accent); root.setProperty("--tt-accent-text", idealText(accent)); }
+      var dens = localStorage.getItem("tt.density"); root.setProperty("--tt-density", { compact: "5px", normal: "9px", airy: "14px" }[dens] || "9px");
+      // tt.sgsize, shared with the settings grid, drives the logo tile as [img, box] per step,
       // where box minus img is twice the tile's padding
-      var lg = ccLogoSizes();
-      root.setProperty("--cc-logo-img", lg[0]); root.setProperty("--cc-logo-box", lg[1]);
+      var lg = ttLogoSizes();
+      root.setProperty("--tt-logo-img", lg[0]); root.setProperty("--tt-logo-box", lg[1]);
       // The colour for ShipLog's update-all button, restyled to match the badges. It goes on
       // documentElement so it reaches .ToggleViewMode, which sits outside the enhanced table.
-      var ub = localStorage.getItem("cc.rainbow") === "1" ? ccRbColor(5) : (accent || "#FCC419");   // the action slot the toggles and primary buttons share
-      root.setProperty("--cc-updall-bg", ub); root.setProperty("--cc-updall-text", idealText(ub));
+      var ub = localStorage.getItem("tt.rainbow") === "1" ? ttRbColor(5) : (accent || "#FCC419");   // the action slot the toggles and primary buttons share
+      root.setProperty("--tt-updall-bg", ub); root.setProperty("--tt-updall-text", idealText(ub));
       colview = loadColview();
     } catch (e) {}
   }
@@ -969,19 +969,19 @@
   function applyEnhanceClasses() {
     try {
       var tb = nativeTable(); if (!tb || tb.tagName !== "TABLE") return;
-      tb.classList.add("cc-enh"); tb.classList.toggle("cc-adv", isAdvancedView());
-      tb.classList.toggle("cc-rainbow", localStorage.getItem("cc.rainbow") === "1");
-      tb.classList.toggle("cc-tint-icons", !!effc("iconcolor"));
-      tb.classList.toggle("cc-docker-iconbg", iconBgOn());
-      // The density is a class as well as the --cc-density padding: the row height is mostly
+      tb.classList.add("tt-enh"); tb.classList.toggle("tt-adv", isAdvancedView());
+      tb.classList.toggle("tt-rainbow", localStorage.getItem("tt.rainbow") === "1");
+      tb.classList.toggle("tt-tint-icons", !!effc("iconcolor"));
+      tb.classList.toggle("tt-docker-iconbg", iconBgOn());
+      // The density is a class as well as the --tt-density padding: the row height is mostly
       // badge content, so compact and airy also change the badge spacing.
-      var dens = localStorage.getItem("cc.density") || "normal";
-      ["compact", "normal", "airy"].forEach(function (d) { tb.classList.toggle("cc-dens-" + d, dens === d); });
-      COLS.forEach(function (c) { tb.classList.toggle("cc-c-" + c.key, colOn(c.key)); });
+      var dens = localStorage.getItem("tt.density") || "normal";
+      ["compact", "normal", "airy"].forEach(function (d) { tb.classList.toggle("tt-dens-" + d, dens === d); });
+      COLS.forEach(function (c) { tb.classList.toggle("tt-c-" + c.key, colOn(c.key)); });
       applyIconTint();
     } catch (e) {}
   }
-  function removeEnhanceClasses() { try { var tb = nativeTable(); if (!tb) return; tb.classList.remove("cc-enh", "cc-adv", "cc-rainbow", "cc-tint-icons", "cc-docker-iconbg", "cc-dens-compact", "cc-dens-normal", "cc-dens-airy"); COLS.forEach(function (c) { tb.classList.remove("cc-c-" + c.key); }); var t2 = tintTargets(); for (var i = 0; i < t2.length; i++) { t2[i].style.filter = ""; if (t2[i].tagName === "IMG") setIconSrc(t2[i], ""); } if (gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll("img.cc-card-ico")).forEach(function (n) { n.style.filter = ""; setIconSrc(n, ""); }); Array.prototype.slice.call(document.querySelectorAll(".cc-ico-tint")).forEach(function (n) { n.remove(); }); ["cc-tint-svg", "cc-mono-svg", "cc-tint-svg-blk", "cc-tint-svg-wht", "cc-mono-svg-blk", "cc-mono-svg-wht"].forEach(function (id) { var h2 = document.getElementById(id); if (h2) h2.remove(); }); } catch (e) {} }
+  function removeEnhanceClasses() { try { var tb = nativeTable(); if (!tb) return; tb.classList.remove("tt-enh", "tt-adv", "tt-rainbow", "tt-tint-icons", "tt-docker-iconbg", "tt-dens-compact", "tt-dens-normal", "tt-dens-airy"); COLS.forEach(function (c) { tb.classList.remove("tt-c-" + c.key); }); var t2 = tintTargets(); for (var i = 0; i < t2.length; i++) { t2[i].style.filter = ""; if (t2[i].tagName === "IMG") setIconSrc(t2[i], ""); } if (gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll("img.tt-card-ico")).forEach(function (n) { n.style.filter = ""; setIconSrc(n, ""); }); Array.prototype.slice.call(document.querySelectorAll(".tt-ico-tint")).forEach(function (n) { n.remove(); }); ["tt-tint-svg", "tt-mono-svg", "tt-tint-svg-blk", "tt-tint-svg-wht", "tt-mono-svg-blk", "tt-mono-svg-wht"].forEach(function (id) { var h2 = document.getElementById(id); if (h2) h2.remove(); }); } catch (e) {} }
 
   // reads a positional cell's docker_readmore value, dropping the nested advanced block and the
   // Tailscale tooltip and collapsing it to one short line
@@ -1002,13 +1002,13 @@
   function colorBarButtons() {
     try {
       var bar = document.querySelector("div.js-actions"); if (!bar) return;
-      var btns = Array.prototype.slice.call(bar.querySelectorAll("input[type=button]:not(.cc-folded), .cc-allct, .cc-bulkmode-badge"));
-      if (!themingOn() || localStorage.getItem("cc.rainbow") !== "1") { btns.forEach(function (b) { b.style.removeProperty("--cc-rb-c"); b.style.removeProperty("--cc-rb-ct"); }); return; }
-      var pal = ccPalActive(RB_PAL);
-      var off = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET;
+      var btns = Array.prototype.slice.call(bar.querySelectorAll("input[type=button]:not(.tt-folded), .tt-allct, .tt-bulkmode-badge"));
+      if (!themingOn() || localStorage.getItem("tt.rainbow") !== "1") { btns.forEach(function (b) { b.style.removeProperty("--tt-rb-c"); b.style.removeProperty("--tt-rb-ct"); }); return; }
+      var pal = ttPalActive(RB_PAL);
+      var off = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET;
       btns.forEach(function (b, i) {
         var c = pal[(i + off) % pal.length];
-        b.style.setProperty("--cc-rb-c", c); b.style.setProperty("--cc-rb-ct", idealText(c));
+        b.style.setProperty("--tt-rb-c", c); b.style.setProperty("--tt-rb-ct", idealText(c));
       });
     } catch (e) {}
   }
@@ -1023,24 +1023,24 @@
     var own = /^(de|en)/i.test(document.documentElement.lang || "en");
     Object.keys(BAR_LABELS).forEach(function (fn) {
       var b = barNative(bar, fn); if (!b) return;
-      if (fn === "addContainer") b.classList.add("cc-bar-primary");
+      if (fn === "addContainer") b.classList.add("tt-bar-primary");
       if (own && b.value !== t(BAR_LABELS[fn])) b.value = t(BAR_LABELS[fn]);
     });
-    var folded = BAR_FOLD.map(function (f2) { var b = barNative(bar, f2[0]); if (b) b.classList.add("cc-folded"); return b; });
+    var folded = BAR_FOLD.map(function (f2) { var b = barNative(bar, f2[0]); if (b) b.classList.add("tt-folded"); return b; });
     if (!folded.some(Boolean)) return;
-    var btn = bar.querySelector(".cc-allct");
+    var btn = bar.querySelector(".tt-allct");
     if (!btn) {
-      btn = ccLabelled(el("span", "cc-allct"), "Containers", t("allContainers")); btn.setAttribute(MARK, "1");
+      btn = ttLabelled(el("span", "tt-allct"), "Containers", t("allContainers")); btn.setAttribute(MARK, "1");
       btn.setAttribute("role", "button"); btn.setAttribute("tabindex", "0"); btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false");
-      var caret = el("span", "cc-allct-caret"); caret.setAttribute("aria-hidden", "true"); btn.appendChild(caret);
+      var caret = el("span", "tt-allct-caret"); caret.setAttribute("aria-hidden", "true"); btn.appendChild(caret);
       var open = function () {
-        if (btn.getAttribute("aria-disabled") === "true" || !window.CCTheme || !window.CCTheme.menu) return;
+        if (btn.getAttribute("aria-disabled") === "true" || !window.TTTheme || !window.TTTheme.menu) return;
         var items = [];
         BAR_FOLD.forEach(function (f2) {
           var nb = barNative(bar, f2[0]); if (!nb || nb.disabled) return;
           items.push({ glyph: f2[2], label: own ? t(f2[1]) : nb.value, run: function () { var n2 = barNative(bar, f2[0]); if (n2 && !n2.disabled) n2.click(); } });
         });
-        if (items.length) window.CCTheme.menu(btn, items);
+        if (items.length) window.TTTheme.menu(btn, items);
       };
       btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); open(); });
       btn.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter" || e.key === "ArrowDown") { e.preventDefault(); open(); } });
@@ -1064,26 +1064,26 @@
       var idx = -1;
       for (var i = 0; i < ths.length; i++) { if (/volum/i.test(ths[i].textContent || "")) { idx = i; break; } }
       var cell = idx >= 0 ? tr.children[idx] : tr.querySelector(":scope > td:nth-child(8)");
-      if (!cell || cell.getAttribute("data-cc-vm") === "1") return;
-      cell.setAttribute("data-cc-vm", "1");
-      // The cell is rebuilt from CC's own mount data, which readmore cannot undo, and each line
+      if (!cell || cell.getAttribute("data-tt-vm") === "1") return;
+      cell.setAttribute("data-tt-vm", "1");
+      // The cell is rebuilt from TowerTorch's own mount data, which readmore cannot undo, and each line
       // gets its own hover, so only the hovered one scrolls.
-      var host = el("div", "cc-volmarq");
+      var host = el("div", "tt-volmarq");
       c.mounts.forEach(function (m) {
-        var w = el("span", "cc-vline"), t = el("span", "cc-vtext");
+        var w = el("span", "tt-vline"), t = el("span", "tt-vtext");
         t.textContent = (m.source || "") + " \u2194 " + (m.dest || "") + (m.rw ? "" : " (ro)");
         w.appendChild(t); host.appendChild(w);
         var iv = null;
         w.addEventListener("mouseenter", function () {
           var over = t.scrollWidth - w.clientWidth; if (over <= 2) return;
-          w.classList.add("cc-vrun");
+          w.classList.add("tt-vrun");
           var dur = Math.max(1000, Math.round(over / 55 * 1000)), toEnd = true;
           t.style.transition = "transform " + (dur / 1000) + "s linear"; t.style.transform = "translateX(-" + over + "px)";
           iv = setInterval(function () { if (!t.isConnected) { clearInterval(iv); return; } toEnd = !toEnd; t.style.transform = "translateX(" + (toEnd ? -over : 0) + "px)"; }, dur + 700);
         });
         w.addEventListener("mouseleave", function () {
           if (iv) { clearInterval(iv); iv = null; }
-          w.classList.remove("cc-vrun");
+          w.classList.remove("tt-vrun");
           t.style.transition = "none"; t.style.transform = "none";
         });
       });
@@ -1099,12 +1099,12 @@
       // row exists and on every reinject, since a rainbow toggle clears ROWMARK, and it is
       // removed while the rainbow is off. The index is the row's position.
       try {
-        if (themingOn() && localStorage.getItem("cc.rainbow") === "1") {
+        if (themingOn() && localStorage.getItem("tt.rainbow") === "1") {
           var _pp = tr.parentNode, _ix = _pp ? Array.prototype.indexOf.call(_pp.querySelectorAll("tr.sortable"), tr) : 0; if (_ix < 0) _ix = 0;
-          var _of = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET, _pl = ccPalActive(RB_PAL);
+          var _of = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET, _pl = ttPalActive(RB_PAL);
           var _c = _pl[(_ix + _of) % _pl.length];
-          tr.style.setProperty("--cc-rb-c", _c); tr.style.setProperty("--cc-rb-ct", idealText(_c));
-        } else { tr.style.removeProperty("--cc-rb-c"); tr.style.removeProperty("--cc-rb-ct"); }
+          tr.style.setProperty("--tt-rb-c", _c); tr.style.setProperty("--tt-rb-ct", idealText(_c));
+        } else { tr.style.removeProperty("--tt-rb-c"); tr.style.removeProperty("--tt-rb-ct"); }
       } catch (_eR) {}
       var name = rowName(tr);
       if (filterText) tr.style.display = (norm(name).indexOf(filterText) >= 0) ? "" : "none";
@@ -1115,17 +1115,17 @@
       // offsets used below. Space picks it from the keyboard and Shift and Space a range.
       var tile = nameCell && nameCell.querySelector(".outer > span.hand");
       if (tile) {
-        if (!tile.classList.contains("cc-pick")) {
-          tile.classList.add("cc-pick"); tile.setAttribute("role", "checkbox"); tile.setAttribute("tabindex", "0");
+        if (!tile.classList.contains("tt-pick")) {
+          tile.classList.add("tt-pick"); tile.setAttribute("role", "checkbox"); tile.setAttribute("tabindex", "0");
           tile.setAttribute("aria-label", (LANG === "de" ? "Auswählen: " : "Select ") + name);
         }
-        tile.setAttribute("aria-checked", ccBulkSel[name] ? "true" : "false");
-        if (!tile.ccPickKeys) {
-          tile.ccPickKeys = true;
+        tile.setAttribute("aria-checked", ttBulkSel[name] ? "true" : "false");
+        if (!tile.ttPickKeys) {
+          tile.ttPickKeys = true;
           tile.addEventListener("keydown", function (e) {
-            if (e.key !== " " || !tile.classList.contains("cc-pick")) return;
+            if (e.key !== " " || !tile.classList.contains("tt-pick")) return;
             e.preventDefault(); e.stopPropagation();
-            var row = tile.closest("tr"); if (row) ccBulkClick(row, { shiftKey: e.shiftKey });
+            var row = tile.closest("tr"); if (row) ttBulkClick(row, { shiftKey: e.shiftKey });
           });
         }
       }
@@ -1143,8 +1143,8 @@
         if (outerBox) { outerBox.style.setProperty("display", "flex", "important"); outerBox.style.setProperty("align-items", "center", "important"); outerBox.style.setProperty("height", "auto", "important"); }
         // The grip stands in for Unraid's move arrow, which went with the stray children above.
         // docker.css shows it only while the list is sortable, so it needs no lock state here.
-        if (tile && !tile.querySelector(".cc-grip")) {
-          var grip = el("span", "cc-grip"); grip.setAttribute(MARK, "1"); grip.innerHTML = ccGlyph("Grip");
+        if (tile && !tile.querySelector(".tt-grip")) {
+          var grip = el("span", "tt-grip"); grip.setAttribute(MARK, "1"); grip.innerHTML = ttGlyph("Grip");
           tile.appendChild(grip);
         }
       }
@@ -1158,29 +1158,29 @@
       if (nameCell) {
         var glyph = nameCell.querySelector(".inner i[id^='load-']");
         var st = (c && c.state) || glyphState(glyph) || "unknown";
-        var meta = el("div", "cc-namemeta"); meta.setAttribute(MARK, "1");
+        var meta = el("div", "tt-namemeta"); meta.setAttribute(MARK, "1");
         // Under the name sits a colour dot on its own row, not a clickable toggle: its hover
         // shows the current state, which syncStateBadges keeps live, and a click flashes the
-        // action icons, since the name-click handler matches .cc-ct-dotrow too. The CSS is keyed
-        // on .cc-ct-dotrow > .cc-badge, so the state poll's className rewrite cannot strip the
+        // action icons, since the name-click handler matches .tt-ct-dotrow too. The CSS is keyed
+        // on .tt-ct-dotrow > .tt-badge, so the state poll's className rewrite cannot strip the
         // dot's look, and font-size:0 hides the status text. With theming off the meta row gets
         // the clickable state pill instead.
         var innerEl0 = nameCell.querySelector(".inner") || nameCell, appnameEl = innerEl0.querySelector("span.appname");
         if (themingOn() && appnameEl) {
-          var dot = el("span", "cc-badge cc-badge-" + st + " cc-ct-statedot" + (showUnhealthy(c) ? " cc-badge-alert" : ""));
+          var dot = el("span", "tt-badge tt-badge-" + st + " tt-ct-statedot" + (showUnhealthy(c) ? " tt-badge-alert" : ""));
           dot.dataset.name = name;
           dot.setAttribute("data-tip", showUnhealthy(c) ? unhealthyTip() : stateLabel(st));
-          var drow = innerEl0.querySelector(".cc-ct-dotrow");
-          if (!drow) { drow = el("div", "cc-ct-dotrow"); drow.setAttribute(MARK, "1"); if (appnameEl.nextSibling) appnameEl.parentNode.insertBefore(drow, appnameEl.nextSibling); else appnameEl.parentNode.appendChild(drow); }
+          var drow = innerEl0.querySelector(".tt-ct-dotrow");
+          if (!drow) { drow = el("div", "tt-ct-dotrow"); drow.setAttribute(MARK, "1"); if (appnameEl.nextSibling) appnameEl.parentNode.insertBefore(drow, appnameEl.nextSibling); else appnameEl.parentNode.appendChild(drow); }
           drow.appendChild(dot);
         } else {
-          var sb = stateToggle(name, st); if (showUnhealthy(c)) { sb.classList.add("cc-badge-alert"); sb.textContent = stateLabel(st) + " ✕"; sb.setAttribute("data-tip", unhealthyTip()); }
+          var sb = stateToggle(name, st); if (showUnhealthy(c)) { sb.classList.add("tt-badge-alert"); sb.textContent = stateLabel(st) + " ✕"; sb.setAttribute("data-tip", unhealthyTip()); }
           meta.appendChild(sb);
         }
         // the id, author and volume badges are decorative, so theming has to be on
         if (themingOn()) {
           var advDiv = nameCell.querySelector(":scope > div.advanced");
-          var idrow = el("div", "cc-namemeta-ids"), added = false, hideAdv = false;
+          var idrow = el("div", "tt-namemeta-ids"), added = false, hideAdv = false;
           if (advDiv) {
             if (colOn("id")) { var cid = readContainerId(advDiv); if (cid) { idrow.appendChild(badgeInfo("ID", cid.slice(0, 12), "id")); added = true; hideAdv = true; } }
             if (colOn("von")) { var a = advDiv.querySelector("a[target='_blank']"); if (a && a.textContent.trim()) { var vb = badgeInfo("Von", a.textContent.trim(), "von"); var hf = a.getAttribute("href") || ""; if (hf) vb.setAttribute("data-tip", hf); idrow.appendChild(vb); added = true; hideAdv = true; } }
@@ -1193,7 +1193,7 @@
             volB.setAttribute("data-tip", c.mounts.map(function (m) { return m.source + " → " + m.dest + (m.rw ? "" : " (ro)"); }).join("\n"));
             idrow.appendChild(volB); added = true;
           }
-          if (added) { if (hideAdv && advDiv) advDiv.classList.add("cc-hidden"); meta.appendChild(idrow); }
+          if (added) { if (hideAdv && advDiv) advDiv.classList.add("tt-hidden"); meta.appendChild(idrow); }
         }
         var inner = nameCell.querySelector(".inner") || nameCell; inner.appendChild(meta);
       }
@@ -1203,11 +1203,11 @@
       // own limit editor. The CSS hides the native cell.
       if (colOn("res")) {
         var resCell = tr.querySelector(":scope > td:nth-child(9)") || tr.querySelector(":scope > td.advanced"); // the actions column at position 2 shifts this by one
-        if (resCell && !resCell.querySelector(".cc-resgroup")) {
-          var rg = el("div", "cc-rowbadges cc-resgroup"); rg.setAttribute(MARK, "1"); rg.dataset.name = name;
+        if (resCell && !resCell.querySelector(".tt-resgroup")) {
+          var rg = el("div", "tt-rowbadges tt-resgroup"); rg.setAttribute(MARK, "1"); rg.dataset.name = name;
           var lm = limits[name] || {};
           var cpuSet = cpuLimited(lm) || cpuPinned(lm), ramSet = ramLimited(lm);
-          // CPU, RAM and bandwidth each get a .cc-resline of their own, so the three sit one
+          // CPU, RAM and bandwidth each get a .tt-resline of their own, so the three sit one
           // under the other. They carry no status dot: the gear turning green already says a
           // limit is set.
           var cpuB = badgeInfo("CPU", "…", "cpu");
@@ -1228,7 +1228,7 @@
       // tag text is read out of Unraid's native div.advanced, which is then hidden, so the tag
       // never leaks into the simple view and always renders as a badge.
       if (upCell) {
-        var vh = el("div", "cc-rowbadges"); vh.setAttribute(MARK, "1");
+        var vh = el("div", "tt-rowbadges"); vh.setAttribute(MARK, "1");
         // The tag badge, hiding the native tag text and restyling the update button are all
         // decorative, so with theming off Unraid's own version and update column shows unchanged.
         if (themingOn()) {
@@ -1238,16 +1238,16 @@
           var tagTxt = tagDiv ? tagDiv.textContent.replace(/\s+/g, " ").trim() : "";
           // Only the text advanced divs are hidden, the image tag that is re-rendered as a badge,
           // never the one carrying the force-update link, or that badge could never show.
-          Array.prototype.forEach.call(advs, function (d) { if (!d.querySelector("a.exec")) d.classList.add("cc-hidden"); });
+          Array.prototype.forEach.call(advs, function (d) { if (!d.querySelector("a.exec")) d.classList.add("tt-hidden"); });
           // The apply-update link, a top-level a.exec rather than one inside an advanced div,
           // gets its pill inline: some builds have no nested orange-text span, so the :has()
           // rule never fires and only bare text shows. With the native state colours on it keeps
           // its orange; with them off it joins the colour mode. injectAllRowBadges computes
-          // ccUpBg and ccUpFg once per pass.
+          // ttUpBg and ttUpFg once per pass.
           Array.prototype.slice.call(upCell.querySelectorAll("a.exec")).forEach(function (ax) {
             if (ax.closest("div.advanced")) return;
-            ax.style.setProperty("background", ccUpBg, "important");
-            ax.style.setProperty("color", ccUpFg, "important");
+            ax.style.setProperty("background", ttUpBg, "important");
+            ax.style.setProperty("color", ttUpFg, "important");
             ax.style.setProperty("display", "inline-flex", "important");
             ax.style.setProperty("align-items", "center", "important");
           });
@@ -1255,7 +1255,7 @@
           // The third-party version status: Unraid's class-less span, an icon with text, becomes
           // a neutral badge matching the changelog chip under it. Only classes are added, no DOM
           // is moved, and clearRowBadges strips them again.
-          Array.prototype.slice.call(upCell.querySelectorAll("span > i.fa-docker")).forEach(function (fi) { fi.parentElement.classList.add("cc-b", "cc-3p"); thirdPartyWord(fi.parentElement); });
+          Array.prototype.slice.call(upCell.querySelectorAll("span > i.fa-docker")).forEach(function (fi) { fi.parentElement.classList.add("tt-b", "tt-3p"); thirdPartyWord(fi.parentElement); });
         }
         var p = lastRunPill(name); if (p) vh.appendChild(p); // the last plan run is orchestration status, so it shows with theming off too
         if (vh.children.length) upCell.appendChild(vh);
@@ -1279,12 +1279,12 @@
           // stopped container too, where the native LAN cell is empty. Only for a real host
           // interface: a custom docker bridge IP is not LAN-reachable.
           if (!lanTxt && c && c.ip && isMacvlan(c)) lanTxt = c.ip;
-          var g = el("div", "cc-rowbadges cc-netgroup"); g.setAttribute(MARK, "1");
+          var g = el("div", "tt-rowbadges tt-netgroup"); g.setAttribute(MARK, "1");
           if (netTxt && colOn("net")) { g.appendChild(badgeInfo("Netzwerk", netTxt, "net")); }
           if (ipTxt && colOn("ip")) g.appendChild(badgeInfo("Container IP", ipTxt, "ip"));
           if (lanTxt && colOn("lan")) g.appendChild(badgeInfo("LAN IP", lanTxt, "lan"));
           if (portTxt && colOn("port")) g.appendChild(badgeInfo("Port", portTxt, "port"));
-          var nrm = c3.querySelector("span.docker_readmore"); if (nrm && colOn("net")) nrm.classList.add("cc-hidden"); // the native network name stays when only its badge is off
+          var nrm = c3.querySelector("span.docker_readmore"); if (nrm && colOn("net")) nrm.classList.add("tt-hidden"); // the native network name stays when only its badge is off
           if (g.children.length) c3.appendChild(g);
         }
       }
@@ -1293,7 +1293,7 @@
       if (colOn("plan")) {
         var c9 = tr.querySelector(":scope > td:nth-child(10)"); // the actions column shifts this by one
         if (c9) {
-          var ph = el("div", "cc-rowbadges cc-planholder"); ph.setAttribute(MARK, "1"); ph.appendChild(planBadge(name));
+          var ph = el("div", "tt-rowbadges tt-planholder"); ph.setAttribute(MARK, "1"); ph.appendChild(planBadge(name));
           // The gap between the toggle and the chip matches the one between the CPU and RAM
           // badges, written inline, and the stray <br>s in the native autostart cell that would
           // inflate it are switched off.
@@ -1309,8 +1309,8 @@
         var lmR = limits[name];
         if (lmR && lmR.restart_policy === "no") {
           var c9r = tr.querySelector(":scope > td:nth-child(10)"); // the actions column shifts this by one
-          if (c9r && !c9r.querySelector(".cc-restwarn")) {
-            var rwh = el("div", "cc-rowbadges cc-restwarn"); rwh.setAttribute(MARK, "1");
+          if (c9r && !c9r.querySelector(".tt-restwarn")) {
+            var rwh = el("div", "tt-rowbadges tt-restwarn"); rwh.setAttribute(MARK, "1");
             rwh.appendChild(restartWarnBadge());
             rwh.style.setProperty("margin", "5px 0 0 0", "important");
             c9r.appendChild(rwh);
@@ -1325,17 +1325,17 @@
       // inside it; clearRowBadges unwraps it instead.
       if (themingOn()) {
         var c9b = tr.querySelector(":scope > td:nth-child(10)");
-        if (c9b && !c9b.querySelector(":scope > span.cc-grp")) {
+        if (c9b && !c9b.querySelector(":scope > span.tt-grp")) {
           var gi = c9b.querySelector(":scope > i.fa");
           var gt = null;
           for (var gn = 0; gn < c9b.childNodes.length; gn++) { var nd0 = c9b.childNodes[gn]; if (nd0.nodeType === 3 && nd0.textContent.replace(/\s+/g, "")) { gt = nd0; break; } }
-          if (gi && gt) { var gb = el("span", "cc-b cc-grp"); c9b.insertBefore(gb, gi); gb.appendChild(gi); gb.appendChild(gt); thirdPartyWord(gb); }
+          if (gi && gt) { var gb = el("span", "tt-b tt-grp"); c9b.insertBefore(gb, gi); gb.appendChild(gi); gb.appendChild(gt); thirdPartyWord(gb); }
         }
       }
     } catch (e) { /* one bad row must not break Unraid's page */ }
   }
   // Unraid labels a container it did not create "3rd Party" in the autostart cell, untranslated,
-  // and by its translated name in the version cell. Both read the one word CC uses for it.
+  // and by its translated name in the version cell. Both read the one word TowerTorch uses for it.
   function thirdPartyWord(badge) {
     for (var i = 0; i < badge.childNodes.length; i++) {
       var n = badge.childNodes[i];
@@ -1388,44 +1388,44 @@
   // glyph is drawn in currentColor, so it takes black or white against the button like badge text.
   // Tab reaches it, which is what brings a row's buttons in for a keyboard (:focus-within).
   function actBtn(icon, tip, fn) {
-    var b = el("span", "cc-actbtn"); b.setAttribute("data-tip", tip); b.setAttribute("aria-label", tip); b.innerHTML = ccGlyph(icon);
+    var b = el("span", "tt-actbtn"); b.setAttribute("data-tip", tip); b.setAttribute("aria-label", tip); b.innerHTML = ttGlyph(icon);
     b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); fn(); });
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b);
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(b);
     return b;
   }
   // greyed placeholder: an action without a target still occupies its slot,
   // so every row shows the same stable icon block
-  function actBtnOff(icon, tip) { var b = el("span", "cc-actbtn cc-actoff"); b.setAttribute("data-tip", tip); b.setAttribute("aria-disabled", "true"); b.innerHTML = ccGlyph(icon); return b; }
+  function actBtnOff(icon, tip) { var b = el("span", "tt-actbtn tt-actoff"); b.setAttribute("data-tip", tip); b.setAttribute("aria-disabled", "true"); b.innerHTML = ttGlyph(icon); return b; }
   // rainbow: every action icon takes a rotating palette colour (falls back to grey);
   // disabled placeholders stay grey
   // Icons follow the configured accent exactly like the badges:
-  // normal mode = cc.accent, rainbow mode = the rainbow palette. cc.actcolors = "0"
+  // normal mode = tt.accent, rainbow mode = the rainbow palette. tt.actcolors = "0"
   // turns the colours off (grey buttons) via the gear menu. Colours are computed
   // directly (no CSS-var indirection) with auto black/white glyphs. A delete is never red, so
   // Entfernen passes a rainbow red on to the next slot.
   function tintAct(bar) {
-    var colorsOn = localStorage.getItem("cc.actcolors") !== "0";
-    var rb = themingOn() && localStorage.getItem("cc.rainbow") === "1"; // rainbow is theming; accent/legibility tint stays
-    var pal = ccPalActive(RB_PAL);
-    var off = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET;
-    Array.prototype.slice.call(bar.querySelectorAll(".cc-actbtn")).forEach(function (b2, i2) {
+    var colorsOn = localStorage.getItem("tt.actcolors") !== "0";
+    var rb = themingOn() && localStorage.getItem("tt.rainbow") === "1"; // rainbow is theming; accent/legibility tint stays
+    var pal = ttPalActive(RB_PAL);
+    var off = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET;
+    Array.prototype.slice.call(bar.querySelectorAll(".tt-actbtn")).forEach(function (b2, i2) {
       // The grey rest follows the theme's surface, so it is no dark slab on a light page.
-      var bg = "var(--cc-surface-3, #2e2e2e)", tx = "var(--cc-text-dim, #8a8a8a)";
-      if (!b2.classList.contains("cc-actoff")) {
-        tx = "var(--cc-text, #e6e6e6)";
+      var bg = "var(--tt-surface-3, #2e2e2e)", tx = "var(--tt-text-dim, #8a8a8a)";
+      if (!b2.classList.contains("tt-actoff")) {
+        tx = "var(--tt-text, #e6e6e6)";
         if (colorsOn) {
-          bg = !rb ? (effc("accent") || "#FCC419") : (b2.classList.contains("cc-act-del") && window.CCTheme ? window.CCTheme.deleteSlot(pal, i2 + off) : pal[(i2 + off) % pal.length]);
+          bg = !rb ? (effc("accent") || "#FCC419") : (b2.classList.contains("tt-act-del") && window.TTTheme ? window.TTTheme.deleteSlot(pal, i2 + off) : pal[(i2 + off) % pal.length]);
           tx = idealText(bg);
         }
       }
       // In the reactive sub-mode the CSS rests the coloured buttons grey and colours them on
       // hover from the stamped vars, which an inline !important would make impossible.
-      var neutral = rb && localStorage.getItem("cc.rbmode") === "active";
-      if (neutral && colorsOn && !b2.classList.contains("cc-actoff")) {
-        b2.style.setProperty("--cc-rb-c", bg); b2.style.setProperty("--cc-rb-ct", tx);
+      var neutral = rb && localStorage.getItem("tt.rbmode") === "active";
+      if (neutral && colorsOn && !b2.classList.contains("tt-actoff")) {
+        b2.style.setProperty("--tt-rb-c", bg); b2.style.setProperty("--tt-rb-ct", tx);
         b2.style.removeProperty("background"); b2.style.removeProperty("color");
       } else {
-        b2.style.removeProperty("--cc-rb-c"); b2.style.removeProperty("--cc-rb-ct");
+        b2.style.removeProperty("--tt-rb-c"); b2.style.removeProperty("--tt-rb-ct");
         b2.style.setProperty("background", bg, "important");
         b2.style.setProperty("color", tx, "important");
       }
@@ -1438,36 +1438,36 @@
   // shows the same grid: no WebUI or template, a stopped container's WebUI, console and pause.
   function actionBars(name, c, tr, state) {
     var cx = ctxFor(name, tr);
-    var bar = el("div", "cc-actbar");
+    var bar = el("div", "tt-actbar");
     var st = state || (c && c.state) || (tr && glyphState(tr.querySelector("td.ct-name .inner i[id^='load-']"))) || "unknown";
-    bar.dataset.ccState = st;
+    bar.dataset.ttState = st;
     var running = st === "running", paused = st === "paused", de = LANG === "de";
     var term = typeof window.openTerminal === "function";
-    var r1 = el("div", "cc-actrow");
+    var r1 = el("div", "tt-actrow");
     r1.appendChild(cx.webui && running ? actBtn("ExternalLink", "WebUI", function () { window.open(cx.webui, "_blank"); }) : actBtnOff("ExternalLink", cx.webui ? (de ? "WebUI erst, wenn der Container läuft" : "WebUI once the container is running") : (de ? "kein WebUI" : "no WebUI")));
     r1.appendChild(term ? actBtn("Log", "Log", function () { window.openTerminal("docker", name, ".log"); }) : actBtnOff("Log", "Log"));
     r1.appendChild(cx.xml ? actBtn("Pencil", de ? "Bearbeiten" : "Edit", function () { editTemplate(cx.xml); }) : actBtnOff("Pencil", de ? "kein Template" : "no template"));
-    var r2 = el("div", "cc-actrow");
+    var r2 = el("div", "tt-actrow");
     r2.appendChild(actBtn("Retry", t("restart"), function () { doAction(name, "restart"); }));
     r2.appendChild(paused ? actBtn("Resume", t("resume"), function () { doAction(name, "unpause"); })
       : (running ? actBtn("Pause", t("pause"), function () { doAction(name, "pause"); }) : actBtnOff("Pause", t("pause"))));
     // The stop and start slot. Its action is re-derived at click time, so a stale bar never runs
     // the opposite of what the container needs.
-    r2.appendChild(actBtn(running || paused ? "Stop" : "Play", running || paused ? t("stop") : t("start"), function () { var cc2 = containerByName(name); doAction(name, cc2 && (cc2.state === "running" || cc2.state === "paused") ? "stop" : "start"); }));
-    var r3 = el("div", "cc-actrow");
+    r2.appendChild(actBtn(running || paused ? "Stop" : "Play", running || paused ? t("stop") : t("start"), function () { var row = containerByName(name); doAction(name, row && (row.state === "running" || row.state === "paused") ? "stop" : "start"); }));
+    var r3 = el("div", "tt-actrow");
     var konsole = de ? "Konsole" : "Console";
     r3.appendChild(term && running ? actBtn("Code", konsole, function () { if (cx.shell) window.openTerminal("docker", name, cx.shell); else window.openTerminal("docker", name); }) : actBtnOff("Code", term ? (de ? "Konsole erst, wenn der Container läuft" : "Console once the container is running") : konsole));
     // Update and remove go through Unraid's own functions, which ask before they act.
     r3.appendChild(typeof window.updateContainer === "function" ? actBtn("Update", t("updateCt"), function () { window.updateContainer(name); }) : actBtnOff("Update", t("updateCt")));
     var rmLabel = de ? "Entfernen" : "Remove";
     var rm = typeof window.rmContainer === "function" && cx.id ? actBtn("Trash", rmLabel, function () { window.rmContainer(name, cx.image, cx.id); }) : actBtnOff("Trash", rmLabel);
-    rm.classList.add("cc-act-del"); r3.appendChild(rm);
-    if (window.CCTheme && window.CCTheme.menu) {
+    rm.classList.add("tt-act-del"); r3.appendChild(rm);
+    if (window.TTTheme && window.TTTheme.menu) {
       var moreBtn = actBtn("More", de ? "Mehr" : "More", function () {
         var extras = limitItems(moreBtn, name);
         if (cx.tswebui) extras.push({ glyph: "ExternalLink", label: "Tailscale WebUI", run: function () { window.open(cx.tswebui, "_blank"); } });
         cx.links.forEach(function (l2) { extras.push({ glyph: l2.glyph, label: l2.tip, run: function () { window.open(l2.url, "_blank"); } }); });
-        window.CCTheme.menu(moreBtn, extras);
+        window.TTTheme.menu(moreBtn, extras);
       });
       r3.appendChild(moreBtn);
     } else {
@@ -1480,18 +1480,18 @@
   function injectActionCell(tr, name, c) {
     try {
       var hr2 = headerRow();
-      if (hr2 && !hr2.querySelector(".cc-act-th")) { var th2 = el("th", "cc-act-th", LANG === "de" ? "Aktionen" : "Actions"); hr2.insertBefore(th2, hr2.children[1] || null); }
+      if (hr2 && !hr2.querySelector(".tt-act-th")) { var th2 = el("th", "tt-act-th", LANG === "de" ? "Aktionen" : "Actions"); hr2.insertBefore(th2, hr2.children[1] || null); }
       var ab = actionBars(name, c, tr);
-      var old2 = tr.querySelector(".cc-actcell");
-      if (old2) { if (old2.dataset.ccSig === ab.sig) return; old2.remove(); } // rebuild once the data changed
-      var tda = el("td", "cc-actcell"); tda.setAttribute(MARK, "1"); tda.dataset.ccSig = ab.sig;
+      var old2 = tr.querySelector(".tt-actcell");
+      if (old2) { if (old2.dataset.ttSig === ab.sig) return; old2.remove(); } // rebuild once the data changed
+      var tda = el("td", "tt-actcell"); tda.setAttribute(MARK, "1"); tda.dataset.ttSig = ab.sig;
       tda.style.setProperty("vertical-align", "middle", "important");
       tda.appendChild(ab.bar);
       tr.insertBefore(tda, tr.children[1] || null); // between the name and the version column
     } catch (e) {}
   }
   // Measures Unraid's always-visible footer, so the docked action bar, which CSS puts at
-  // bottom: var(--cc-footer-h), sits on top of it. It docks only where #footer is genuinely
+  // bottom: var(--tt-footer-h), sits on top of it. It docks only where #footer is genuinely
   // fixed; on a narrow portrait viewport the footer flows in the document and the bar has to
   // flow too, which clearing the var lets the media query do.
   function syncFooterDock() {
@@ -1501,7 +1501,7 @@
       // every badge pass. One read phase and one write phase cost a single layout.
       var f = document.getElementById("footer");
       var bar = document.querySelector("div.js-actions");
-      var lst = document.querySelector("#docker_list") || document.querySelector("table.cc-enh");
+      var lst = document.querySelector("#docker_list") || document.querySelector("table.tt-enh");
       // read phase
       var fixed = f && getComputedStyle(f).position === "fixed";
       // The var is always stamped: a hidden footer measures 0, a missing one counts as 0, and a
@@ -1513,9 +1513,9 @@
       var lr = bar && lst ? lst.getBoundingClientRect() : null;
       var vw = document.documentElement.clientWidth;
       // write phase
-      document.documentElement.style.setProperty("--cc-footer-h", h + "px");
+      document.documentElement.style.setProperty("--tt-footer-h", h + "px");
       // the docked bar's own height feeds the scroll clearance through a CSS padding-bottom
-      if (bh > 0 && bh < 200) document.documentElement.style.setProperty("--cc-actbar-h", bh + "px");
+      if (bh > 0 && bh < 200) document.documentElement.style.setProperty("--tt-actbar-h", bh + "px");
       // The native bar is fixed at the full viewport width, so its edges are inset to the
       // container list's, measured here on every apply, resize and scroll, with width:auto so
       // left and right decide.
@@ -1532,8 +1532,8 @@
       }
       colorBarButtons(); // the rainbow tint for the native bar buttons; the CSS handles the accent
     } catch (e) {}
-    if (!window.__ccDockResize) {
-      window.__ccDockResize = true;
+    if (!window.__ttDockResize) {
+      window.__ttDockResize = true;
       window.addEventListener("resize", function () { try { syncFooterDock(); } catch (e) {} });
     }
   }
@@ -1541,17 +1541,17 @@
   // calls loadlist() directly, since triggering the hidden checkbox does nothing.
   function ensureBarToggle(bar) {
     function advWord(on) { return on ? (LANG === "de" ? "Erweiterte Ansicht" : "Advanced view") : (LANG === "de" ? "Einfache Ansicht" : "Basic view"); }
-    var existing = bar.querySelector(".cc-bar-adv");
-    if (existing) { var on0 = isAdvancedView(); var t0 = existing.querySelector(".cc-set-toggle"), l0 = existing.querySelector(".cc-bar-adv-lbl"); if (t0) { t0.classList.toggle("cc-set-toggle-on", on0); t0.setAttribute("aria-checked", on0 ? "true" : "false"); } if (l0) l0.textContent = advWord(on0); return; }
-    var wrap = el("span", "cc-bar-adv"); wrap.setAttribute(MARK, "1");
-    var lbl = el("span", "cc-bar-adv-lbl", advWord(isAdvancedView())); wrap.appendChild(lbl);
-    var tg = el("span", "cc-set-toggle" + (isAdvancedView() ? " cc-set-toggle-on" : ""));
+    var existing = bar.querySelector(".tt-bar-adv");
+    if (existing) { var on0 = isAdvancedView(); var t0 = existing.querySelector(".tt-set-toggle"), l0 = existing.querySelector(".tt-bar-adv-lbl"); if (t0) { t0.classList.toggle("tt-set-toggle-on", on0); t0.setAttribute("aria-checked", on0 ? "true" : "false"); } if (l0) l0.textContent = advWord(on0); return; }
+    var wrap = el("span", "tt-bar-adv"); wrap.setAttribute(MARK, "1");
+    var lbl = el("span", "tt-bar-adv-lbl", advWord(isAdvancedView())); wrap.appendChild(lbl);
+    var tg = el("span", "tt-set-toggle" + (isAdvancedView() ? " tt-set-toggle-on" : ""));
     tg.setAttribute("role", "switch"); tg.setAttribute("tabindex", "0"); tg.setAttribute("aria-checked", isAdvancedView() ? "true" : "false");
     tg.setAttribute("data-tip", LANG === "de" ? "Einfache / Erweiterte Ansicht" : "Basic / Advanced view");
-    tg.appendChild(el("span", "cc-set-knob"));
+    tg.appendChild(el("span", "tt-set-knob"));
     function flip() {
       var next = !isAdvancedView();
-      tg.classList.toggle("cc-set-toggle-on", next); tg.setAttribute("aria-checked", next ? "true" : "false");
+      tg.classList.toggle("tt-set-toggle-on", next); tg.setAttribute("aria-checked", next ? "true" : "false");
       lbl.textContent = advWord(next);
       try { document.cookie = "docker_listview_mode=" + (next ? "advanced" : "basic") + "; path=/"; } catch (e9) {}
       try { var inp9 = document.querySelector("input.advancedview"); if (inp9) inp9.checked = next; } catch (e9) {}
@@ -1573,7 +1573,7 @@
       setTimeout(function () { try { if (!themingOn()) { removeEnhanceClasses(); reinjectRowBadges(); } } catch (e9) {} }, 300);
       setTimeout(function () {
         try {
-          if (!themingOn() || mode !== "list" || ccEnhanceAt > flipAt) return;   // the observer already repainted the fresh list, or the cards hide it
+          if (!themingOn() || mode !== "list" || ttEnhanceAt > flipAt) return;   // the observer already repainted the fresh list, or the cards hide it
           applyEnhanceClasses(); reinjectRowBadges();
         } catch (e9) {}
       }, 1200);
@@ -1583,34 +1583,34 @@
     wrap.appendChild(tg); bar.appendChild(wrap);
   }
   // This badge in the floating action bar turns every logo tile into its row's selection
-  // (html.cc-bulkmode-on), so a plain click or a tap picks it, for a touch screen above all, which
+  // (html.tt-bulkmode-on), so a plain click or a tap picks it, for a touch screen above all, which
   // has no Ctrl or Shift. Switching it off clears the selection too, since a lingering count bar
   // over tiles that do not pick is a confusing state.
-  var ccBulkModeOn = false;
-  function ccBulkModeToggle() {
-    ccBulkModeOn = !ccBulkModeOn;
-    document.documentElement.classList.toggle("cc-bulkmode-on", ccBulkModeOn);
-    var btn = document.querySelector(".cc-bulkmode-badge"); if (btn) btn.classList.toggle("cc-bulkmode-badge-on", ccBulkModeOn);
+  var ttBulkModeOn = false;
+  function ttBulkModeToggle() {
+    ttBulkModeOn = !ttBulkModeOn;
+    document.documentElement.classList.toggle("tt-bulkmode-on", ttBulkModeOn);
+    var btn = document.querySelector(".tt-bulkmode-badge"); if (btn) btn.classList.toggle("tt-bulkmode-badge-on", ttBulkModeOn);
     try { colorBarButtons(); } catch (e) {}   // the pressed badge drops its inline paint, and regains it on release, in the same tick as the class
-    if (!ccBulkModeOn) { ccBulkSel = {}; ccBulkClearMarks(); ccBulkBarSync(); }
+    if (!ttBulkModeOn) { ttBulkSel = {}; ttBulkClearMarks(); ttBulkBarSync(); }
   }
   function ensureBulkModeBadge(bar) {
-    var btn = bar.querySelector(".cc-bulkmode-badge");
+    var btn = bar.querySelector(".tt-bulkmode-badge");
     if (!btn) {
-      // The badge carries no .cc-b: that is the sm-tier chip recipe, which reads as a different
+      // The badge carries no .tt-b: that is the sm-tier chip recipe, which reads as a different
       // species beside the bar's uppercase buttons. Its look comes from
-      // `div.js-actions .cc-bulkmode-badge` in docker.css, which shares the native buttons' rules.
-      btn = ccLabelled(el("span", "cc-bulkmode-badge" + (ccBulkModeOn ? " cc-bulkmode-badge-on" : "")), "SelectAll", LANG === "de" ? "Mehrfachauswahl" : "Multi-select");
+      // `div.js-actions .tt-bulkmode-badge` in docker.css, which shares the native buttons' rules.
+      btn = ttLabelled(el("span", "tt-bulkmode-badge" + (ttBulkModeOn ? " tt-bulkmode-badge-on" : "")), "SelectAll", LANG === "de" ? "Mehrfachauswahl" : "Multi-select");
       btn.setAttribute(MARK, "1"); btn.setAttribute("role", "button"); btn.setAttribute("tabindex", "0");
-      btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); ccBulkModeToggle(); });
-      btn.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); ccBulkModeToggle(); } });
+      btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); ttBulkModeToggle(); });
+      btn.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); ttBulkModeToggle(); } });
     }
     // The badge is anchored to the container-size button through its onclick, since that button
     // carries no id or class and its label is translated. A plain appendChild would put it after
-    // .cc-bar-adv, whose margin-left:auto flings everything behind it to the far end of the bar.
+    // .tt-bar-adv, whose margin-left:auto flings everything behind it to the far end of the bar.
     // The fallbacks are just before the right-pinned toggle, then an append. relocateTopBar runs
     // this on every badge pass, so it touches the DOM only when the position is wrong.
-    var anchor = bar.querySelector('input[type=button][onclick*="contSizes"]'), adv = bar.querySelector(".cc-bar-adv");
+    var anchor = bar.querySelector('input[type=button][onclick*="contSizes"]'), adv = bar.querySelector(".tt-bar-adv");
     var placed = btn.parentElement === bar && (anchor ? btn.previousElementSibling === anchor : (!adv || btn.nextElementSibling === adv));
     if (!placed) bar.insertBefore(btn, anchor ? anchor.nextSibling : (adv || null));
   }
@@ -1626,55 +1626,55 @@
       // nothing to pick there and leaves with the list.
       var listView = mode === "list";
       if (!listView) {
-        var bulkBadge = document.querySelector(".cc-bulkmode-badge"); if (bulkBadge) bulkBadge.remove();
-        if (ccBulkModeOn) ccBulkModeToggle();
+        var bulkBadge = document.querySelector(".tt-bulkmode-badge"); if (bulkBadge) bulkBadge.remove();
+        if (ttBulkModeOn) ttBulkModeToggle();
       } else if (!findRows().length) return; // no gear before the rows exist, or it flashes on load
-      var oldAm = document.querySelector(".cc-advmini"); if (oldAm) oldAm.remove();
+      var oldAm = document.querySelector(".tt-advmini"); if (oldAm) oldAm.remove();
       var jsa = document.querySelector("div.js-actions");
       if (jsa) {
         // The gear menu is the one home of the list, grid and folder switch, so the list view needs
         // a gear as much as the card and folder views do. It sits beside the view switch in the
         // docked bar: a column header scrolls out of reach with a wide table and has no room
         // beside its label, while the bar wraps and stays on screen.
-        Array.prototype.slice.call(document.querySelectorAll(".cc-hgear")).forEach(function (x9) { if (!x9.closest(".cc-bar-adv")) x9.remove(); });
-        var hc = document.querySelector(".cc-headctl"); if (hc) hc.remove();
+        Array.prototype.slice.call(document.querySelectorAll(".tt-hgear")).forEach(function (x9) { if (!x9.closest(".tt-bar-adv")) x9.remove(); });
+        var hc = document.querySelector(".tt-headctl"); if (hc) hc.remove();
         foldBar(jsa);
         ensureBarToggle(jsa);
         if (listView) ensureBulkModeBadge(jsa);
-        var advGrp = jsa.querySelector(".cc-bar-adv");
-        if (advGrp && !advGrp.querySelector(".cc-hgear")) advGrp.appendChild(makeGear("cc-hgear-home"));
+        var advGrp = jsa.querySelector(".tt-bar-adv");
+        if (advGrp && !advGrp.querySelector(".tt-hgear")) advGrp.appendChild(makeGear("tt-hgear-home"));
       } else {
         // the Plugins and VM pages have a tab strip rather than a js-actions bar
         var tc9 = document.querySelector("nav.tabs .tabs-container");
         if (tc9) {
-          Array.prototype.slice.call(document.querySelectorAll(".cc-hgear:not(.cc-hgear-home)")).forEach(function (x9) { x9.remove(); });
-          if (!tc9.querySelector(".cc-hgear-home")) tc9.appendChild(makeGear("cc-hgear-home"));
+          Array.prototype.slice.call(document.querySelectorAll(".tt-hgear:not(.tt-hgear-home)")).forEach(function (x9) { x9.remove(); });
+          if (!tc9.querySelector(".tt-hgear-home")) tc9.appendChild(makeGear("tt-hgear-home"));
         }
       }
     } catch (e) {}
   }
   function injectAllRowBadges() {
     relocateTopBar();
-    // The update pill's colours are page-global, from --cc-rbaccent or --cc-accent and the
-    // cc.statenative flag, never per row, so they are computed once here. Reading them inside
+    // The update pill's colours are page-global, from --tt-rbaccent or --tt-accent and the
+    // tt.statenative flag, never per row, so they are computed once here. Reading them inside
     // injectRowBadges puts a getComputedStyle between that row's own writes, and each one forces
     // a synchronous style recalculation of the whole document; after a tbody replace on a host
     // with a hundred containers that is a hundred recalculations in one blocking task.
-    var upNative = localStorage.getItem("cc.statenative") === "1";
+    var upNative = localStorage.getItem("tt.statenative") === "1";
     var upRs = getComputedStyle(document.documentElement);
-    ccUpBg = upNative ? "var(--cc-warn, #ff832b)" : ((upRs.getPropertyValue("--cc-rbaccent") || "").trim() || (upRs.getPropertyValue("--cc-accent") || "").trim() || "#FCC419");
-    ccUpFg = upNative ? "var(--cc-warn-fg, #161616)" : ((upRs.getPropertyValue("--cc-rbaccent-text") || "").trim() || (upRs.getPropertyValue("--cc-accent-text") || "").trim() || "#161616");
+    ttUpBg = upNative ? "var(--tt-warn, #ff832b)" : ((upRs.getPropertyValue("--tt-rbaccent") || "").trim() || (upRs.getPropertyValue("--tt-accent") || "").trim() || "#FCC419");
+    ttUpFg = upNative ? "var(--tt-warn-fg, #161616)" : ((upRs.getPropertyValue("--tt-rbaccent-text") || "").trim() || (upRs.getPropertyValue("--tt-accent-text") || "").trim() || "#161616");
     // The advanced/basic read is cached for this pass (see isAdvancedView) and reset in a finally,
     // so a mid-pass exception cannot leave a later call reading a stale value.
-    ccAdvCache = isAdvancedViewReal();
-    ccEnhanceAt = Date.now();   // stamped on every full pass, whoever started it
+    ttAdvCache = isAdvancedViewReal();
+    ttEnhanceAt = Date.now();   // stamped on every full pass, whoever started it
     try {
       findRows().forEach(injectRowBadges);
       if (themingOn()) { // the centring is cosmetic, so native rows keep their alignment with theming off
         requestAnimationFrame(centerNameCells);
         setTimeout(centerNameCells, 800); // a late-loading icon changes the row height
         // Anything in the list still carrying a native title, ShipLog's chip, Unraid's
-        // wait-seconds input or a future stray, becomes a CC bubble. nchan rebuilds the rows with
+        // wait-seconds input or a future stray, becomes a TowerTorch bubble. nchan rebuilds the rows with
         // the title back, so this runs per pass, and the teardown is free, since the native rows
         // return on their own.
         try {
@@ -1682,7 +1682,7 @@
           for (var ti = 0; ti < tl.length; ti++) { var tt = tl[ti].getAttribute("title"); if (tt) { tl[ti].removeAttribute("title"); tl[ti].setAttribute("data-tip", tt); } }
         } catch (e9) {}
       }
-    } finally { ccAdvCache = null; }
+    } finally { ttAdvCache = null; }
   }
   // Measures where .outer actually sits inside td.ct-name and compensates with a translateY,
   // because Unraid's own rules differ per build and theme and no fixed CSS covers them all. Each
@@ -1703,10 +1703,10 @@
       }
       for (var j = 0; j < pending.length; j++) {
         var p = pending[j];
-        var prev = parseFloat(p.outer.dataset.ccDy || "0");
+        var prev = parseFloat(p.outer.dataset.ttDy || "0");
         var dy = Math.round(prev + ((p.tdR.bottom - p.oR.bottom) - (p.oR.top - p.tdR.top)) / 2);
         if (Math.abs(dy - prev) < 2) continue;
-        p.outer.dataset.ccDy = String(dy);
+        p.outer.dataset.ttDy = String(dy);
         p.outer.style.setProperty("transform", "translateY(" + dy + "px)", "important");
       }
     } catch (e) {}
@@ -1715,12 +1715,12 @@
     var root = document.getElementById("docker_list") || nativeTable() || document; // scoped to the list rather than the whole page
     Array.prototype.slice.call(root.querySelectorAll("[" + MARK + "]")).forEach(function (n) { n.remove(); });
     Array.prototype.slice.call(root.querySelectorAll("[" + ROWMARK + "]")).forEach(function (n) { n.removeAttribute(ROWMARK); });
-    Array.prototype.slice.call(root.querySelectorAll(".cc-hidden")).forEach(function (n) { n.classList.remove("cc-hidden"); });
-    Array.prototype.slice.call(root.querySelectorAll(".cc-pick")).forEach(function (n) { n.classList.remove("cc-pick"); ["role", "tabindex", "aria-label", "aria-checked"].forEach(function (a) { n.removeAttribute(a); }); });
+    Array.prototype.slice.call(root.querySelectorAll(".tt-hidden")).forEach(function (n) { n.classList.remove("tt-hidden"); });
+    Array.prototype.slice.call(root.querySelectorAll(".tt-pick")).forEach(function (n) { n.classList.remove("tt-pick"); ["role", "tabindex", "aria-label", "aria-checked"].forEach(function (a) { n.removeAttribute(a); }); });
     // the third-party badges lose their stamped classes, and the group badge is unwrapped, which
     // puts the native icon and text back
-    Array.prototype.slice.call(root.querySelectorAll(".cc-3p")).forEach(function (n) { n.classList.remove("cc-b", "cc-3p"); });
-    Array.prototype.slice.call(root.querySelectorAll("span.cc-grp")).forEach(function (n) { while (n.firstChild) n.parentNode.insertBefore(n.firstChild, n); n.remove(); });
+    Array.prototype.slice.call(root.querySelectorAll(".tt-3p")).forEach(function (n) { n.classList.remove("tt-b", "tt-3p"); });
+    Array.prototype.slice.call(root.querySelectorAll("span.tt-grp")).forEach(function (n) { while (n.firstChild) n.parentNode.insertBefore(n.firstChild, n); n.remove(); });
   }
   // Reverts the cosmetic inline styles injectRowBadges and centerNameCells wrote onto the native
   // cells: the vertical centring, the hidden name-cell state text and spinner, and .outer's flex
@@ -1755,10 +1755,10 @@
   function markTransient(name, action) {
     var lbl = transientLabel(action); if (!lbl) return;
     try {
-      Array.prototype.slice.call(document.querySelectorAll(".cc-badge")).forEach(function (b) {
+      Array.prototype.slice.call(document.querySelectorAll(".tt-badge")).forEach(function (b) {
         if (b.dataset && b.dataset.name === name) {
           b.textContent = lbl;
-          b.className = b.className.replace(/cc-badge-(running|exited|paused|created|restarting|removing|dead|unknown)\b/g, "").replace(/\s+/g, " ").trim() + " cc-badge-transient";
+          b.className = b.className.replace(/tt-badge-(running|exited|paused|created|restarting|removing|dead|unknown)\b/g, "").replace(/\s+/g, " ").trim() + " tt-badge-transient";
         }
       });
     } catch (e) {}
@@ -1775,113 +1775,113 @@
   // It leaves after a moment, since by then the result itself is on screen.
   var CHECK_HOLD = 1600;
   function confirmCheck(host, before) {
-    var mark = el("span", "cc-done-check");
+    var mark = el("span", "tt-done-check");
     host.insertBefore(mark, before || null);
-    window.CCPictures.drawCheck(mark, t("done"));
+    window.TTPictures.drawCheck(mark, t("done"));
     setTimeout(function () { if (mark.parentNode) mark.parentNode.removeChild(mark); }, CHECK_HOLD);
   }
   // A start, stop or restart showed its progress on the container's state badges, so the check
   // stands beside each of them. A running container's badge is hidden on a card, and there the
   // check takes its place.
   function confirmAction(name) {
-    Array.prototype.slice.call(document.querySelectorAll('.cc-badge[data-name="' + CSS.escape(name) + '"]')).forEach(function (b) { confirmCheck(b.parentNode, b); });
+    Array.prototype.slice.call(document.querySelectorAll('.tt-badge[data-name="' + CSS.escape(name) + '"]')).forEach(function (b) { confirmCheck(b.parentNode, b); });
   }
-  function actionBtn(label, name, action, primary) { var b = el("button", "cc-abtn" + (primary ? " cc-abtn-primary" : ""), label); b.addEventListener("click", function (e) { e.stopPropagation(); doAction(name, action, b); }); return b; }
+  function actionBtn(label, name, action, primary) { var b = el("button", "tt-abtn" + (primary ? " tt-abtn-primary" : ""), label); b.addEventListener("click", function (e) { e.stopPropagation(); doAction(name, action, b); }); return b; }
 
-  // The bulk-select action bar. Start, stop and restart go through CC's own engine API, the same
+  // The bulk-select action bar. Start, stop and restart go through TowerTorch's own engine API, the same
   // path every single-container button uses, one request per container in parallel with a single
   // load() at the end. Remove is different, because the engine never performs a destructive
   // removal: it drives Unraid's own docker-manager endpoint, the Events.php remove_container
   // action rmContainer() uses, behind one combined confirm rather than a dialog per container.
-  var ccBulkBarEl = null;
-  function ccBulkBarSync() {
-    var names = Object.keys(ccBulkSel);
-    document.documentElement.classList.toggle("cc-bulk-picked", names.length > 0);
+  var ttBulkBarEl = null;
+  function ttBulkBarSync() {
+    var names = Object.keys(ttBulkSel);
+    document.documentElement.classList.toggle("tt-bulk-picked", names.length > 0);
     if (!names.length) {
-      if (!ccBulkBarEl) return;
+      if (!ttBulkBarEl) return;
       // A bar that hides under the keyboard focus would drop it on <body>; the multi-select badge,
       // else a row's logo tile, is where the next step starts.
-      var hadFocus = ccBulkBarEl.contains(document.activeElement);
-      ccBulkBarEl.style.setProperty("display", "none", "important");
+      var hadFocus = ttBulkBarEl.contains(document.activeElement);
+      ttBulkBarEl.style.setProperty("display", "none", "important");
       if (hadFocus) {
-        var next = [document.querySelector(".cc-bulkmode-badge")].concat(Array.prototype.slice.call(document.querySelectorAll(".cc-pick")))
+        var next = [document.querySelector(".tt-bulkmode-badge")].concat(Array.prototype.slice.call(document.querySelectorAll(".tt-pick")))
           .filter(function (n) { return n && n.getClientRects().length; })[0];
         if (next) next.focus();
       }
       return;
     }
     var de = LANG === "de";
-    if (!ccBulkBarEl) {
-      var bar = el("div", "cc-bulkbar");
-      var count = el("span", "cc-bulkbar-count"); bar.appendChild(count);
-      var startB = ccLabelled(el("span", "cc-b cc-bulkbtn"), "Play", de ? "Starten" : "Start"); startB.addEventListener("click", function () { ccBulkRun("start"); }); bar.appendChild(startB);
-      var stopB = ccLabelled(el("span", "cc-b cc-bulkbtn"), "Stop", de ? "Stoppen" : "Stop"); stopB.addEventListener("click", function () { ccBulkRun("stop"); }); bar.appendChild(stopB);
-      var rmB = ccLabelled(el("span", "cc-b cc-bulkbtn cc-bulkbtn-del"), "Trash", de ? "Entfernen" : "Remove"); rmB.addEventListener("click", ccBulkRemove); bar.appendChild(rmB);
-      var clearB = ccLabelled(el("span", "cc-b cc-bulkbtn cc-bulkbtn-clear"), "ClearSelection", de ? "Aufheben" : "Clear"); clearB.addEventListener("click", function () { ccBulkSel = {}; ccBulkClearMarks(); ccBulkBarSync(); }); bar.appendChild(clearB);
-      if (window.CCTheme) [startB, stopB, rmB, clearB].forEach(window.CCTheme.pressable);
+    if (!ttBulkBarEl) {
+      var bar = el("div", "tt-bulkbar");
+      var count = el("span", "tt-bulkbar-count"); bar.appendChild(count);
+      var startB = ttLabelled(el("span", "tt-b tt-bulkbtn"), "Play", de ? "Starten" : "Start"); startB.addEventListener("click", function () { ttBulkRun("start"); }); bar.appendChild(startB);
+      var stopB = ttLabelled(el("span", "tt-b tt-bulkbtn"), "Stop", de ? "Stoppen" : "Stop"); stopB.addEventListener("click", function () { ttBulkRun("stop"); }); bar.appendChild(stopB);
+      var rmB = ttLabelled(el("span", "tt-b tt-bulkbtn tt-bulkbtn-del"), "Trash", de ? "Entfernen" : "Remove"); rmB.addEventListener("click", ttBulkRemove); bar.appendChild(rmB);
+      var clearB = ttLabelled(el("span", "tt-b tt-bulkbtn tt-bulkbtn-clear"), "ClearSelection", de ? "Aufheben" : "Clear"); clearB.addEventListener("click", function () { ttBulkSel = {}; ttBulkClearMarks(); ttBulkBarSync(); }); bar.appendChild(clearB);
+      if (window.TTTheme) [startB, stopB, rmB, clearB].forEach(window.TTTheme.pressable);
       document.body.appendChild(bar);
-      ccBulkBarEl = bar;
+      ttBulkBarEl = bar;
     }
-    ccBulkBarEl.style.removeProperty("display");
-    colorBulkButtons(ccBulkBarEl);
-    ccBulkBarEl.querySelector(".cc-bulkbar-count").textContent = names.length + " " + (de ? "ausgewählt" : "selected");
+    ttBulkBarEl.style.removeProperty("display");
+    colorBulkButtons(ttBulkBarEl);
+    ttBulkBarEl.querySelector(".tt-bulkbar-count").textContent = names.length + " " + (de ? "ausgewählt" : "selected");
   }
   // The bar's buttons take palette slots for their hover the way the action bar's do, Entfernen
   // through deleteSlot so a red slot passes to the next colour. Outside the rainbow modes the
   // sheet falls back to the accent.
   function colorBulkButtons(bar) {
-    var btns = Array.prototype.slice.call(bar.querySelectorAll(".cc-bulkbtn:not(.cc-bulkbtn-clear)"));
-    var rb = themingOn() && localStorage.getItem("cc.rainbow") === "1";
-    var pal = ccPalActive(RB_PAL), off = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET;
+    var btns = Array.prototype.slice.call(bar.querySelectorAll(".tt-bulkbtn:not(.tt-bulkbtn-clear)"));
+    var rb = themingOn() && localStorage.getItem("tt.rainbow") === "1";
+    var pal = ttPalActive(RB_PAL), off = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET;
     btns.forEach(function (b, i) {
-      if (!rb) { b.style.removeProperty("--cc-rb-c"); b.style.removeProperty("--cc-rb-ct"); return; }
-      var c = b.classList.contains("cc-bulkbtn-del") && window.CCTheme ? window.CCTheme.deleteSlot(pal, i + off) : pal[(i + off) % pal.length];
-      b.style.setProperty("--cc-rb-c", c); b.style.setProperty("--cc-rb-ct", idealText(c));
+      if (!rb) { b.style.removeProperty("--tt-rb-c"); b.style.removeProperty("--tt-rb-ct"); return; }
+      var c = b.classList.contains("tt-bulkbtn-del") && window.TTTheme ? window.TTTheme.deleteSlot(pal, i + off) : pal[(i + off) % pal.length];
+      b.style.setProperty("--tt-rb-c", c); b.style.setProperty("--tt-rb-ct", idealText(c));
     });
   }
   // Picking rows the way a file manager does (GlimStone, "Lists"): Ctrl or Cmd and a click toggles
   // a row's tile and makes it the anchor, Shift and a click picks the rows from the anchor to this
   // one, in the order the list shows them. A click on a control in the row keeps doing its own job.
-  var ccBulkAnchor = null;
-  var BULK_SKIP = "a[href], button, input, select, textarea, label, [role=button], [role=switch], .cc-actcell, .cc-b-copy, .cc-plan, .cc-limbtn";
-  function ccBulkRows() { return findRows().filter(function (r) { return r.style.display !== "none" && r.querySelector(".cc-pick"); }); }
-  function ccBulkRowFor(e) {
+  var ttBulkAnchor = null;
+  var BULK_SKIP = "a[href], button, input, select, textarea, label, [role=button], [role=switch], .tt-actcell, .tt-b-copy, .tt-plan, .tt-limbtn";
+  function ttBulkRows() { return findRows().filter(function (r) { return r.style.display !== "none" && r.querySelector(".tt-pick"); }); }
+  function ttBulkRowFor(e) {
     if (mode !== "list" || !(e.ctrlKey || e.metaKey || e.shiftKey) || e.button || !e.target || !e.target.closest) return null;
     var tr = e.target.closest("#docker_list tr");
-    if (!tr || !tr.querySelector(".cc-pick") || e.target.closest(BULK_SKIP)) return null;
+    if (!tr || !tr.querySelector(".tt-pick") || e.target.closest(BULK_SKIP)) return null;
     return tr;
   }
   // A plain click on a logo tile picks it while multi-select is on or something is picked already;
   // otherwise the click keeps pointing at the row's actions.
-  function ccBulkTileFor(e) {
-    if (mode !== "list" || e.button || !e.target || !e.target.closest || !(ccBulkModeOn || Object.keys(ccBulkSel).length)) return null;
-    var tile = e.target.closest("#docker_list td.ct-name span.cc-pick");
+  function ttBulkTileFor(e) {
+    if (mode !== "list" || e.button || !e.target || !e.target.closest || !(ttBulkModeOn || Object.keys(ttBulkSel).length)) return null;
+    var tile = e.target.closest("#docker_list td.ct-name span.tt-pick");
     return tile ? tile.closest("tr") : null;
   }
-  function ccBulkInRange(tr) { var rows = ccBulkRows(); return rows.indexOf(ccBulkAnchor) >= 0 && rows.indexOf(tr) >= 0; }
-  function ccBulkSet(tr, on) {
-    var name = rowName(tr), tile = tr.querySelector(".cc-pick");
+  function ttBulkInRange(tr) { var rows = ttBulkRows(); return rows.indexOf(ttBulkAnchor) >= 0 && rows.indexOf(tr) >= 0; }
+  function ttBulkSet(tr, on) {
+    var name = rowName(tr), tile = tr.querySelector(".tt-pick");
     if (tile) tile.setAttribute("aria-checked", on ? "true" : "false");
-    if (on) { var cx = ctxFor(name, tr); ccBulkSel[name] = { id: cx.id, image: cx.image }; }
-    else delete ccBulkSel[name];
+    if (on) { var cx = ctxFor(name, tr); ttBulkSel[name] = { id: cx.id, image: cx.image }; }
+    else delete ttBulkSel[name];
   }
-  function ccBulkClick(tr, e) {
-    if (e.shiftKey && ccBulkInRange(tr)) {
-      var rows = ccBulkRows(), a = rows.indexOf(ccBulkAnchor), b = rows.indexOf(tr);
+  function ttBulkClick(tr, e) {
+    if (e.shiftKey && ttBulkInRange(tr)) {
+      var rows = ttBulkRows(), a = rows.indexOf(ttBulkAnchor), b = rows.indexOf(tr);
       var lo = Math.min(a, b), hi = Math.max(a, b);
       // The range takes the place of the selection, rows a filter hides included, so a bulk action
       // never reaches one out of sight.
-      findRows().forEach(function (r) { if (r.querySelector(".cc-pick")) { var i = rows.indexOf(r); ccBulkSet(r, i >= lo && i <= hi); } });
+      findRows().forEach(function (r) { if (r.querySelector(".tt-pick")) { var i = rows.indexOf(r); ttBulkSet(r, i >= lo && i <= hi); } });
     } else {
-      ccBulkSet(tr, !ccBulkSel[rowName(tr)]);
-      ccBulkAnchor = tr;
+      ttBulkSet(tr, !ttBulkSel[rowName(tr)]);
+      ttBulkAnchor = tr;
     }
-    ccBulkBarSync();
+    ttBulkBarSync();
   }
   // Every tile is unpicked after a bulk action or a clear. The fresh rows a native tbody replace
   // creates start unpicked, so there is nothing to do for those.
-  function ccBulkClearMarks() {
-    Array.prototype.slice.call(document.querySelectorAll(".cc-pick")).forEach(function (n) { n.setAttribute("aria-checked", "false"); });
+  function ttBulkClearMarks() {
+    Array.prototype.slice.call(document.querySelectorAll(".tt-pick")).forEach(function (n) { n.setAttribute("aria-checked", "false"); });
   }
   // Shared by the bulk-select bar and the per-folder start and stop buttons, so there is one
   // start-in-parallel-then-reload mechanism rather than two.
@@ -1893,14 +1893,14 @@
       .then(function () { return load(); })
       .then(function () { flash(t("done")); if (onDone) onDone(); });
   }
-  function ccBulkRun(action) {
-    runBulkAction(Object.keys(ccBulkSel), action, function () { ccBulkSel = {}; ccBulkClearMarks(); ccBulkBarSync(); });
+  function ttBulkRun(action) {
+    runBulkAction(Object.keys(ttBulkSel), action, function () { ttBulkSel = {}; ttBulkClearMarks(); ttBulkBarSync(); });
   }
-  function ccBulkRemove(ev) {
-    var names = Object.keys(ccBulkSel);
-    if (!names.length || !window.CCTheme || !window.CCTheme.ask) return;
+  function ttBulkRemove(ev) {
+    var names = Object.keys(ttBulkSel);
+    if (!names.length || !window.TTTheme || !window.TTTheme.ask) return;
     var de = LANG === "de", count = names.length;
-    window.CCTheme.ask({
+    window.TTTheme.ask({
       title: de ? count + " Container entfernen?" : "Remove " + count + " container" + (count === 1 ? "" : "s") + "?",
       text: names.join(", "), ok: de ? "Entfernen" : "Remove", cancel: t("cancel"), danger: true,
       opener: ev && ev.currentTarget, onOk: removeNow
@@ -1908,18 +1908,18 @@
     function removeNow() {
       var tok = csrfToken();
       var reqs = names.map(function (n) {
-        var info = ccBulkSel[n] || {};
+        var info = ttBulkSel[n] || {};
         var body = "action=remove_container&container=" + encodeURIComponent(info.id || "") + "&name=" + encodeURIComponent(n) + "&image=" + encodeURIComponent(info.image || "") + (tok ? "&csrf_token=" + encodeURIComponent(tok) : "");
         return fetch("/plugins/dynamix.docker.manager/include/Events.php", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body }).catch(function () {});
       });
       Promise.all(reqs).then(function () {
-        ccBulkSel = {}; ccBulkClearMarks(); ccBulkBarSync();
+        ttBulkSel = {}; ttBulkClearMarks(); ttBulkBarSync();
         if (typeof window.loadlist === "function") window.loadlist();
       });
     }
   }
   function lifecycle(c) {
-    var box = el("span", "cc-life");
+    var box = el("span", "tt-life");
     if (c.state === "running") { box.appendChild(actionBtn(t("stop"), c.name, "stop")); box.appendChild(actionBtn(t("restart"), c.name, "restart")); box.appendChild(actionBtn(t("pause"), c.name, "pause")); }
     else if (c.state === "paused") { box.appendChild(actionBtn(t("resume"), c.name, "unpause", true)); box.appendChild(actionBtn(t("stop"), c.name, "stop")); }
     else box.appendChild(actionBtn(t("start"), c.name, "start", true));
@@ -1927,10 +1927,10 @@
   }
 
   // The grid's cards, built from the engine's data.
-  // The per-card rainbow stamp. In the list applyRainbowPalette() puts a rotating --cc-rb-c and
-  // --cc-rb-ct on every row by its DOM position, so the logo tile and everything else that falls
-  // back to --cc-rb-c rotates per row; the grid and folder views need the same on their cards, or
-  // docker.css's var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-accent))) chain falls straight to
+  // The per-card rainbow stamp. In the list applyRainbowPalette() puts a rotating --tt-rb-c and
+  // --tt-rb-ct on every row by its DOM position, so the logo tile and everything else that falls
+  // back to --tt-rb-c rotates per row; the grid and folder views need the same on their cards, or
+  // docker.css's var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent))) chain falls straight to
   // the flat accent. It lives inside card() rather than in renderGrid() and renderFolderView(),
   // so both callers get it and cannot drift apart.
   //
@@ -1941,21 +1941,21 @@
   // when the view changes. The list indexes by DOM row position instead, which follows whatever
   // the native table sorts by.
   function stampCardRainbow(wrap, name) {
-    if (themingOn() && localStorage.getItem("cc.rainbow") === "1") {
+    if (themingOn() && localStorage.getItem("tt.rainbow") === "1") {
       var idx = containerNames.indexOf(name); if (idx < 0) idx = 0;
-      var rc = ccRbColor(idx);
-      wrap.style.setProperty("--cc-rb-c", rc); wrap.style.setProperty("--cc-rb-ct", idealText(rc));
+      var rc = ttRbColor(idx);
+      wrap.style.setProperty("--tt-rb-c", rc); wrap.style.setProperty("--tt-rb-ct", idealText(rc));
     } else {
-      wrap.style.removeProperty("--cc-rb-c"); wrap.style.removeProperty("--cc-rb-ct");
+      wrap.style.removeProperty("--tt-rb-c"); wrap.style.removeProperty("--tt-rb-ct");
     }
   }
   // A card's logo inside the box that carries its tile colour. The colour sits on the box, as it
   // sits on span.hand in the list, because the ink filter applyIconTint() puts on the <img> would
   // flatten a background of the image's own into one block of ink.
   function cardIcon(name, extra) {
-    var box = el("span", "cc-card-icobox" + (extra ? " " + extra : "")), ico = iconFor(name);
-    if (ico) { var im = el("img", "cc-card-ico"); im.src = ico; im.alt = ""; im.setAttribute("data-cc-name", name); im.onerror = function () { this.style.visibility = "hidden"; }; box.appendChild(im); }
-    else box.appendChild(el("span", "cc-card-ico cc-card-ico-ph"));
+    var box = el("span", "tt-card-icobox" + (extra ? " " + extra : "")), ico = iconFor(name);
+    if (ico) { var im = el("img", "tt-card-ico"); im.src = ico; im.alt = ""; im.setAttribute("data-tt-name", name); im.onerror = function () { this.style.visibility = "hidden"; }; box.appendChild(im); }
+    else box.appendChild(el("span", "tt-card-ico tt-card-ico-ph"));
     return box;
   }
   // A card's autostart switch works the list's own checkbox, which stays in the hidden table, so
@@ -1965,10 +1965,10 @@
   function autostartSwitch(name) {
     var box = nativeAutostart(name);
     if (!box) return null;
-    var tg = el("span", "cc-set-toggle cc-card-auto"); tg.setAttribute("role", "switch"); tg.setAttribute("tabindex", "0");
+    var tg = el("span", "tt-set-toggle tt-card-auto"); tg.setAttribute("role", "switch"); tg.setAttribute("tabindex", "0");
     tg.setAttribute("aria-label", "Autostart"); tg.setAttribute("data-tip", "Autostart");
-    tg.appendChild(el("span", "cc-set-knob"));
-    function show(on) { tg.classList.toggle("cc-set-toggle-on", on); tg.setAttribute("aria-checked", on ? "true" : "false"); }
+    tg.appendChild(el("span", "tt-set-knob"));
+    function show(on) { tg.classList.toggle("tt-set-toggle-on", on); tg.setAttribute("aria-checked", on ? "true" : "false"); }
     function flip() { var b = nativeAutostart(name); if (!b) return; b.click(); show(b.checked); }
     show(box.checked);
     tg.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); flip(); });
@@ -1976,9 +1976,9 @@
     return tg;
   }
   function card(c) {
-    var wrap = el("div", "cc-card"); wrap.dataset.name = c.name;
+    var wrap = el("div", "tt-card"); wrap.dataset.name = c.name;
     stampCardRainbow(wrap, c.name);
-    var head = el("div", "cc-card-head");
+    var head = el("div", "tt-card-head");
     head.appendChild(cardIcon(c.name));
     // The IP, the network and the published ports run as one line under the name, so none of
     // them has a badge of its own, and CPU, RAM and the network rate are the badges at the foot
@@ -1986,35 +1986,35 @@
     // wrapped line, and a port list cut short by the card comes up whole as the tip. Each part
     // shows in the views its list column shows in, so the Basic/Advanced switch changes the card
     // as it changes the list.
-    var nb = el("div", "cc-card-name"), title = el("div", "cc-card-title", c.name);
+    var nb = el("div", "tt-card-name"), title = el("div", "tt-card-title", c.name);
     title.addEventListener("mouseover", function () { if (title.scrollWidth > title.clientWidth) title.setAttribute("data-tip", c.name); else title.removeAttribute("data-tip"); });
     nb.appendChild(title);
     var where = [colOn("ip") && c.ip, colOn("net") && c.network, colOn("port") && (c.ports || []).join(", ")].filter(Boolean).join(" · ");
     if (where) {
-      var ip = el("div", "cc-card-ip", where);
+      var ip = el("div", "tt-card-ip", where);
       ip.addEventListener("mouseover", function () { if (ip.scrollHeight > ip.clientHeight) ip.setAttribute("data-tip", where); else ip.removeAttribute("data-tip"); });
       nb.appendChild(ip);
     }
     head.appendChild(nb);
     // The corner gathers whether and how the container starts: the start plan and the autostart
     // switch, and under them its state while it is not running and the plan's last run.
-    var corner = el("div", "cc-card-corner"), startRow = el("div", "cc-card-cornerrow");
+    var corner = el("div", "tt-card-corner"), startRow = el("div", "tt-card-cornerrow");
     if (colOn("plan")) startRow.appendChild(planBadge(c.name));
     var auto = autostartSwitch(c.name); if (auto) startRow.appendChild(auto);
     corner.appendChild(startRow);
-    var stateRow = el("div", "cc-card-cornerrow cc-card-state");
+    var stateRow = el("div", "tt-card-cornerrow tt-card-state");
     stateRow.appendChild(stateBadge(c));
     var p = lastRunPill(c.name); if (p) stateRow.appendChild(p);
     corner.appendChild(stateRow);
     head.appendChild(corner); wrap.appendChild(head);
     var ab2 = actionBars(c.name, c);
-    var abrow = el("div", "cc-card-actbar"); abrow.appendChild(ab2.bar);
+    var abrow = el("div", "tt-card-actbar"); abrow.appendChild(ab2.bar);
     wrap.appendChild(abrow);
     // CPU, RAM and the network rate with the limit gears a list row carries. A container that is
     // not running has no values to show, so its card carries only its state, and the card's menu
     // opens the limit editors instead.
     if (colOn("res") && c.state === "running") {
-      var rg = el("div", "cc-rowbadges cc-resgroup cc-card-res"); rg.setAttribute(MARK, "1"); rg.dataset.name = c.name;
+      var rg = el("div", "tt-rowbadges tt-resgroup tt-card-res"); rg.setAttribute(MARK, "1"); rg.dataset.name = c.name;
       var lm = limits[c.name] || {};
       var cpuB = badgeInfo("CPU", "…", "cpu");
       rg.appendChild(resLine(cpuB, limGear(c.name, "cpu", cpuLimited(lm) || cpuPinned(lm))));
@@ -2029,10 +2029,10 @@
     if (filterText && norm(c.name).indexOf(filterText) < 0) wrap.style.display = "none";
     return wrap;
   }
-  function gauge(label, pct, right) { var w = el("div", "cc-stat"); w.appendChild(el("span", "cc-stat-lbl", label)); var bar = el("div", "cc-gauge cc-meter"), fill = el("div", "cc-gauge-fill" + (pct >= 90 ? " cc-hot" : "")); fill.style.width = Math.max(0, Math.min(100, pct)) + "%"; bar.appendChild(fill); w.appendChild(bar); w.appendChild(el("span", "cc-stat-val", right)); return w; }
+  function gauge(label, pct, right) { var w = el("div", "tt-stat"); w.appendChild(el("span", "tt-stat-lbl", label)); var bar = el("div", "tt-gauge tt-meter"), fill = el("div", "tt-gauge-fill" + (pct >= 90 ? " tt-hot" : "")); fill.style.width = Math.max(0, Math.min(100, pct)) + "%"; bar.appendChild(fill); w.appendChild(bar); w.appendChild(el("span", "tt-stat-val", right)); return w; }
   function ensureGridHolder() {
     if (gridHolder && gridHolder.parentNode) return gridHolder;
-    gridHolder = el("div", "cc-grid-holder cc-root");
+    gridHolder = el("div", "tt-grid-holder tt-root");
     try { var tb = nativeTable(); if (tb && tb.parentNode) tb.parentNode.insertBefore(gridHolder, tb); else document.body.appendChild(gridHolder); } catch (e) { document.body.appendChild(gridHolder); }
     return gridHolder;
   }
@@ -2043,12 +2043,12 @@
   function gridFocusKey() {
     var a = document.activeElement;
     if (!gridHolder || !a || !gridHolder.contains(a)) return null;
-    var box = a.closest(".cc-card[data-name], .cc-folder-group[data-fid]") || gridHolder;
+    var box = a.closest(".tt-card[data-name], .tt-folder-group[data-fid]") || gridHolder;
     return { name: box.getAttribute("data-name"), fid: box.getAttribute("data-fid"), at: Array.prototype.indexOf.call(box.querySelectorAll(GRID_FOCUSABLE), a) };
   }
   function restoreGridFocus(k) {
     if (!k || !gridHolder) return;
-    var box = k.name != null ? gridHolder.querySelector('.cc-card[data-name="' + CSS.escape(k.name) + '"]') : k.fid != null ? gridHolder.querySelector('.cc-folder-group[data-fid="' + CSS.escape(k.fid) + '"]') : gridHolder;
+    var box = k.name != null ? gridHolder.querySelector('.tt-card[data-name="' + CSS.escape(k.name) + '"]') : k.fid != null ? gridHolder.querySelector('.tt-folder-group[data-fid="' + CSS.escape(k.fid) + '"]') : gridHolder;
     var target = box && box.querySelectorAll(GRID_FOCUSABLE)[k.at];
     if (target) target.focus({ preventScroll: true });
   }
@@ -2057,12 +2057,12 @@
     var focusKey = gridFocusKey();
     ensureGridHolder(); gridHolder.innerHTML = "";
     relocateTopBar(); // the native toggle row collapses in the card view too
-    gridHolder.classList.toggle("cc-rainbow", localStorage.getItem("cc.rainbow") === "1");
-    gridHolder.classList.toggle("cc-tint-icons", !!effc("iconcolor"));
+    gridHolder.classList.toggle("tt-rainbow", localStorage.getItem("tt.rainbow") === "1");
+    gridHolder.classList.toggle("tt-tint-icons", !!effc("iconcolor"));
     // the grid's twin of the table's iconbg gate in applyEnhanceClasses, which the reactive
     // logo-tile rules key on, so the card view matches the list
-    gridHolder.classList.toggle("cc-docker-iconbg", iconBgOn());
-    var grid = el("div", "cc-grid");
+    gridHolder.classList.toggle("tt-docker-iconbg", iconBgOn());
+    var grid = el("div", "tt-grid");
     containers.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).forEach(function (c) { grid.appendChild(card(c)); });
     gridHolder.appendChild(grid);
     applyIconTint();
@@ -2073,49 +2073,49 @@
   // it runs in the advanced view, the state while it does not, an update badge when one is ready,
   // and WebUI, start or stop and restart. The rarer actions sit in the menu behind the icon.
   //
-  // The tile keeps the cc-card class and its icon .cc-card-ico, so stampCardRainbow(), the reactive
-  // hover rules and every iconbg and shape selector that targets .cc-card apply unchanged. The
+  // The tile keeps the tt-card class and its icon .tt-card-ico, so stampCardRainbow(), the reactive
+  // hover rules and every iconbg and shape selector that targets .tt-card apply unchanged. The
   // bars are gauge()'s, in the order refreshStats() expects, so the stats tick keeps them live.
   // `row` is the container's native list row when the caller has it, which saves a table scan.
   function folderTile(c, row) {
-    var wrap = el("div", "cc-card cc-tile"); wrap.dataset.name = c.name;
+    var wrap = el("div", "tt-card tt-tile"); wrap.dataset.name = c.name;
     stampCardRainbow(wrap, c.name);
     var st = c.state || "unknown", running = st === "running", paused = st === "paused", de = LANG === "de";
     var cx = ctxFor(c.name, row);
-    var icoBtn = cardIcon(c.name, "cc-tile-icobtn");
+    var icoBtn = cardIcon(c.name, "tt-tile-icobtn");
     icoBtn.setAttribute("aria-label", (de ? "Aktionen: " : "Actions: ") + c.name);
     icoBtn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); containerMenu(icoBtn, c, cx); });
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(icoBtn);
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(icoBtn);
     wrap.appendChild(icoBtn);
-    var body = el("div", "cc-tile-body");
-    var head = el("div", "cc-tile-head");
-    var id = el("div", "cc-tile-id");
-    var nm = el("div", "cc-tile-name", c.name);
+    var body = el("div", "tt-tile-body");
+    var head = el("div", "tt-tile-head");
+    var id = el("div", "tt-tile-id");
+    var nm = el("div", "tt-tile-name", c.name);
     // The full name goes into the hover bubble only while the ellipsis cuts it.
     nm.addEventListener("mouseover", function () { if (nm.scrollWidth > nm.clientWidth) nm.setAttribute("data-tip", c.name); else nm.removeAttribute("data-tip"); });
     id.appendChild(nm);
-    if (c.ip) id.appendChild(el("div", "cc-tile-ip", c.ip));
+    if (c.ip) id.appendChild(el("div", "tt-tile-ip", c.ip));
     head.appendChild(id);
     body.appendChild(head);
-    var stats2 = el("div", "cc-tile-stats"), s = stats[c.name];
+    var stats2 = el("div", "tt-tile-stats"), s = stats[c.name];
     if (running) {
       stats2.appendChild(gauge("CPU", s ? s.cpu_percent : 0, s ? (s.cpu_percent || 0) + "%" : "…"));
       stats2.appendChild(gauge("RAM", s ? s.mem_percent : 0, s ? humanBytes(s.mem_used) + " / " + humanBytes(s.mem_limit) : "…"));
     }
     body.appendChild(stats2);
-    var foot = el("div", "cc-tile-foot");
-    var state = el("span", "cc-tile-state");
-    var dot = el("span", "cc-badge cc-tile-dot cc-badge-" + st + (showUnhealthy(c) ? " cc-badge-alert" : "")); dot.dataset.name = c.name;
+    var foot = el("div", "tt-tile-foot");
+    var state = el("span", "tt-tile-state");
+    var dot = el("span", "tt-badge tt-tile-dot tt-badge-" + st + (showUnhealthy(c) ? " tt-badge-alert" : "")); dot.dataset.name = c.name;
     state.appendChild(dot);
-    state.appendChild(el("span", "cc-tile-status", stateLabel(st)));
+    state.appendChild(el("span", "tt-tile-status", stateLabel(st)));
     if (updateReady(c.name, row) && typeof window.updateContainer === "function") {
-      var up = el("span", "cc-tile-up"); up.setAttribute("data-tip", t("updateCt")); ccLabelled(up, "Update", t("update"));
+      var up = el("span", "tt-tile-up"); up.setAttribute("data-tip", t("updateCt")); ttLabelled(up, "Update", t("update"));
       up.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); window.updateContainer(c.name); });
-      if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(up);
+      if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(up);
       state.appendChild(up);
     }
     foot.appendChild(state);
-    var acts = el("span", "cc-mrow-act cc-tile-act");
+    var acts = el("span", "tt-mrow-act tt-tile-act");
     if (cx.webui) acts.appendChild(running ? actBtn("ExternalLink", "WebUI", function () { window.open(cx.webui, "_blank"); }) : actBtnOff("ExternalLink", de ? "WebUI erst, wenn der Container läuft" : "WebUI once the container is running"));
     acts.appendChild(paused ? actBtn("Resume", t("resume"), function () { doAction(c.name, "unpause"); })
       : running ? actBtn("Stop", t("stop"), function () { doAction(c.name, "stop"); })
@@ -2142,7 +2142,7 @@
   // The menu behind a tile's icon: log, console, edit, pause and the links the template carries,
   // the actions the list keeps in its action block and the tile has no room for.
   function containerMenu(anchor, c, cx) {
-    if (!window.CCTheme || !window.CCTheme.menu) return;
+    if (!window.TTTheme || !window.TTTheme.menu) return;
     var name = c.name, de = LANG === "de", running = c.state === "running", term = typeof window.openTerminal === "function";
     cx = cx || ctxFor(name);
     var items = [];
@@ -2154,13 +2154,13 @@
     if (cx.tswebui) items.push({ glyph: "ExternalLink", label: "Tailscale WebUI", run: function () { window.open(cx.tswebui, "_blank"); } });
     cx.links.forEach(function (l2) { items.push({ glyph: l2.glyph, label: l2.tip, run: function () { window.open(l2.url, "_blank"); } }); });
     if (typeof window.rmContainer === "function" && cx.id) items.push({ glyph: "Trash", label: de ? "Entfernen" : "Remove", del: true, run: function () { window.rmContainer(name, cx.image, cx.id); } });
-    if (items.length) window.CCTheme.menu(anchor, items);
+    if (items.length) window.TTTheme.menu(anchor, items);
   }
-  // The per-folder collapse and hide-stopped state, kept like every other cc.* preference: the
+  // The per-folder collapse and hide-stopped state, kept like every other tt.* preference: the
   // setItem and removeItem interceptor near the top of this file sweeps any key matching
-  // /^cc[a-z]*\./ into ui_settings. They are keyed by the organizer's folder id rather than its
+  // /^tt[a-z]*\./ into ui_settings. They are keyed by the organizer's folder id rather than its
   // name, so they survive a rename.
-  var FOLDER_COLLAPSED_KEY = "cc.folderCollapsed", FOLDER_HIDESTOPPED_KEY = "cc.folderHideStopped";
+  var FOLDER_COLLAPSED_KEY = "tt.folderCollapsed", FOLDER_HIDESTOPPED_KEY = "tt.folderHideStopped";
   function readIdMap(key) { try { var o = JSON.parse(localStorage.getItem(key) || "{}"); return (o && typeof o === "object") ? o : {}; } catch (e) { return {}; } }
   function writeIdMapFlag(key, id, on) { var m = readIdMap(key); if (on) m[id] = true; else delete m[id]; localStorage.setItem(key, JSON.stringify(m)); }
   function isFolderCollapsed(id) { return !!readIdMap(FOLDER_COLLAPSED_KEY)[id]; }
@@ -2170,47 +2170,47 @@
   // A container is hidden when its own parent folder has hide-stopped on and it is not running.
   // A plain predicate rather than a closure inside renderFolderView, so a test can reach it and
   // it cannot diverge from what is filtered.
-  function ccFolderHidesContainer(parentId, c) { return folderHidesStopped(parentId) && !!c && c.state !== "running"; }
+  function ttFolderHidesContainer(parentId, c) { return folderHidesStopped(parentId) && !!c && c.state !== "running"; }
   // The live-search match, taking the byParent tree as an argument rather than closing over
   // module state, so a test can reach it. renderFolderView uses the same rule for both
   // auto-expand and hide. A folder matches when its own name does, or any descendant does
   // through the nested folders; a container matches on its own name.
-  function ccEntryMatches(byParent, filterText, entry) {
+  function ttEntryMatches(byParent, filterText, entry) {
     if (!filterText) return true;
     if (entry.type === "container") return norm(entry.name.replace(/^\//, "")).indexOf(filterText) >= 0;
     if (norm(entry.name).indexOf(filterText) >= 0) return true;
     var kids = byParent[entry.id] || [];
-    for (var i = 0; i < kids.length; i++) if (ccEntryMatches(byParent, filterText, kids[i])) return true;
+    for (var i = 0; i < kids.length; i++) if (ttEntryMatches(byParent, filterText, kids[i])) return true;
     return false;
   }
   // The stored collapse state, overridden open, never shut, while a live search matches inside a
   // folder. That is the auto-expand, and it stops applying the moment the filter is cleared,
   // with no saved state of its own.
-  function ccEffectiveCollapsed(byParent, filterText, entry) { return (filterText && ccEntryMatches(byParent, filterText, entry)) ? false : isFolderCollapsed(entry.id); }
+  function ttEffectiveCollapsed(byParent, filterText, entry) { return (filterText && ttEntryMatches(byParent, filterText, entry)) ? false : isFolderCollapsed(entry.id); }
   // The bulk start and stop target list: every container descendant through the nested folders,
   // not only the direct children. It takes the byParent tree and an existence lookup as
   // arguments, so a test can reach it.
-  function ccCollectFolderContainerNames(byParent, fid, existsFn) {
+  function ttCollectFolderContainerNames(byParent, fid, existsFn) {
     var out = [];
     (byParent[fid] || []).forEach(function (k) {
       if (k.type === "container") { var nm = k.name.replace(/^\//, ""); if (existsFn(nm)) out.push(nm); }
-      else out = out.concat(ccCollectFolderContainerNames(byParent, k.id, existsFn));
+      else out = out.concat(ttCollectFolderContainerNames(byParent, k.id, existsFn));
     });
     return out;
   }
   // The folder header's action buttons carry a GlimStone glyph rather than emoji text: an emoji
-  // draws its own fixed shape and ignores a CSS colour, while the glyph inherits .cc-folder-act's
+  // draws its own fixed shape and ignores a CSS colour, while the glyph inherits .tt-folder-act's
   // own grey at rest and accent on hover.
   function folderActBtn(cls, icon, title) {
     var b = el("button", cls); b.type = "button"; b.title = title; b.setAttribute("aria-label", title);
-    b.innerHTML = ccGlyph(icon);
+    b.innerHTML = ttGlyph(icon);
     return b;
   }
   // A folder's colour and icon. The organizer stores a name and the members and nothing more, so
-  // these live beside the other cc.* preferences, keyed by the folder id like the collapse state.
+  // these live beside the other tt.* preferences, keyed by the folder id like the collapse state.
   // A colour of "" follows the colour mode; an icon is "g:<glyph>" or "c:<container>", whose logo
   // it borrows.
-  var FOLDER_LOOK_KEY = "cc.folderLook";
+  var FOLDER_LOOK_KEY = "tt.folderLook";
   function folderLook(id) { var l = readIdMap(FOLDER_LOOK_KEY)[id]; return { color: (l && l.color) || "", icon: (l && l.icon) || "" }; }
   function setFolderLook(id, look) {
     var m = readIdMap(FOLDER_LOOK_KEY);
@@ -2220,32 +2220,32 @@
   // The head takes the folder's own colour, else under rainbow the palette slot of its place among
   // the folders, else nothing and the CSS falls back to the accent.
   function stampFolderColour(head, color, idx) {
-    var c = color || (themingOn() && localStorage.getItem("cc.rainbow") === "1" ? ccRbColor(idx) : "");
-    if (c) { head.style.setProperty("--cc-rb-c", c); head.style.setProperty("--cc-rb-ct", idealText(c)); }
+    var c = color || (themingOn() && localStorage.getItem("tt.rainbow") === "1" ? ttRbColor(idx) : "");
+    if (c) { head.style.setProperty("--tt-rb-c", c); head.style.setProperty("--tt-rb-ct", idealText(c)); }
   }
   function folderBadge(icon) {
-    var b = el("span", "cc-folder-badge");
+    var b = el("span", "tt-folder-badge");
     var logo = /^c:/.test(icon || "") ? iconFor(icon.slice(2)) : "";
     if (logo) { var im = el("img"); im.src = logo; im.alt = ""; b.appendChild(im); }
-    else b.innerHTML = ccGlyph(/^g:/.test(icon || "") ? icon.slice(2) : "Folder");
+    else b.innerHTML = ttGlyph(/^g:/.test(icon || "") ? icon.slice(2) : "Folder");
     return b;
   }
   // The logos of a folded folder's containers, a stopped one in grey. A click opens the container's
   // menu and leaves the folder folded.
   var PEEK_MAX = 12;
   function folderPeek(names) {
-    var wrap = el("span", "cc-folder-peek");
+    var wrap = el("span", "tt-folder-peek");
     names.slice(0, PEEK_MAX).forEach(function (n) {
       var c = containerByName(n); if (!c) return;
-      var b = el("span", "cc-peek" + (c.state === "running" ? "" : " cc-peek-off"));
+      var b = el("span", "tt-peek" + (c.state === "running" ? "" : " tt-peek-off"));
       var src = iconFor(c.name);
       if (src) { var im = el("img"); im.src = src; im.alt = ""; b.appendChild(im); }
       b.setAttribute("data-tip", c.name + " · " + stateLabel(c.state)); b.setAttribute("aria-label", c.name);
       b.addEventListener("click", function (ev) { ev.preventDefault(); ev.stopPropagation(); containerMenu(b, c); });
-      if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b);
+      if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(b);
       wrap.appendChild(b);
     });
-    if (names.length > PEEK_MAX) wrap.appendChild(el("span", "cc-peek-more", "+" + (names.length - PEEK_MAX)));
+    if (names.length > PEEK_MAX) wrap.appendChild(el("span", "tt-peek-more", "+" + (names.length - PEEK_MAX)));
     return wrap;
   }
   // The combined load of a folder's running containers. RAM is measured against the largest limit
@@ -2263,30 +2263,30 @@
   // The two bars in a folder's head, built like a tile's and repainted by refreshStats() from the
   // member names they carry.
   function folderLoadBars(names) {
-    var l = folderLoad(names, stats), wrap = el("span", "cc-folder-load");
-    wrap.ccNames = names;
+    var l = folderLoad(names, stats), wrap = el("span", "tt-folder-load");
+    wrap.ttNames = names;
     wrap.appendChild(gauge("CPU", l.cpu, l.cpu + "%"));
     wrap.appendChild(gauge("RAM", l.ramPct, humanBytes(l.used)));
     return wrap;
   }
   function paintFolderLoad(wrap) {
-    var l = folderLoad(wrap.ccNames || [], stats), f = wrap.querySelectorAll(".cc-gauge-fill"), v = wrap.querySelectorAll(".cc-stat-val");
+    var l = folderLoad(wrap.ttNames || [], stats), f = wrap.querySelectorAll(".tt-gauge-fill"), v = wrap.querySelectorAll(".tt-stat-val");
     if (f[0]) f[0].style.width = Math.min(100, l.cpu) + "%";
     if (v[0]) v[0].textContent = l.cpu + "%";
     if (f[1]) f[1].style.width = Math.min(100, l.ramPct) + "%";
     if (v[1]) v[1].textContent = humanBytes(l.used);
   }
   function newFolderTile() {
-    var b = ccLabelled(el("span", "cc-tile-new"), "Folder", t("newFolder"));
-    b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); ccOrgCreateFolder(); });
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b);
+    var b = ttLabelled(el("span", "tt-tile-new"), "Folder", t("newFolder"));
+    b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); ttOrgCreateFolder(); });
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(b);
     return b;
   }
   // Updates every container of a folder that has one ready, in one run of Unraid's own update
   // command, the way its Update All button does, after one question.
-  function ccFolderUpdate(names, ctl) {
+  function ttFolderUpdate(names, ctl) {
     var de = LANG === "de";
-    ccOrgAsk({
+    ttOrgAsk({
       title: de ? names.length + " Container aktualisieren?" : "Update " + names.length + " container" + (names.length === 1 ? "" : "s") + "?",
       text: names.join(", "), ok: t("updateCt"), glyph: "Update", cancel: t("cancel"), opener: ctl,
       onOk: function () { window.openDocker("update_container " + names.map(encodeURIComponent).join("*"), t("bulkUpdateAll"), "", "loadlist"); }
@@ -2295,7 +2295,7 @@
   // The organizer calls the folder editor's save makes, in order: the rename, then the containers
   // switched in, then those switched out, which go back to the root and so to no folder at all.
   // members is the set of container entry ids the folder should hold directly.
-  function ccFolderEditSteps(view, id, name, members) {
+  function ttFolderEditSteps(view, id, name, members) {
     var self = view.flatEntries.filter(function (e2) { return e2.id === id; })[0], steps = [];
     if (self && name && name !== self.name) steps.push({ q: ORG_RENAME_MUT, v: { folderId: id, newName: name }, m: "renameDockerFolder" });
     var cts = view.flatEntries.filter(function (e2) { return e2.type === "container"; });
@@ -2305,10 +2305,10 @@
     if (out.length) steps.push({ q: ORG_MOVE_MUT, v: { sourceEntryIds: out, destinationFolderId: view.rootId }, m: "moveDockerEntriesToFolder" });
     return steps;
   }
-  function ccOrgRunSteps(steps) {
+  function ttOrgRunSteps(steps) {
     return steps.reduce(function (p, s) {
-      return p.then(function () { return ccOrgMutate(s.q, s.v).then(function (data) { return { data: data, m: s.m }; }); });
-    }, Promise.resolve(null)).then(function (last) { if (last) ccOrgAdopt(last.data, last.m); });
+      return p.then(function () { return ttOrgMutate(s.q, s.v).then(function (data) { return { data: data, m: s.m }; }); });
+    }, Promise.resolve(null)).then(function (last) { if (last) ttOrgAdopt(last.data, last.m); });
   }
   var FOLDER_GLYPHS = ["Folder", "Star", "VM", "Code", "Download", "Schedules", "Manual", "Power", "Log", "Gear"];
   // The pencil on a folder's head: its name, colour and icon, and which containers it holds, one
@@ -2316,28 +2316,28 @@
   function openFolderEditor(anchor, id) {
     if (togglePop(anchor)) return;
     closePop();
-    if (!ccOrgView) return;
-    var de = LANG === "de", self = ccOrgView.flatEntries.filter(function (e2) { return e2.id === id; })[0];
+    if (!ttOrgView) return;
+    var de = LANG === "de", self = ttOrgView.flatEntries.filter(function (e2) { return e2.id === id; })[0];
     if (!self) return;
     var look = folderLook(id), color = look.color, icon = look.icon || "g:Folder";
-    var cts = ccOrgView.flatEntries.filter(function (e2) { return e2.type === "container"; })
+    var cts = ttOrgView.flatEntries.filter(function (e2) { return e2.type === "container"; })
       .map(function (e2) { return { e: e2, name: e2.name.replace(/^\//, "") }; })
       .sort(function (a, b) { return a.name.localeCompare(b.name); });
     var members = {}; cts.forEach(function (x) { if (x.e.parentId === id) members[x.e.id] = true; });
     var start = JSON.stringify([self.name, color, icon, Object.keys(members).sort()]);
-    var pop = el("div", "cc-pop cc-pop-folder"); if (localStorage.getItem("cc.rainbow") === "1") pop.classList.add("cc-rainbow");
-    var head = el("div", "cc-pop-head"), ttl = el("span", "cc-win-title cc-pop-ttl", t("editFolder"));
+    var pop = el("div", "tt-pop tt-pop-folder"); if (localStorage.getItem("tt.rainbow") === "1") pop.classList.add("tt-rainbow");
+    var head = el("div", "tt-pop-head"), ttl = el("span", "tt-win-title tt-pop-ttl", t("editFolder"));
     ttl.appendChild(infoBubble(de
       ? "Name, Farbe und Symbol gelten nur für die Ordneransicht. Unten nimmst du Container in den Ordner auf oder wieder heraus; einer, der schon in einem anderen Ordner liegt, wechselt hierher, einer, den du herausnimmst, steht danach ohne Ordner da."
       : "Name, colour and icon only apply to the folder view. Below you put containers into the folder or take them out; one that is already in another folder moves here, one you take out ends up in no folder."));
     head.appendChild(ttl); pop.appendChild(head);
-    var body = el("div", "cc-pop-body");
-    var nrow = el("div", "cc-pop-row"); nrow.appendChild(el("label", "cc-pop-lbl", t("folderName")));
-    var nameIn = el("input", "cc-in"); nameIn.type = "text"; nameIn.value = self.name; nameIn.setAttribute("autocomplete", "off"); nameIn.setAttribute("aria-label", t("folderName"));
+    var body = el("div", "tt-pop-body");
+    var nrow = el("div", "tt-pop-row"); nrow.appendChild(el("label", "tt-pop-lbl", t("folderName")));
+    var nameIn = el("input", "tt-in"); nameIn.type = "text"; nameIn.value = self.name; nameIn.setAttribute("autocomplete", "off"); nameIn.setAttribute("aria-label", t("folderName"));
     nrow.appendChild(nameIn); body.appendChild(nrow);
     // A choice row of pressable chips, one of them picked, its pick shown by a check or a fill.
     function picks(cls, items, cur, paint, onPick) {
-      var box = el("span", "cc-fpicks"); box.setAttribute("role", "radiogroup");
+      var box = el("span", "tt-fpicks"); box.setAttribute("role", "radiogroup");
       items.forEach(function (it) {
         var b = el("span", cls); b.setAttribute("role", "radio"); b.setAttribute("tabindex", "0"); b.setAttribute("data-tip", it.tip); b.setAttribute("aria-label", it.tip);
         paint(b, it);
@@ -2348,39 +2348,39 @@
       });
       return box;
     }
-    var crow = el("div", "cc-pop-row");
+    var crow = el("div", "tt-pop-row");
     crow.appendChild(lblInfo(t("folderColour"), de ? "Die Farbe des Ordnersymbols. „Farbmodus“ übernimmt die Akzentfarbe oder im Regenbogen die Farbe, die der Ordner dort bekommt." : "The colour of the folder's icon. “Colour mode” takes the accent, or under rainbow the colour the folder gets there."));
-    var pal = ccPalActive(RB_PAL);
-    crow.appendChild(picks("cc-fsw", [{ v: "", tip: de ? "Farbmodus" : "Colour mode" }].concat(pal.map(function (c) { return { v: c, tip: c }; })), color, function (b, it) {
-      if (it.v) { b.style.setProperty("--cc-fsw", it.v); b.style.setProperty("--cc-fsw-t", idealText(it.v)); } else b.classList.add("cc-fsw-auto");
-      b.innerHTML = ccGlyph("Check");
+    var pal = ttPalActive(RB_PAL);
+    crow.appendChild(picks("tt-fsw", [{ v: "", tip: de ? "Farbmodus" : "Colour mode" }].concat(pal.map(function (c) { return { v: c, tip: c }; })), color, function (b, it) {
+      if (it.v) { b.style.setProperty("--tt-fsw", it.v); b.style.setProperty("--tt-fsw-t", idealText(it.v)); } else b.classList.add("tt-fsw-auto");
+      b.innerHTML = ttGlyph("Check");
     }, function (v) { color = v; }));
     body.appendChild(crow);
-    var irow = el("div", "cc-pop-row");
+    var irow = el("div", "tt-pop-row");
     irow.appendChild(lblInfo(t("folderIcon"), de ? "Ein Symbol oder das Logo eines Containers aus diesem Ordner." : "A symbol, or the logo of one of this folder's containers."));
     var iconItems = FOLDER_GLYPHS.map(function (g) { return { v: "g:" + g, tip: g, glyph: g }; })
       .concat(cts.filter(function (x) { return members[x.e.id] && iconFor(x.name); }).map(function (x) { return { v: "c:" + x.name, tip: x.name, logo: iconFor(x.name) }; }));
-    irow.appendChild(picks("cc-ficon", iconItems, icon, function (b, it) {
-      if (it.logo) { var im = el("img"); im.src = it.logo; im.alt = ""; b.appendChild(im); } else b.innerHTML = ccGlyph(it.glyph);
+    irow.appendChild(picks("tt-ficon", iconItems, icon, function (b, it) {
+      if (it.logo) { var im = el("img"); im.src = it.logo; im.alt = ""; b.appendChild(im); } else b.innerHTML = ttGlyph(it.glyph);
     }, function (v) { icon = v; }));
     body.appendChild(irow);
     pop.appendChild(body);
-    var list = el("div", "cc-pop-body cc-fmembers");
-    var srow = el("div", "cc-pop-row"); srow.appendChild(el("span", "cc-pop-sech", t("folderMembers")));
-    var find = el("input", "cc-in cc-fsearch"); find.type = "text"; find.placeholder = t("filter"); find.setAttribute("aria-label", t("search"));
+    var list = el("div", "tt-pop-body tt-fmembers");
+    var srow = el("div", "tt-pop-row"); srow.appendChild(el("span", "tt-pop-sech", t("folderMembers")));
+    var find = el("input", "tt-in tt-fsearch"); find.type = "text"; find.placeholder = t("filter"); find.setAttribute("aria-label", t("search"));
     srow.appendChild(find); list.appendChild(srow);
     var rows = cts.map(function (x) {
-      var row = el("div", "cc-pop-row cc-fmember"); row.dataset.name = norm(x.name);
-      var src = iconFor(x.name), lg = el("span", "cc-fmember-ico");
+      var row = el("div", "tt-pop-row tt-fmember"); row.dataset.name = norm(x.name);
+      var src = iconFor(x.name), lg = el("span", "tt-fmember-ico");
       if (src) { var im = el("img"); im.src = src; im.alt = ""; lg.appendChild(im); }
       row.appendChild(lg);
-      var nm = el("span", "cc-fmember-name", x.name);
-      var other = x.e.parentId !== id && x.e.parentId !== ccOrgView.rootId && ccOrgView.flatEntries.filter(function (f) { return f.id === x.e.parentId; })[0];
-      if (other) nm.appendChild(el("span", "cc-fmember-in", "in " + other.name));
+      var nm = el("span", "tt-fmember-name", x.name);
+      var other = x.e.parentId !== id && x.e.parentId !== ttOrgView.rootId && ttOrgView.flatEntries.filter(function (f) { return f.id === x.e.parentId; })[0];
+      if (other) nm.appendChild(el("span", "tt-fmember-in", "in " + other.name));
       row.appendChild(nm);
-      var tg = el("span", "cc-set-toggle" + (members[x.e.id] ? " cc-set-toggle-on" : "")); tg.setAttribute("role", "switch"); tg.setAttribute("tabindex", "0");
-      tg.setAttribute("aria-checked", members[x.e.id] ? "true" : "false"); tg.setAttribute("aria-label", x.name); tg.appendChild(el("span", "cc-set-knob"));
-      function flip() { var on = !members[x.e.id]; if (on) members[x.e.id] = true; else delete members[x.e.id]; tg.classList.toggle("cc-set-toggle-on", on); tg.setAttribute("aria-checked", on ? "true" : "false"); }
+      var tg = el("span", "tt-set-toggle" + (members[x.e.id] ? " tt-set-toggle-on" : "")); tg.setAttribute("role", "switch"); tg.setAttribute("tabindex", "0");
+      tg.setAttribute("aria-checked", members[x.e.id] ? "true" : "false"); tg.setAttribute("aria-label", x.name); tg.appendChild(el("span", "tt-set-knob"));
+      function flip() { var on = !members[x.e.id]; if (on) members[x.e.id] = true; else delete members[x.e.id]; tg.classList.toggle("tt-set-toggle-on", on); tg.setAttribute("aria-checked", on ? "true" : "false"); }
       tg.addEventListener("click", flip);
       tg.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); } });
       row.appendChild(tg); list.appendChild(row);
@@ -2388,17 +2388,17 @@
     });
     find.addEventListener("input", function () { var q = norm(find.value); rows.forEach(function (r) { r.style.display = !q || r.dataset.name.indexOf(q) >= 0 ? "" : "none"; }); });
     pop.appendChild(list);
-    var act = el("div", "cc-pop-row cc-pop-act");
-    var cancel = ccLabelled(el("span", "cc-btn"), "Close", t("cancel")); cancel.addEventListener("click", dismissPop);
-    var save = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort"));
+    var act = el("div", "tt-pop-row tt-pop-act");
+    var cancel = ttLabelled(el("span", "tt-btn"), "Close", t("cancel")); cancel.addEventListener("click", dismissPop);
+    var save = ttLabelled(el("span", "tt-btn tt-btn-primary"), "Save", t("saveShort"));
     save.addEventListener("click", function () {
       var name = nameIn.value.trim();
-      if (!name) { if (window.CCTheme && window.CCTheme.shake) window.CCTheme.shake(nameIn); nameIn.focus(); return; }
+      if (!name) { if (window.TTTheme && window.TTTheme.shake) window.TTTheme.shake(nameIn); nameIn.focus(); return; }
       setFolderLook(id, { color: color, icon: icon === "g:Folder" ? "" : icon });
-      var steps = ccFolderEditSteps(ccOrgView, id, name, members);
+      var steps = ttFolderEditSteps(ttOrgView, id, name, members);
       closePop();
       if (!steps.length) { if (mode === "folder") renderFolderView(); return; }
-      ccOrgRunSteps(steps).catch(function () { flash(t("invalid"), true); if (mode === "folder") renderFolderView(); });
+      ttOrgRunSteps(steps).catch(function () { flash(t("invalid"), true); if (mode === "folder") renderFolderView(); });
     });
     act.appendChild(cancel); act.appendChild(save); pop.appendChild(act);
     pop._unsaved = function () { return JSON.stringify([nameIn.value.trim(), color, icon, Object.keys(members).sort()]) !== start; };
@@ -2421,25 +2421,25 @@
     var savedScroll = window.scrollY, focusKey = gridFocusKey();
     ensureGridHolder(); gridHolder.innerHTML = "";
     relocateTopBar();
-    gridHolder.classList.toggle("cc-rainbow", localStorage.getItem("cc.rainbow") === "1");
-    gridHolder.classList.toggle("cc-tint-icons", !!effc("iconcolor"));
-    gridHolder.classList.toggle("cc-docker-iconbg", iconBgOn());
+    gridHolder.classList.toggle("tt-rainbow", localStorage.getItem("tt.rainbow") === "1");
+    gridHolder.classList.toggle("tt-tint-icons", !!effc("iconcolor"));
+    gridHolder.classList.toggle("tt-docker-iconbg", iconBgOn());
     // the folder tiles show their CPU and RAM bars in the advanced view only
-    gridHolder.classList.toggle("cc-adv", isAdvancedView());
-    if (!ccOrgView) { removeGridHolder(); window.scrollTo(0, savedScroll); return; }
+    gridHolder.classList.toggle("tt-adv", isAdvancedView());
+    if (!ttOrgView) { removeGridHolder(); window.scrollTo(0, savedScroll); return; }
     var byParent = {};
-    ccOrgView.flatEntries.forEach(function (e) { (byParent[e.parentId] = byParent[e.parentId] || []).push(e); });
+    ttOrgView.flatEntries.forEach(function (e) { (byParent[e.parentId] = byParent[e.parentId] || []).push(e); });
     Object.keys(byParent).forEach(function (pid) { byParent[pid].sort(function (a, b) { return a.position - b.position; }); });
 
-    // thin closures over ccEntryMatches() and ccEffectiveCollapsed(), so this pass's byParent and
+    // thin closures over ttEntryMatches() and ttEffectiveCollapsed(), so this pass's byParent and
     // filterText need not be threaded through every call site
-    function entryMatches(entry) { return ccEntryMatches(byParent, filterText, entry); }
-    function effectiveCollapsed(entry) { return ccEffectiveCollapsed(byParent, filterText, entry); }
+    function entryMatches(entry) { return ttEntryMatches(byParent, filterText, entry); }
+    function effectiveCollapsed(entry) { return ttEffectiveCollapsed(byParent, filterText, entry); }
     // A folder's bulk action covers every container descendant through the nested folders, and
     // goes through runBulkAction(), the machinery the bulk-select bar uses.
-    function ccFolderBulk(fid, action) { runBulkAction(ccCollectFolderContainerNames(byParent, fid, containerByName), action); }
+    function ttFolderBulk(fid, action) { runBulkAction(ttCollectFolderContainerNames(byParent, fid, containerByName), action); }
 
-    var root = el("div", "cc-folderview"), folderIdx = 0;
+    var root = el("div", "tt-folderview"), folderIdx = 0;
     // the native rows, looked up once per render rather than once per tile
     var rowsByName = {};
     findRows().forEach(function (r) { rowsByName[rowName(r)] = r; });
@@ -2448,18 +2448,18 @@
     // through the page as the pointer travels, so the others make room while it passes, and the
     // place it holds when it is dropped is what gets saved. buildMoveMenu below is the same action
     // by click, for touch and keyboard.
-    function clearDropHighlights() { Array.prototype.slice.call(gridHolder.querySelectorAll(".cc-drop-target")).forEach(function (n) { n.classList.remove("cc-drop-target"); }); }
+    function clearDropHighlights() { Array.prototype.slice.call(gridHolder.querySelectorAll(".tt-drop-target")).forEach(function (n) { n.classList.remove("tt-drop-target"); }); }
     function wireDragSource(handle, moved, entry) {
       handle.draggable = true;
       handle.addEventListener("dragstart", function (ev) {
         folderDrag = { entry: entry, el: moved, over: null, calm: 0, dropped: false };
         try { ev.dataTransfer.effectAllowed = "move"; ev.dataTransfer.setData("text/plain", entry.id); } catch (e2) {}
         // faded only once the browser has taken its picture of the element to drag
-        setTimeout(function () { moved.classList.add("cc-dragging"); }, 0);
+        setTimeout(function () { moved.classList.add("tt-dragging"); }, 0);
       });
       handle.addEventListener("dragend", function () {
         var d = folderDrag; folderDrag = null;
-        moved.classList.remove("cc-dragging"); clearDropHighlights();
+        moved.classList.remove("tt-dragging"); clearDropHighlights();
         // A cancelled drag, or one that ends where it began, gets the saved order back and any
         // render that waited for the drag.
         if (!d || !d.dropped || !saveDrag(d)) renderFolderView();
@@ -2467,7 +2467,7 @@
     }
     // Moves an element and lets everything it pushes aside slide over from where it stood.
     function slideInto(node, parent, before) {
-      var items = Array.prototype.slice.call(root.querySelectorAll(".cc-tile, .cc-folder-group, .cc-tile-new"));
+      var items = Array.prototype.slice.call(root.querySelectorAll(".tt-tile, .tt-folder-group, .tt-tile-new"));
       var was = items.map(function (n) { return n.getBoundingClientRect(); });
       parent.insertBefore(node, before);
       items.forEach(function (n, i) {
@@ -2492,22 +2492,22 @@
       if (!t || d.el.contains(t)) { d.over = null; clearDropHighlights(); return; }
       var ref = null, head = null;
       if (d.entry.type === "container") {
-        head = t.closest(".cc-folder-group-head");
-        ref = head ? null : t.closest(".cc-tile[data-eid], .cc-tile-new");
+        head = t.closest(".tt-folder-group-head");
+        ref = head ? null : t.closest(".tt-tile[data-eid], .tt-tile-new");
       } else {
         for (ref = t; ref && ref.parentNode !== d.el.parentNode; ref = ref.parentNode) {}
-        if (ref && !ref.matches(".cc-tile, .cc-folder-group, .cc-tile-new")) ref = null;
+        if (ref && !ref.matches(".tt-tile, .tt-folder-group, .tt-tile-new")) ref = null;
       }
       var target = head || ref;
       if (!target) { d.over = null; clearDropHighlights(); return; }
       if (d.over === target) return;
       d.over = target; clearDropHighlights();
       if (head) {
-        head.classList.add("cc-drop-target");
-        var body = head.parentNode.querySelector(":scope > .cc-folder-group-body");
+        head.classList.add("tt-drop-target");
+        var body = head.parentNode.querySelector(":scope > .tt-folder-group-body");
         if (body && d.el.parentNode !== body) slideInto(d.el, body, null);
       } else {
-        var after = !ref.classList.contains("cc-tile-new") && !!(d.el.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING);
+        var after = !ref.classList.contains("tt-tile-new") && !!(d.el.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING);
         slideInto(d.el, ref.parentNode, after ? ref.nextSibling : ref);
       }
       d.calm = Date.now() + (parseFloat(getComputedStyle(d.el).transitionDuration) || 0) * 1000;
@@ -2517,7 +2517,7 @@
     // stopped" keeps off the page has no element of its own. Answers whether anything was sent.
     function saveDrag(d) {
       var host = d.el.parentNode;
-      var dest = host === root ? ccOrgView.rootId : host && host.classList.contains("cc-folder-group-body") ? host.parentNode.getAttribute("data-fid") : null;
+      var dest = host === root ? ttOrgView.rootId : host && host.classList.contains("tt-folder-group-body") ? host.parentNode.getAttribute("data-fid") : null;
       if (!dest) return false;
       var others = (byParent[dest] || []).filter(function (x) { return x.id !== d.entry.id; }).map(function (x) { return x.id; });
       var next = d.el.nextElementSibling, prev = d.el.previousElementSibling, pos;
@@ -2525,14 +2525,14 @@
       else if (prev && prev.dataset.eid) pos = others.indexOf(prev.dataset.eid) + 1;
       else pos = others.length;
       if (dest === d.entry.parentId && pos === (byParent[dest] || []).indexOf(d.entry)) return false;
-      ccOrgMoveToPosition(d.entry.id, dest, pos);
+      ttOrgMoveToPosition(d.entry.id, dest, pos);
       return true;
     }
     function attachMoveButton(cardEl, entry) {
-      var btn = el("button", "cc-card-movebtn"); btn.type = "button"; btn.title = t("moveToFolder");
-      btn.innerHTML = ccGlyph("Folder"); btn.setAttribute("aria-label", t("moveToFolder"));
+      var btn = el("button", "tt-card-movebtn"); btn.type = "button"; btn.title = t("moveToFolder");
+      btn.innerHTML = ttGlyph("Folder"); btn.setAttribute("aria-label", t("moveToFolder"));
       btn.addEventListener("click", function (ev) { ev.stopPropagation(); ev.preventDefault(); toggleMenu(btn, function () { return buildMoveMenu(entry); }, ev); });
-      cardEl.querySelector(".cc-tile-head").appendChild(btn);
+      cardEl.querySelector(".tt-tile-head").appendChild(btn);
     }
 
     function renderEntries(parentId, container) {
@@ -2540,51 +2540,51 @@
         if (e.type === "folder" || e.type === "group") {
           if (filterText && !entryMatches(e)) return; // live search: a folder with no match anywhere inside it (and no name match itself) is hidden outright
           var collapsed = effectiveCollapsed(e);
-          var names = ccCollectFolderContainerNames(byParent, e.id, containerByName);
-          var grp = el("div", "cc-folder-group" + (collapsed ? " cc-folder-collapsed" : "")); grp.setAttribute("data-fid", e.id); grp.dataset.eid = e.id;
-          var head = el("div", "cc-folder-group-head");
+          var names = ttCollectFolderContainerNames(byParent, e.id, containerByName);
+          var grp = el("div", "tt-folder-group" + (collapsed ? " tt-folder-collapsed" : "")); grp.setAttribute("data-fid", e.id); grp.dataset.eid = e.id;
+          var head = el("div", "tt-folder-group-head");
           stampFolderColour(head, folderLook(e.id).color, folderIdx++);
-          var titleWrap = el("span", "cc-folder-group-title");
-          var chev = el("span", "cc-folder-chev", collapsed ? "▸" : "▾"); chev.setAttribute("aria-hidden", "true");
+          var titleWrap = el("span", "tt-folder-group-title");
+          var chev = el("span", "tt-folder-chev", collapsed ? "▸" : "▾"); chev.setAttribute("aria-hidden", "true");
           titleWrap.appendChild(chev);
           titleWrap.appendChild(folderBadge(folderLook(e.id).icon));
-          titleWrap.appendChild(el("span", "cc-folder-group-label", e.name));
+          titleWrap.appendChild(el("span", "tt-folder-group-label", e.name));
           var up = names.filter(function (n) { var c2 = containerByName(n); return c2 && c2.state === "running"; }).length;
-          titleWrap.appendChild(el("span", "cc-folder-count", up + "/" + names.length + " " + (LANG === "de" ? "laufen" : "running")));
+          titleWrap.appendChild(el("span", "tt-folder-count", up + "/" + names.length + " " + (LANG === "de" ? "laufen" : "running")));
           head.appendChild(titleWrap);
           if (collapsed && names.length) head.appendChild(folderPeek(names));
-          head.appendChild(el("span", "cc-folder-spacer"));
+          head.appendChild(el("span", "tt-folder-spacer"));
           if (up) head.appendChild(folderLoadBars(names));
           head.style.cursor = "pointer";
           // Collapse and expand, kept by setFolderCollapsed. A click on one of the action buttons
           // below never reaches here, since they all stop propagation.
           head.addEventListener("click", function () { setFolderCollapsed(e.id, !effectiveCollapsed(e)); renderFolderView(); });
-          var acts = el("span", "cc-folder-group-actions");
+          var acts = el("span", "tt-folder-group-actions");
           // hide-stopped is per folder rather than global
           var hsOn = folderHidesStopped(e.id);
-          var hsBtn = folderActBtn("cc-folder-act" + (hsOn ? " cc-folder-act-on" : ""), hsOn ? "EyeOff" : "Eye", t("hideStopped"));
+          var hsBtn = folderActBtn("tt-folder-act" + (hsOn ? " tt-folder-act-on" : ""), hsOn ? "EyeOff" : "Eye", t("hideStopped"));
           hsBtn.addEventListener("click", function (ev) { ev.stopPropagation(); setFolderHideStopped(e.id, !folderHidesStopped(e.id)); renderFolderView(); });
           acts.appendChild(hsBtn);
           [["Play", "bulkStartAll", "start"], ["Stop", "bulkStopAll", "stop"], ["Retry", "bulkRestartAll", "restart"]].forEach(function (b) {
-            var btn = folderActBtn("cc-folder-act", b[0], t(b[1]));
-            btn.addEventListener("click", function (ev) { ev.stopPropagation(); ccFolderBulk(e.id, b[2]); });
+            var btn = folderActBtn("tt-folder-act", b[0], t(b[1]));
+            btn.addEventListener("click", function (ev) { ev.stopPropagation(); ttFolderBulk(e.id, b[2]); });
             acts.appendChild(btn);
           });
           var updatable = names.filter(function (n) { return updateReady(n, rowsByName[n]); });
           if (updatable.length && typeof window.openDocker === "function") {
-            var updBtn = folderActBtn("cc-folder-act", "Update", t("bulkUpdateAll"));
-            updBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ccFolderUpdate(updatable, updBtn); });
+            var updBtn = folderActBtn("tt-folder-act", "Update", t("bulkUpdateAll"));
+            updBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ttFolderUpdate(updatable, updBtn); });
             acts.appendChild(updBtn);
           }
-          var editBtn = folderActBtn("cc-folder-act", "Pencil", t("editFolder"));
+          var editBtn = folderActBtn("tt-folder-act", "Pencil", t("editFolder"));
           editBtn.addEventListener("click", function (ev) { ev.stopPropagation(); openFolderEditor(editBtn, e.id); });
-          var delBtn = folderActBtn("cc-folder-act", "Trash", t("deleteFolder"));
-          delBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ccOrgDeleteFolder(e.id, delBtn); });
+          var delBtn = folderActBtn("tt-folder-act", "Trash", t("deleteFolder"));
+          delBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ttOrgDeleteFolder(e.id, delBtn); });
           acts.appendChild(editBtn); acts.appendChild(delBtn);
           wireDragSource(head, grp, e); // the head is the drag handle and the whole group moves
           head.appendChild(acts);
           grp.appendChild(head);
-          var kids = el("div", "cc-folder-group-body");
+          var kids = el("div", "tt-folder-group-body");
           grp.appendChild(kids);
           container.appendChild(grp);
           renderEntries(e.id, kids); // a nested folder renders inside its own group's body, even collapsed, so the auto-expand still finds matches
@@ -2595,7 +2595,7 @@
           var c = containerByName(name);
           if (c) {
             if (filterText && !entryMatches(e)) return;
-            if (ccFolderHidesContainer(parentId, c)) return;
+            if (ttFolderHidesContainer(parentId, c)) return;
             var cd = folderTile(c, rowsByName[c.name]); cd.dataset.eid = e.id;
             wireDragSource(cd, cd, e);
             attachMoveButton(cd, e);
@@ -2604,7 +2604,7 @@
         }
       });
     }
-    renderEntries(ccOrgView.rootId, root);
+    renderEntries(ttOrgView.rootId, root);
     if (!filterText) root.appendChild(newFolderTile());
     // A drop anywhere in the view keeps the place the item was dragged to.
     root.addEventListener("dragover", dragOver);
@@ -2621,78 +2621,78 @@
   function renderCurrentView() { if (mode === "folder") renderFolderView(); else renderGrid(); }
 
   // the gear and its menu
-  function makeGear(extra) { var g = el("button", "cc-hgear" + (extra ? " " + extra : "") + (daemonUp === false ? " cc-hgear-down" : "")); g.innerHTML = ccGlyph("Gear"); g.type = "button"; g.setAttribute("data-cc-focus-key", extra || "cc-hgear"); var tip = daemonUp === false ? "TowerTorch: daemon not reachable" : "TowerTorch"; g.setAttribute("data-tip", tip); g.setAttribute("aria-label", tip); g.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); toggleMenu(g, null, e); }); return g; }
+  function makeGear(extra) { var g = el("button", "tt-hgear" + (extra ? " " + extra : "") + (daemonUp === false ? " tt-hgear-down" : "")); g.innerHTML = ttGlyph("Gear"); g.type = "button"; g.setAttribute("data-tt-focus-key", extra || "tt-hgear"); var tip = daemonUp === false ? "TowerTorch: daemon not reachable" : "TowerTorch"; g.setAttribute("data-tip", tip); g.setAttribute("aria-label", tip); g.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); toggleMenu(g, null, e); }); return g; }
   function injectHeaderGear() {
     try {
       // never a second list-mode gear once one exists
-      if (document.querySelector(".cc-hgear")) return true;
+      if (document.querySelector(".tt-hgear")) return true;
       // Its home is the floating action bar on the Docker page or the tab strip on the others,
       // as in relocateTopBar, and never a column-header th, which the CSS hides in the basic view.
       var homeH = document.querySelector("div.js-actions") || document.querySelector("nav.tabs .tabs-container");
-      if (homeH) { if (!homeH.querySelector(".cc-hgear-home")) homeH.appendChild(makeGear("cc-hgear-home")); return true; }
+      if (homeH) { if (!homeH.querySelector(".tt-hgear-home")) homeH.appendChild(makeGear("tt-hgear-home")); return true; }
       // Failing that, inside Unraid's view-toggle row as its first child, so the gear sits in the
       // right-aligned control group beside the toggle rather than orphaned on the line above.
       var tv = document.querySelector("div.ToggleViewMode");
-      if (tv) { if (tv.querySelector(".cc-hgear-bar")) return true; tv.insertBefore(makeGear("cc-hgear-bar"), tv.firstChild); return true; }
+      if (tv) { if (tv.querySelector(".tt-hgear-bar")) return true; tv.insertBefore(makeGear("tt-hgear-bar"), tv.firstChild); return true; }
       var tb = nativeTable(); if (!tb) return false;
       var hr = headerRow();
-      if (hr) { if (hr.querySelector(".cc-hgear")) return true; var th = hr.querySelector("th"); if (th) { th.appendChild(makeGear("cc-hgear-th")); return true; } }
+      if (hr) { if (hr.querySelector(".tt-hgear")) return true; var th = hr.querySelector("th"); if (th) { th.appendChild(makeGear("tt-hgear-th")); return true; } }
       var wrap = tb.parentNode;
-      if (wrap && !wrap.querySelector(".cc-hgear-float")) { try { if (getComputedStyle(wrap).position === "static") wrap.style.position = "relative"; } catch (e) {} wrap.appendChild(makeGear("cc-hgear-float")); }
+      if (wrap && !wrap.querySelector(".tt-hgear-float")) { try { if (getComputedStyle(wrap).position === "static") wrap.style.position = "relative"; } catch (e) {} wrap.appendChild(makeGear("tt-hgear-float")); }
       return true;
     } catch (e) { return false; }
   }
-  function menuHead(txt) { return el("div", "cc-menu-h", txt); }
+  function menuHead(txt) { return el("div", "tt-menu-h", txt); }
   // Under rainbow each selector wears a palette colour of its own, counted in the order they stand
   // (GlimStone, "Every selector wears a colour of its own"); otherwise they share the accent.
   function paintSelectors(root) {
-    var rb = themingOn() && localStorage.getItem("cc.rainbow") === "1";
-    Array.prototype.slice.call(root.querySelectorAll(".cc-seg")).forEach(function (s, i) {
-      if (rb) { var c = ccRbColor(i); s.style.setProperty("--cc-rb-c", c); s.style.setProperty("--cc-rb-ct", idealText(c)); }
-      else { s.style.removeProperty("--cc-rb-c"); s.style.removeProperty("--cc-rb-ct"); }
+    var rb = themingOn() && localStorage.getItem("tt.rainbow") === "1";
+    Array.prototype.slice.call(root.querySelectorAll(".tt-seg")).forEach(function (s, i) {
+      if (rb) { var c = ttRbColor(i); s.style.setProperty("--tt-rb-c", c); s.style.setProperty("--tt-rb-ct", idealText(c)); }
+      else { s.style.removeProperty("--tt-rb-c"); s.style.removeProperty("--tt-rb-ct"); }
     });
   }
   function buildMenu() {
-    var m = el("div", "cc-menu cc-menu-wide");
+    var m = el("div", "tt-menu tt-menu-wide");
     m.addEventListener("click", function (e) { e.stopPropagation(); });
     // Without the daemon the limits and bandwidth cannot work at all, so the menu says so in red.
     // A running daemon is the normal case and shows nothing (GlimStone rule 33).
-    if (daemonUp === false) m.appendChild(el("div", "cc-menu-status cc-bad-text", t("daemonDown")));
+    if (daemonUp === false) m.appendChild(el("div", "tt-menu-status tt-bad-text", t("daemonDown")));
     // The list and grid choice belongs to the theming, so it is hidden with theming off.
     if (themingOn()) {
       m.appendChild(menuHead(t("view")));
       // The horizontal selector of the settings page, in its well, with the same glyphs as the
       // view selector there.
-      var seg = el("div", "cc-seg cc-set-mode"); seg.setAttribute("role", "radiogroup"); seg.setAttribute("aria-label", t("view"));
+      var seg = el("div", "tt-seg tt-set-mode"); seg.setAttribute("role", "radiogroup"); seg.setAttribute("aria-label", t("view"));
       var views = [["list", t("list"), "ViewList"], ["grid", t("grid"), "ViewGrid"]];
       // The folder view is where folders are made, so it is offered as soon as the organizer is
       // there, before the first folder exists.
-      if (ccOrgAvailable) views.push(["folder", LANG === "de" ? "Ordner" : "Folder", "Folder"]);
+      if (ttOrgAvailable) views.push(["folder", LANG === "de" ? "Ordner" : "Folder", "Folder"]);
       views.forEach(function (v) {
-        var b = el("button", "cc-seg-btn" + (mode === v[0] ? " cc-seg-on" : "")); b.type = "button";
+        var b = el("button", "tt-seg-btn" + (mode === v[0] ? " tt-seg-on" : "")); b.type = "button";
         b.setAttribute("role", "radio"); b.setAttribute("aria-checked", mode === v[0] ? "true" : "false");
-        ccLabelled(b, v[2], v[1]);
+        ttLabelled(b, v[2], v[1]);
         b.addEventListener("click", function () { closeMenu(); setMode(v[0]); });
         seg.appendChild(b);
       });
-      var vrow = el("div", "cc-menu-row cc-menu-plain"); vrow.appendChild(seg); m.appendChild(vrow);
-      if (ccOrgAvailable && mode === "folder") {
-        var nrow = el("div", "cc-menu-row cc-menu-plain");
-        var nb = el("button", "cc-btn cc-menu-newfolder"); nb.type = "button";
-        ccLabelled(nb, "Folder", t("newFolder"));
-        nb.addEventListener("click", function () { closeMenu(); ccOrgCreateFolder(); });
+      var vrow = el("div", "tt-menu-row tt-menu-plain"); vrow.appendChild(seg); m.appendChild(vrow);
+      if (ttOrgAvailable && mode === "folder") {
+        var nrow = el("div", "tt-menu-row tt-menu-plain");
+        var nb = el("button", "tt-btn tt-menu-newfolder"); nb.type = "button";
+        ttLabelled(nb, "Folder", t("newFolder"));
+        nb.addEventListener("click", function () { closeMenu(); ttOrgCreateFolder(); });
         nrow.appendChild(nb); m.appendChild(nrow);
       }
     }
-    if (m.children.length) m.appendChild(el("div", "cc-menu-sep"));
-    var prow = el("div", "cc-menu-row cc-menu-plain");
-    var save = ccLabelled(el("button", "cc-btn"), "Save", t("save")), fire = ccLabelled(el("button", "cc-btn cc-btn-primary"), "Play", t("startorder"));
+    if (m.children.length) m.appendChild(el("div", "tt-menu-sep"));
+    var prow = el("div", "tt-menu-row tt-menu-plain");
+    var save = ttLabelled(el("button", "tt-btn"), "Save", t("save")), fire = ttLabelled(el("button", "tt-btn tt-btn-primary"), "Play", t("startorder"));
     save.addEventListener("click", function () { savePlan(false, save); }); fire.addEventListener("click", function () { savePlan(true, fire); });
     prow.appendChild(save); prow.appendChild(fire); m.appendChild(prow);
     // The colours, the icons and the basic or advanced view are set elsewhere, on the settings page
     // and with the switch beside the toolbar, so the menu keeps to the view of this page.
-    var srow = el("div", "cc-menu-row cc-menu-plain");
-    var link = ccLabelled(el("a", "cc-btn cc-menu-settings"), "Gear", LANG === "de" ? "Einstellungen" : "Settings");
+    var srow = el("div", "tt-menu-row tt-menu-plain");
+    var link = ttLabelled(el("a", "tt-btn tt-menu-settings"), "Gear", LANG === "de" ? "Einstellungen" : "Settings");
     link.href = "/Settings/TowerTorch"; srow.appendChild(link); m.appendChild(srow);
     paintSelectors(m);
     return m;
@@ -2701,7 +2701,7 @@
     if (!menu || !menuAnchor) return;
     // A gear near the bottom edge, such as the list view's in the docked bar or the card view's
     // tile after the last card, opens its menu upward.
-    var at = window.CCTheme.placeAt(menuAnchor.getBoundingClientRect(), menu.offsetWidth || 240, menu.offsetHeight, 6, true);
+    var at = window.TTTheme.placeAt(menuAnchor.getBoundingClientRect(), menu.offsetWidth || 240, menu.offsetHeight, 6, true);
     menu.style.left = (window.scrollX + at.left) + "px";
     menu.style.top = (window.scrollY + at.top) + "px";
   }
@@ -2735,7 +2735,7 @@
     if (!menu) return;
     var held = menu.contains(document.activeElement);
     menu.remove(); menu = null;
-    var back = held && window.CCTheme ? window.CCTheme.refind(menuAnchor) : null;
+    var back = held && window.TTTheme ? window.TTTheme.refind(menuAnchor) : null;
     if (back) back.focus();
   }
   // A menu opened from the keyboard, a click with no pointer behind it, puts the focus on its first
@@ -2762,8 +2762,8 @@
   // A move with a position, for the drag reordering, which combines the folder move and the
   // placement in one call; ORG_MOVE_MUT appends instead.
   var ORG_MOVEPOS_MUT = 'mutation($sourceEntryIds: [String!]!, $destinationFolderId: String!, $position: Float!) { moveDockerItemsToPosition(sourceEntryIds: $sourceEntryIds, destinationFolderId: $destinationFolderId, position: $position) { views { ' + ORG_VIEW_SHAPE + ' } } }';
-  function ccOrgQuery() {
-    return ccGql(ORG_QUERY)
+  function ttOrgQuery() {
+    return ttGql(ORG_QUERY)
       .then(function (r) { return r.json(); })
       .then(function (j) {
         if (j.errors) throw new Error(j.errors[0].message);
@@ -2771,109 +2771,109 @@
         return (views && views[0]) || null;
       });
   }
-  function ccOrgMutate(mutation, variables) {
-    return ccGql(mutation, variables)
+  function ttOrgMutate(mutation, variables) {
+    return ttGql(mutation, variables)
       .then(function (r) { return r.json(); })
       .then(function (j) { if (j.errors) throw new Error(j.errors[0].message); return j.data; });
   }
-  function ccOrgInit() {
-    return ccOrgQuery().then(function (v) { ccOrgView = v; ccOrgAvailable = !!v; })
-      .catch(function () { ccOrgView = null; ccOrgAvailable = false; }); // the feature flag is off or the API is unreachable
+  function ttOrgInit() {
+    return ttOrgQuery().then(function (v) { ttOrgView = v; ttOrgAvailable = !!v; })
+      .catch(function () { ttOrgView = null; ttOrgAvailable = false; }); // the feature flag is off or the API is unreachable
   }
-  // CC's view mode is kept on the server through updateDockerViewPreferences as well as in
-  // localStorage. `prefs` is a free-form blob shared with Unraid's own frontend, so CC's value
+  // TowerTorch's view mode is kept on the server through updateDockerViewPreferences as well as in
+  // localStorage. `prefs` is a free-form blob shared with Unraid's own frontend, so TowerTorch's value
   // lives under a namespaced key and this merges into whatever is already there; the mutation
   // replaces the whole blob.
-  function ccOrgSavePrefs(patch) {
-    if (!ccOrgAvailable || !ccOrgView) return;
-    var merged = {}; var cur = ccOrgView.prefs;
+  function ttOrgSavePrefs(patch) {
+    if (!ttOrgAvailable || !ttOrgView) return;
+    var merged = {}; var cur = ttOrgView.prefs;
     if (cur && typeof cur === "object") for (var k in cur) if (Object.prototype.hasOwnProperty.call(cur, k)) merged[k] = cur[k];
     for (var k2 in patch) if (Object.prototype.hasOwnProperty.call(patch, k2)) merged[k2] = patch[k2];
-    ccOrgMutate(ORG_SETPREFS_MUT, { viewId: ccOrgView.id, prefs: merged })
-      .then(function () { ccOrgView.prefs = merged; })
+    ttOrgMutate(ORG_SETPREFS_MUT, { viewId: ttOrgView.id, prefs: merged })
+      .then(function () { ttOrgView.prefs = merged; })
       .catch(function () {}); // a failed prefs save stays quiet: localStorage already holds the value
   }
 
   // Every write mutation returns the full fresh organizer state, so it is adopted in place rather
   // than fetched again, and the folder view repaints when it is on screen.
-  function ccOrgAdopt(data, mutName) {
+  function ttOrgAdopt(data, mutName) {
     var views = data && data[mutName] && data[mutName].views, v = views && views[0];
-    if (!v) return; ccOrgView = v; ccOrgAvailable = true;
+    if (!v) return; ttOrgView = v; ttOrgAvailable = true;
     if (mode === "folder") renderFolderView();
   }
   // The folder questions are TowerTorch windows rather than window.prompt and window.confirm,
-  // which cannot be styled and block the whole tab. Without cc-theme.js there is no window to ask in,
+  // which cannot be styled and block the whole tab. Without tt-theme.js there is no window to ask in,
   // so the action does nothing.
-  function ccOrgAsk(o) { if (window.CCTheme && window.CCTheme.ask) window.CCTheme.ask(o); }
-  function ccOrgCreateFolder() {
-    if (!ccOrgAvailable || !ccOrgView) return;
-    ccOrgAsk({ title: t("newFolderTitle"), input: { label: t("folderName"), placeholder: t("folderName") }, ok: t("create"), glyph: "Add", cancel: t("cancel"), onOk: ccOrgCreateNamed });
+  function ttOrgAsk(o) { if (window.TTTheme && window.TTTheme.ask) window.TTTheme.ask(o); }
+  function ttOrgCreateFolder() {
+    if (!ttOrgAvailable || !ttOrgView) return;
+    ttOrgAsk({ title: t("newFolderTitle"), input: { label: t("folderName"), placeholder: t("folderName") }, ok: t("create"), glyph: "Add", cancel: t("cancel"), onOk: ttOrgCreateNamed });
   }
-  function ccOrgCreateNamed(name) {
-    if (!ccOrgAvailable || !ccOrgView) return;
-    ccOrgMutate(ORG_CREATE_MUT, { name: name, parentId: ccOrgView.rootId })
+  function ttOrgCreateNamed(name) {
+    if (!ttOrgAvailable || !ttOrgView) return;
+    ttOrgMutate(ORG_CREATE_MUT, { name: name, parentId: ttOrgView.rootId })
       .then(function (data) {
-        ccOrgAdopt(data, "createDockerFolder");
+        ttOrgAdopt(data, "createDockerFolder");
         setMode("folder"); // straight to the result, so the new folder is visible
       })
       .catch(function () { flash(t("invalid"), true); });
   }
-  function ccOrgDeleteFolder(id, opener) {
-    if (!ccOrgView) return;
-    var self2 = ccOrgView.flatEntries.filter(function (e2) { return e2.id === id; })[0];
-    var n = ccOrgView.flatEntries.filter(function (e2) { return e2.parentId === id; }).length, de = LANG === "de";
+  function ttOrgDeleteFolder(id, opener) {
+    if (!ttOrgView) return;
+    var self2 = ttOrgView.flatEntries.filter(function (e2) { return e2.id === id; })[0];
+    var n = ttOrgView.flatEntries.filter(function (e2) { return e2.parentId === id; }).length, de = LANG === "de";
     var text = !n ? (de ? "Der Ordner ist leer." : "The folder is empty.")
       : n === 1 ? (de ? "Der Eintrag darin rückt eine Ebene nach oben. Gelöscht wird nur der Ordner." : "The entry inside moves up a level. Only the folder is deleted.")
       : (de ? "Die " + n + " Einträge darin rücken eine Ebene nach oben. Gelöscht wird nur der Ordner." : "The " + n + " entries inside move up a level. Only the folder is deleted.");
-    ccOrgAsk({
+    ttOrgAsk({
       title: t("deleteFolderTitle").replace("%s", (self2 && self2.name) || ""), text: text,
       ok: t("deleteShort"), cancel: t("cancel"), danger: true, opener: opener,
-      onOk: function () { ccOrgDeleteNow(id); }
+      onOk: function () { ttOrgDeleteNow(id); }
     });
   }
-  function ccOrgDeleteNow(id) {
-    if (!ccOrgView) return;
-    var kids = ccOrgView.flatEntries.filter(function (e2) { return e2.parentId === id; }).map(function (e2) { return e2.id; });
-    var self2 = ccOrgView.flatEntries.filter(function (e2) { return e2.id === id; })[0];
-    var parentId = (self2 && self2.parentId) || ccOrgView.rootId;
+  function ttOrgDeleteNow(id) {
+    if (!ttOrgView) return;
+    var kids = ttOrgView.flatEntries.filter(function (e2) { return e2.parentId === id; }).map(function (e2) { return e2.id; });
+    var self2 = ttOrgView.flatEntries.filter(function (e2) { return e2.id === id; })[0];
+    var parentId = (self2 && self2.parentId) || ttOrgView.rootId;
     // The contents move up to the folder's own parent before it is deleted: deleteDockerEntries
     // has no cascade, so an unrescued delete orphans every container inside.
-    var rescue = kids.length ? ccOrgMutate(ORG_MOVE_MUT, { sourceEntryIds: kids, destinationFolderId: parentId }) : Promise.resolve(null);
-    rescue.then(function () { return ccOrgMutate(ORG_DELETE_MUT, { entryIds: [id] }); })
-      .then(function (data) { setFolderLook(id, null); ccOrgAdopt(data, "deleteDockerEntries"); })
+    var rescue = kids.length ? ttOrgMutate(ORG_MOVE_MUT, { sourceEntryIds: kids, destinationFolderId: parentId }) : Promise.resolve(null);
+    rescue.then(function () { return ttOrgMutate(ORG_DELETE_MUT, { entryIds: [id] }); })
+      .then(function (data) { setFolderLook(id, null); ttOrgAdopt(data, "deleteDockerEntries"); })
       .catch(function () { flash(t("invalid"), true); });
   }
   // Moves an entry into another folder, appended at the end. Both the click menu and a drop on a
   // folder head come through here.
-  function ccOrgMoveToFolder(entryId, destFolderId) {
-    if (!ccOrgAvailable || !ccOrgView) return;
-    ccOrgMutate(ORG_MOVE_MUT, { sourceEntryIds: [entryId], destinationFolderId: destFolderId })
-      .then(function (data) { ccOrgAdopt(data, "moveDockerEntriesToFolder"); })
+  function ttOrgMoveToFolder(entryId, destFolderId) {
+    if (!ttOrgAvailable || !ttOrgView) return;
+    ttOrgMutate(ORG_MOVE_MUT, { sourceEntryIds: [entryId], destinationFolderId: destFolderId })
+      .then(function (data) { ttOrgAdopt(data, "moveDockerEntriesToFolder"); })
       .catch(function () { flash(t("invalid"), true); });
   }
   // Moves an entry to a folder and a position, the drag reorder path. Dropping one item on
   // another moves it to that item's own folder and position, which is a reorder when the folder
   // does not change.
-  function ccOrgMoveToPosition(entryId, destFolderId, position) {
-    if (!ccOrgAvailable || !ccOrgView) return;
-    ccOrgMutate(ORG_MOVEPOS_MUT, { sourceEntryIds: [entryId], destinationFolderId: destFolderId, position: position })
-      .then(function (data) { ccOrgAdopt(data, "moveDockerItemsToPosition"); })
+  function ttOrgMoveToPosition(entryId, destFolderId, position) {
+    if (!ttOrgAvailable || !ttOrgView) return;
+    ttOrgMutate(ORG_MOVEPOS_MUT, { sourceEntryIds: [entryId], destinationFolderId: destFolderId, position: position })
+      .then(function (data) { ttOrgAdopt(data, "moveDockerItemsToPosition"); })
       // a drag leaves the item where it was dropped, so a failed save puts it back
       .catch(function () { flash(t("invalid"), true); if (mode === "folder") renderFolderView(); });
   }
   // The click-menu equivalent of dragging a card onto a folder, for touch and keyboard.
   function buildMoveMenu(entry) {
-    var m = el("div", "cc-menu");
+    var m = el("div", "tt-menu");
     m.addEventListener("click", function (e) { e.stopPropagation(); });
     m.appendChild(menuHead(t("moveToFolder")));
-    m.appendChild(menuItem("cc-menu-link" + (entry.parentId === ccOrgView.rootId ? " cc-menu-link-current" : ""), t("rootLevel"), function () { ccOrgMoveToFolder(entry.id, ccOrgView.rootId); }));
-    ccOrgView.flatEntries
+    m.appendChild(menuItem("tt-menu-link" + (entry.parentId === ttOrgView.rootId ? " tt-menu-link-current" : ""), t("rootLevel"), function () { ttOrgMoveToFolder(entry.id, ttOrgView.rootId); }));
+    ttOrgView.flatEntries
       // The root entry is excluded: it is a folder too, and the root level above already covers
       // it, so without this it appears a second time as its own destination.
-      .filter(function (f) { return (f.type === "folder" || f.type === "group") && f.id !== entry.id && f.id !== ccOrgView.rootId; })
+      .filter(function (f) { return (f.type === "folder" || f.type === "group") && f.id !== entry.id && f.id !== ttOrgView.rootId; })
       .forEach(function (f) {
         var indent = new Array(Math.max(0, f.depth - 1) + 1).join("　"); // one full-width space per nesting level under the root
-        m.appendChild(menuItem("cc-menu-link" + (entry.parentId === f.id ? " cc-menu-link-current" : ""), indent + f.name, function () { ccOrgMoveToFolder(entry.id, f.id); }));
+        m.appendChild(menuItem("tt-menu-link" + (entry.parentId === f.id ? " tt-menu-link-current" : ""), indent + f.name, function () { ttOrgMoveToFolder(entry.id, f.id); }));
       });
     return m;
   }
@@ -2881,9 +2881,9 @@
   // fromServer: the mode came from the organizer's own prefs, so there is nothing to save back.
   function setMode(m, fromServer) {
     if (!themingOn() && m !== "list") m = "list"; // the grid and folder views belong to the theming
-    if (m === "folder" && !ccOrgAvailable) m = "list"; // never enter the folder view without organizer data
+    if (m === "folder" && !ttOrgAvailable) m = "list"; // never enter the folder view without organizer data
     mode = m; localStorage.setItem(VIEW_KEY, m); refresh();
-    if (!fromServer) ccOrgSavePrefs({ ccViewMode: m });
+    if (!fromServer) ttOrgSavePrefs({ ttViewMode: m });
   }
   // The folder view takes part in the same stats tick as the grid, so the bars on its tiles stay
   // live.
@@ -2893,16 +2893,16 @@
     // The values are found by kind rather than by index. The bandwidth badge shows the live
     // rate, as CPU and RAM show live usage, while the configured cap stays in its dot, its gear
     // colour and its tooltip.
-    var cpuV = rg.querySelector(".cc-b-cpu .cc-b-v"), ramV = rg.querySelector(".cc-b-ram .cc-b-v"), bwV = rg.querySelector(".cc-b-bw .cc-b-v");
+    var cpuV = rg.querySelector(".tt-b-cpu .tt-b-v"), ramV = rg.querySelector(".tt-b-ram .tt-b-v"), bwV = rg.querySelector(".tt-b-bw .tt-b-v");
     // A container that is not running has no values: its row shows one dash in place of the
     // group, its card leaves the group out, and both reach the limits through their menu.
-    rg.classList.toggle("cc-res-idle", state !== "running");
+    rg.classList.toggle("tt-res-idle", state !== "running");
     if (state !== "running") return;
     // A card shows the rate once there has been traffic, or while a cap is set, so a quiet
     // container does not carry a badge reading zero. The list keeps its column filled.
-    if (bwV && rg.classList.contains("cc-card-res")) {
-      var name = rg.dataset.name, line = bwV.closest(".cc-resline");
-      line.classList.toggle("cc-hidden", !netSeen[name] && !bwHasLimit(bandwidthFor(name)));
+    if (bwV && rg.classList.contains("tt-card-res")) {
+      var name = rg.dataset.name, line = bwV.closest(".tt-resline");
+      line.classList.toggle("tt-hidden", !netSeen[name] && !bwHasLimit(bandwidthFor(name)));
     }
     if (cpuV) cpuV.textContent = s ? (s.cpu_percent || 0) + "%" : "…";
     if (ramV) ramV.textContent = s ? humanBytes(s.mem_used) + " / " + humanBytes(s.mem_limit) : "…";
@@ -2911,7 +2911,7 @@
   function applyMode() {
     try {
       if (dead) return;
-      // With theming off there is no grid view and no .cc-enh class, so the native cells stay
+      // With theming off there is no grid view and no .tt-enh class, so the native cells stay
       // native. The orchestration controls still go in through injectAllRowBadges(), whose
       // decorative blocks gate themselves on themingOn().
       if (!themingOn()) { hideNative(false); removeGridHolder(); removeEnhanceClasses(); injectAllRowBadges(); return; }
@@ -2925,8 +2925,8 @@
   // renderFolderView. It is cheap, being structural grouping with no stats to recompute, and the
   // field being typed into is the header's, outside gridHolder, so rebuilding that never touches it.
   function applyFilter() {
-    if (mode === "grid") { if (gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll(".cc-card")).forEach(function (cd) { cd.style.display = (!filterText || norm(cd.dataset.name).indexOf(filterText) >= 0) ? "" : "none"; }); }
-    else if (mode === "folder") { if (ccOrgView) renderFolderView(); }
+    if (mode === "grid") { if (gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll(".tt-card")).forEach(function (cd) { cd.style.display = (!filterText || norm(cd.dataset.name).indexOf(filterText) >= 0) ? "" : "none"; }); }
+    else if (mode === "folder") { if (ttOrgView) renderFolderView(); }
     else findRows().forEach(function (tr) { tr.style.display = (!filterText || norm(rowName(tr)).indexOf(filterText) >= 0) ? "" : "none"; });
   }
   // The header's page search filters the containers while it is open on this tab. Unraid removes
@@ -2967,10 +2967,10 @@
         if (s._rxr > 0 || s._txr > 0) netSeen[nm] = true;
       });
       // the folder tiles carry bars; a grid card shows its values in the resource badges below
-      if (mode === "folder" && gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll(".cc-tile")).forEach(function (cd) { var s = stats[cd.dataset.name]; if (!s) return; var f = cd.querySelectorAll(".cc-gauge-fill"), v = cd.querySelectorAll(".cc-stat-val"); if (f[0]) f[0].style.width = Math.min(100, s.cpu_percent) + "%"; if (v[0]) v[0].textContent = (s.cpu_percent || 0) + "%"; if (f[1]) f[1].style.width = Math.min(100, s.mem_percent) + "%"; if (v[1]) v[1].textContent = humanBytes(s.mem_used) + " / " + humanBytes(s.mem_limit); });
-      Array.prototype.slice.call(document.querySelectorAll(".cc-folder-load")).forEach(paintFolderLoad);
+      if (mode === "folder" && gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll(".tt-tile")).forEach(function (cd) { var s = stats[cd.dataset.name]; if (!s) return; var f = cd.querySelectorAll(".tt-gauge-fill"), v = cd.querySelectorAll(".tt-stat-val"); if (f[0]) f[0].style.width = Math.min(100, s.cpu_percent) + "%"; if (v[0]) v[0].textContent = (s.cpu_percent || 0) + "%"; if (f[1]) f[1].style.width = Math.min(100, s.mem_percent) + "%"; if (v[1]) v[1].textContent = humanBytes(s.mem_used) + " / " + humanBytes(s.mem_limit); });
+      Array.prototype.slice.call(document.querySelectorAll(".tt-folder-load")).forEach(paintFolderLoad);
       // the resource badges update in both modes, since a grid card carries a resgroup too
-      Array.prototype.slice.call(document.querySelectorAll(".cc-resgroup")).forEach(function (rg) { var cn = containerByName(rg.dataset.name); updateResGroup(rg, stats[rg.dataset.name], cn && cn.state); });
+      Array.prototype.slice.call(document.querySelectorAll(".tt-resgroup")).forEach(function (rg) { var cn = containerByName(rg.dataset.name); updateResGroup(rg, stats[rg.dataset.name], cn && cn.state); });
     }).catch(function () {});
   }
 
@@ -2979,8 +2979,8 @@
   // by any stylesheet, so the geometry is stamped here.
   function hardenPop(root) {
     try {
-      Array.prototype.slice.call(root.querySelectorAll(".cc-pop-row")).forEach(function (r) {
-        if (r.classList.contains("cc-pop-act")) {
+      Array.prototype.slice.call(root.querySelectorAll(".tt-pop-row")).forEach(function (r) {
+        if (r.classList.contains("tt-pop-act")) {
           r.style.setProperty("border-top", "none", "important"); // no separator lines in any popup
           // The button row spans the content card's width, as the title badge does, 10px in from
           // the window's edge.
@@ -2991,9 +2991,9 @@
         // One content inset per window, 14px inside the card. A row inside a section wrapper
         // already sits on that wrapper's 4px margin and needs 10 of its own, while a row placed
         // straight into the card has no margin under it and needs the whole 14, or it stands
-        // proud of every field. These are the numbers .cc-pop-row uses in docker.css, and this
+        // proud of every field. These are the numbers .tt-pop-row uses in docker.css, and this
         // stamp is !important, so the sheet alone cannot correct it.
-        var wrapped = !!(r.closest && r.closest(".cc-pop-body, .cc-pop-auto, .cc-pop-sub"));
+        var wrapped = !!(r.closest && r.closest(".tt-pop-body, .tt-pop-auto, .tt-pop-sub"));
         r.style.setProperty("padding", wrapped ? "3px 10px" : "3px 14px", "important");
         r.style.setProperty("margin", "0", "important");
         // the row itself: one tight flex line, nothing may wrap or stretch it
@@ -3008,16 +3008,16 @@
           ch.style.setProperty("margin", "0", "important");
           ch.style.setProperty("line-height", "1.4", "important");
           ch.style.setProperty("min-height", "0", "important");
-          // The label column is the exception. docker.css sizes .cc-pop-lbl with a min-width
+          // The label column is the exception. docker.css sizes .tt-pop-lbl with a min-width
           // floor and nowrap rather than a fixed width, since a fixed width cannot grow and a
           // longer label wraps inside it, and the blanket min-width:0 below would erase that
-          // floor and leave the column ragged. The numbers match the sheet's, as .cc-port's do,
+          // floor and leave the column ragged. The numbers match the sheet's, as .tt-port's do,
           // so Unraid's own label rules cannot beat them either; the plan window carries the long
           // labels and takes the wider floor.
-          if (ch.classList.contains("cc-pop-lbl")) {
+          if (ch.classList.contains("tt-pop-lbl")) {
             ch.style.setProperty("flex", "0 0 auto", "important");
             ch.style.setProperty("width", "auto", "important");
-            ch.style.setProperty("min-width", (ch.closest && ch.closest(".cc-pop-plan")) ? "120px" : "100px", "important");
+            ch.style.setProperty("min-width", (ch.closest && ch.closest(".tt-pop-plan")) ? "120px" : "100px", "important");
             ch.style.setProperty("white-space", "nowrap", "important");
             return;
           }
@@ -3027,40 +3027,40 @@
         });
       });
       // The fill and the hover of a popup button are not written here. An inline
-      // `background: … !important` beats Unraid's theme, but it beats CC's own rules too, so a
-      // button could never take its own --cc-rb-c and the reactive rest-grey never reached one.
-      // `html .cc-pop .cc-btn` in docker.css carries the same weight while leaving the colour
+      // `background: … !important` beats Unraid's theme, but it beats TowerTorch's own rules too, so a
+      // button could never take its own --tt-rb-c and the reactive rest-grey never reached one.
+      // `html .tt-pop .tt-btn` in docker.css carries the same weight while leaving the colour
       // chain and :hover working. Only the border stays inline, since Unraid does put one on
       // these and removing it depends on no mode.
-      Array.prototype.slice.call(root.querySelectorAll(".cc-btn")).forEach(function (b) {
+      Array.prototype.slice.call(root.querySelectorAll(".tt-btn")).forEach(function (b) {
         b.style.removeProperty("background");   // clears what an older release stamped; a hot-swapped script keeps the DOM
         b.style.removeProperty("color");
         b.style.removeProperty("filter");
         b.style.setProperty("border", "none", "important");
-        if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b);
+        if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(b);
       });
       // uniform popup style everywhere, applied automatically: no head/foot separator lines
-      var hh = root.querySelector(".cc-pop-head"); if (hh) hh.style.setProperty("border-bottom", "none", "important");
-      var ff = root.querySelector(".cc-pop-foot"); if (ff) { ff.style.setProperty("border-top", "none", "important"); ff.style.setProperty("border-bottom", "none", "important"); }
-      Array.prototype.slice.call(root.querySelectorAll(".cc-in")).forEach(function (i) {
+      var hh = root.querySelector(".tt-pop-head"); if (hh) hh.style.setProperty("border-bottom", "none", "important");
+      var ff = root.querySelector(".tt-pop-foot"); if (ff) { ff.style.setProperty("border-top", "none", "important"); ff.style.setProperty("border-bottom", "none", "important"); }
+      Array.prototype.slice.call(root.querySelectorAll(".tt-in")).forEach(function (i) {
         // The narrow fields keep their short width inline, since a stylesheet width loses to
         // Unraid's input rules. The plan window is the exception, where every field shares one
-        // width; both halves have to move together, and .cc-pop-plan .cc-port in docker.css says
+        // width; both halves have to move together, and .tt-pop-plan .tt-port in docker.css says
         // why the CPU and RAM window keeps its 80px, where the field is half of a value and unit
         // pair.
-        if (i.classList.contains("cc-port")) {
-          if (i.closest && i.closest(".cc-pop-plan")) { i.style.setProperty("width", "auto", "important"); i.style.setProperty("flex", "1 1 0", "important"); }
+        if (i.classList.contains("tt-port")) {
+          if (i.closest && i.closest(".tt-pop-plan")) { i.style.setProperty("width", "auto", "important"); i.style.setProperty("flex", "1 1 0", "important"); }
           else { i.style.setProperty("width", "80px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
         }
-        else if (i.classList.contains("cc-unit")) { i.style.setProperty("width", "68px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
-        else if (i.classList.contains("cc-sched-act")) { i.style.setProperty("width", "92px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
-        else if (i.classList.contains("cc-sched-time")) { i.style.setProperty("width", "100px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
+        else if (i.classList.contains("tt-unit")) { i.style.setProperty("width", "68px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
+        else if (i.classList.contains("tt-sched-act")) { i.style.setProperty("width", "92px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
+        else if (i.classList.contains("tt-sched-time")) { i.style.setProperty("width", "100px", "important"); i.style.setProperty("flex", "0 0 auto", "important"); }
         i.style.setProperty("min-width", "0", "important");
         i.style.setProperty("max-width", "100%", "important");
         i.style.setProperty("box-sizing", "border-box", "important");
         // The fill is not stamped here either. The `background` shorthand also resets
         // background-image, where the select caret lives, and an inline !important rest colour
-        // cannot be beaten by :focus, so the focus step never appears. `html .cc-pop .cc-in` in
+        // cannot be beaten by :focus, so the focus step never appears. `html .tt-pop .tt-in` in
         // docker.css carries the same weight against Unraid and leaves :focus working.
         i.style.removeProperty("background");
         i.style.removeProperty("background-color");
@@ -3072,27 +3072,27 @@
         // The time field and the multi-select keep room on the right for the clock button and the
         // caret; docker.css asks for it, and this inline padding would otherwise win and run the
         // text under the icon.
-        i.style.setProperty("padding", (i.classList.contains("cc-sched-time") || i.classList.contains("cc-dropin")) ? "5px 24px 5px 8px" : "5px 8px", "important");
-        i.style.setProperty("border-radius", "var(--cc-radius-control)", "important");
+        i.style.setProperty("padding", (i.classList.contains("tt-sched-time") || i.classList.contains("tt-dropin")) ? "5px 24px 5px 8px" : "5px 8px", "important");
+        i.style.setProperty("border-radius", "var(--tt-radius-control)", "important");
         i.style.setProperty("line-height", "1.35", "important");
       });
     } catch (e) {}
   }
-  // One painter for every control in a CC window: a single sequence in DOM order per window, so
+  // One painter for every control in a TowerTorch window: a single sequence in DOM order per window, so
   // two adjacent controls never land on the same palette slot and every control reads the same
   // var chain in the sheets, the title badge first. The dropdowns keep their own painter in
-  // cc-theme.js, which already rotates per element. The reactive sub-mode is honoured by always
+  // tt-theme.js, which already rotates per element. The reactive sub-mode is honoured by always
   // stamping the custom properties and never forcing a rest colour, so the sheets decide whether a
   // control rests neutral until hover.
-  var POP_PAINT_SEL = ".cc-set-toggle, input[type=checkbox], .cc-day, .cc-btn, .cc-sched-time, .cc-pop-ttl, .cc-win-x";
+  var POP_PAINT_SEL = ".tt-set-toggle, input[type=checkbox], .tt-day, .tt-btn, .tt-sched-time, .tt-pop-ttl, .tt-win-x";
   function paintPopChrome(root) {
     try {
       if (!root) return;
-      var rb = themingOn() && localStorage.getItem("cc.rainbow") === "1";
+      var rb = themingOn() && localStorage.getItem("tt.rainbow") === "1";
       Array.prototype.slice.call(root.querySelectorAll(POP_PAINT_SEL)).forEach(function (e, i) {
         // Outside the rainbow the stamps are removed, so the sheets resolve to the plain accent.
-        if (rb) { var c = ccRbColor(i); e.style.setProperty("--cc-rb-c", c); e.style.setProperty("--cc-rb-ct", idealText(c)); }
-        else { e.style.removeProperty("--cc-rb-c"); e.style.removeProperty("--cc-rb-ct"); }
+        if (rb) { var c = ttRbColor(i); e.style.setProperty("--tt-rb-c", c); e.style.setProperty("--tt-rb-ct", idealText(c)); }
+        else { e.style.removeProperty("--tt-rb-c"); e.style.removeProperty("--tt-rb-ct"); }
       });
     } catch (e) {}
   }
@@ -3105,45 +3105,45 @@
   // stops it changing. The scrollbar's width is measured and given back as body padding, or
   // taking the bar away widens the viewport and the whole page jumps sideways as the window
   // opens.
-  function ccScrollLock(on) {
+  function ttScrollLock(on) {
     try {
       var de = document.documentElement;
       if (on) {
-        if (de.classList.contains("cc-scrolllock")) return;
+        if (de.classList.contains("tt-scrolllock")) return;
         var sbw = window.innerWidth - de.clientWidth;
-        if (sbw > 0) de.style.setProperty("--cc-sbw", sbw + "px");
-        de.classList.add("cc-scrolllock");
+        if (sbw > 0) de.style.setProperty("--tt-sbw", sbw + "px");
+        de.classList.add("tt-scrolllock");
       } else {
-        de.classList.remove("cc-scrolllock");
-        de.style.removeProperty("--cc-sbw");
+        de.classList.remove("tt-scrolllock");
+        de.style.removeProperty("--tt-sbw");
       }
     } catch (e) {}
   }
-  // The title and the button row stay put and only the region between them scrolls. The .cc-pop
+  // The title and the button row stay put and only the region between them scrolls. The .tt-pop
   // windows build their content as a flat list of children, so rather than restructuring each
-  // builder, everything between the head and the action row is moved into one .cc-pop-mid
+  // builder, everything between the head and the action row is moved into one .tt-pop-mid
   // wrapper here, which covers any future window too. It runs before the positioning, so the
   // offsetHeight there measures the capped window.
   function popAnchorParts(pop) {
-    var head = pop.querySelector(":scope > .cc-pop-head"), act = pop.querySelector(":scope > .cc-pop-act");
-    if (!head || pop.querySelector(":scope > .cc-pop-mid")) return;
-    var mid = el("div", "cc-pop-mid"), n = head.nextSibling, kids = [];
+    var head = pop.querySelector(":scope > .tt-pop-head"), act = pop.querySelector(":scope > .tt-pop-act");
+    if (!head || pop.querySelector(":scope > .tt-pop-mid")) return;
+    var mid = el("div", "tt-pop-mid"), n = head.nextSibling, kids = [];
     while (n && n !== act) { kids.push(n); n = n.nextSibling; }
     if (!kids.length) return;
     pop.insertBefore(mid, act || null);
     kids.forEach(function (k) { mid.appendChild(k); });
   }
-  // The placement clamp, shared by every .cc-pop window. With the page pinned, a window opened
+  // The placement clamp, shared by every .tt-pop window. With the page pinned, a window opened
   // off a row near an edge cannot be scrolled into view, so it is clamped into the viewport: the
   // preferred spot is under its anchor, and it slides up or left as far as needed to sit on
-  // screen. With .cc-pop's max-height and the scrolling .cc-pop-mid, every window is reachable at
+  // screen. With .tt-pop's max-height and the scrolling .tt-pop-mid, every window is reachable at
   // any viewport size without the page moving.
   //
   // It runs on every size change, not once at open: the plan editor grows afterwards, when a
   // schedule row is added or a probe switch reveals a field, and the box would otherwise grow
   // downward from a top that suited its old height, leaving the button row below the fold with
   // the page pinned. Both axes are clamped, since a viewport can narrow under a standing window
-  // as easily as it can shorten. data-cc-top and data-cc-left remember the anchor-relative spot,
+  // as easily as it can shorten. data-tt-top and data-tt-left remember the anchor-relative spot,
   // so removing a row or widening the viewport lets the window slide back. Neither write can
   // feed the ResizeObserver, because a position never changes the box's size.
   function clampPop(pop) {
@@ -3151,13 +3151,13 @@
       if (!pop || !pop.parentNode) return;
       var de = document.documentElement;
       var vh = de.clientHeight || window.innerHeight, vw = de.clientWidth || window.innerWidth;
-      var m = window.CCTheme.edge();
-      var h = pop.offsetHeight || 0, top = parseFloat(pop.getAttribute("data-cc-top") || "0");
+      var m = window.TTTheme.edge();
+      var h = pop.offsetHeight || 0, top = parseFloat(pop.getAttribute("data-tt-top") || "0");
       if (top + h + m > vh) top = vh - h - m;
       pop.style.top = (window.scrollY + Math.max(m, top)) + "px";
-      var lAttr = pop.getAttribute("data-cc-left");
+      var lAttr = pop.getAttribute("data-tt-left");
       if (lAttr !== null) {
-        var w = pop.offsetWidth || parseFloat(pop.getAttribute("data-cc-minw") || "0") || 320, left = parseFloat(lAttr);
+        var w = pop.offsetWidth || parseFloat(pop.getAttribute("data-tt-minw") || "0") || 320, left = parseFloat(lAttr);
         if (left + w + m > vw) left = vw - w - m;
         pop.style.left = (window.scrollX + Math.max(m, left)) + "px";
       }
@@ -3165,20 +3165,20 @@
   }
   function placePop(pop, anchor, minW) {
     popAnchorParts(pop);
-    paintSelects();   // the window's .cc-dsel lists join the colour modes, document-wide so the rotation keeps one sequence
+    paintSelects();   // the window's .tt-dsel lists join the colour modes, document-wide so the rotation keeps one sequence
     paintPopChrome(pop);   // and so does every other control in it, through the one chokepoint every window shares
     var r = anchor.getBoundingClientRect();
     // the preferred spot only; clampPop owns the first placement and every later one, so the two
     // cannot disagree
-    pop.setAttribute("data-cc-top", String(r.bottom + 6));
-    pop.setAttribute("data-cc-left", String(r.left));
-    if (minW) pop.setAttribute("data-cc-minw", String(minW));   // the caller's fallback width, for when offsetWidth reads 0
+    pop.setAttribute("data-tt-top", String(r.bottom + 6));
+    pop.setAttribute("data-tt-left", String(r.left));
+    if (minW) pop.setAttribute("data-tt-minw", String(minW));   // the caller's fallback width, for when offsetWidth reads 0
     clampPop(pop);
     openPop = pop; openPopAnchor = anchor;
-    ccScrollLock(true);
+    ttScrollLock(true);
     // The scrim, the focus and the keyboard come from the one modal every TowerTorch window
     // shares; Escape and a click on the scrim come back here through closePop.
-    if (window.CCTheme && window.CCTheme.modal) popModal = window.CCTheme.modal(pop, { opener: anchor, onDismiss: dismissPop });
+    if (window.TTTheme && window.TTTheme.modal) popModal = window.TTTheme.modal(pop, { opener: anchor, onDismiss: dismissPop });
     paintPopChrome(pop);   // once more for the close badge the modal has just added
     // A ResizeObserver rather than patching every growth site: the editor has several (add/remove a
     // schedule row, the probe switch, an error strip appearing), and a guard wired at one of them is a
@@ -3196,8 +3196,8 @@
     try { if (popRo) { popRo.disconnect(); popRo = null; } } catch (e) {}
     if (openPop) { openPop.remove(); openPop = null; openPopAnchor = null; }
     if (popModal) { var m = popModal; popModal = null; m.close(); }
-    Array.prototype.slice.call(document.querySelectorAll(".cc-drop")).forEach(function (n) { n.remove(); });
-    ccScrollLock(false);
+    Array.prototype.slice.call(document.querySelectorAll(".tt-drop")).forEach(function (n) { n.remove(); });
+    ttScrollLock(false);
   }
   // The ways out a user takes, the close badge, Escape, the scrim and a click outside, come here.
   // A window whose _unsaved() says it holds work asks before letting it go; a save and the page
@@ -3205,28 +3205,28 @@
   function dismissPop() {
     var pop = openPop;
     if (!pop) return;
-    if (!pop._unsaved || !pop._unsaved() || !window.CCTheme || !window.CCTheme.ask) { closePop(); return; }
-    window.CCTheme.ask({ title: t("discardTitle"), ok: t("discard"), cancel: t("keepEditing"), cancelGlyph: "Pencil", danger: true, onOk: function () { if (openPop === pop) closePop(); } });
+    if (!pop._unsaved || !pop._unsaved() || !window.TTTheme || !window.TTTheme.ask) { closePop(); return; }
+    window.TTTheme.ask({ title: t("discardTitle"), ok: t("discard"), cancel: t("keepEditing"), cancelGlyph: "Pencil", danger: true, onOk: function () { if (openPop === pop) closePop(); } });
   }
   // clicking the SAME badge again closes its popover (toggle). Returns true if it closed.
   function togglePop(anchor) { if (openPop && openPopAnchor === anchor) { closePop(); return true; } return false; }
-  function refreshChip(chip, name) { chip.classList.toggle("cc-plan-on", !!workingPlan[name]); showPlanState(chip, name); }
-  // The (i) beside a label, whose hover explains the dropdown's options. It is the same .cc-info
-  // every other area builds in cc-theme.js, riding the same body-level #cc-tipfloat, so it stays
+  function refreshChip(chip, name) { chip.classList.toggle("tt-plan-on", !!workingPlan[name]); showPlanState(chip, name); }
+  // The (i) beside a label, whose hover explains the dropdown's options. It is the same .tt-info
+  // every other area builds in tt-theme.js, riding the same body-level #tt-tipfloat, so it stays
   // neutral, cannot be clipped by an overflow ancestor, closes on Escape and on focus-out, and
   // its bubble takes no pointer events. The [key, text] pairs flatten to one line each; the
   // bubble renders them pre-line.
   function infoBubble(items) {
     if (typeof items === "string") items = [["", items]];   // a plain prose bubble
     var txt = items.map(function (it) { return it[0] ? it[0] + " · " + it[1] : it[1]; }).join("\n");
-    var b = (window.CCTheme && window.CCTheme.infoIcon) ? window.CCTheme.infoIcon(txt) : (function () {
-      var s = el("span", "cc-info"); s.setAttribute("data-tip", txt); s.setAttribute("aria-label", txt); s.setAttribute("tabindex", "0"); return s;
+    var b = (window.TTTheme && window.TTTheme.infoIcon) ? window.TTTheme.infoIcon(txt) : (function () {
+      var s = el("span", "tt-info"); s.setAttribute("data-tip", txt); s.setAttribute("aria-label", txt); s.setAttribute("tabindex", "0"); return s;
     })();
     // inside a <label> the (i) must not toggle the label's checkbox (section-header bubbles)
     b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
     return b;
   }
-  function lblInfo(text, items) { var l = el("label", "cc-pop-lbl cc-lbl-info"); l.appendChild(document.createTextNode(text)); l.appendChild(infoBubble(items)); return l; }
+  function lblInfo(text, items) { var l = el("label", "tt-pop-lbl tt-lbl-info"); l.appendChild(document.createTextNode(text)); l.appendChild(infoBubble(items)); return l; }
   function probeItems() {
     return LANG === "de"
       ? [["health", "Docker-Healthcheck meldet healthy"], ["running", "Container läuft (kurze Karenz)"], ["tcp", "ein TCP-Port nimmt Verbindungen an"], ["http", "ein HTTP-GET liefert 2xx/3xx"], ["exec", "ein Befehl im Container endet mit Code 0"], ["log", "ein Text taucht im Log auf"]]
@@ -3259,14 +3259,14 @@
   }
   // The restart-policy dropdown, prefilled to `cur`. Factored out so a DOM test can pin its shape.
   function restartPolicySelect(cur) {
-    var sel = el("select", "cc-in cc-rp-sel");
+    var sel = el("select", "tt-in tt-rp-sel");
     RESTART_POLICIES.forEach(function (p) { var o = el("option", null, restartPolicyLabel(p)); o.value = p; if (p === cur) o.selected = true; sel.appendChild(o); });
     return sel;
   }
   // The per-item icon mode: the four choices the settings page offers globally, an explicit
   // "follows the global setting", which is the default, so nothing is pinned until it is chosen,
   // and the original logo, which only makes sense for one item at a time.
-  // It is kept in the shared cc.iconov map in cc-theme.js, which rides the settings sync.
+  // It is kept in the shared tt.iconov map in tt-theme.js, which rides the settings sync.
   function iconModeItems() {
     return LANG === "de"
       ? [["", "Wie TowerTorch das Logo dieses Eintrags einfärbt. Ohne eigene Wahl gilt, was in den Einstellungen unter „Icon-Färbung“ steht."],
@@ -3283,8 +3283,8 @@
           ["Original logo", "Its own logo exactly as it ships: never swapped for another and never tinted."]];
   }
   function iconModeSelect(scope, name) {
-    var CI = window.CCTheme && window.CCTheme.icons;
-    var sel = el("select", "cc-in cc-icm-sel");
+    var CI = window.TTTheme && window.TTTheme.icons;
+    var sel = el("select", "tt-in tt-icm-sel");
     var cur = CI ? CI.override(scope, name) : "";
     [["", t("iconInherit")], ["auto", t("iconAuto")], ["native", t("iconNative")], ["flat", t("iconFlat")], ["tint", t("iconTint")], ["original", t("iconOriginal")]].forEach(function (o) {
       var op = el("option", null, o[1]); op.value = o[0]; if (o[0] === cur) op.selected = true; sel.appendChild(op);
@@ -3300,26 +3300,26 @@
   // The per-row warning badge for a container whose restart policy is "no", so it does not
   // come back after a host reboot. The warning state colour, outside rainbow and accent.
   function restartWarnBadge() {
-    var b = badgeInfo("⚠", t("rpWarn"), "restart"); b.classList.add("cc-b-warn"); b.setAttribute("data-tip", t("rpWarnTip")); return b;
+    var b = badgeInfo("⚠", t("rpWarn"), "restart"); b.classList.add("tt-b-warn"); b.setAttribute("data-tip", t("rpWarnTip")); return b;
   }
   // The time picker (GlimStone, "The time picker"). A native <input type=time> expands into the
   // browser's own drop-down, which CSS cannot reach past a couple of vendor pseudo-elements, so it
-  // opens as a light panel over CC's dark window; rule 18 replaces it with the widget this window
-  // already has, the .cc-drop panel of "Hängt ab von", here with two listbox columns, hours 00 to 23
-  // and minutes in steps of five. Same class and same lifecycle: closePop() sweeps .cc-drop, and
-  // paintSelects() in cc-theme.js carries it through the colour modes.
+  // opens as a light panel over TowerTorch's dark window; rule 18 replaces it with the widget this window
+  // already has, the .tt-drop panel of "Hängt ab von", here with two listbox columns, hours 00 to 23
+  // and minutes in steps of five. Same class and same lifecycle: closePop() sweeps .tt-drop, and
+  // paintSelects() in tt-theme.js carries it through the colour modes.
   // The <input> stays the source of truth and stays typable, so a minute off the five-minute grid
   // can still be typed, and the panel shows it as one more entry. The clock button beside it opens
   // the panel; focus on the field does not. A clock reading is data, so the field, the button and
   // the panel stay left to right under a right-to-left language.
   var tpOpen = null;   // closes the one picker that is open
-  function ccTimePicker(input) {
-    var wrap = el("span", "cc-tp"), btn = el("span", "cc-tp-btn");
+  function ttTimePicker(input) {
+    var wrap = el("span", "tt-tp"), btn = el("span", "tt-tp-btn");
     var label = LANG === "de" ? "Uhrzeit wählen" : "Pick a time";
-    btn.innerHTML = ccGlyph("Schedules");
+    btn.innerHTML = ttGlyph("Schedules");
     btn.setAttribute("data-tip", label); btn.setAttribute("aria-label", label);
     btn.setAttribute("aria-haspopup", "listbox"); btn.setAttribute("aria-expanded", "false");
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(btn);
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(btn);
     input.setAttribute("dir", "ltr"); btn.setAttribute("dir", "ltr");
     var panel = null, cols = [], opened = "";
     function two(n) { return (n < 10 ? "0" : "") + n; }
@@ -3346,8 +3346,8 @@
       if (refocus) btn.focus();
     }
     function pick(ci, it) {
-      cols[ci].forEach(function (o) { o.classList.remove("cc-drop-on"); o.setAttribute("aria-selected", "false"); });
-      it.classList.add("cc-drop-on"); it.setAttribute("aria-selected", "true");
+      cols[ci].forEach(function (o) { o.classList.remove("tt-drop-on"); o.setAttribute("aria-selected", "false"); });
+      it.classList.add("tt-drop-on"); it.setAttribute("aria-selected", "true");
       if (ci === 0) write(+it.dataset.v, null); else write(null, +it.dataset.v);
     }
     function onKey(e) {
@@ -3358,7 +3358,7 @@
       else if (e.key === "End") to = list.length - 1;
       else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         e.preventDefault(); e.stopPropagation();
-        var other = cols[ci ? 0 : 1]; (other.filter(function (o) { return o.classList.contains("cc-drop-on"); })[0] || other[0]).focus();
+        var other = cols[ci ? 0 : 1]; (other.filter(function (o) { return o.classList.contains("tt-drop-on"); })[0] || other[0]).focus();
         return;
       } else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); pick(ci, it); close(true); return; }
       // Every step writes the field as it goes, so Escape puts back the time the panel opened on.
@@ -3371,19 +3371,19 @@
     function open() {
       if (panel && panel.isConnected) return;
       if (tpOpen) tpOpen();
-      panel = el("div", "cc-drop cc-timepick"); panel.setAttribute("dir", "ltr"); opened = input.value;
-      panel.setAttribute("data-cc-own-keys", "1");   // the window leaves Escape and Tab to the panel
+      panel = el("div", "tt-drop tt-timepick"); panel.setAttribute("dir", "ltr"); opened = input.value;
+      panel.setAttribute("data-tt-own-keys", "1");   // the window leaves Escape and Tab to the panel
       cols = [];
       var cur = parts(), mins = [];
       for (var mv = 0; mv < 60; mv += 5) mins.push(mv);
       if (cur[1] != null && mins.indexOf(cur[1]) < 0) { mins.push(cur[1]); mins.sort(function (a, b) { return a - b; }); }
       var hours = []; for (var hv = 0; hv < 24; hv++) hours.push(hv);
       [[hours, cur[0], LANG === "de" ? "Stunde" : "Hour"], [mins, cur[1], LANG === "de" ? "Minute" : "Minute"]].forEach(function (spec, ci) {
-        var c = el("div", "cc-tp-col"); c.setAttribute("role", "listbox"); c.setAttribute("aria-label", spec[2]);
+        var c = el("div", "tt-tp-col"); c.setAttribute("role", "listbox"); c.setAttribute("aria-label", spec[2]);
         cols.push([]);
         spec[0].forEach(function (v) {
           var on = v === spec[1];
-          var it = el("div", "cc-drop-it" + (on ? " cc-drop-on" : ""), two(v));
+          var it = el("div", "tt-drop-it" + (on ? " tt-drop-on" : ""), two(v));
           it.dataset.v = String(v); it.setAttribute("role", "option"); it.setAttribute("aria-selected", on ? "true" : "false"); it.tabIndex = -1;
           it.addEventListener("click", function (ev) { ev.stopPropagation(); pick(ci, it); it.focus(); });
           it.addEventListener("keydown", onKey);
@@ -3396,18 +3396,18 @@
       // behind is scroll-locked while a window stands (rule 15), so a panel off the fold would
       // be unreachable. Both edges are clamped, as in clampPop: a schedule row sits at the right
       // end of a window that is itself clamped to the viewport.
-      var at = window.CCTheme.placeAt(wrap.getBoundingClientRect(), panel.offsetWidth, panel.offsetHeight, 3);
+      var at = window.TTTheme.placeAt(wrap.getBoundingClientRect(), panel.offsetWidth, panel.offsetHeight, 3);
       panel.style.left = (window.scrollX + at.left) + "px";
       panel.style.top = (window.scrollY + at.top) + "px";
       // Opens on the current value, so 22:45 does not show 00 at the top of both columns. This runs
       // after the panel stands where it belongs, or the browser scrolls the page to reach it.
-      cols.forEach(function (cs) { for (var i = 0; i < cs.length; i++) if (cs[i].classList.contains("cc-drop-on")) { cs[i].parentNode.scrollTop = Math.max(0, cs[i].offsetTop - 64); break; } });
+      cols.forEach(function (cs) { for (var i = 0; i < cs.length; i++) if (cs[i].classList.contains("tt-drop-on")) { cs[i].parentNode.scrollTop = Math.max(0, cs[i].offsetTop - 64); break; } });
       paintSelects();
       btn.setAttribute("aria-expanded", "true");
       document.addEventListener("mousedown", onDoc, true);
       window.addEventListener("scroll", onScroll, true);
       tpOpen = function () { close(false); };
-      (cols[0].filter(function (o) { return o.classList.contains("cc-drop-on"); })[0] || cols[0][0]).focus();
+      (cols[0].filter(function (o) { return o.classList.contains("tt-drop-on"); })[0] || cols[0][0]).focus();
     }
     btn.addEventListener("click", function (ev) { ev.preventDefault(); ev.stopPropagation(); if (panel && panel.isConnected) close(true); else open(); });
     btn.addEventListener("keydown", function (ev) { if (ev.key === "ArrowDown") { ev.preventDefault(); open(); } });
@@ -3483,20 +3483,20 @@
   // "off".
   var sceneRoot = null;
   function planScene(focus) {
-    var P = window.CCPictures, de = LANG === "de";
-    var fig = el("figure", "cc-plan-scene"); fig.setAttribute("role", "img");
-    var cap = el("figcaption", "cc-plan-scene-cap", t("sceneTitle")); cap.appendChild(infoBubble(t("sceneInfo"))); fig.appendChild(cap);
-    var chain = el("div", "cc-plan-scene-chain"), lines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    lines.setAttribute("class", "cc-plan-scene-lines"); lines.setAttribute("aria-hidden", "true");
-    var aloneNote = el("div", "cc-plan-scene-alone", t("sceneAlone")), stuckNote = el("div", "cc-plan-scene-stuck", t("sceneCycle"));
+    var P = window.TTPictures, de = LANG === "de";
+    var fig = el("figure", "tt-plan-scene"); fig.setAttribute("role", "img");
+    var cap = el("figcaption", "tt-plan-scene-cap", t("sceneTitle")); cap.appendChild(infoBubble(t("sceneInfo"))); fig.appendChild(cap);
+    var chain = el("div", "tt-plan-scene-chain"), lines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    lines.setAttribute("class", "tt-plan-scene-lines"); lines.setAttribute("aria-hidden", "true");
+    var aloneNote = el("div", "tt-plan-scene-alone", t("sceneAlone")), stuckNote = el("div", "tt-plan-scene-stuck", t("sceneCycle"));
     fig.appendChild(chain); fig.appendChild(aloneNote); fig.appendChild(stuckNote);
     var at = {}, edges = [], stations = {}, timers = [], started = 0, sig = "";
 
     function station(name) {
-      var s = el("div", "cc-sn" + (name === focus ? " cc-sn-focus" : "")); s.dataset.name = name; s.setAttribute("data-tip", name);
+      var s = el("div", "tt-sn" + (name === focus ? " tt-sn-focus" : "")); s.dataset.name = name; s.setAttribute("data-tip", name);
       stampCardRainbow(s, name);
-      var ico = cardIcon(name, "cc-sn-ico"); ico.appendChild(el("span", "cc-sn-ok"));
-      s.appendChild(ico); s.appendChild(el("span", "cc-sn-name", name));
+      var ico = cardIcon(name, "tt-sn-ico"); ico.appendChild(el("span", "tt-sn-ok"));
+      s.appendChild(ico); s.appendChild(el("span", "tt-sn-name", name));
       stations[name] = s;
       return s;
     }
@@ -3505,17 +3505,17 @@
       chain.appendChild(lines);
       var cols = ps.stuck.length ? ps.stages.concat([ps.stuck]) : ps.stages;
       cols.forEach(function (st, i) {
-        var col = el("div", "cc-plan-scene-stage" + (i === cols.length - 1 && ps.stuck.length ? " cc-plan-scene-cycle" : ""));
+        var col = el("div", "tt-plan-scene-stage" + (i === cols.length - 1 && ps.stuck.length ? " tt-plan-scene-cycle" : ""));
         st.forEach(function (n) { col.appendChild(station(n.name)); });
         chain.appendChild(col);
       });
       // A container further down may also wait for one outside the chain; that arrow stays out.
       cols.forEach(function (st) { st.forEach(function (n) { (n.after || []).forEach(function (d) { if (stations[d]) edges.push({ from: d, to: n.name }); }); }); });
-      aloneNote.classList.toggle("cc-hidden", edges.length > 0);
-      chain.classList.toggle("cc-plan-scene-lone", !edges.length);
-      stuckNote.classList.toggle("cc-hidden", !ps.stuck.length);
-      fig.classList.toggle("cc-rainbow", localStorage.getItem("cc.rainbow") === "1");
-      fig.classList.toggle("cc-docker-iconbg", iconBgOn());
+      aloneNote.classList.toggle("tt-hidden", edges.length > 0);
+      chain.classList.toggle("tt-plan-scene-lone", !edges.length);
+      stuckNote.classList.toggle("tt-hidden", !ps.stuck.length);
+      fig.classList.toggle("tt-rainbow", localStorage.getItem("tt.rainbow") === "1");
+      fig.classList.toggle("tt-docker-iconbg", iconBgOn());
       var said = ps.stages.map(function (st) { return st.map(function (n) { return n.name; }).join(", "); }).join(de ? ", dann " : ", then ");
       if (!edges.length) said += ". " + t("sceneAlone");
       if (ps.stuck.length) said += (said ? ". " : "") + t("sceneCycle");
@@ -3524,15 +3524,15 @@
     // Large stations while every stage fits beside the others, small ones when not; a stage too
     // long for one column runs into a second.
     function fit() {
-      chain.classList.remove("cc-plan-scene-small");
-      var cols = chain.querySelectorAll(".cc-plan-scene-stage");
-      if (cols.length && cols[cols.length - 1].offsetTop > cols[0].offsetTop) chain.classList.add("cc-plan-scene-small");
+      chain.classList.remove("tt-plan-scene-small");
+      var cols = chain.querySelectorAll(".tt-plan-scene-stage");
+      if (cols.length && cols[cols.length - 1].offsetTop > cols[0].offsetTop) chain.classList.add("tt-plan-scene-small");
     }
     // Offsets rather than client rectangles, because the window scales in as it opens and a
     // rectangle read during that would put the arrows off their stations. A station's tooltip
     // makes it a positioned box, so the offsets are summed up to the chain.
     function box(name) {
-      var b = stations[name].querySelector(".cc-card-icobox"), x = 0, y = 0;
+      var b = stations[name].querySelector(".tt-card-icobox"), x = 0, y = 0;
       for (var n = b; n && n !== chain; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; }
       return { x: x, y: y + b.offsetHeight / 2, w: b.offsetWidth };
     }
@@ -3542,9 +3542,9 @@
       edges.forEach(function (e) {
         var a = box(e.from), b = box(e.to), from = [a.x + a.w + 3, a.y], to = [b.x - 4, b.y];
         var f = P.flow(lines, from, to, { gap: 22, size: 1.8 });
-        f.el.classList.add("cc-plan-scene-edge");
+        f.el.classList.add("tt-plan-scene-edge");
         var head = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        head.setAttribute("class", "cc-plan-scene-head");
+        head.setAttribute("class", "tt-plan-scene-head");
         head.setAttribute("d", "M" + (to[0] - 5) + " " + (to[1] - 4) + "L" + to[0] + " " + to[1] + "L" + (to[0] - 5) + " " + (to[1] + 4));
         f.el.appendChild(head);
         e.el = f.el;
@@ -3554,21 +3554,21 @@
       Object.keys(stations).forEach(function (n) {
         // A station caught in a cycle has no time, since the engine never starts it.
         var s = stations[n], w = at[n];
-        s.classList.toggle("cc-sn-on", !!w && ms >= w.start);
-        if (w && ms >= w.ready && !s.classList.contains("cc-sn-ready")) { s.classList.add("cc-sn-ready"); P.drawCheck(s.querySelector(".cc-sn-ok")); }
+        s.classList.toggle("tt-sn-on", !!w && ms >= w.start);
+        if (w && ms >= w.ready && !s.classList.contains("tt-sn-ready")) { s.classList.add("tt-sn-ready"); P.drawCheck(s.querySelector(".tt-sn-ok")); }
       });
       edges.forEach(function (e) {
         if (!e.el) return;
         var from = at[e.from], to = at[e.to];
         var on = !!from && ms >= from.ready;
-        e.el.classList.toggle("cc-plan-scene-on", on);
-        e.el.classList.toggle("cc-plan-scene-live", on && !!to && ms < to.start + 400);
+        e.el.classList.toggle("tt-plan-scene-on", on);
+        e.el.classList.toggle("tt-plan-scene-live", on && !!to && ms < to.start + 400);
       });
     }
     function elapsed() { return P.still() || !started ? Infinity : performance.now() - started; }
     function play() {
       timers.forEach(clearTimeout); timers = [];
-      Object.keys(stations).forEach(function (n) { stations[n].classList.remove("cc-sn-on", "cc-sn-ready"); });
+      Object.keys(stations).forEach(function (n) { stations[n].classList.remove("tt-sn-on", "tt-sn-ready"); });
       fit(); draw();
       started = performance.now();
       if (P.still()) { paint(Infinity); return; }
@@ -3601,26 +3601,26 @@
     if (togglePop(anchor)) return;
     closePop();
     var existing = workingPlan[name], node = existing || { name: name, after: [], probe: { kind: "health" }, policy: "abort" };
-    // cc-pop-plan is wider than the other two .cc-pop editors: a schedule row is action, time,
+    // tt-pop-plan is wider than the other two .tt-pop editors: a schedule row is action, time,
     // seven day chips and the delete badge, and at the shared 340px it always wrapped onto two
     // lines. The measured budget lives with the rule in docker.css.
-    var pop = el("div", "cc-pop cc-pop-plan"); if (localStorage.getItem("cc.rainbow") === "1") pop.classList.add("cc-rainbow");
-    var head = el("div", "cc-pop-head"); head.appendChild(el("span", "cc-win-title cc-pop-ttl", t("plan") + ": " + name)); pop.appendChild(head);
+    var pop = el("div", "tt-pop tt-pop-plan"); if (localStorage.getItem("tt.rainbow") === "1") pop.classList.add("tt-rainbow");
+    var head = el("div", "tt-pop-head"); head.appendChild(el("span", "tt-win-title tt-pop-ttl", t("plan") + ": " + name)); pop.appendChild(head);
     // "Manage in the start plan" is a toggle, not a checkbox. manageOn drives commit().
     var manageOn = !!existing;
-    var manageTog = el("span", "cc-set-toggle" + (manageOn ? " cc-set-toggle-on" : "")); manageTog.setAttribute("role", "switch"); manageTog.setAttribute("tabindex", "0"); manageTog.setAttribute("aria-checked", manageOn ? "true" : "false"); manageTog.appendChild(el("span", "cc-set-knob"));
-    function flipManage() { manageOn = !manageOn; manageTog.classList.toggle("cc-set-toggle-on", manageOn); manageTog.setAttribute("aria-checked", manageOn ? "true" : "false"); commit(); }
+    var manageTog = el("span", "tt-set-toggle" + (manageOn ? " tt-set-toggle-on" : "")); manageTog.setAttribute("role", "switch"); manageTog.setAttribute("tabindex", "0"); manageTog.setAttribute("aria-checked", manageOn ? "true" : "false"); manageTog.appendChild(el("span", "tt-set-knob"));
+    function flipManage() { manageOn = !manageOn; manageTog.classList.toggle("tt-set-toggle-on", manageOn); manageTog.setAttribute("aria-checked", manageOn ? "true" : "false"); commit(); }
     manageTog.addEventListener("click", flipManage);
     manageTog.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); flipManage(); } });
-    var mrow = el("div", "cc-pop-row cc-pop-toggle"); mrow.appendChild(el("span", "cc-pop-sech", t("manage"))); mrow.appendChild(infoBubble(t("manageInfo"))); mrow.appendChild(el("span", "cc-set-spacer")); mrow.appendChild(manageTog); pop.appendChild(mrow);
+    var mrow = el("div", "tt-pop-row tt-pop-toggle"); mrow.appendChild(el("span", "tt-pop-sech", t("manage"))); mrow.appendChild(infoBubble(t("manageInfo"))); mrow.appendChild(el("span", "tt-set-spacer")); mrow.appendChild(manageTog); pop.appendChild(mrow);
     var scene = planScene(name); pop.appendChild(scene.el);
-    var body = el("div", "cc-pop-body" + (existing ? "" : " cc-dis"));
+    var body = el("div", "tt-pop-body" + (existing ? "" : " tt-dis"));
     // This is the one field in the window whose behaviour the control does not show: a text box
     // holding a comma list that is really a click-to-toggle multi-select, feeding an ordering
-    // engine that also waits on the "Bereit wenn" probe of everything named in it. cc-dropin
+    // engine that also waits on the "Bereit wenn" probe of everything named in it. tt-dropin
     // gives it the arrow that says so.
-    var arow = el("div", "cc-pop-row"); arow.appendChild(lblInfo(t("dependsOn"), t("dependsOnInfo")));
-    var after = el("input", "cc-in cc-dropin"); after.type = "text"; after.placeholder = t("commaSep"); after.value = (node.after || []).join(", "); arow.appendChild(after); body.appendChild(arow);
+    var arow = el("div", "tt-pop-row"); arow.appendChild(lblInfo(t("dependsOn"), t("dependsOnInfo")));
+    var after = el("input", "tt-in tt-dropin"); after.type = "text"; after.placeholder = t("commaSep"); after.value = (node.after || []).join(", "); arow.appendChild(after); body.appendChild(arow);
     // A multi-select dropdown. A native datalist replaces the whole value, so only one container
     // would be pickable; this list opens on focus, every click toggles a container in the comma
     // list, and it stays open for picking several.
@@ -3631,11 +3631,11 @@
       function vals() { return after.value.split(",").map(function (s2) { return s2.trim(); }).filter(Boolean); }
       after.addEventListener("focus", function () {
         if (panel) return;
-        panel = el("div", "cc-drop");
+        panel = el("div", "tt-drop");
         containerNames.forEach(function (n2) {
           if (n2 === name) return;
-          var it = el("div", "cc-drop-it", n2);
-          var sync = function () { it.classList.toggle("cc-drop-on", vals().indexOf(n2) >= 0); };
+          var it = el("div", "tt-drop-it", n2);
+          var sync = function () { it.classList.toggle("tt-drop-on", vals().indexOf(n2) >= 0); };
           sync();
           it.addEventListener("mousedown", function (ev) {
             ev.preventDefault(); ev.stopPropagation(); // keep focus, keep the panel open
@@ -3648,14 +3648,14 @@
         var r2 = after.getBoundingClientRect();
         panel.style.minWidth = r2.width + "px";
         document.body.appendChild(panel);
-        var at = window.CCTheme.placeAt(r2, panel.offsetWidth, panel.offsetHeight, 3);
+        var at = window.TTTheme.placeAt(r2, panel.offsetWidth, panel.offsetHeight, 3);
         panel.style.left = (window.scrollX + at.left) + "px"; panel.style.top = (window.scrollY + at.top) + "px";
-        paintSelects();   // the "Hängt ab von" list joins the colour modes like every other CC dropdown
+        paintSelects();   // the "Hängt ab von" list joins the colour modes like every other TowerTorch dropdown
         document.addEventListener("mousedown", onDoc, true);
       });
     })();
-    var drow = el("div", "cc-pop-row"); drow.appendChild(el("label", "cc-pop-lbl", t("startDelay")));
-    var delay = el("input", "cc-in cc-port"); delay.type = "number"; delay.min = "0"; delay.placeholder = "sec"; delay.value = node.delay_seconds ? node.delay_seconds : "";
+    var drow = el("div", "tt-pop-row"); drow.appendChild(el("label", "tt-pop-lbl", t("startDelay")));
+    var delay = el("input", "tt-in tt-port"); delay.type = "number"; delay.min = "0"; delay.placeholder = "sec"; delay.value = node.delay_seconds ? node.delay_seconds : "";
     // no trailing "sec to wait" span: the placeholder already says "sec", and the extra
     // flex child could wrap and double the row height (one source of the stubborn gap).
     drow.appendChild(delay); body.appendChild(drow);
@@ -3663,26 +3663,26 @@
     // unnumbered and therefore last, in list order. It is a priority, so duplicates are allowed
     // and ties break by list order; dependencies and health gates still bound it in the engine,
     // so a number never races a dependency.
-    var sorow = el("div", "cc-pop-row"); sorow.appendChild(lblInfo(t("startOrder"), t("startOrderInfo")));   // the prose string goes in as a string; infoBubble wraps it, while an array of one string would take its first two characters as key and text
-    var sorder = el("input", "cc-in cc-port"); sorder.type = "number"; sorder.min = "0"; sorder.step = "1"; sorder.placeholder = t("startOrderPh"); sorder.value = node.start_order ? node.start_order : "";
+    var sorow = el("div", "tt-pop-row"); sorow.appendChild(lblInfo(t("startOrder"), t("startOrderInfo")));   // the prose string goes in as a string; infoBubble wraps it, while an array of one string would take its first two characters as key and text
+    var sorder = el("input", "tt-in tt-port"); sorder.type = "number"; sorder.min = "0"; sorder.step = "1"; sorder.placeholder = t("startOrderPh"); sorder.value = node.start_order ? node.start_order : "";
     sorow.appendChild(sorder); body.appendChild(sorow);
-    var prow = el("div", "cc-pop-row"); prow.appendChild(lblInfo(t("readyWhen"), probeItems()));
-    var probe = el("select", "cc-in"); PROBES.forEach(function (p) { var o = el("option", null, p); o.value = p; if (node.probe && node.probe.kind === p) o.selected = true; probe.appendChild(o); });
-    var port = el("input", "cc-in cc-port"); port.type = "number"; port.placeholder = "port"; port.value = (node.probe && node.probe.port) ? node.probe.port : "";
-    var pathIn = el("input", "cc-in cc-port"); pathIn.type = "text"; pathIn.placeholder = "/health"; pathIn.value = (node.probe && node.probe.path) ? node.probe.path : "";
-    var cmdIn = el("input", "cc-in"); cmdIn.type = "text"; cmdIn.placeholder = t("execPh"); cmdIn.value = (node.probe && node.probe.command) ? node.probe.command : "";
-    var matchIn = el("input", "cc-in"); matchIn.type = "text"; matchIn.placeholder = t("logPh"); matchIn.value = (node.probe && node.probe.match) ? node.probe.match : "";
+    var prow = el("div", "tt-pop-row"); prow.appendChild(lblInfo(t("readyWhen"), probeItems()));
+    var probe = el("select", "tt-in"); PROBES.forEach(function (p) { var o = el("option", null, p); o.value = p; if (node.probe && node.probe.kind === p) o.selected = true; probe.appendChild(o); });
+    var port = el("input", "tt-in tt-port"); port.type = "number"; port.placeholder = "port"; port.value = (node.probe && node.probe.port) ? node.probe.port : "";
+    var pathIn = el("input", "tt-in tt-port"); pathIn.type = "text"; pathIn.placeholder = "/health"; pathIn.value = (node.probe && node.probe.path) ? node.probe.path : "";
+    var cmdIn = el("input", "tt-in"); cmdIn.type = "text"; cmdIn.placeholder = t("execPh"); cmdIn.value = (node.probe && node.probe.command) ? node.probe.command : "";
+    var matchIn = el("input", "tt-in"); matchIn.type = "text"; matchIn.placeholder = t("logPh"); matchIn.value = (node.probe && node.probe.match) ? node.probe.match : "";
     var syncPort = function () { var k = probe.value; port.style.display = (k === "tcp" || k === "http") ? "" : "none"; pathIn.style.display = k === "http" ? "" : "none"; cmdIn.style.display = k === "exec" ? "" : "none"; matchIn.style.display = k === "log" ? "" : "none"; }; syncPort();
     prow.appendChild(probe); prow.appendChild(port); prow.appendChild(pathIn); prow.appendChild(cmdIn); prow.appendChild(matchIn); body.appendChild(prow);
-    var polrow = el("div", "cc-pop-row"); polrow.appendChild(lblInfo(t("onFail"), policyItems().concat([["", t("failhint")]])));   // failhint rides in the bubble, no loose info text in the window
-    var pol = el("select", "cc-in"); POLICIES.forEach(function (p) { var o = el("option", null, p); o.value = p; if (node.policy === p) o.selected = true; pol.appendChild(o); });
+    var polrow = el("div", "tt-pop-row"); polrow.appendChild(lblInfo(t("onFail"), policyItems().concat([["", t("failhint")]])));   // failhint rides in the bubble, no loose info text in the window
+    var pol = el("select", "tt-in"); POLICIES.forEach(function (p) { var o = el("option", null, p); o.value = p; if (node.policy === p) o.selected = true; pol.appendChild(o); });
     polrow.appendChild(pol); body.appendChild(polrow); pop.appendChild(body);
 
     // The Docker restart policy, independent of plan membership. It applies on change through
     // POST /api/restartpolicy without a recreate and is mirrored into the template so a later
     // Apply keeps it. Prefilled from the limits cache, then refined by a fresh per-name read.
-    var rpSec = el("div", "cc-pop-auto");
-    var rpRow = el("div", "cc-pop-row"); rpRow.appendChild(lblInfo(t("restartPolicy"), restartPolicyItems()));
+    var rpSec = el("div", "tt-pop-auto");
+    var rpRow = el("div", "tt-pop-row"); rpRow.appendChild(lblInfo(t("restartPolicy"), restartPolicyItems()));
     var rpSel = restartPolicySelect((limits[name] && limits[name].restart_policy) || "no");
     rpRow.appendChild(rpSel); rpSec.appendChild(rpRow); pop.appendChild(rpSec);
     function setRpCache(p) { if (limits[name]) limits[name].restart_policy = p; else limits[name] = { restart_policy: p }; }
@@ -3703,45 +3703,45 @@
     }).catch(function () {});
 
     // Icon colouring, this container's own pin.
-    var icSec = el("div", "cc-pop-auto");
-    var icRow = el("div", "cc-pop-row"); icRow.appendChild(lblInfo(t("iconMode"), iconModeItems()));
+    var icSec = el("div", "tt-pop-auto");
+    var icRow = el("div", "tt-pop-row"); icRow.appendChild(lblInfo(t("iconMode"), iconModeItems()));
     icRow.appendChild(iconModeSelect("docker", name)); icSec.appendChild(icRow); pop.appendChild(icSec);
 
     // The auto-restart watchdog, independent of plan membership.
     var wd = watchdogFor(name);
-    var wSec = el("div", "cc-pop-auto");
-    // cc-cb draws GlimStone's switch on the checkbox, so the toggles below keep reading .checked.
-    var wHead = el("label", "cc-pop-row cc-pop-toggle"), wEn = el("input", "cc-cb"); wEn.type = "checkbox"; wEn.checked = !!(wd && wd.enabled);
-    wHead.appendChild(el("span", "cc-pop-sech", t("watchdog"))); wHead.appendChild(infoBubble(t("watchdogInfo"))); wHead.appendChild(el("span", "cc-set-spacer")); wHead.appendChild(wEn); wSec.appendChild(wHead);
-    var wBody = el("div", "cc-pop-sub" + (wEn.checked ? "" : " cc-dis"));
-    var wUrow = el("label", "cc-pop-row"), wU = el("input", "cc-cb"); wU.type = "checkbox"; wU.checked = wd ? !!wd.on_unhealthy : true;
-    wUrow.appendChild(el("span", null, t("wUnhealthy"))); wUrow.appendChild(el("span", "cc-set-spacer")); wUrow.appendChild(wU); wBody.appendChild(wUrow);
-    var wXrow = el("label", "cc-pop-row"), wX = el("input", "cc-cb"); wX.type = "checkbox"; wX.checked = wd ? !!wd.on_exit : false;
-    wXrow.appendChild(el("span", null, t("wExit"))); wXrow.appendChild(el("span", "cc-set-spacer")); wXrow.appendChild(wX); wBody.appendChild(wXrow);
-    var wMrow = el("div", "cc-pop-row"); wMrow.appendChild(el("label", "cc-pop-lbl", t("wMax")));
+    var wSec = el("div", "tt-pop-auto");
+    // tt-cb draws GlimStone's switch on the checkbox, so the toggles below keep reading .checked.
+    var wHead = el("label", "tt-pop-row tt-pop-toggle"), wEn = el("input", "tt-cb"); wEn.type = "checkbox"; wEn.checked = !!(wd && wd.enabled);
+    wHead.appendChild(el("span", "tt-pop-sech", t("watchdog"))); wHead.appendChild(infoBubble(t("watchdogInfo"))); wHead.appendChild(el("span", "tt-set-spacer")); wHead.appendChild(wEn); wSec.appendChild(wHead);
+    var wBody = el("div", "tt-pop-sub" + (wEn.checked ? "" : " tt-dis"));
+    var wUrow = el("label", "tt-pop-row"), wU = el("input", "tt-cb"); wU.type = "checkbox"; wU.checked = wd ? !!wd.on_unhealthy : true;
+    wUrow.appendChild(el("span", null, t("wUnhealthy"))); wUrow.appendChild(el("span", "tt-set-spacer")); wUrow.appendChild(wU); wBody.appendChild(wUrow);
+    var wXrow = el("label", "tt-pop-row"), wX = el("input", "tt-cb"); wX.type = "checkbox"; wX.checked = wd ? !!wd.on_exit : false;
+    wXrow.appendChild(el("span", null, t("wExit"))); wXrow.appendChild(el("span", "tt-set-spacer")); wXrow.appendChild(wX); wBody.appendChild(wXrow);
+    var wMrow = el("div", "tt-pop-row"); wMrow.appendChild(el("label", "tt-pop-lbl", t("wMax")));
     // A new watchdog starts with a per-hour cap rather than unlimited, so a flapping container
     // is bounded and gives up once instead of restarting forever. An existing watchdog keeps
     // its saved value; blank is 0, which is unlimited.
-    var wM = el("input", "cc-in cc-port"); wM.type = "number"; wM.min = "0"; wM.placeholder = "0 = ∞"; wM.value = wd ? (wd.max_restarts ? wd.max_restarts : "") : "6";
+    var wM = el("input", "tt-in tt-port"); wM.type = "number"; wM.min = "0"; wM.placeholder = "0 = ∞"; wM.value = wd ? (wd.max_restarts ? wd.max_restarts : "") : "6";
     wMrow.appendChild(wM); wBody.appendChild(wMrow); wSec.appendChild(wBody);
-    wEn.addEventListener("change", function () { wBody.classList.toggle("cc-dis", !wEn.checked); });
+    wEn.addEventListener("change", function () { wBody.classList.toggle("tt-dis", !wEn.checked); });
     pop.appendChild(wSec);
     function readWatchdog() { if (!wEn.checked) return null; return { name: name, enabled: true, on_unhealthy: !!wU.checked, on_exit: !!wX.checked, max_restarts: parseInt(wM.value, 10) || 0 }; }
 
     // Idle auto-stop, in the style of ContainerNursery. It stays one collapsed group, a toggle
     // and two inputs, so the editor does not grow another section.
     var ni = idleStopFor(name);
-    var nSec = el("div", "cc-pop-auto");
-    var nHead = el("label", "cc-pop-row cc-pop-toggle"), nEn = el("input", "cc-cb"); nEn.type = "checkbox"; nEn.checked = !!(ni && ni.enabled);
-    nHead.appendChild(el("span", "cc-pop-sech", t("idleStop"))); nHead.appendChild(infoBubble(t("idleFoot"))); nHead.appendChild(el("span", "cc-set-spacer")); nHead.appendChild(nEn); nSec.appendChild(nHead);   // idleFoot rides as a bubble on the header, no loose foot text
-    var nBody = el("div", "cc-pop-sub" + (nEn.checked ? "" : " cc-dis"));
-    var nMrow = el("div", "cc-pop-row"); nMrow.appendChild(el("label", "cc-pop-lbl", t("idleMin")));
-    var nMin = el("input", "cc-in cc-port"); nMin.type = "number"; nMin.min = "1"; nMin.placeholder = "30"; nMin.value = (ni && ni.idle_minutes) ? ni.idle_minutes : "";
+    var nSec = el("div", "tt-pop-auto");
+    var nHead = el("label", "tt-pop-row tt-pop-toggle"), nEn = el("input", "tt-cb"); nEn.type = "checkbox"; nEn.checked = !!(ni && ni.enabled);
+    nHead.appendChild(el("span", "tt-pop-sech", t("idleStop"))); nHead.appendChild(infoBubble(t("idleFoot"))); nHead.appendChild(el("span", "tt-set-spacer")); nHead.appendChild(nEn); nSec.appendChild(nHead);   // idleFoot rides as a bubble on the header, no loose foot text
+    var nBody = el("div", "tt-pop-sub" + (nEn.checked ? "" : " tt-dis"));
+    var nMrow = el("div", "tt-pop-row"); nMrow.appendChild(el("label", "tt-pop-lbl", t("idleMin")));
+    var nMin = el("input", "tt-in tt-port"); nMin.type = "number"; nMin.min = "1"; nMin.placeholder = "30"; nMin.value = (ni && ni.idle_minutes) ? ni.idle_minutes : "";
     nMrow.appendChild(nMin); nBody.appendChild(nMrow);
-    var nCrow = el("div", "cc-pop-row"); nCrow.appendChild(el("label", "cc-pop-lbl", t("idleCpu")));
-    var nCpu = el("input", "cc-in cc-port"); nCpu.type = "number"; nCpu.min = "0"; nCpu.max = "100"; nCpu.placeholder = "5"; nCpu.value = (ni && ni.cpu_threshold_pct) ? ni.cpu_threshold_pct : "";
+    var nCrow = el("div", "tt-pop-row"); nCrow.appendChild(el("label", "tt-pop-lbl", t("idleCpu")));
+    var nCpu = el("input", "tt-in tt-port"); nCpu.type = "number"; nCpu.min = "0"; nCpu.max = "100"; nCpu.placeholder = "5"; nCpu.value = (ni && ni.cpu_threshold_pct) ? ni.cpu_threshold_pct : "";
     nCrow.appendChild(nCpu); nBody.appendChild(nCrow); nSec.appendChild(nBody);
-    nEn.addEventListener("change", function () { nBody.classList.toggle("cc-dis", !nEn.checked); });
+    nEn.addEventListener("change", function () { nBody.classList.toggle("tt-dis", !nEn.checked); });
     pop.appendChild(nSec);
     // Enabled with blank or invalid minutes falls back to the placeholder of 30 rather than 0,
     // because a 0 persists an enabled entry that the monitor ignores while the plan chip still
@@ -3751,34 +3751,34 @@
 
     // Timed lifecycle actions, independent of plan membership.
     function schedRow(s) {
-      var row = el("div", "cc-sched-row");
-      var act2 = el("select", "cc-in cc-sched-act"); SCHED_ACTIONS.forEach(function (a) { var o = el("option", null, t(a)); o.value = a; if (s && s.action === a) o.selected = true; act2.appendChild(o); });
-      var time = el("input", "cc-in cc-sched-time"); time.type = "time"; time.value = (s && s.time) || "";
-      var timeBox = ccTimePicker(time);
-      var days = el("div", "cc-days"), sel = {}; ((s && s.days) || []).forEach(function (d) { sel[d] = true; });
-      DAYS.forEach(function (d) { var b = el("span", "cc-day" + (sel[d[1]] ? " cc-day-on" : ""), d[0]); b.dataset.day = d[1]; b.addEventListener("click", function (e) { e.preventDefault(); b.classList.toggle("cc-day-on"); }); days.appendChild(b); });
+      var row = el("div", "tt-sched-row");
+      var act2 = el("select", "tt-in tt-sched-act"); SCHED_ACTIONS.forEach(function (a) { var o = el("option", null, t(a)); o.value = a; if (s && s.action === a) o.selected = true; act2.appendChild(o); });
+      var time = el("input", "tt-in tt-sched-time"); time.type = "time"; time.value = (s && s.time) || "";
+      var timeBox = ttTimePicker(time);
+      var days = el("div", "tt-days"), sel = {}; ((s && s.days) || []).forEach(function (d) { sel[d] = true; });
+      DAYS.forEach(function (d) { var b = el("span", "tt-day" + (sel[d[1]] ? " tt-day-on" : ""), d[0]); b.dataset.day = d[1]; b.addEventListener("click", function (e) { e.preventDefault(); b.classList.toggle("tt-day-on"); }); days.appendChild(b); });
       // stopPropagation is load-bearing: the document-level "click outside closes the window"
       // guard tests openPop.contains(e.target), and this handler detaches e.target from the
       // window before that test runs, so removing one schedule row reads as a click outside and
       // shuts the whole editor along with every unsaved edit in it.
-      // The delete control is a badge box-for-box like the .cc-day chip beside it, 26×26 on the
-      // same shape-engine radius, in the chosen chip's colour rather than red, like .cc-b-del.
-      var rm = el("span", "cc-sched-x"); rm.innerHTML = CC_TRASH_SVG; rm.setAttribute("data-tip", t("remove")); rm.setAttribute("aria-label", t("remove")); rm.addEventListener("click", function (ev) { ev.stopPropagation(); row.remove(); });
+      // The delete control is a badge box-for-box like the .tt-day chip beside it, 26×26 on the
+      // same shape-engine radius, in the chosen chip's colour rather than red, like .tt-b-del.
+      var rm = el("span", "tt-sched-x"); rm.innerHTML = TT_TRASH_SVG; rm.setAttribute("data-tip", t("remove")); rm.setAttribute("aria-label", t("remove")); rm.addEventListener("click", function (ev) { ev.stopPropagation(); row.remove(); });
       row.appendChild(act2); row.appendChild(timeBox); row.appendChild(days); row.appendChild(rm);
-      ctWrapSelect(act2);   // the schedule action <select> gets the CC dsel panel too; it dispatches a native change, so row._read still reads act2.value
+      ctWrapSelect(act2);   // the schedule action <select> gets the TowerTorch dsel panel too; it dispatches a native change, so row._read still reads act2.value
       // No days means every day; only rows with a valid HH:MM time are saved.
-      row._read = function () { if (!/^\d{2}:\d{2}$/.test(time.value)) return null; var ds = []; Array.prototype.slice.call(days.children).forEach(function (x) { if (x.classList.contains("cc-day-on")) ds.push(parseInt(x.dataset.day, 10)); }); var o = { name: name, action: act2.value, time: time.value, enabled: true }; if (ds.length) o.days = ds; return o; };
+      row._read = function () { if (!/^\d{2}:\d{2}$/.test(time.value)) return null; var ds = []; Array.prototype.slice.call(days.children).forEach(function (x) { if (x.classList.contains("tt-day-on")) ds.push(parseInt(x.dataset.day, 10)); }); var o = { name: name, action: act2.value, time: time.value, enabled: true }; if (ds.length) o.days = ds; return o; };
       return row;
     }
-    var sSec = el("div", "cc-pop-auto"); sSec.appendChild(el("div", "cc-pop-sech cc-pop-sech-lone", t("schedules")));
-    var sList = el("div", "cc-sched-list"); schedulesFor(name).forEach(function (s) { sList.appendChild(schedRow(s)); }); sSec.appendChild(sList);
+    var sSec = el("div", "tt-pop-auto"); sSec.appendChild(el("div", "tt-pop-sech tt-pop-sech-lone", t("schedules")));
+    var sList = el("div", "tt-sched-list"); schedulesFor(name).forEach(function (s) { sList.appendChild(schedRow(s)); }); sSec.appendChild(sList);
     // A row added after the window opened goes through the same two passes the window itself
     // got. With paintSelects() alone, a fresh row's time field carried no hardenPop stamp
     // (measured 116px instead of the 100px every other row has, Unraid's theme margins back on
-    // it) and none of its controls had a --cc-rb-c jewel. hardenPop is scoped to the new row;
+    // it) and none of its controls had a --tt-rb-c jewel. hardenPop is scoped to the new row;
     // paintPopChrome re-runs over the whole window so the rotation stays one continuous sequence
     // rather than restarting at slot 0 inside the new row.
-    var addB = ccLabelled(el("span", "cc-btn cc-btn-sm"), "Add", t("addsched"));
+    var addB = ttLabelled(el("span", "tt-btn tt-btn-sm"), "Add", t("addsched"));
     addB.addEventListener("click", function () { var nr = schedRow(null); sList.appendChild(nr); hardenPop(nr); paintSelects(); paintPopChrome(pop); });
     sSec.appendChild(addB);
     pop.appendChild(sSec);
@@ -3789,9 +3789,9 @@
 
     // One save button stores the whole plan plus this container's automation; running the start
     // order stays a daemon and apply concern.
-    var act = el("div", "cc-pop-row cc-pop-act");
+    var act = el("div", "tt-pop-row tt-pop-act");
     act.style.setProperty("border-top", "none", "important"); // no bottom separator line either
-    var bSave = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort"));
+    var bSave = ttLabelled(el("span", "tt-btn tt-btn-primary"), "Save", t("saveShort"));
     bSave.addEventListener("click", function () { saveEditor(name, readWatchdog(), readSchedules(), readNursery(), false, bSave); });
     act.appendChild(bSave); pop.appendChild(act);
     // What Save would store from this window, against what it opened with. The plan fields are left
@@ -3801,8 +3801,8 @@
     pop._unsaved = function () { return draft() !== opened; };
     function commit() {
       scene.changed();
-      if (!manageOn) { delete workingPlan[name]; body.classList.add("cc-dis"); refreshChip(anchor, name); return; }
-      body.classList.remove("cc-dis");
+      if (!manageOn) { delete workingPlan[name]; body.classList.add("tt-dis"); refreshChip(anchor, name); return; }
+      body.classList.remove("tt-dis");
       var afterList = after.value.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
       var pr = { kind: probe.value }, pv = parseInt(port.value, 10);
       if (probe.value === "tcp" && pv > 0) pr.port = pv;
@@ -3826,11 +3826,11 @@
     });
     probe.addEventListener("change", syncPort);
     document.body.appendChild(pop); hardenPop(pop);
-    // The editor's native <select>s for probe, policy and restart policy get the CC dsel panel;
+    // The editor's native <select>s for probe, policy and restart policy get the TowerTorch dsel panel;
     // the schedule action selects are already wrapped inside schedRow. ctWrapSelect keeps the
     // <select> as the source of truth and dispatches a native change, so every commit() and API
     // listener above still fires.
-    Array.prototype.slice.call(pop.querySelectorAll("select:not([data-cc-dsel])")).forEach(function (s) { try { ctWrapSelect(s); } catch (e) {} });
+    Array.prototype.slice.call(pop.querySelectorAll("select:not([data-tt-dsel])")).forEach(function (s) { try { ctWrapSelect(s); } catch (e) {} });
     placePop(pop, anchor, 320);   // Rule 15: anchors head/foot, clamps into the viewport, locks the page behind it
     scene.update();
   }
@@ -3848,27 +3848,27 @@
     // In the reactive sub-mode neither a set nor an idle gear paints inline. CSS rests them all
     // neutral and colours them on row or card hover, like every other control, and an inline
     // paint would keep one gear stuck coloured.
-    var rbOn = themingOn() && localStorage.getItem("cc.rainbow") === "1";
-    // In either rainbow sub-mode the gear's kind colour (cpu, ram or bw, each --cc-rb-<kind> on
-    // :root) goes on --cc-rb-c and CSS decides the rest: neutral grey under the rbneutral class,
-    // always coloured in full rainbow, with the reactive :hover rule revealing --cc-rb-c.
-    // Clearing --cc-rb-c instead would drop hover back to the flat accent for every gear.
+    var rbOn = themingOn() && localStorage.getItem("tt.rainbow") === "1";
+    // In either rainbow sub-mode the gear's kind colour (cpu, ram or bw, each --tt-rb-<kind> on
+    // :root) goes on --tt-rb-c and CSS decides the rest: neutral grey under the rbneutral class,
+    // always coloured in full rainbow, with the reactive :hover rule revealing --tt-rb-c.
+    // Clearing --tt-rb-c instead would drop hover back to the flat accent for every gear.
     if (rbOn && kind) {
       lb.style.removeProperty("background"); lb.style.removeProperty("color");
-      lb.style.setProperty("--cc-rb-c", "var(--cc-rb-" + kind + ", var(--cc-accent, #FCC419))");
-      lb.style.setProperty("--cc-rb-ct", "var(--cc-rb-" + kind + "-t, #fff)");
+      lb.style.setProperty("--tt-rb-c", "var(--tt-rb-" + kind + ", var(--tt-accent, #FCC419))");
+      lb.style.setProperty("--tt-rb-ct", "var(--tt-rb-" + kind + "-t, #fff)");
       return;
     }
-    lb.style.removeProperty("--cc-rb-c"); lb.style.removeProperty("--cc-rb-ct");   // accent and native mode take the inline fill
+    lb.style.removeProperty("--tt-rb-c"); lb.style.removeProperty("--tt-rb-ct");   // accent and native mode take the inline fill
     // A set limit carries the badge accent; an unused one rests on the theme's surface grey like
     // the row actions, so it is no dark slab on a light page.
-    var bg = set ? (effc("accent") || "#FCC419") : "var(--cc-surface-3, #2e2e2e)";
-    var tx = set ? idealText(bg) : "var(--cc-text, #e6e6e6)";
+    var bg = set ? (effc("accent") || "#FCC419") : "var(--tt-surface-3, #2e2e2e)";
+    var tx = set ? idealText(bg) : "var(--tt-text, #e6e6e6)";
     lb.style.setProperty("background", bg, "important");
     lb.style.setProperty("color", tx, "important");
   }
   function limGear(name, which, set) {
-    var lb = el("span", "cc-limbtn" + (set ? " cc-limbtn-set" : "") + " cc-lim-" + which); lb.setAttribute(MARK, "1"); lb.innerHTML = CC_GEAR_SVG;
+    var lb = el("span", "tt-limbtn" + (set ? " tt-limbtn-set" : "") + " tt-lim-" + which); lb.setAttribute(MARK, "1"); lb.innerHTML = TT_GEAR_SVG;
     gearFill(lb, set, which);   // "cpu" or "ram", each its own rainbow kind
     lb.setAttribute("data-tip", (which === "cpu" ? t("cpuLimit") : t("ramLimit")) + " · " + (set ? t("cfgSet") : t("cfgUnset")));
     lb.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openLimits(lb, name, which); });
@@ -3876,7 +3876,7 @@
   }
   // The bandwidth gear on the third resource line opens the egress-limit editor.
   function bwGear(name, set) {
-    var lb = el("span", "cc-limbtn" + (set ? " cc-limbtn-set" : "") + " cc-lim-bw"); lb.setAttribute(MARK, "1"); lb.innerHTML = CC_GEAR_SVG;
+    var lb = el("span", "tt-limbtn" + (set ? " tt-limbtn-set" : "") + " tt-lim-bw"); lb.setAttribute(MARK, "1"); lb.innerHTML = TT_GEAR_SVG;
     gearFill(lb, set, "bw");
     lb.setAttribute("data-tip", t("bandwidth") + " · " + (set ? t("cfgSet") : t("cfgUnset")));
     lb.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openBandwidth(lb, name); });
@@ -3894,30 +3894,30 @@
   }
   // A gear opens a window, and focus comes back to it when the window closes, so it has to be
   // reachable from the keyboard in the first place.
-  function gearKeys(lb) { lb.setAttribute("aria-label", lb.getAttribute("data-tip") || ""); if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(lb); return lb; }
+  function gearKeys(lb) { lb.setAttribute("aria-label", lb.getAttribute("data-tip") || ""); if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(lb); return lb; }
   // Egress rate-limit editor, mirroring the CPU/RAM limit popover. Save writes the whole
   // config (read-modify-write) so nothing else is dropped; the monitor (re-)applies the tc
   // rule on the Settings-chosen interface while the container runs. "Remove" clears it.
   function openBandwidth(anchor, name) {
     if (togglePop(anchor)) return;
     closePop();
-    var pop = el("div", "cc-pop"); if (localStorage.getItem("cc.rainbow") === "1") pop.classList.add("cc-rainbow");
-    var head = el("div", "cc-pop-head");
+    var pop = el("div", "tt-pop"); if (localStorage.getItem("tt.rainbow") === "1") pop.classList.add("tt-rainbow");
+    var head = el("div", "tt-pop-head");
     // The info text lives in one bubble inside the window title, as on a card's title.
-    var bwTitle = el("span", "cc-win-title cc-pop-ttl", t("bandwidth") + ": " + name);
+    var bwTitle = el("span", "tt-win-title tt-pop-ttl", t("bandwidth") + ": " + name);
     head.appendChild(bwTitle);
     bwTitle.appendChild(infoBubble(LANG === "de"
       ? "Bandbreitenlimit pro Container: Upload wird per tbf-Shaper begrenzt, Download per Netfilter-Policing. 0 oder leer = unbegrenzt. Die Statuszeile unten prüft live, ob die Regel wirklich greift."
       : "Per-container bandwidth cap: upload is shaped via tbf, download via netfilter policing. 0 or blank = unlimited. The status line below verifies live that the rule is really in place."));
     pop.appendChild(head);
-    var body = el("div", "cc-pop-body");
+    var body = el("div", "tt-pop-body");
     var cur = bandwidthFor(name);
     // One Mbit/s field per direction, prefilled from curKbit; blank means no cap.
     function rateRow(labelText, curKbit) {
-      var row = el("div", "cc-pop-row"); row.appendChild(el("label", "cc-pop-lbl", labelText));
-      var inp = el("input", "cc-in"); inp.type = "number"; inp.min = "0"; inp.step = "0.1"; inp.placeholder = "0 = ∞";
+      var row = el("div", "tt-pop-row"); row.appendChild(el("label", "tt-pop-lbl", labelText));
+      var inp = el("input", "tt-in"); inp.type = "number"; inp.min = "0"; inp.step = "0.1"; inp.placeholder = "0 = ∞";
       inp.value = (curKbit > 0) ? (Math.round(curKbit / 1000 * 100) / 100) : "";
-      row.appendChild(inp); row.appendChild(el("span", "cc-unit", "Mbit/s")); body.appendChild(row);
+      row.appendChild(inp); row.appendChild(el("span", "tt-unit", "Mbit/s")); body.appendChild(row);
       return inp;
     }
     // Upload is a tbf egress shaper. Download is netfilter policing, an iptables hashlimit on
@@ -3926,12 +3926,12 @@
     var upIn = rateRow(t("upload"), cur && cur.egress_kbit);
     var dnIn = rateRow(t("download"), cur && cur.ingress_kbit);
     Array.prototype.slice.call(body.children).forEach(statSlot);   // reserve the dot slots so the fields never shrink
-    pop.classList.add("cc-pop-stat");                              // window sized for field, unit and dot
+    pop.classList.add("tt-pop-stat");                              // window sized for field, unit and dot
     pop.appendChild(body); // no explainer text; the diagnosis line says what matters
     function readKbit(inp) { var v = parseFloat(String(inp.value).trim().replace(",", ".")); return v > 0 ? Math.round(v * 1000) : 0; }
-    var srow = el("div", "cc-pop-row cc-pop-act");
-    var rem = ccLabelled(el("span", "cc-btn"), "Trash", t("removeLim")); rem.addEventListener("click", function () { saveBandwidth(name, 0, 0, rem); });
-    var save = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort")); save.addEventListener("click", function () { saveBandwidth(name, readKbit(upIn), readKbit(dnIn), save); });
+    var srow = el("div", "tt-pop-row tt-pop-act");
+    var rem = ttLabelled(el("span", "tt-btn"), "Trash", t("removeLim")); rem.addEventListener("click", function () { saveBandwidth(name, 0, 0, rem); });
+    var save = ttLabelled(el("span", "tt-btn tt-btn-primary"), "Save", t("saveShort")); save.addEventListener("click", function () { saveBandwidth(name, readKbit(upIn), readKbit(dnIn), save); });
     srow.appendChild(rem); srow.appendChild(save); pop.appendChild(srow);
     document.body.appendChild(pop); hardenPop(pop);
     placePop(pop, anchor, 300);   // Rule 15: anchors head/foot, clamps into the viewport, locks the page behind it
@@ -3947,7 +3947,7 @@
       var base = "iface " + (st.iface || "eth0") + (st.last_apply ? " · Apply " + st.last_apply : "");
       // Status per field: a round green check or red cross behind Upload and Download, with the
       // full diagnosis in its hover bubble instead of a loose status box in the window.
-      var rows = pop.querySelectorAll(".cc-pop-body > .cc-pop-row"), rUp = rows[0], rDn = rows[1];
+      var rows = pop.querySelectorAll(".tt-pop-body > .tt-pop-row"), rUp = rows[0], rDn = rows[1];
       var A = LANG === "de" ? "AKTIV" : "ACTIVE", M = LANG === "de" ? "FEHLT" : "MISSING";
       var hl = st.filter && st.filter.indexOf("hashlimit") >= 0 ? st.filter.split("\n").filter(function (l2) { return l2.indexOf("hashlimit") >= 0; }).join(" ") : "";
       popClearError();
@@ -3962,20 +3962,20 @@
   // The apply-status dot at the end of a row's label, so the field keeps the row's far end: a green
   // check for verified applied, a red cross for failed, the detail in the same hover bubble as the
   // (i) explainers. One dot per row, replaced in place on every re-check.
-  function statHost(row) { return row.querySelector(":scope > .cc-pop-lbl") || row; }
+  function statHost(row) { return row.querySelector(":scope > .tt-pop-lbl") || row; }
   function statDot(row, ok, text) {
     if (!row) return;
-    var d = row.querySelector(".cc-statdot");
-    if (!d) { d = el("span", "cc-statdot"); statHost(row).appendChild(d); }
-    d.className = "cc-statdot " + (ok ? "cc-stat-ok" : "cc-stat-bad");
+    var d = row.querySelector(".tt-statdot");
+    if (!d) { d = el("span", "tt-statdot"); statHost(row).appendChild(d); }
+    d.className = "tt-statdot " + (ok ? "tt-stat-ok" : "tt-stat-bad");
     d.textContent = ok ? "✓" : "✕";
     if (text) { d.setAttribute("data-tip", text); d.setAttribute("aria-label", text); } else { d.removeAttribute("data-tip"); d.removeAttribute("aria-label"); }
     return d;
   }
   // The dot's slot is reserved from the start, so the field does not shrink when the dot
   // appears; statDot only makes the placeholder visible.
-  function statSlot(row) { if (row && !row.querySelector(".cc-statdot")) statHost(row).appendChild(el("span", "cc-statdot cc-stat-slot")); }
-  function statClear(row) { var d = row && row.querySelector(".cc-statdot"); if (d) { d.className = "cc-statdot cc-stat-slot"; d.textContent = ""; d.removeAttribute("data-tip"); d.removeAttribute("aria-label"); } }   // data-tip goes too: an invisible slot with a live tip would pop a bubble over nothing
+  function statSlot(row) { if (row && !row.querySelector(".tt-statdot")) statHost(row).appendChild(el("span", "tt-statdot tt-stat-slot")); }
+  function statClear(row) { var d = row && row.querySelector(".tt-statdot"); if (d) { d.className = "tt-statdot tt-stat-slot"; d.textContent = ""; d.removeAttribute("data-tip"); d.removeAttribute("aria-label"); } }   // data-tip goes too: an invisible slot with a live tip would pop a bubble over nothing
   // The backend or Docker rejection stays in the open window, where a 4s toast would be
   // unreadable, so the reason `docker update` refused can still be read back. It is the only
   // way to diagnose a set or remove failure once a stale install is ruled out. Also logged.
@@ -3985,17 +3985,17 @@
     var p = openPop;
     if (ctl || !p) flash("Error: " + m, true, ctl);   // a failed click reports like any other; the line below keeps the reason
     if (!p) return;
-    var box = p.querySelector(".cc-pop-err");
-    if (!box) { box = el("div", "cc-pop-err"); var foot = p.querySelector(".cc-pop-foot"); if (foot && foot.nextSibling) p.insertBefore(box, foot.nextSibling); else p.appendChild(box); }
-    box.classList.remove("cc-pop-ok"); box.textContent = "✕ " + m; box.style.display = "block";
+    var box = p.querySelector(".tt-pop-err");
+    if (!box) { box = el("div", "tt-pop-err"); var foot = p.querySelector(".tt-pop-foot"); if (foot && foot.nextSibling) p.insertBefore(box, foot.nextSibling); else p.appendChild(box); }
+    box.classList.remove("tt-pop-ok"); box.textContent = "✕ " + m; box.style.display = "block";
   }
-  function popClearError() { var p = openPop; if (!p) return; var box = p.querySelector(".cc-pop-err"); if (box) { box.textContent = ""; box.style.display = "none"; box.classList.remove("cc-pop-ok"); } }
+  function popClearError() { var p = openPop; if (!p) return; var box = p.querySelector(".tt-pop-err"); if (box) { box.textContent = ""; box.style.display = "none"; box.classList.remove("tt-pop-ok"); } }
   // Green confirmation in the same slot as the error line, carrying the verified values.
   function popOk(msg) {
     var p = openPop; if (!p) { flash(msg); return; }
-    var box = p.querySelector(".cc-pop-err");
-    if (!box) { box = el("div", "cc-pop-err"); var foot = p.querySelector(".cc-pop-foot"); if (foot && foot.nextSibling) p.insertBefore(box, foot.nextSibling); else p.appendChild(box); }
-    box.classList.add("cc-pop-ok"); box.textContent = msg; box.style.display = "block";
+    var box = p.querySelector(".tt-pop-err");
+    if (!box) { box = el("div", "tt-pop-err"); var foot = p.querySelector(".tt-pop-foot"); if (foot && foot.nextSibling) p.insertBefore(box, foot.nextSibling); else p.appendChild(box); }
+    box.classList.add("tt-pop-ok"); box.textContent = msg; box.style.display = "block";
   }
   // Persist one container's up and down caps, where 0/0 removes them. It is a read, modify and
   // write against the live config, so schedules, watchdogs, notify, shape_iface and every other
@@ -4030,35 +4030,35 @@
     closePop();
     var showRam = which !== "cpu", showCpu = which !== "ram";
     var title = which === "cpu" ? t("cpuLimit") : which === "ram" ? t("ramLimit") : "CPU / RAM";
-    var pop = el("div", "cc-pop cc-pop-stat"); if (localStorage.getItem("cc.rainbow") === "1") pop.classList.add("cc-rainbow");
-    var head = el("div", "cc-pop-head");
+    var pop = el("div", "tt-pop tt-pop-stat"); if (localStorage.getItem("tt.rainbow") === "1") pop.classList.add("tt-rainbow");
+    var head = el("div", "tt-pop-head");
     // The info text lives in one bubble inside the window title, as on a card's title, not in a foot line.
-    var limTitle = el("span", "cc-win-title cc-pop-ttl", title + ": " + name);
+    var limTitle = el("span", "tt-win-title tt-pop-ttl", title + ": " + name);
     limTitle.appendChild(infoBubble(t("limitsFoot"))); head.appendChild(limTitle); pop.appendChild(head);
-    var body = el("div", "cc-pop-body"), memNum = null, memUnit = null, cpu = null;
+    var body = el("div", "tt-pop-body"), memNum = null, memUnit = null, cpu = null;
     var readCpuset = function () { return ""; }, fillCpuset = function () {};
     if (showRam) {
-      var mrow = el("div", "cc-pop-row"); mrow.appendChild(el("label", "cc-pop-lbl", t("ramLimit")));
-      memNum = el("input", "cc-in"); memNum.type = "number"; memNum.min = "0"; memNum.step = "0.5"; memNum.placeholder = t("ramNum");
-      memUnit = el("select", "cc-in cc-unit"); ["MB", "GB"].forEach(function (u) { var o = el("option", null, u); o.value = u; if (u === "GB") o.selected = true; memUnit.appendChild(o); });
+      var mrow = el("div", "tt-pop-row"); mrow.appendChild(el("label", "tt-pop-lbl", t("ramLimit")));
+      memNum = el("input", "tt-in"); memNum.type = "number"; memNum.min = "0"; memNum.step = "0.5"; memNum.placeholder = t("ramNum");
+      memUnit = el("select", "tt-in tt-unit"); ["MB", "GB"].forEach(function (u) { var o = el("option", null, u); o.value = u; if (u === "GB") o.selected = true; memUnit.appendChild(o); });
       mrow.appendChild(memNum); mrow.appendChild(memUnit); statSlot(mrow); body.appendChild(mrow);
     }
     if (showCpu) {
-      var crow = el("div", "cc-pop-row"); crow.appendChild(el("label", "cc-pop-lbl", t("cpuLimit")));
-      cpu = el("input", "cc-in"); cpu.type = "text"; cpu.placeholder = t("cpuNum"); crow.appendChild(cpu); statSlot(crow); body.appendChild(crow);
+      var crow = el("div", "tt-pop-row"); crow.appendChild(el("label", "tt-pop-lbl", t("cpuLimit")));
+      cpu = el("input", "tt-in"); cpu.type = "text"; cpu.placeholder = t("cpuNum"); crow.appendChild(cpu); statSlot(crow); body.appendChild(crow);
       // CPU pinning is a graphical core picker like the VM manager's: one box per physical core
       // with its hyperthreads stacked inside, wrapping into rows, so a 32-thread CPU is a block
       // rather than a long column. On an Intel hybrid CPU the boxes carry a P or E tag from the
       // engine's /sys cpu_core and cpu_atom lists. The counts come from the engine, meaning the
       // host's CPUs, not navigator.hardwareConcurrency. Empty means all.
-      pop.classList.add("cc-pop-wide"); // pinning needs the extra width
-      var prow = el("div", "cc-pop-row cc-pin-row"); prow.appendChild(el("label", "cc-pop-lbl", t("cpuPin")));
+      pop.classList.add("tt-pop-wide"); // pinning needs the extra width
+      var prow = el("div", "tt-pop-row tt-pin-row"); prow.appendChild(el("label", "tt-pop-lbl", t("cpuPin")));
       var ncpu = hostCpus || navigator.hardwareConcurrency || 0;
       var coreOf = (hostCoreOf && hostCoreOf.length === ncpu) ? hostCoreOf : null;
       var isE = {}; hostECores.forEach(function (n) { isE[n] = true; });
       var hybrid = hostPCores.length > 0 && hostECores.length > 0;
       if (ncpu > 0 && ncpu <= 512) {
-        var grid = el("div", "cc-cores");
+        var grid = el("div", "tt-cores");
         // Group the logical CPUs by physical core; without a core map every CPU is its own group.
         var groups = {}, order = [];
         for (var ci = 0; ci < ncpu; ci++) {
@@ -4067,25 +4067,25 @@
           groups[g].push(ci);
         }
         order.forEach(function (g) {
-          var box = el("span", "cc-corebox");
+          var box = el("span", "tt-corebox");
           if (hybrid) {
             var e = groups[g].every(function (n) { return isE[n]; });
-            box.classList.add(e ? "cc-corebox-e" : "cc-corebox-p");
-            box.appendChild(el("span", "cc-corebox-tag", e ? "E" : "P"));
+            box.classList.add(e ? "tt-corebox-e" : "tt-corebox-p");
+            box.appendChild(el("span", "tt-corebox-tag", e ? "E" : "P"));
           }
           groups[g].forEach(function (cpu2) {
-            var core = el("span", "cc-core cc-rb-" + (g % 8), String(cpu2)); core.dataset.core = cpu2; // cc-rb-N: rainbow mode colours selected cores per physical-core group
+            var core = el("span", "tt-core tt-rb-" + (g % 8), String(cpu2)); core.dataset.core = cpu2; // tt-rb-N: rainbow mode colours selected cores per physical-core group
             core.setAttribute("data-tip", "CPU " + cpu2 + (coreOf ? " · core " + g : "") + (hybrid ? (isE[cpu2] ? " · E-core" : " · P-core") : ""));
-            core.addEventListener("click", function () { this.classList.toggle("cc-core-on"); });
+            core.addEventListener("click", function () { this.classList.toggle("tt-core-on"); });
             box.appendChild(core);
           });
           grid.appendChild(box);
         });
         prow.appendChild(grid);
-        readCpuset = function () { var sel = []; Array.prototype.slice.call(grid.querySelectorAll(".cc-core")).forEach(function (c) { if (c.classList.contains("cc-core-on")) sel.push(parseInt(c.dataset.core, 10)); }); return setToCpuset(sel); };
-        fillCpuset = function (str) { var s = cpusetToSet(str); Array.prototype.slice.call(grid.querySelectorAll(".cc-core")).forEach(function (c) { c.classList.toggle("cc-core-on", s.indexOf(parseInt(c.dataset.core, 10)) >= 0); }); };
+        readCpuset = function () { var sel = []; Array.prototype.slice.call(grid.querySelectorAll(".tt-core")).forEach(function (c) { if (c.classList.contains("tt-core-on")) sel.push(parseInt(c.dataset.core, 10)); }); return setToCpuset(sel); };
+        fillCpuset = function (str) { var s = cpusetToSet(str); Array.prototype.slice.call(grid.querySelectorAll(".tt-core")).forEach(function (c) { c.classList.toggle("tt-core-on", s.indexOf(parseInt(c.dataset.core, 10)) >= 0); }); };
       } else {
-        var pinIn = el("input", "cc-in"); pinIn.type = "text"; pinIn.placeholder = t("cpuPinPh"); prow.appendChild(pinIn);
+        var pinIn = el("input", "tt-in"); pinIn.type = "text"; pinIn.placeholder = t("cpuPinPh"); prow.appendChild(pinIn);
         readCpuset = function () { return String(pinIn.value).trim().replace(/\s+/g, ""); };
         fillCpuset = function (str) { pinIn.value = str || ""; };
       }
@@ -4128,12 +4128,12 @@
           try { console.error("TowerTorch:", e); } catch (_) {}
         });
     }
-    var srow = el("div", "cc-pop-row cc-pop-act");
+    var srow = el("div", "tt-pop-row tt-pop-act");
     // "remove" is an explicit flag rather than a client-computed value: the engine sets the
     // field to practical-unlimited, host RAM or all cores, and strips it from the template.
     // Sending remove_* instead of mem_bytes=hostMem also covers a browser whose cached hostMem
     // is 0, where the Remove button would otherwise do nothing.
-    var rem = ccLabelled(el("span", "cc-btn"), "Trash", t("removeLim"));
+    var rem = ttLabelled(el("span", "tt-btn"), "Trash", t("removeLim"));
     rem.addEventListener("click", function () {
       var payload = { name: name };
       if (showRam) payload.remove_mem = true;
@@ -4146,7 +4146,7 @@
     // made before the prefill returns cannot remove a limit nobody touched, and cannot miss a
     // real removal because the bulk map was stale.
     var cur = limits[name] || {}, curLoaded = false;
-    var save = ccLabelled(el("span", "cc-btn cc-btn-primary"), "Save", t("saveShort"));
+    var save = ttLabelled(el("span", "tt-btn tt-btn-primary"), "Save", t("saveShort"));
     save.addEventListener("click", function () {
       // The fields are prefilled with the current limits, so clearing one means "remove that
       // limit", which is how a cap is lifted, not "leave unchanged". A value sets the limit;
@@ -4248,15 +4248,15 @@
       // A progress note ("saving…") is rewritten by the result that follows it rather than
       // stacking a second toast under it.
       var kind = bad ? "error" : "";
-      if (bad && ctl && window.CCTheme) window.CCTheme.shake(ctl);
-      if (!(flashToast && flashToast.update(msg, kind))) flashToast = window.CCTheme ? window.CCTheme.toast(msg, kind) : null;
+      if (bad && ctl && window.TTTheme) window.TTTheme.shake(ctl);
+      if (!(flashToast && flashToast.update(msg, kind))) flashToast = window.TTTheme ? window.TTTheme.toast(msg, kind) : null;
       if (!/…$/.test(msg)) flashToast = null;
     } catch (e) {}
   }
 
   // The names datalist behind the editor's "depends on" field.
   function ensureNames() {
-    var dl = document.getElementById("cc-names"); if (!dl) { dl = el("datalist"); dl.id = "cc-names"; document.body.appendChild(dl); }
+    var dl = document.getElementById("tt-names"); if (!dl) { dl = el("datalist"); dl.id = "tt-names"; document.body.appendChild(dl); }
     dl.innerHTML = ""; containerNames.forEach(function (n) { var o = el("option"); o.value = n; dl.appendChild(o); });
   }
 
@@ -4269,7 +4269,7 @@
       // that lands while a sweep's 250ms cooldown is active folds into one trailing sweep.
       function moSweep() {
         moPending = true; moTrail = false;
-        try { mo.disconnect(); } catch (e) {}   // stop observing CC's own writes for this pass, the badges and the #cc-names datalist, so they cannot re-fire the observer
+        try { mo.disconnect(); } catch (e) {}   // stop observing TowerTorch's own writes for this pass, the badges and the #tt-names datalist, so they cannot re-fire the observer
         try { applyEnhanceClasses(); injectAllRowBadges(); } catch (e) {}
         // The first real pass is what the tab-load spinner covers for. Every later native
         // rebuild, a container start or stop and the 3-5s poll, is fast and invisible, so this
@@ -4278,17 +4278,17 @@
         // enhancement work finishes. With rows already in the table at boot, which is the common
         // case since Unraid server-renders it, the "paint once now" fast path below calls
         // moSweep() synchronously inside connectObserver(), itself called right after
-        // cc-enh-busy is set, so the flag would live for a single JS turn and never survive one
-        // tick of ccLoadState()'s 60ms poll.
-        if (!ccFirstPaintDone) {
-          ccFirstPaintDone = true;
-          var ccEnhMinMs = 400, ccEnhElapsed = Date.now() - ccEnhBusyStart;
-          if (ccEnhElapsed >= ccEnhMinMs) document.documentElement.classList.remove("cc-enh-busy");
-          else setTimeout(function () { document.documentElement.classList.remove("cc-enh-busy"); }, ccEnhMinMs - ccEnhElapsed);
+        // tt-enh-busy is set, so the flag would live for a single JS turn and never survive one
+        // tick of ttLoadState()'s 60ms poll.
+        if (!ttFirstPaintDone) {
+          ttFirstPaintDone = true;
+          var ttEnhMinMs = 400, ttEnhElapsed = Date.now() - ttEnhBusyStart;
+          if (ttEnhElapsed >= ttEnhMinMs) document.documentElement.classList.remove("tt-enh-busy");
+          else setTimeout(function () { document.documentElement.classList.remove("tt-enh-busy"); }, ttEnhMinMs - ttEnhElapsed);
         }
         // A native-list rebuild usually means Unraid has just finished a container action from
         // its own buttons or menu, and the state map is stale until the next 9s poll. Pull
-        // fresh state now, throttled so CC's idempotent re-injects cannot turn it into a
+        // fresh state now, throttled so TowerTorch's idempotent re-injects cannot turn it into a
         // request loop.
         try { refresh(); } catch (e) {} // instant: inject with the data already in memory
         try { if (Date.now() - lastObsLoad > 2000) { lastObsLoad = Date.now(); load(); } } catch (e) {}
@@ -4306,10 +4306,10 @@
         moSweep();                                    // otherwise paint on the leading edge
       });
       // Observe #docker_list's direct <tr> children only. Unraid replaces the tbody wholesale
-      // every 3-5s and those rows need re-tagging, while subtree:false keeps CC's own deep badge
+      // every 3-5s and those rows need re-tagging, while subtree:false keeps TowerTorch's own deep badge
       // and datalist writes and nchan's per-second CPU/RAM text ticks from waking the observer.
       // Until the list has been rendered, retry rather than falling back to <table> or <body>
-      // with subtree: that watches CC's own .cc-b-v appends and drives a rebuild loop, which is
+      // with subtree: that watches TowerTorch's own .tt-b-v appends and drives a rebuild loop, which is
       // the /Docker freeze after a container update.
       (function armList() {
         var body = document.getElementById("docker_list");
@@ -4326,31 +4326,31 @@
       })();
     } catch (e) {}
   }
-  // ShipLog integration, live only when both CC and ShipLog are installed. ShipLog's changelog
-  // bubble, .sl-bubble appended to <body>, takes CC's button and severity-pill theme. Accent and
-  // shape come from the --cc-* vars in docker.css; this adds the per-element rainbow
+  // ShipLog integration, live only when both TowerTorch and ShipLog are installed. ShipLog's changelog
+  // bubble, .sl-bubble appended to <body>, takes TowerTorch's button and severity-pill theme. Accent and
+  // shape come from the --tt-* vars in docker.css; this adds the per-element rainbow
   // rotation CSS cannot express. ShipLog's own code stays untouched, and the selectors match
   // only once ShipLog has rendered a bubble.
-  function ccRbColor(i) {
-    var pal = ccPalActive(RB_PAL);
-    var off = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET;
+  function ttRbColor(i) {
+    var pal = ttPalActive(RB_PAL);
+    var off = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET;
     return pal[(i + off) % pal.length];
   }
   function enhanceShipLogBubble(bub) {
     try {
-      if (!themingOn() || localStorage.getItem("cc.rainbow") !== "1") return; // accent and shape are pure CSS, rainbow is theming
+      if (!themingOn() || localStorage.getItem("tt.rainbow") !== "1") return; // accent and shape are pure CSS, rainbow is theming
       // The controls, the two action buttons, the close button and the auto-update switch, share
       // one index sequence, so the bubble reads as one themed set. The switch takes only the
       // custom properties, since its off state rests grey.
       // The custom properties are always stamped, but the direct colours are forced only outside
       // the reactive sub-mode. An unconditional inline paint beats every CSS rest-state rule,
-      // while every other Docker-tab control rests neutral under html.cc-shares-rbneutral and
-      // takes its colour on :hover, where docker.css reads --cc-rb-c.
-      var neutral = document.documentElement.classList.contains("cc-shares-rbneutral");
+      // while every other Docker-tab control rests neutral under html.tt-shares-rbneutral and
+      // takes its colour on :hover, where docker.css reads --tt-rb-c.
+      var neutral = document.documentElement.classList.contains("tt-shares-rbneutral");
       Array.prototype.slice.call(bub.querySelectorAll(".sl-upd:not(.sl-upd-off), .sl-gh, .sl-x, .sl-au-track")).forEach(function (bn, i) {
-        var c = ccRbColor(i);
-        bn.style.setProperty("--cc-rb-c", c);
-        bn.style.setProperty("--cc-rb-ct", idealText(c));
+        var c = ttRbColor(i);
+        bn.style.setProperty("--tt-rb-c", c);
+        bn.style.setProperty("--tt-rb-ct", idealText(c));
         if (neutral || bn.classList.contains("sl-au-track")) { bn.style.removeProperty("background"); bn.style.removeProperty("color"); bn.style.removeProperty("border-color"); return; }
         bn.style.setProperty("background", c, "important");
         bn.style.setProperty("color", idealText(c), "important");
@@ -4376,21 +4376,21 @@
   // The fixed bottom action bar, div.js-actions, does not hit-test across its right region;
   // at z-index 3000 the row underneath is still topmost there. A pointer in that zone hovers
   // the row and fires the reactive colouring, which flickers as the mouse moves along the bar.
-  // html.cc-actbar-hot is stamped whenever the pointer is inside the bar's Y band, where
+  // html.tt-actbar-hot is stamped whenever the pointer is inside the bar's Y band, where
   // docker.css suppresses the row-hover colour. The Y band rather than a hit test, so the
   // unhittable right region is covered too. Bound once on document and throttled to a frame.
-  var ccBarRaf = 0, ccBarHot = false;
-  function ccBarCheck(e) {
-    if (ccBarRaf) return;
-    ccBarRaf = (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
-      ccBarRaf = 0;
+  var ttBarRaf = 0, ttBarHot = false;
+  function ttBarCheck(e) {
+    if (ttBarRaf) return;
+    ttBarRaf = (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
+      ttBarRaf = 0;
       var bar = document.querySelector("div.js-actions"), hot = false;
       if (bar) { var r = bar.getBoundingClientRect(); if (r.height && e.clientY >= r.top && e.clientY <= r.bottom && e.clientX >= r.left && e.clientX <= r.right) hot = true; }
-      if (hot !== ccBarHot) { ccBarHot = hot; document.documentElement.classList.toggle("cc-actbar-hot", hot); }
+      if (hot !== ttBarHot) { ttBarHot = hot; document.documentElement.classList.toggle("tt-actbar-hot", hot); }
     });
   }
-  function bindBarGuard() { if (ccBarBound) return; ccBarBound = true; document.addEventListener("pointermove", ccBarCheck, { passive: true }); }
-  var ccBarBound = false;
+  function bindBarGuard() { if (ttBarBound) return; ttBarBound = true; document.addEventListener("pointermove", ttBarCheck, { passive: true }); }
+  var ttBarBound = false;
   function startTimers() {
     bindBarGuard();
     lastAdv = isAdvancedView();
@@ -4421,10 +4421,10 @@
       try { closePop(); } catch (e) {} try { closeMenu(); } catch (e) {}
       removeEnhanceClasses();
       clearRowBadges();
-      try { var rs = document.documentElement.style; ["--cc-icon-color", "--cc-icon-strength", "--cc-accent", "--cc-density"].forEach(function (p) { rs.removeProperty(p); }); } catch (e) {}
-      Array.prototype.slice.call(document.querySelectorAll(".cc-hgear, .cc-grid-holder, .cc-menu, .cc-toast, .cc-pop, #cc-names")).forEach(function (n) { n.remove(); });
-      if (ccBulkBarEl) { ccBulkBarEl.remove(); ccBulkBarEl = null; } ccBulkSel = {};
-      document.documentElement.classList.remove("cc-bulk-picked");
+      try { var rs = document.documentElement.style; ["--tt-icon-color", "--tt-icon-strength", "--tt-accent", "--tt-density"].forEach(function (p) { rs.removeProperty(p); }); } catch (e) {}
+      Array.prototype.slice.call(document.querySelectorAll(".tt-hgear, .tt-grid-holder, .tt-menu, .tt-toast, .tt-pop, #tt-names")).forEach(function (n) { n.remove(); });
+      if (ttBulkBarEl) { ttBulkBarEl.remove(); ttBulkBarEl = null; } ttBulkSel = {};
+      document.documentElement.classList.remove("tt-bulk-picked");
       hideNative(false);
     } catch (e) {}
   }
@@ -4434,7 +4434,7 @@
     if (dead) return Promise.resolve();
     return Promise.all([api("GET", "state"), loadShiplog(), loadConfig()]).then(function (res) {
       daemonUp = true; indexState(res[0]); ensureNames(); refresh(); syncStateBadges(); updateGearHealth();
-      try { localStorage.setItem("cc.stateCache", JSON.stringify(res[0])); } catch (e9) {} // seeds the instant paint on the next reload
+      try { localStorage.setItem("tt.stateCache", JSON.stringify(res[0])); } catch (e9) {} // seeds the instant paint on the next reload
       if (res[0] && res[0].docker_error) flash("docker: " + res[0].docker_error, true);
     }).catch(function (e) {
       // 404 and 410 mean the proxy file is gone, so self-remove and let the re-probe rebuild if
@@ -4448,7 +4448,7 @@
   // Every gear turns red while the daemon is unreachable, a standing health signal next to the
   // "engine unreachable" toast, which lasts 4s and is easy to miss. Blue means up.
   function updateGearHealth() {
-    try { var bad = daemonUp === false; Array.prototype.slice.call(document.querySelectorAll(".cc-hgear")).forEach(function (g) { g.classList.toggle("cc-hgear-down", bad); }); } catch (e) {}
+    try { var bad = daemonUp === false; Array.prototype.slice.call(document.querySelectorAll(".tt-hgear")).forEach(function (g) { g.classList.toggle("tt-hgear-down", bad); }); } catch (e) {}
   }
   // Form mode for /Docker/AddContainer and /Docker/UpdateContainer. It is loaded by the
   // URL-gated Buttons hook TowerTorch.DockerForm.page, since these pages carry no Menu=;
@@ -4467,21 +4467,21 @@
   function onCtForm() {
     try { return /^\/(Docker|Apps)\/(AddContainer|UpdateContainer)$/.test(ctPn()) && !!document.querySelector('#canvas form[onsubmit^="return prepareConfig"]'); } catch (e) { return false; }
   }
-  // cc-dsel = the shares.js ccWrapSelect mechanism under DISTINCT class/marker names, so shares.js's
-  // global "#displaybox .cc-sel" teardown (that script loads on every page) can never unwrap ours.
+  // tt-dsel = the shares.js ttWrapSelect mechanism under DISTINCT class/marker names, so shares.js's
+  // global "#displaybox .tt-sel" teardown (that script loads on every page) can never unwrap ours.
   // The real <select> stays (display:none) as the source of truth; we write selectedIndex back and
   // dispatch change so the inline onchange chain (loadTemplate/showSubnet/showTailscale/…) fires.
   function ctWrapSelect(sel) {
-    sel.setAttribute("data-cc-dsel", "1");                 // set FIRST -> observer re-fire is a no-op
-    var wrap = el("span", "cc-dsel"); sel.parentNode.insertBefore(wrap, sel);
+    sel.setAttribute("data-tt-dsel", "1");                 // set FIRST -> observer re-fire is a no-op
+    var wrap = el("span", "tt-dsel"); sel.parentNode.insertBefore(wrap, sel);
     sel.style.display = "none"; wrap.appendChild(sel);
-    var trig = selTrigger(el("span", "cc-dsel-trigger")); wrap.appendChild(trig);
-    var panel = el("div", "cc-dsel-panel"); wrap.appendChild(panel);
+    var trig = selTrigger(el("span", "tt-dsel-trigger")); wrap.appendChild(trig);
+    var panel = el("div", "tt-dsel-panel"); wrap.appendChild(panel);
     var lastGroup = null;
     for (var k = 0; k < sel.options.length; k++) {
       var o = sel.options[k], gl = o.parentNode && o.parentNode.tagName === "OPTGROUP" ? o.parentNode.label : null;
-      if (gl && gl !== lastGroup) { panel.appendChild(el("div", "cc-dsel-group", gl)); lastGroup = gl; }   // TemplateSelect's "[ Default templates ]" headers survive
-      var chip = el("div", "cc-dsel-opt", o.text); chip.setAttribute("data-i", k);
+      if (gl && gl !== lastGroup) { panel.appendChild(el("div", "tt-dsel-group", gl)); lastGroup = gl; }   // TemplateSelect's "[ Default templates ]" headers survive
+      var chip = el("div", "tt-dsel-opt", o.text); chip.setAttribute("data-i", k);
       chip.addEventListener("click", (function (idx) {
         return function (ev) {
           ev.stopPropagation();
@@ -4489,7 +4489,7 @@
           sel.selectedIndex = idx;
           sel.dispatchEvent(new Event("change", { bubbles: true }));
           ctSyncOne(sel);
-          wrap.classList.remove("cc-open");
+          wrap.classList.remove("tt-open");
           trig.focus();
         };
       })(k));
@@ -4499,17 +4499,17 @@
       ev.stopPropagation();
       if (sel.disabled) return;
       ctSyncOne(sel);                                       // reflect live disabled/selected BEFORE opening
-      var open = wrap.classList.toggle("cc-open");
-      if (open) { var o2 = document.querySelectorAll(".cc-dsel.cc-open"); for (var j = 0; j < o2.length; j++) if (o2[j] !== wrap) o2[j].classList.remove("cc-open"); ccPositionDsel(trig, panel); }
+      var open = wrap.classList.toggle("tt-open");
+      if (open) { var o2 = document.querySelectorAll(".tt-dsel.tt-open"); for (var j = 0; j < o2.length; j++) if (o2[j] !== wrap) o2[j].classList.remove("tt-open"); ttPositionDsel(trig, panel); }
     });
     ctSyncOne(sel);
   }
-  // As position:absolute the cc-dsel panel is clipped by the #canvas div.content it lives in,
+  // As position:absolute the tt-dsel panel is clipped by the #canvas div.content it lives in,
   // which is overflow:auto, so a long template list ends at the content edge with no reachable
   // scrollbar. On open the panel is re-anchored as position:fixed at its trigger and capped to
   // the free viewport space, which escapes the clip and gives it its own scrollbar. It flips
   // upward when there is more room above.
-  function ccPositionDsel(trig, panel) {
+  function ttPositionDsel(trig, panel) {
     try {
       var r = trig.getBoundingClientRect(), gap = 4, edge = 14;
       // position:fixed is offset by the nearest ancestor with a transform, filter or perspective,
@@ -4541,9 +4541,9 @@
     } catch (e) {}
   }
   function ctSyncOne(sel) {
-    var w = sel.parentNode; if (!w || !w.classList || !w.classList.contains("cc-dsel")) return;
-    w.classList.toggle("cc-dsel-disabled", !!sel.disabled);
-    var t2 = w.querySelector(".cc-dsel-trigger"), c = w.querySelectorAll(".cc-dsel-opt");
+    var w = sel.parentNode; if (!w || !w.classList || !w.classList.contains("tt-dsel")) return;
+    w.classList.toggle("tt-dsel-disabled", !!sel.disabled);
+    var t2 = w.querySelector(".tt-dsel-trigger"), c = w.querySelectorAll(".tt-dsel-opt");
     var label = sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : "";
     if (t2 && t2.textContent !== label) t2.textContent = label;   // guarded writes: no childList churn, so the body observer cannot loop
     for (var k = 0; k < c.length; k++) {
@@ -4553,55 +4553,55 @@
       c[k].classList.toggle("is-disabled", !!o.disabled);
     }
   }
-  // The wheel over a closed field with focus (GlimStone rule 14) is handled in cc-theme.js; this hands
+  // The wheel over a closed field with focus (GlimStone rule 14) is handled in tt-theme.js; this hands
   // it the repaint the chip-click path already uses, so a wheel step and a click leave the widget
   // identical.
-  try { if (window.CCTheme && window.CCTheme.registerSelectSync) window.CCTheme.registerSelectSync(function (sel, wrap) { if (!wrap || !wrap.classList || !wrap.classList.contains("cc-dsel")) return false; ctSyncOne(sel); return true; }); } catch (e) {}
+  try { if (window.TTTheme && window.TTTheme.registerSelectSync) window.TTTheme.registerSelectSync(function (sel, wrap) { if (!wrap || !wrap.classList || !wrap.classList.contains("tt-dsel")) return false; ctSyncOne(sel); return true; }); } catch (e) {}
   function ctSelectsTeardown() {
     try {
-      var wraps = document.querySelectorAll(".cc-dsel");
+      var wraps = document.querySelectorAll(".tt-dsel");
       for (var i = 0; i < wraps.length; i++) {
         var w = wraps[i], sel = w.querySelector("select");
-        if (sel) { sel.style.display = ""; sel.removeAttribute("data-cc-dsel"); w.parentNode.insertBefore(sel, w); }
+        if (sel) { sel.style.display = ""; sel.removeAttribute("data-tt-dsel"); w.parentNode.insertBefore(sel, w); }
         if (w.parentNode) w.parentNode.removeChild(w);
       }
     } catch (e) {}
   }
   // The page-title head badge. The form page's heading div.title is i.fa.fa-th.title plus a bare
-  // text node before span.right, and both are wrapped into span.cc-b.cc-pagehead so docker.css
+  // text node before span.right, and both are wrapped into span.tt-b.tt-pagehead so docker.css
   // can badge them. It is idempotent, because a wrapped icon no longer matches div.title > i.
   // The wrapper carries no MARK, since it holds native nodes that a MARK sweep would destroy;
-  // ctTitleUnwrap restores them explicitly, like the cc-grp wrapper.
+  // ctTitleUnwrap restores them explicitly, like the tt-grp wrapper.
   function ctTitleWrap() {
     try {
       var icons = document.querySelectorAll("div.title > i.fa.title, div.title > i.fa.fa-th");
       for (var i = 0; i < icons.length; i++) {
         var ic = icons[i], ti = ic.parentNode;
-        if (ti.querySelector(":scope > span.cc-pagehead")) continue;
+        if (ti.querySelector(":scope > span.tt-pagehead")) continue;
         var tx = null;
         for (var n = 0; n < ti.childNodes.length; n++) { var nd = ti.childNodes[n]; if (nd.nodeType === 3 && nd.textContent.replace(/\s+/g, "")) { tx = nd; break; } }
         if (!tx) continue;
-        var w = el("span", "cc-b cc-pagehead"); ti.insertBefore(w, ic); w.appendChild(ic); w.appendChild(tx);
+        var w = el("span", "tt-b tt-pagehead"); ti.insertBefore(w, ic); w.appendChild(ic); w.appendChild(tx);
       }
     } catch (e) {}
   }
   function ctTitleUnwrap() {
     try {
-      var ws = document.querySelectorAll("div.title > span.cc-pagehead");
+      var ws = document.querySelectorAll("div.title > span.tt-pagehead");
       for (var i = 0; i < ws.length; i++) { var w = ws[i]; while (w.firstChild) w.parentNode.insertBefore(w.firstChild, w); w.parentNode.removeChild(w); }
     } catch (e) {}
   }
   // Every variable label in the container form becomes a badge without its trailing colon. Each
   // config row is <dl><dt><span>Label:</span></dt><dd>field</dd>. We class the
   // label span (docker.css badges it) and strip the trailing ":" from its last text node, stashing
-  // the original in data-cc-lab for a clean teardown. Idempotent via the class guard.
+  // the original in data-tt-lab for a clean teardown. Idempotent via the class guard.
   // strip the trailing colon on the LAST non-empty text node (keeps a leading fa icon), stashing
-  // the original text in data-cc-lab so the teardown restores it verbatim.
+  // the original text in data-tt-lab so the teardown restores it verbatim.
   function ctStripColon(host) {
     for (var n = host.childNodes.length - 1; n >= 0; n--) {
       var nd = host.childNodes[n];
       if (nd.nodeType === 3 && nd.textContent.replace(/\s+/g, "")) {
-        if (!host.getAttribute("data-cc-lab")) host.setAttribute("data-cc-lab", nd.textContent);
+        if (!host.getAttribute("data-tt-lab")) host.setAttribute("data-tt-lab", nd.textContent);
         // The lead goes too: an env var label starts with two &nbsp; after its hidden icon.
         nd.textContent = nd.textContent.replace(/^\s+|\s*:\s*$/g, "");
         return;
@@ -4609,7 +4609,7 @@
     }
   }
   // A field is required when the matching <dd> carries [required], which is how Unraid marks
-  // mandatory inputs. The badge takes a red dot through .cc-req::after, which reads in accent
+  // mandatory inputs. The badge takes a red dot through .tt-req::after, which reads in accent
   // and in rainbow, unlike a red fill.
   function ctMarkReq(badge, dt) {
     try {
@@ -4617,27 +4617,27 @@
       while (dd && dd.tagName !== "DD") dd = dd.nextElementSibling;
       // Two sources: Unraid stamps the label span class="required" from the template's Required
       // flag, which is authoritative and also covers the select fields it leaves without the
-      // [required] attribute, and the field itself may carry [required]. The CC dot sits on
+      // [required] attribute, and the field itself may carry [required]. The TowerTorch dot sits on
       // ::after with higher specificity than the native " *" from CreateDocker.css on the same
       // element, so a required field shows the dot rather than the asterisk.
       var req = (badge && badge.classList.contains("required")) || !!(dd && dd.querySelector("input[required],select[required],textarea[required]"));
-      badge.classList.toggle("cc-req", req);
+      badge.classList.toggle("tt-req", req);
     } catch (e) {}
   }
   function ctVarLabels() {
     try {
       // Environment variable labels, <dt><span>Label:</span></dt>, badge the inner span.
-      var sps = document.querySelectorAll("#canvas dl > dt > span:not(.cc-info), .ui-dialog dl > dt > span:not(.cc-info)");
+      var sps = document.querySelectorAll("#canvas dl > dt > span:not(.tt-info), .ui-dialog dl > dt > span:not(.tt-info)");
       for (var i = 0; i < sps.length; i++) {
         var sp = sps[i];
-        if (!sp.classList.contains("cc-varlab")) { ctStripColon(sp); sp.classList.add("cc-varlab"); }
+        if (!sp.classList.contains("tt-varlab")) { ctStripColon(sp); sp.classList.add("tt-varlab"); }
         ctMarkReq(sp, sp.parentNode);
         // Some dialog labels keep the colon as a text node in the <dt> after the badge span,
         // out of reach of the strip above, so it goes here and is stashed on the dt for the
         // teardown to restore.
         var pdt = sp.parentNode;
-        if (pdt && pdt.tagName === "DT" && !pdt.hasAttribute("data-cc-dtcolon") && pdt.lastChild && pdt.lastChild.nodeType === 3 && /:\s*$/.test(pdt.lastChild.textContent)) {
-          pdt.setAttribute("data-cc-dtcolon", pdt.lastChild.textContent);
+        if (pdt && pdt.tagName === "DT" && !pdt.hasAttribute("data-tt-dtcolon") && pdt.lastChild && pdt.lastChild.nodeType === 3 && /:\s*$/.test(pdt.lastChild.textContent)) {
+          pdt.setAttribute("data-tt-dtcolon", pdt.lastChild.textContent);
           pdt.lastChild.textContent = pdt.lastChild.textContent.replace(/\s*:\s*$/, "");
         }
       }
@@ -4648,29 +4648,29 @@
       var dts = document.querySelectorAll("#canvas dl > dt, .ui-dialog dl > dt");
       for (var j = 0; j < dts.length; j++) {
         var dt = dts[j];
-        if (dt.querySelector(":scope > span:not(.cc-info)")) continue; // a span label, handled above
+        if (dt.querySelector(":scope > span:not(.tt-info)")) continue; // a span label, handled above
         var hasText = false;
         for (var k = 0; k < dt.childNodes.length; k++) { var c = dt.childNodes[k]; if (c.nodeType === 3 && c.textContent.replace(/\s+/g, "")) { hasText = true; break; } }
         if (!hasText) continue; // an empty, layout-only dt
-        if (!dt.classList.contains("cc-dtlab")) { ctStripColon(dt); dt.classList.add("cc-dtlab"); }
+        if (!dt.classList.contains("tt-dtlab")) { ctStripColon(dt); dt.classList.add("tt-dtlab"); }
         ctMarkReq(dt, dt);
       }
     } catch (e) {}
   }
   function ctVarLabelsTeardown() {
     try {
-      var hosts = document.querySelectorAll("#canvas dl > dt > span.cc-varlab, .ui-dialog dl > dt > span.cc-varlab, #canvas dl > dt.cc-dtlab, .ui-dialog dl > dt.cc-dtlab");
+      var hosts = document.querySelectorAll("#canvas dl > dt > span.tt-varlab, .ui-dialog dl > dt > span.tt-varlab, #canvas dl > dt.tt-dtlab, .ui-dialog dl > dt.tt-dtlab");
       for (var i = 0; i < hosts.length; i++) {
-        var h = hosts[i], orig = h.getAttribute("data-cc-lab");
+        var h = hosts[i], orig = h.getAttribute("data-tt-lab");
         if (orig) { for (var n = h.childNodes.length - 1; n >= 0; n--) { var nd = h.childNodes[n]; if (nd.nodeType === 3 && nd.textContent.replace(/\s+/g, "")) { nd.textContent = orig; break; } } }
-        h.classList.remove("cc-varlab"); h.classList.remove("cc-dtlab"); h.classList.remove("cc-req"); h.removeAttribute("data-cc-lab");
+        h.classList.remove("tt-varlab"); h.classList.remove("tt-dtlab"); h.classList.remove("tt-req"); h.removeAttribute("data-tt-lab");
       }
-      // restore the trailing ":" text node we stripped off dialog <dt>s (data-cc-dtcolon)
-      var cdts = document.querySelectorAll("#canvas dl > dt[data-cc-dtcolon], .ui-dialog dl > dt[data-cc-dtcolon]");
+      // restore the trailing ":" text node we stripped off dialog <dt>s (data-tt-dtcolon)
+      var cdts = document.querySelectorAll("#canvas dl > dt[data-tt-dtcolon], .ui-dialog dl > dt[data-tt-dtcolon]");
       for (var q = 0; q < cdts.length; q++) {
         var cdt = cdts[q];
-        if (cdt.lastChild && cdt.lastChild.nodeType === 3) cdt.lastChild.textContent = cdt.getAttribute("data-cc-dtcolon");
-        cdt.removeAttribute("data-cc-dtcolon");
+        if (cdt.lastChild && cdt.lastChild.nodeType === 3) cdt.lastChild.textContent = cdt.getAttribute("data-tt-dtcolon");
+        cdt.removeAttribute("data-tt-dtcolon");
       }
     } catch (e) {}
   }
@@ -4680,28 +4680,28 @@
   function ctUnfold() {
     try {
       var rm = document.getElementById("readmore_toggle");
-      if (rm && !rm.hasAttribute("data-cc-open")) {
-        rm.setAttribute("data-cc-open", "1");
+      if (rm && !rm.hasAttribute("data-tt-open")) {
+        rm.setAttribute("data-tt-open", "1");
         if (rm.classList.contains("readmore_collapsed") && typeof window.toggleReadmore === "function") window.toggleReadmore();
-        var rdl = rm.closest("dl"); if (rdl) rdl.classList.add("cc-ct-foldrow");
+        var rdl = rm.closest("dl"); if (rdl) rdl.classList.add("tt-ct-foldrow");
       }
       var at = document.getElementById("allocations_toggle"), list = document.getElementById("dockerAllocations");
       var a = at && at.querySelector("a");
-      if (!a || !list || a.hasAttribute("data-cc-win")) return;
-      a.setAttribute("data-cc-win", "1");
-      ccLabelled(a, "Eye", LANG === "de" ? "Docker-Zuweisungen" : "Docker allocations");
+      if (!a || !list || a.hasAttribute("data-tt-win")) return;
+      a.setAttribute("data-tt-win", "1");
+      ttLabelled(a, "Eye", LANG === "de" ? "Docker-Zuweisungen" : "Docker allocations");
       a.setAttribute("role", "button"); a.setAttribute("tabindex", "0");
       var open = function (ev) {
         ev.preventDefault(); ev.stopPropagation();
-        if (!window.CCTheme || !window.CCTheme.modal) return;
+        if (!window.TTTheme || !window.TTTheme.modal) return;
         var home = list.parentNode, next = list.nextSibling;
-        var win = el("div", "cc-win cc-dlg cc-ct-allocwin");
-        win.appendChild(el("div", "cc-win-title", a.textContent));
-        var card = el("div", "cc-win-card"); win.appendChild(card);
+        var win = el("div", "tt-win tt-dlg tt-ct-allocwin");
+        win.appendChild(el("div", "tt-win-title", a.textContent));
+        var card = el("div", "tt-win-card"); win.appendChild(card);
         document.body.appendChild(win);
         card.appendChild(list); list.style.display = "block";
-        ccAllocSortApply(); ccAllocFill();
-        var h = window.CCTheme.modal(win, { opener: a, onDismiss: function () {
+        ttAllocSortApply(); ttAllocFill();
+        var h = window.TTTheme.modal(win, { opener: a, onDismiss: function () {
           list.style.display = "none"; home.insertBefore(list, next);
           h.close();
         } });
@@ -4718,7 +4718,7 @@
       var dls = document.querySelectorAll("#canvas dl, .ui-dialog dl");
       for (var i = 0; i < dls.length; i++) {
         var inp = dls[i].querySelector('dd input[type="text"]');
-        if (inp && !inp.parentNode.querySelector(":scope > .cc-colorvar") && ctIsColorVar(dls[i].textContent, inp.value)) ctColorSwatch(inp, dls[i].querySelector("dt"));
+        if (inp && !inp.parentNode.querySelector(":scope > .tt-colorvar") && ctIsColorVar(dls[i].textContent, inp.value)) ctColorSwatch(inp, dls[i].querySelector("dt"));
       }
     } catch (e) {}
   }
@@ -4729,10 +4729,10 @@
   }
   // A value written without the # keeps that form; an empty field takes the #.
   function ctColorSwatch(inp, dt) {
-    if (!window.CCTheme) return;
+    if (!window.TTTheme) return;
     var label = dt ? (dt.textContent || "").replace(/[\s:ⓘ]+$/, "").trim() : "";
-    var sw = window.CCTheme.colorSwatch(inp, { hash: !/^[0-9a-f]{6}$/i.test(String(inp.value || "").trim()), label: label });
-    sw.classList.add("cc-colorvar"); sw.setAttribute(MARK, "1");
+    var sw = window.TTTheme.colorSwatch(inp, { hash: !/^[0-9a-f]{6}$/i.test(String(inp.value || "").trim()), label: label });
+    sw.classList.add("tt-colorvar"); sw.setAttribute(MARK, "1");
   }
   // Every field of the form explains itself in an (i) beside its label (GlimStone rule 8). Unraid's
   // own fields get a sentence of ours, keyed by the field's name: their inline help blocks are not
@@ -4778,15 +4778,15 @@
       for (var i = 0; i < dts.length; i++) {
         var dt = dts[i], dl = dt.parentNode, dd = dt.nextElementSibling;
         if (!dd || dd.tagName !== "DD") continue;
-        var host = dt.querySelector(":scope > span.cc-varlab") || (dt.classList.contains("cc-dtlab") ? dt : null);
-        if (!host || host.querySelector(":scope > .cc-info")) continue;
+        var host = dt.querySelector(":scope > span.tt-varlab") || (dt.classList.contains("tt-dtlab") ? dt : null);
+        if (!host || host.querySelector(":scope > .tt-info")) continue;
         var tip = "", cfg = dl.closest("[id^='ConfigNum']");
         if (cfg) {
           var dsc = cfg.querySelector('input[name="confDescription[]"]'), kind = cfg.querySelector('input[name="confType[]"]');
           tip = ((dsc && dsc.value) || "").trim();
           if (tip) {
             var notes = dd.querySelectorAll(".boxed > span.orange-text");
-            for (var n = 0; n < notes.length; n++) if ((notes[n].textContent || "").trim() === tip) notes[n].setAttribute("data-cc-help", "1");
+            for (var n = 0; n < notes.length; n++) if ((notes[n].textContent || "").trim() === tip) notes[n].setAttribute("data-tt-help", "1");
           } else tip = ctHelpText(CT_KIND_HELP[kind && kind.value]);
         } else {
           var field = dd.querySelector("select[name], select[id], input[name]:not([type=hidden]), input[id]:not([type=hidden]), textarea[name]");
@@ -4797,7 +4797,7 @@
           if (!tip && field && bq && wrap.querySelectorAll(":scope > dl > dt").length === 1) tip = (bq.textContent || "").trim();
         }
         if (!tip) continue;
-        var ic = (window.CCTheme && window.CCTheme.infoIcon) ? window.CCTheme.infoIcon(tip) : null;
+        var ic = (window.TTTheme && window.TTTheme.infoIcon) ? window.TTTheme.infoIcon(tip) : null;
         if (!ic) return;
         ic.setAttribute(MARK, "1");
         host.appendChild(ic);
@@ -4806,103 +4806,103 @@
   }
   function ctInfoBubblesTeardown() {
     try {
-      Array.prototype.forEach.call(document.querySelectorAll("#canvas dl > dt .cc-info[" + MARK + "]"), function (ic) { ic.parentNode.removeChild(ic); });
-      Array.prototype.forEach.call(document.querySelectorAll("#canvas .boxed > span.orange-text[data-cc-help]"), function (s) { s.removeAttribute("data-cc-help"); });
+      Array.prototype.forEach.call(document.querySelectorAll("#canvas dl > dt .tt-info[" + MARK + "]"), function (ic) { ic.parentNode.removeChild(ic); });
+      Array.prototype.forEach.call(document.querySelectorAll("#canvas .boxed > span.orange-text[data-tt-help]"), function (s) { s.removeAttribute("data-tt-help"); });
     } catch (e) {}
   }
   // The native #dockerAllocations table ("Docker-Zuweisungen") shows "invalid IP" for a stopped
-  // container's IP and "???" for its ports. The CC engine knows the configured static IP (survives a
+  // container's IP and "???" for its ports. The TowerTorch engine knows the configured static IP (survives a
   // stop) + the published ports (HostConfig.PortBindings), so fetch the engine state once and fill
   // those cells. The AddContainer page runs only bootCtForm (no list machinery), so fetch the state
   // directly from the proxy here. norm()/MARK/PROXY are the same helpers the list enhancer uses.
-  var ccAllocState = null, ccAllocPending = false;
-  function ccAllocFill() {
+  var ttAllocState = null, ttAllocPending = false;
+  function ttAllocFill() {
     var tbl = document.getElementById("dockerAllocations");
     if (!tbl || !tbl.querySelector(".docker-allocation-row")) return;
-    if (!ccAllocState) {
-      if (ccAllocPending) return;
-      ccAllocPending = true;
+    if (!ttAllocState) {
+      if (ttAllocPending) return;
+      ttAllocPending = true;
       fetch(PROXY + "?path=" + encodeURIComponent("state"), { headers: { Accept: "application/json" } })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (st) {
-          ccAllocState = {};
-          ((st && st.containers) || []).forEach(function (c) { if (c && c.name) ccAllocState[norm(c.name)] = c; });
-          ccAllocPending = false; ccAllocPaint();
-        }).catch(function () { ccAllocPending = false; });
+          ttAllocState = {};
+          ((st && st.containers) || []).forEach(function (c) { if (c && c.name) ttAllocState[norm(c.name)] = c; });
+          ttAllocPending = false; ttAllocPaint();
+        }).catch(function () { ttAllocPending = false; });
       return;
     }
-    ccAllocPaint();
+    ttAllocPaint();
   }
-  function ccAllocPaint() {
+  function ttAllocPaint() {
     var tbl = document.getElementById("dockerAllocations");
-    if (!tbl || !ccAllocState) return;
+    if (!tbl || !ttAllocState) return;
     var rows = tbl.querySelectorAll(".docker-allocation-row");
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       if (row.getAttribute(MARK)) continue;
       var spans = row.querySelectorAll(":scope > span");
       if (spans.length < 4) continue;
-      var c = ccAllocState[norm((spans[0].textContent || "").trim())];
+      var c = ttAllocState[norm((spans[0].textContent || "").trim())];
       if (!c) continue;
       row.setAttribute(MARK, "1");
       // IP col: "invalid IP" (stopped) -> the configured static IP the engine kept
-      if (/invalid ip/i.test(spans[2].textContent || "") && c.ip) { spans[2].textContent = c.ip; spans[2].classList.add("cc-alloc-filled"); }
+      if (/invalid ip/i.test(spans[2].textContent || "") && c.ip) { spans[2].textContent = c.ip; spans[2].classList.add("tt-alloc-filled"); }
       // Port col: "???" -> the published ports (bridge containers) from the engine's HostConfig read
-      if (/\?\?\?/.test(spans[3].textContent || "") && c.ports && c.ports.length) { spans[3].textContent = c.ports.join(" "); spans[3].classList.add("cc-alloc-filled"); }
+      if (/\?\?\?/.test(spans[3].textContent || "") && c.ports && c.ports.length) { spans[3].textContent = c.ports.join(" "); spans[3].classList.add("tt-alloc-filled"); }
     }
-    ccAllocSortUI(); ccAllocSortApply();   // keep the sort control and the applied order after every repaint
+    ttAllocSortUI(); ttAllocSortApply();   // keep the sort control and the applied order after every repaint
   }
   // Sorts the Docker allocations by container name (A-Z) or by IP. The rows are native DOM
   // (.docker-allocation-row; span[0]=name, span[2]=IP), so we reorder the nodes. Idempotent (only re-appends
   // when the order actually changed) so the bootCtForm subtree observer can't ping-pong into a re-sort loop.
-  function ccAllocSortMode() { try { return localStorage.getItem("cc.allocsort") || ""; } catch (e) { return ""; } }
-  function ccAllocIpKey(s) { var m = String(s || "").match(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/); return m ? ((+m[1]) * 16777216 + (+m[2]) * 65536 + (+m[3]) * 256 + (+m[4])) : -1; }
-  function ccAllocSortUI() {
+  function ttAllocSortMode() { try { return localStorage.getItem("tt.allocsort") || ""; } catch (e) { return ""; } }
+  function ttAllocIpKey(s) { var m = String(s || "").match(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/); return m ? ((+m[1]) * 16777216 + (+m[2]) * 65536 + (+m[3]) * 256 + (+m[4])) : -1; }
+  function ttAllocSortUI() {
     var tbl = document.getElementById("dockerAllocations");
-    if (!tbl || !tbl.querySelector(".docker-allocation-row") || tbl.querySelector(":scope > .cc-alloc-sortbar")) return;
-    var bar = el("div", "cc-alloc-sortbar"); bar.setAttribute(MARK, "1");
-    bar.appendChild(el("span", "cc-alloc-sortlbl", LANG === "de" ? "Sortieren:" : "Sort:"));
+    if (!tbl || !tbl.querySelector(".docker-allocation-row") || tbl.querySelector(":scope > .tt-alloc-sortbar")) return;
+    var bar = el("div", "tt-alloc-sortbar"); bar.setAttribute(MARK, "1");
+    bar.appendChild(el("span", "tt-alloc-sortlbl", LANG === "de" ? "Sortieren:" : "Sort:"));
     [["name", "Name A-Z"], ["ip", "IP"]].forEach(function (m) {
-      var b = el("button", "cc-alloc-sortbtn" + (ccAllocSortMode() === m[0] ? " cc-alloc-sorton" : ""), m[1]); b.type = "button";
+      var b = el("button", "tt-alloc-sortbtn" + (ttAllocSortMode() === m[0] ? " tt-alloc-sorton" : ""), m[1]); b.type = "button";
       b.addEventListener("click", function () {
-        var nm = ccAllocSortMode() === m[0] ? "" : m[0];   // click the active one again -> back to native order
-        try { localStorage.setItem("cc.allocsort", nm); } catch (e) {}
-        Array.prototype.forEach.call(bar.querySelectorAll(".cc-alloc-sortbtn"), function (x) { x.classList.remove("cc-alloc-sorton"); });
-        if (nm) b.classList.add("cc-alloc-sorton");
-        ccAllocSortApply();
+        var nm = ttAllocSortMode() === m[0] ? "" : m[0];   // click the active one again -> back to native order
+        try { localStorage.setItem("tt.allocsort", nm); } catch (e) {}
+        Array.prototype.forEach.call(bar.querySelectorAll(".tt-alloc-sortbtn"), function (x) { x.classList.remove("tt-alloc-sorton"); });
+        if (nm) b.classList.add("tt-alloc-sorton");
+        ttAllocSortApply();
       });
       bar.appendChild(b);
     });
     tbl.insertBefore(bar, tbl.firstChild);
   }
-  function ccAllocSortApply() {
+  function ttAllocSortApply() {
     var tbl = document.getElementById("dockerAllocations"); if (!tbl) return;
-    var mode = ccAllocSortMode(); if (!mode) return;   // "" = keep native order
+    var mode = ttAllocSortMode(); if (!mode) return;   // "" = keep native order
     // each container is a direct-child <dl> wrapping a .docker-allocation-row (span[0]=name, span[2]=IP)
     var dls = Array.prototype.slice.call(tbl.querySelectorAll(":scope > dl"));
     if (dls.length < 2) return;
     function cells(dl) { var r = dl.querySelector(".docker-allocation-row"); return r ? r.querySelectorAll(":scope > span") : []; }
     var sorted = dls.slice().sort(function (a, b) {
       var sa = cells(a), sb = cells(b);
-      if (mode === "ip") return ccAllocIpKey(sa[2] && sa[2].textContent) - ccAllocIpKey(sb[2] && sb[2].textContent);
+      if (mode === "ip") return ttAllocIpKey(sa[2] && sa[2].textContent) - ttAllocIpKey(sb[2] && sb[2].textContent);
       var na = ((sa[0] && sa[0].textContent) || "").trim().toLowerCase(), nb = ((sb[0] && sb[0].textContent) || "").trim().toLowerCase();
       return na < nb ? -1 : na > nb ? 1 : 0;
     });
     for (var i = 0; i < dls.length; i++) { if (dls[i] !== sorted[i]) { sorted.forEach(function (d) { tbl.appendChild(d); }); return; } }   // only reorder if order actually changed (loop guard)
   }
   // docker.css pads div.title by the content gutter, which puts the form's Basic/Advanced toggle at
-  // the content's right edge. This only clears the --cc-ct-toggle-pad an older build wrote inline.
+  // the content's right edge. This only clears the --tt-ct-toggle-pad an older build wrote inline.
   function ctAlignToggle() {
-    try { document.documentElement.style.removeProperty("--cc-ct-toggle-pad"); } catch (e) {}
+    try { document.documentElement.style.removeProperty("--tt-ct-toggle-pad"); } catch (e) {}
   }
   function ctApply() {
     try {
       var root = document.documentElement;
-      var on2 = localStorage.getItem("cc.enable.docker") !== "0" && themingOn();
-      root.classList.toggle("cc-docker-on", on2);
-      root.classList.toggle("cc-on-addct", on2 && onCtForm());   // page gate: every docker.css form rule requires BOTH classes
+      var on2 = localStorage.getItem("tt.enable.docker") !== "0" && themingOn();
+      root.classList.toggle("tt-docker-on", on2);
+      root.classList.toggle("tt-on-addct", on2 && onCtForm());   // page gate: every docker.css form rule requires BOTH classes
       if (!on2) { ctSelectsTeardown(); ctTitleUnwrap(); ctInfoBubblesTeardown(); ctVarLabelsTeardown(); return; }
-      applySettings();                                           // --cc-accent, --cc-accent-text and the rainbow vars, the same chokepoint as list mode
+      applySettings();                                           // --tt-accent, --tt-accent-text and the rainbow vars, the same chokepoint as list mode
       ctTitleWrap();
       ctVarLabels();                                             // every variable label -> a colon-free badge
       ctUnfold();
@@ -4911,25 +4911,25 @@
       // The jQuery-UI config dialog appends to body, outside #canvas, so its selects need the
       // second selector or they stay native. The body-childList observer re-enters here when
       // the dialog fills, so wrapping them in the same pass is enough.
-      var sels = document.querySelectorAll('#canvas select:not([multiple]):not([data-cc-dsel]), .ui-dialog select:not([multiple]):not([data-cc-dsel])');
+      var sels = document.querySelectorAll('#canvas select:not([multiple]):not([data-tt-dsel]), .ui-dialog select:not([multiple]):not([data-tt-dsel])');
       for (var i = 0; i < sels.length; i++) ctWrapSelect(sels[i]);
-      var done = document.querySelectorAll('#canvas select[data-cc-dsel], .ui-dialog select[data-cc-dsel]');
+      var done = document.querySelectorAll('#canvas select[data-tt-dsel], .ui-dialog select[data-tt-dsel]');
       for (var j = 0; j < done.length; j++) ctSyncOne(done[j]);  // Unraid re-selects/re-labels at runtime (loadTemplate/showSubnet)
       // Rainbow on the form page rotates the palette over the visible chrome. Consumers read
-      // var(--cc-rb-c, var(--cc-accent)), so un-stamping falls back to the accent. The neutral
+      // var(--tt-rb-c, var(--tt-accent)), so un-stamping falls back to the accent. The neutral
       // sub-mode greys the buttons through CSS, while the heading badge and checked toggles keep
       // their stamped colour.
-      var rbOn2 = localStorage.getItem("cc.rainbow") === "1";
-      var pal2 = ccPalActive(RB_PAL);
-      var off3 = localStorage.getItem("cc.rainbowrot") === "0" ? 0 : RB_OFFSET;
-      var chrome = document.querySelectorAll('#displaybox div.title > span.left, .cc-pagehead, .switch-button-background, #canvas #readmore_toggle a, #canvas #allocations_toggle a, #canvas dl > dd > a, #canvas input[type="submit"], #canvas button:not([role="tab"]), .ui-dialog .ui-dialog-buttonpane button');
+      var rbOn2 = localStorage.getItem("tt.rainbow") === "1";
+      var pal2 = ttPalActive(RB_PAL);
+      var off3 = localStorage.getItem("tt.rainbowrot") === "0" ? 0 : RB_OFFSET;
+      var chrome = document.querySelectorAll('#displaybox div.title > span.left, .tt-pagehead, .switch-button-background, #canvas #readmore_toggle a, #canvas #allocations_toggle a, #canvas dl > dd > a, #canvas input[type="submit"], #canvas button:not([role="tab"]), .ui-dialog .ui-dialog-buttonpane button');
       for (var r3 = 0, ci3 = 0; r3 < chrome.length; r3++) {
         var ce = chrome[r3];
-        if (!rbOn2) { ce.style.removeProperty("--cc-rb-c"); ce.style.removeProperty("--cc-rb-ct"); continue; }
-        var cc0 = pal2[(ci3 + off3) % pal2.length]; ci3++;
-        ce.style.setProperty("--cc-rb-c", cc0); ce.style.setProperty("--cc-rb-ct", idealText(cc0));
+        if (!rbOn2) { ce.style.removeProperty("--tt-rb-c"); ce.style.removeProperty("--tt-rb-ct"); continue; }
+        var chromeFill = pal2[(ci3 + off3) % pal2.length]; ci3++;
+        ce.style.setProperty("--tt-rb-c", chromeFill); ce.style.setProperty("--tt-rb-ct", idealText(chromeFill));
       }
-      ccAllocFill();   // fill a stopped container's IP and ports in the allocations table when it is open
+      ttAllocFill();   // fill a stopped container's IP and ports in the allocations table when it is open
       ctAlignToggle();
     } catch (e) {}
   }
@@ -4939,20 +4939,20 @@
       ctMo = new MutationObserver(function () { if (ctPending) return; ctPending = true; setTimeout(function () { ctPending = false; ctApply(); }, 150); });
       ctMo.observe(document.body, { childList: true, subtree: true });   // the config rows under #configLocation[Advanced] and the re-filled jQuery-UI dialog both land under body
       window.addEventListener("resize", function () { if (ctRz) return; ctRz = requestAnimationFrame(function () { ctRz = 0; ctAlignToggle(); }); });
-      document.addEventListener("click", function () { var o = document.querySelectorAll(".cc-dsel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open"); });
+      document.addEventListener("click", function () { var o = document.querySelectorAll(".tt-dsel.tt-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("tt-open"); });
       // A position:fixed panel drifts from its trigger on scroll, so an open dropdown closes
       // when the page or the content scrolls; the capture phase catches the #canvas div.content
       // scroller. The panel has its own scrollable list, whose scroll also arrives here, so
       // scrolls originating inside the open panel are ignored and the list stays scrollable.
-      window.addEventListener("scroll", function (e) { var tgt = e && e.target; if (tgt && tgt.closest && tgt.closest(".cc-dsel-panel")) return; var o = document.querySelectorAll(".cc-dsel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open"); }, true);
-      window.addEventListener("storage", function (e) { try { if (e && e.key && e.key !== "cc.stateCache" && /^ccd?\./.test(e.key)) ctApply(); } catch (e2) {} });
+      window.addEventListener("scroll", function (e) { var tgt = e && e.target; if (tgt && tgt.closest && tgt.closest(".tt-dsel-panel")) return; var o = document.querySelectorAll(".tt-dsel.tt-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("tt-open"); }, true);
+      window.addEventListener("storage", function (e) { try { if (e && e.key && e.key !== "tt.stateCache" && /^ttd?\./.test(e.key)) ctApply(); } catch (e2) {} });
     } catch (e) {}
   }
   // The create and update output page, the result of docker run or create, shares the
   // /Docker/AddContainer and /Docker/UpdateContainer URL with the form but carries no form,
   // since the output has replaced it, so onCtForm() is false there. Detected here, it turns
   // #displaybox .content into a floating window with an accent title badge, like the
-  // container-update dialog. The look lives in docker.css under html.cc-ctout-on.
+  // container-update dialog. The look lives in docker.css under html.tt-ctout-on.
   function onCtOutput() {
     try {
       if (!/^\/(Docker|Apps)\/(AddContainer|UpdateContainer)$/.test(ctPn())) return false;
@@ -4964,22 +4964,22 @@
   function bootCtOutput() {
     try {
       if (!themingOn()) return;
-      document.documentElement.classList.add("cc-docker-on", "cc-ctout-on");
-      applySettings();   // stamp --cc-hdr-accent etc. so the badge/buttons follow the theme
+      document.documentElement.classList.add("tt-docker-on", "tt-ctout-on");
+      applySettings();   // stamp --tt-hdr-accent etc. so the badge/buttons follow the theme
       var box = document.getElementById("displaybox");
       var content = box && box.querySelector(".content");
       if (!content) return;
-      if (!document.getElementById("cc-ctout-bd")) { var bd = el("div"); bd.id = "cc-ctout-bd"; document.body.appendChild(bd); }
+      if (!document.getElementById("tt-ctout-bd")) { var bd = el("div"); bd.id = "tt-ctout-bd"; document.body.appendChild(bd); }
       // The accent title badge takes the page heading and stands in for the native grey one.
-      if (!document.getElementById("cc-ctout-title")) {
+      if (!document.getElementById("tt-ctout-title")) {
         var t = box.querySelector(".title");
-        var tb = el("div"); tb.id = "cc-ctout-title";
+        var tb = el("div"); tb.id = "tt-ctout-title";
         tb.textContent = ((t ? t.textContent : "") || "Container").replace(/\s+/g, " ").trim().toUpperCase();
         content.insertBefore(tb, content.firstChild);
       }
-      // Hide the native grey headings the badge stands in for, never CC's own badge.
+      // Hide the native grey headings the badge stands in for, never TowerTorch's own badge.
       var heads = box.querySelectorAll(".title, span.left");
-      for (var i = 0; i < heads.length; i++) { if (heads[i].id !== "cc-ctout-title" && /container/i.test(heads[i].textContent || "")) heads[i].style.display = "none"; }
+      for (var i = 0; i < heads.length; i++) { if (heads[i].id !== "tt-ctout-title" && /container/i.test(heads[i].textContent || "")) heads[i].style.display = "none"; }
       // The status indicator sits in the button row, mirroring the real .sweet-alert update
       // window in header.js: its loader lives inside that row and is re-homed there the moment
       // the row exists, falling back to a direct child of the dialog, pinned bottom left by CSS,
@@ -4995,14 +4995,14 @@
           try {
             // In the live DOM the CSS lands in a bare <p> that starts with a comment, so an
             // anchored .logLine{ regex misses it. Match any leaf element or text node whose text
-            // carries a CSS signature and a rule brace, and leave CC's own #cc-ctout-* nodes
+            // carries a CSS signature and a rule brace, and leave TowerTorch's own #tt-ctout-* nodes
             // alone.
             var CSS_SIG = /font-family\s*:|@font-face|\.logLine\s*\{/i;
             var st = content.querySelectorAll("style"); for (var si = 0; si < st.length; si++) st[si].style.display = "none";
             var leafs = content.querySelectorAll("p, div, font, pre, span");
             for (var li = 0; li < leafs.length; li++) {
               var le = leafs[li];
-              if (!le.children.length && !(le.id && le.id.indexOf("cc-ctout") === 0) && CSS_SIG.test(le.textContent || "") && (le.textContent || "").indexOf("{") !== -1) le.style.display = "none";
+              if (!le.children.length && !(le.id && le.id.indexOf("tt-ctout") === 0) && CSS_SIG.test(le.textContent || "") && (le.textContent || "").indexOf("{") !== -1) le.style.display = "none";
             }
             var kids = content.childNodes;
             for (var ki = 0; ki < kids.length; ki++) { var kn = kids[ki]; if (kn.nodeType === 3 && CSS_SIG.test(kn.nodeValue || "") && (kn.nodeValue || "").indexOf("{") !== -1) kn.nodeValue = ""; }
@@ -5010,30 +5010,30 @@
           var log = content.textContent || "";
           var done = /(erfolgreich\s+(ausgeführt|beendet)|finished successfully|command (finished|completed|executed)|befehl.*fehlgeschlagen|the command failed)/i.test(log)
                      || (/docker\s+(create|run)/i.test(log) && !content.querySelector(".fa-spin, .spinner"));   /* a vanished spinner without the phrase counts as done too */
-          var sb = document.getElementById("cc-ctout-status");
-          if (!sb) { sb = el("div"); sb.id = "cc-ctout-status"; sb.setAttribute("role", "status"); }
+          var sb = document.getElementById("tt-ctout-status");
+          if (!sb) { sb = el("div"); sb.id = "tt-ctout-status"; sb.setAttribute("role", "status"); }
           // The same re-home logic as header.js's own window loader: the last button's parent is
           // the button row. While the output still streams and no row has rendered, it stays a
           // direct child of .content, where CSS pins it bottom left until the row appears.
           var btns = content.querySelectorAll("button, input[type=button], input[type=submit]");
           var row = btns.length ? btns[btns.length - 1].parentElement : content;
           if (sb.parentElement !== row) row.appendChild(sb);
-          if (done) { sb.classList.add("cc-ctout-done"); if (sb.getAttribute("data-m") !== "done") { sb.setAttribute("data-m", "done"); sb.setAttribute("aria-label", "Fertig"); sb.innerHTML = ""; confirmCheck(sb); } }
-          else { sb.classList.remove("cc-ctout-done"); if (sb.getAttribute("data-m") !== "run") { sb.setAttribute("data-m", "run"); sb.setAttribute("aria-label", "Läuft"); sb.innerHTML = "<span class='cc-loader cc-load-sm'><span class='o'><i></i></span><span class='in'><i></i></span></span>"; } }   // the sm tier, one size source with the loader engine in header.js
-          // paintPopups() in header.js covers #cc-ctout-title, but nothing on this page calls
+          if (done) { sb.classList.add("tt-ctout-done"); if (sb.getAttribute("data-m") !== "done") { sb.setAttribute("data-m", "done"); sb.setAttribute("aria-label", "Fertig"); sb.innerHTML = ""; confirmCheck(sb); } }
+          else { sb.classList.remove("tt-ctout-done"); if (sb.getAttribute("data-m") !== "run") { sb.setAttribute("data-m", "run"); sb.setAttribute("aria-label", "Läuft"); sb.innerHTML = "<span class='tt-loader tt-load-sm'><span class='o'><i></i></span><span class='in'><i></i></span></span>"; } }   // the sm tier, one size source with the loader engine in header.js
+          // paintPopups() in header.js covers #tt-ctout-title, but nothing on this page calls
           // it, because the window is a plain navigation rather than a .sweet-alert that
           // header.js watches. Calling it here paints the title the moment it exists and again
           // on every streamed line, so it takes its own rainbow colour instead of the flat
-          // var(--cc-rbaccent) fallback that matched the legend badges below it.
+          // var(--tt-rbaccent) fallback that matched the legend badges below it.
           try { if (window.paintPopups) window.paintPopups(); } catch (ePP) {}
         } catch (e) {}
       };
       ctOutStatus();
-      if (!content.__ccStatusObs) { content.__ccStatusObs = new MutationObserver(ctOutStatus); try { content.__ccStatusObs.observe(content, { childList: true, subtree: true, characterData: true }); } catch (e) {} }
+      if (!content.__ttStatusObs) { content.__ttStatusObs = new MutationObserver(ctOutStatus); try { content.__ttStatusObs.observe(content, { childList: true, subtree: true, characterData: true }); } catch (e) {} }
     } catch (e) {}
   }
   function boot() {
-    if (localStorage.getItem("cc.enable.docker") === "0") return; // area disabled in CC settings
+    if (localStorage.getItem("tt.enable.docker") === "0") return; // area disabled in TowerTorch settings
     if (onCtForm()) { bootCtForm(); return; } // form styling only, none of the list machinery, API polling or timers below
     if (onCtOutput()) { bootCtOutput(); return; } // the create and update output page becomes a floating window
     // On the AddContainer and UpdateContainer URL the form, or the run output, can be injected
@@ -5052,9 +5052,9 @@
     try {
       applySettings();
       // Icon pipeline: repaint when an engine lookup or a complexity measurement lands. The
-      // callback fires only on an actual change, see icoNotify in cc-theme.js, so this settles
+      // callback fires only on an actual change, see icoNotify in tt-theme.js, so this settles
       // after a handful of passes and cannot become a repaint loop.
-      try { if (window.CCTheme && window.CCTheme.icons) window.CCTheme.icons.onResolved(function () { if (!dead) applyIconTint(); }); } catch (e8) {}
+      try { if (window.TTTheme && window.TTTheme.icons) window.TTTheme.icons.onResolved(function () { if (!dead) applyIconTint(); }); } catch (e8) {}
       followHeaderSearch();
       // The organizer probe runs in parallel with everything below and never blocks first paint.
       // Once it resolves, the view mode is reconciled against the server's saved choice, which
@@ -5062,43 +5062,43 @@
       // per-browser and cannot know the server-persisted choice on a fresh device. The server
       // wins where it differs, and setMode() re-applies every normal guard, theming off and no
       // organizer, so this cannot land in a broken state.
-      ccOrgInit().then(function () {
+      ttOrgInit().then(function () {
         if (dead) return;
-        var serverMode = ccOrgView && ccOrgView.prefs && ccOrgView.prefs.ccViewMode;
-        if (ccOrgAvailable && serverMode && serverMode !== mode) { setMode(serverMode, true); return; }
+        var serverMode = ttOrgView && ttOrgView.prefs && ttOrgView.prefs.ttViewMode;
+        if (ttOrgAvailable && serverMode && serverMode !== mode) { setMode(serverMode, true); return; }
         // With no server prefs saved yet, fall back to the local-only signal, so a "folder"
         // choice made in this browser still restores.
-        if (ccOrgAvailable && mode !== "folder" && localStorage.getItem(VIEW_KEY) === "folder") setMode("folder");
+        if (ttOrgAvailable && mode !== "folder" && localStorage.getItem(VIEW_KEY) === "folder") setMode("folder");
       });
       // The last known engine state seeds the badges for an instant first paint; the live fetch
       // corrects them moments later.
-      try { var cs9 = JSON.parse(localStorage.getItem("cc.stateCache") || "null"); if (cs9) { indexState(cs9); ensureNames(); refresh(); } } catch (e9) {}
+      try { var cs9 = JSON.parse(localStorage.getItem("tt.stateCache") || "null"); if (cs9) { indexState(cs9); ensureNames(); refresh(); } } catch (e9) {}
       // Fill the "limit set" dots after the first paint, once the containers are indexed, and
       // off the 9s render path: a bulk inspect must not gate or race the paint.
       load().then(refreshLimits);
       // The native tab-load spinner vanishes the moment Unraid's own AJAX populates the table,
-      // well before CC's badges, actions and gauges paint over it, which shows about a second of
-      // unstyled native rows. ccLoadState() in header.js polls every 60ms and holds the
+      // well before TowerTorch's badges, actions and gauges paint over it, which shows about a second of
+      // unstyled native rows. ttLoadState() in header.js polls every 60ms and holds the
       // fullscreen overlay open while this flag is set; moSweep() clears it once the first real
       // enhancement pass has painted, not on every later native rebuild.
-      document.documentElement.classList.add("cc-enh-busy");
-      ccEnhBusyStart = Date.now();
+      document.documentElement.classList.add("tt-enh-busy");
+      ttEnhBusyStart = Date.now();
       // moSweep() only fires from list mode's MutationObserver, so a grid-mode boot, or any path
       // that never reaches it, would hold the overlay open indefinitely. An unbounded busy flag
-      // is worse than the flash it covers, so it is bounded here like ccInjectSpinner's own
+      // is worse than the flash it covers, so it is bounded here like ttInjectSpinner's own
       // window.
-      setTimeout(function () { document.documentElement.classList.remove("cc-enh-busy"); }, 5000);
+      setTimeout(function () { document.documentElement.classList.remove("tt-enh-busy"); }, 5000);
       connectObserver();
       connectShipLogObserver(); // re-skin ShipLog's bubble when it is installed too
       startTimers();
-      // The settings page writes cc.* keys from its own tab, so they are re-applied live here.
+      // The settings page writes tt.* keys from its own tab, so they are re-applied live here.
       window.addEventListener("storage", function (e) {
         try {
-          if (dead || !e.key || !/^ccd?\./.test(e.key)) return; // global cc.* keys and the Docker-own ccd.* keys
-          if (e.key === "cc.view") { setMode(localStorage.getItem("cc.view") === "grid" ? "grid" : "list"); return; }
+          if (dead || !e.key || !/^ttd?\./.test(e.key)) return; // global tt.* keys and the Docker-own ttd.* keys
+          if (e.key === "tt.view") { setMode(localStorage.getItem("tt.view") === "grid" ? "grid" : "list"); return; }
           // The master theming toggle flipped live: coerce grid to list when it is now off,
           // reset the old visual state, then let applyMode() re-render for the new state.
-          if (e.key === "cc.theming") {
+          if (e.key === "tt.theming") {
             if (!themingOn() && mode === "grid") { mode = "list"; localStorage.setItem(VIEW_KEY, "list"); }
             applySettings(); clearRowBadges(); removeEnhanceClasses(); applyMode();
             // applyMode's off branch re-injects orchestration but leaves the icon tint and the
@@ -5120,27 +5120,27 @@
       document.addEventListener("click", function (e) {
         try {
           if (dead || mode !== "list") return;
-          var picked = ccBulkRowFor(e) || ccBulkTileFor(e);
-          if (picked) { e.preventDefault(); e.stopPropagation(); ccBulkClick(picked, e); return; }
-          var hand = e.target && e.target.closest ? e.target.closest("td.ct-name span.hand, td.ct-name span.appname, td.ct-name .cc-ct-dotrow") : null;
+          var picked = ttBulkRowFor(e) || ttBulkTileFor(e);
+          if (picked) { e.preventDefault(); e.stopPropagation(); ttBulkClick(picked, e); return; }
+          var hand = e.target && e.target.closest ? e.target.closest("td.ct-name span.hand, td.ct-name span.appname, td.ct-name .tt-ct-dotrow") : null;
           if (!hand) return;
-          var row2 = hand.closest("tr"); var bar2 = row2 && row2.querySelector(".cc-actbar");
+          var row2 = hand.closest("tr"); var bar2 = row2 && row2.querySelector(".tt-actbar");
           if (!bar2) return;
           e.preventDefault(); e.stopPropagation();
-          bar2.classList.add("cc-act-flash");
-          setTimeout(function () { bar2.classList.remove("cc-act-flash"); }, 1600);
+          bar2.classList.add("tt-act-flash");
+          setTimeout(function () { bar2.classList.remove("tt-act-flash"); }, 1600);
         } catch (e2) {}
       }, true);
       // A Shift and a press on a row would otherwise start a text selection across the list.
-      document.addEventListener("mousedown", function (e) { try { if (!dead && e.shiftKey && ccBulkRowFor(e)) e.preventDefault(); } catch (e2) {} }, true);
+      document.addEventListener("mousedown", function (e) { try { if (!dead && e.shiftKey && ttBulkRowFor(e)) e.preventDefault(); } catch (e2) {} }, true);
       window.addEventListener("scroll", function () { try { if (menu) positionMenu(); } catch (e) {} }, true);
       // A click outside closes the window, but a panel that belongs to the window is not
-      // outside it. .cc-drop has to render as a direct body child, because any overflow ancestor
+      // outside it. .tt-drop has to render as a direct body child, because any overflow ancestor
       // would clip it, so openPop.contains() is false for it and picking an entry reads as a
       // click outside, tearing down the editor along with every unsaved edit in it. The time
       // picker rides the same class, so naming the panel here covers both widgets. The question
       // window that asks about unsaved work does not count as outside either.
-      document.addEventListener("click", function (e) { try { if (openPop && !openPop.contains(e.target) && !e.target.closest(".cc-plan, .cc-drop, .cc-dlg")) dismissPop(); if (menu && !menu.contains(e.target) && !e.target.closest(".cc-hgear")) closeMenu(); } catch (e2) {} });
+      document.addEventListener("click", function (e) { try { if (openPop && !openPop.contains(e.target) && !e.target.closest(".tt-plan, .tt-drop, .tt-dlg")) dismissPop(); if (menu && !menu.contains(e.target) && !e.target.closest(".tt-hgear")) closeMenu(); } catch (e2) {} });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") { try { dismissPop(); closeMenu(); } catch (e2) {} } });
     } catch (e) { /* a failure here must never break Unraid's page */ }
   }

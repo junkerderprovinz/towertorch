@@ -25,7 +25,7 @@ const val = (w) => (w ? w.value : '(none)');
 
 console.log('\nThe menu bar');
 {
-  const html = ['cc-header-on', 'Theme--black'];
+  const html = ['tt-header-on', 'Theme--black'];
   const menu = { tag: 'div', classes: [], attrs: {}, states: {}, html, id: 'menu' };
   ok('the menu is a wrapping flex row, not Unraid\'s two-column grid', val(win(DESKTOP, menu, 'display')) === 'flex' && val(win(DESKTOP, menu, 'flex-wrap')) === 'wrap', val(win(DESKTOP, menu, 'display')));
   const tabs = { tag: 'div', classes: ['nav-tile'], attrs: {}, states: {}, html, inside: ['#menu'] };
@@ -35,15 +35,15 @@ console.log('\nThe menu bar');
   ok('it grows with its rows instead of keeping Unraid\'s one-row height', val(win(DESKTOP, tabs, 'height')) === 'auto');
   const icons = { tag: 'div', classes: ['nav-tile', 'right'], attrs: {}, states: {}, html, inside: ['#menu'] };
   ok('the icon group keeps its size and moves to the right of its own line', val(win(DESKTOP, icons, 'flex')) === '0 0 auto' && val(win(DESKTOP, icons, 'margin-left')) === 'auto');
-  ok('under the sidebar theme the menu is left alone', win(DESKTOP, Object.assign({}, menu, { html: ['cc-header-on', 'Theme--sidebar'] }), 'display') === null);
+  ok('under the sidebar theme the menu is left alone', win(DESKTOP, Object.assign({}, menu, { html: ['tt-header-on', 'Theme--sidebar'] }), 'display') === null);
 }
 
 console.log('\nThe Docker action bar');
 {
-  const bar = { tag: 'div', classes: ['js-actions'], attrs: {}, states: {}, html: ['cc-docker-on'] };
+  const bar = { tag: 'div', classes: ['js-actions'], attrs: {}, states: {}, html: ['tt-docker-on'] };
   ok('it wraps its buttons onto a second row', val(win('docker', bar, 'flex-wrap')) === 'wrap');
   ok('and never scrolls', val(win('docker', bar, 'overflow')) === 'visible' && win('docker', bar, 'overflow-x') === null, val(win('docker', bar, 'overflow-x')));
-  const adv = { tag: 'span', classes: ['cc-bar-adv'], attrs: {}, states: {}, html: ['cc-docker-on'], inside: ['.js-actions'] };
+  const adv = { tag: 'span', classes: ['tt-bar-adv'], attrs: {}, states: {}, html: ['tt-docker-on'], inside: ['.js-actions'] };
   ok('the view switch is pinned right on whichever row it lands', val(win('docker', adv, 'margin-left')) === 'auto');
   ok('and no longer sticks over the buttons', win('docker', adv, 'position') === null, val(win('docker', adv, 'position')));
 }

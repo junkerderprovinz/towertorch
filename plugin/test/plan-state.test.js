@@ -39,25 +39,25 @@ console.log('\nThe badge carries the state');
   env.workingPlan.app = { name: 'app', after: ['db', 'cache'] };
   env.containers.db = { state: 'running' }; env.containers.cache = { state: 'exited' };
   let c = shown('app');
-  ok('a dependency that is not up yet makes it wait', c.v.textContent === 'wartet' && c.cls.has('cc-plan-pending'), c.v.textContent);
+  ok('a dependency that is not up yet makes it wait', c.v.textContent === 'wartet' && c.cls.has('tt-plan-pending'), c.v.textContent);
   ok('its bubble names the dependency and why', /cache \(gestoppt\)/.test(c.attrs['data-tip'] || ''), c.attrs['data-tip']);
   env.containers.cache.state = 'running';
   c = shown('app');
-  ok('all of them running makes it ready', c.v.textContent === 'bereit' && c.cls.has('cc-plan-ready') && !c.cls.has('cc-plan-pending'));
+  ok('all of them running makes it ready', c.v.textContent === 'bereit' && c.cls.has('tt-plan-ready') && !c.cls.has('tt-plan-pending'));
   ok('and the bubble says so', c.attrs['data-tip'] === 'Alle Abhängigkeiten bereit');
   env.lastRun.db = { state: 'failed', reason: 'probe timed out' };
   c = shown('app');
-  ok('a failed dependency makes it fail, whatever the live state says', c.v.textContent === 'fehlgeschlagen' && c.cls.has('cc-plan-failed'));
+  ok('a failed dependency makes it fail, whatever the live state says', c.v.textContent === 'fehlgeschlagen' && c.cls.has('tt-plan-failed'));
   ok('with the reason in the bubble', /db \(fehlgeschlagen: probe timed out\)/.test(c.attrs['data-tip']));
   env.lastRun.db = { state: 'skipped' };
-  ok('a skipped one counts as failed', shown('app').cls.has('cc-plan-failed'));
+  ok('a skipped one counts as failed', shown('app').cls.has('tt-plan-failed'));
   env.lastRun.db = { state: 'degraded' };
-  ok('a degraded one lets its dependents start, so it counts as ready', shown('app').cls.has('cc-plan-ready'));
+  ok('a degraded one lets its dependents start, so it counts as ready', shown('app').cls.has('tt-plan-ready'));
   env.lastRun.db = { state: 'starting' };
-  ok('one still starting makes it wait', shown('app').cls.has('cc-plan-pending'));
+  ok('one still starting makes it wait', shown('app').cls.has('tt-plan-pending'));
   env.workingPlan.solo = { name: 'solo', after: [] };
   c = shown('solo');
-  ok('a container that waits for nothing keeps the plain badge', c.v.textContent === 'aktiv' && !['ready', 'pending', 'failed'].some((s) => c.cls.has('cc-plan-' + s)) && !('data-tip' in c.attrs));
+  ok('a container that waits for nothing keeps the plain badge', c.v.textContent === 'aktiv' && !['ready', 'pending', 'failed'].some((s) => c.cls.has('tt-plan-' + s)) && !('data-tip' in c.attrs));
   ok('one outside the plan says nothing', shown('elsewhere').v.textContent === '');
 }
 
@@ -67,9 +67,9 @@ ok('the plan badge and the window\'s refresh draw the state the same way', /show
 
 console.log('\nThe state colour holds in every colour mode');
 {
-  for (const [state, fill, ink] of [['ready', '--cc-ok', '--cc-ok-fg'], ['pending', '--cc-warn', '--cc-warn-fg'], ['failed', '--cc-err', '--cc-err-fg']]) {
-    for (const html of [['cc-docker-on'], ['cc-docker-on', 'cc-shares-rbneutral'], ['cc-docker-on', 'cc-rb-on']]) {
-      const e = { tag: 'a', classes: ['cc-b', 'cc-plan', 'cc-plan-on', 'cc-plan-' + state], attrs: { class: 'cc-b cc-plan', href: '#' }, states: {}, html, inside: ['.cc-enh.cc-rainbow', '#docker_list', '.cc-grid-holder.cc-rainbow'], outside: ['.appname', '.ct-name'] };
+  for (const [state, fill, ink] of [['ready', '--tt-ok', '--tt-ok-fg'], ['pending', '--tt-warn', '--tt-warn-fg'], ['failed', '--tt-err', '--tt-err-fg']]) {
+    for (const html of [['tt-docker-on'], ['tt-docker-on', 'tt-shares-rbneutral'], ['tt-docker-on', 'tt-rb-on']]) {
+      const e = { tag: 'a', classes: ['tt-b', 'tt-plan', 'tt-plan-on', 'tt-plan-' + state], attrs: { class: 'tt-b tt-plan', href: '#' }, states: {}, html, inside: ['.tt-enh.tt-rainbow', '#docker_list', '.tt-grid-holder.tt-rainbow'], outside: ['.appname', '.ct-name'] };
       const bg = candidates('docker', e, 'background').pop(), fg = candidates('docker', e, 'color').pop();
       ok(state + ' under ' + html.join(' ') + ': the state colour and its ink win', bg && bg.value.indexOf('var(' + fill + ',') === 0 && fg && fg.value.indexOf('var(' + ink + ',') === 0, (bg && bg.selector + ' ' + bg.value) + ' || ' + (fg && fg.selector + ' ' + fg.value));
     }

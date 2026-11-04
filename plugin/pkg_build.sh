@@ -37,7 +37,7 @@ find "$PKGROOT" -type f ! -path "*/bin/*" ! -name '*.png' -print0 \
 # The settings page's Info tab shows this as the UI version beside the engine's, so a
 # stale frontend under test gives itself away.
 echo "==> stamping UI version"
-sed -i "s/@@CCVER@@/$VERSION/" \
+sed -i "s/@@TTVER@@/$VERSION/" \
   "$PKGROOT/usr/local/emhttp/plugins/$SLUG/scripts/settings.js" \
   "$PKGROOT/usr/local/emhttp/plugins/$SLUG/scripts/header.js"
 

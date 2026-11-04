@@ -1,4 +1,4 @@
-// A small CSS cascade for the tests: it parses CC's sheets in the order a page
+// A small CSS cascade for the tests: it parses TowerTorch's sheets in the order a page
 // loads them, matches selectors against a described element and picks the
 // declaration that wins. A test that only reads the rule it cares about misses
 // the heavier rule in another sheet that overrides it.
@@ -10,8 +10,8 @@
 // if it could match the element in some context. Pseudo-classes it cannot decide
 // (structural ones, :has) count as possible too, which errs towards reporting.
 // Rules that reach the element by its tag alone are left out, see keyed(), unless
-// they name an ancestor listed in inside ('#cc-settings'); outside lists the
-// classes and ids known not to be ancestors ('.cc-pop').
+// they name an ancestor listed in inside ('#tt-settings'); outside lists the
+// classes and ids known not to be ancestors ('.tt-pop').
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -259,8 +259,8 @@ function resolve(value, map) {
 }
 
 // Unraid's own control rules from webGui/styles/default-base.css, the ones that compete with
-// CC's single-class rules: an attribute selector plus a tag outweighs one class. They load in
-// <head> before any CC sheet, so a tie goes to CC. The values are the white theme's.
+// TowerTorch's single-class rules: an attribute selector plus a tag outweighs one class. They load in
+// <head> before any TowerTorch sheet, so a tie goes to TowerTorch. The values are the white theme's.
 const UNRAID = { name: 'unraid default-base.css', css: `
 input[type="checkbox"] { vertical-align: middle; margin-right: 6px; }
 span.outer { margin-bottom: 20px; margin-right: 0px; }

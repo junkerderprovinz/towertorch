@@ -27,13 +27,13 @@ const TOKENS = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tokens.css')
 const dark = (() => { let o = ''; const re = /(^|\})\s*html\s*\{([^}]*)\}/g; let m; while ((m = re.exec(clean(TOKENS)))) o += m[2]; return o; })();
 
 // A value is on the scale when it is a scale token, a stage token, or no size at all.
-const ON_SCALE = /^(var\(--cc-text-(status|title|body|subline|meta)\)|var\(--cc-(sm|md|lg|lgb|sec|pagebadge)-fs\)|0|inherit)$/;
+const ON_SCALE = /^(var\(--tt-text-(status|title|body|subline|meta)\)|var\(--tt-(sm|md|lg|lgb|sec|pagebadge)-fs\)|0|inherit)$/;
 const PICTURES = [
   /td\.ct-name \.outer > span\.hand i\.img \{/,                 // the container logo glyph, sized with its tile
-  /var\(--cc-(logo-img|sg-glyph|fav-glyph|md-icon),/,           // logo and glyph tiles, the header icon size
-  /#cc-brand( \.cc-brand-name)? \{/,                            // the header wordmark
-  /\.cc-hero-name\{/,                                           // the settings banner's name beside its logo
-  /\.cc-ud-ctrls\) a :is\(i, img, span\[class\*="icon"\]\) \{/, // Unassigned Devices' 20px control glyphs
+  /var\(--tt-(logo-img|sg-glyph|fav-glyph|md-icon),/,           // logo and glyph tiles, the header icon size
+  /#tt-brand( \.tt-brand-name)? \{/,                            // the header wordmark
+  /\.tt-hero-name\{/,                                           // the settings banner's name beside its logo
+  /\.tt-ud-ctrls\) a :is\(i, img, span\[class\*="icon"\]\) \{/, // Unassigned Devices' 20px control glyphs
   /table\.indexer i\[id\^="check_"\] \{/,                       // the file browser's checkbox glyph
   /width: 40px !important; height: 40px !important;/,           // a 40px icon button's glyph
   /::before \{ margin-right: 5px; font-size: \.82em;/,          // the state glyph, relative to its badge
@@ -61,19 +61,19 @@ function offScale(src) {
 }
 
 console.log('\nThe detector passes the scale and catches a literal');
-ok('a scale token passes', offScale('a { font-size: var(--cc-text-body); }').length === 0);
-ok('a stage token passes', offScale('a { font-size: var(--cc-md-fs) !important; }').length === 0);
+ok('a scale token passes', offScale('a { font-size: var(--tt-text-body); }').length === 0);
+ok('a stage token passes', offScale('a { font-size: var(--tt-md-fs) !important; }').length === 0);
 ok('a literal fails', offScale('a { font-size: 15px; }').length === 1);
-ok('a stage token with a literal fallback fails', offScale('a { font-size: var(--cc-md-fs, 13px); }').length === 1);
+ok('a stage token with a literal fallback fails', offScale('a { font-size: var(--tt-md-fs, 13px); }').length === 1);
 ok('a shorthand size fails', offScale('a { font: 13px/1.45 sans-serif; }').length === 1);
 
 console.log('\nThe five sizes');
 const SCALE = { status: '22px', title: '16px', body: '14px', subline: '13px', meta: '12px' };
-for (const [role, px] of Object.entries(SCALE)) ok(`--cc-text-${role} is ${px}`, new RegExp(`--cc-text-${role}:\\s*${px};`).test(dark));
+for (const [role, px] of Object.entries(SCALE)) ok(`--tt-text-${role} is ${px}`, new RegExp(`--tt-text-${role}:\\s*${px};`).test(dark));
 
 console.log('\nThe badge stages name a role');
 const STAGES = { sm: 'meta', md: 'subline', lg: 'title', lgb: 'body', sec: 'meta', pagebadge: 'subline' };
-for (const [stage, role] of Object.entries(STAGES)) ok(`--cc-${stage}-fs reads --cc-text-${role}`, new RegExp(`--cc-${stage}-fs:\\s*var\\(--cc-text-${role}\\);`).test(dark));
+for (const [stage, role] of Object.entries(STAGES)) ok(`--tt-${stage}-fs reads --tt-text-${role}`, new RegExp(`--tt-${stage}-fs:\\s*var\\(--tt-text-${role}\\);`).test(dark));
 
 console.log('\nNo font size off the scale');
 for (const f of files(DIR, ['.css', '.js'])) {

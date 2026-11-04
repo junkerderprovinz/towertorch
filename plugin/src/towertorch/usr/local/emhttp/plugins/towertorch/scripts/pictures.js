@@ -1,7 +1,7 @@
 // The animated pictures the areas share (GlimStone, "Illustrations"): a bar tall enough to slosh
 // at its end, a vessel that holds a fill level, a checkmark that draws itself, a line with packets
 // on it and a ring that shows progress. Loaded on every page through TowerTorch.Pictures.page as
-// window.CCPictures, before the area scripts.
+// window.TTPictures, before the area scripts.
 //
 // The vessel, the check and the ring move in CSS on the dials of TowerTorch.Pictures.css,
 // so the motion level and a request for less motion reach them there. The packets move with SMIL,
@@ -12,7 +12,7 @@
   var REDUCED = "(prefers-reduced-motion: reduce)";
 
   function still() {
-    return window.matchMedia(REDUCED).matches || document.documentElement.getAttribute("data-cc-motion") === "off";
+    return window.matchMedia(REDUCED).matches || document.documentElement.getAttribute("data-tt-motion") === "off";
   }
   // Each watcher answers false once its picture has left the page, and is dropped then.
   var watchers = null;
@@ -21,7 +21,7 @@
       watchers = [];
       var tell = function () { watchers = watchers.filter(function (w) { return w(); }); };
       window.matchMedia(REDUCED).addEventListener("change", tell);
-      new MutationObserver(tell).observe(document.documentElement, { attributes: true, attributeFilter: ["data-cc-motion"] });
+      new MutationObserver(tell).observe(document.documentElement, { attributes: true, attributeFilter: ["data-tt-motion"] });
     }
     watchers.push(fn);
   }
@@ -55,39 +55,39 @@
   // lower corners can follow the shape setting through the sheet's rx.
   function vesselSvg(id) {
     var top = '<clipPath id="' + id + '-top"><rect x="-10" y="3" width="54" height="40"/></clipPath>';
-    var inside = '<clipPath id="' + id + '" clip-path="url(#' + id + '-top)"><rect class="cc-vessel-in" x="7.5" y="-30" width="19" height="65.5" rx="4.5"/></clipPath>';
-    var crest = function (cls) { return '<path class="cc-vessel-liquid ' + cls + '" d="' + CREST + '"/>'; };
-    var bubbles = BUBBLES.map(function (b) { return '<circle class="cc-vessel-bubble" cx="' + b[0] + '" cy="0" r="' + b[1] + '"/>'; }).join("");
+    var inside = '<clipPath id="' + id + '" clip-path="url(#' + id + '-top)"><rect class="tt-vessel-in" x="7.5" y="-30" width="19" height="65.5" rx="4.5"/></clipPath>';
+    var crest = function (cls) { return '<path class="tt-vessel-liquid ' + cls + '" d="' + CREST + '"/>'; };
+    var bubbles = BUBBLES.map(function (b) { return '<circle class="tt-vessel-bubble" cx="' + b[0] + '" cy="0" r="' + b[1] + '"/>'; }).join("");
     var pops = POPS.map(function (p) {
       var at = ' cx="' + p[0] + '" cy="0"';
-      return '<g class="cc-vessel-pop"><circle class="cc-vessel-pop-bubble"' + at + ' r="' + p[1] + '"/><circle class="cc-vessel-pop-ring"' + at + ' r="' + p[1] + '"/>' +
-        '<circle class="cc-vessel-pop-drop"' + at + ' r=".3"/><circle class="cc-vessel-pop-drop"' + at + ' r=".3"/><circle class="cc-vessel-pop-drop"' + at + ' r=".3"/></g>';
+      return '<g class="tt-vessel-pop"><circle class="tt-vessel-pop-bubble"' + at + ' r="' + p[1] + '"/><circle class="tt-vessel-pop-ring"' + at + ' r="' + p[1] + '"/>' +
+        '<circle class="tt-vessel-pop-drop"' + at + ' r=".3"/><circle class="tt-vessel-pop-drop"' + at + ' r=".3"/><circle class="tt-vessel-pop-drop"' + at + ' r=".3"/></g>';
     }).join("");
     return '<svg viewBox="0 0 34 40" role="progressbar" aria-valuemin="0" aria-valuemax="100"><defs>' + top + inside + "</defs>" +
-      '<rect class="cc-vessel-wash cc-vessel-in" x="7.5" y="-30" width="19" height="65.5" rx="4.5" clip-path="url(#' + id + '-top)"/>' +
-      '<g clip-path="url(#' + id + ')"><g class="cc-vessel-level">' +
-      '<g class="cc-vessel-splash-tilt"><path class="cc-vessel-liquid cc-vessel-back" d="' + BACK + '"/><g class="cc-vessel-tilt">' +
-      '<path class="cc-vessel-liquid" d="' + BODY + '"/><path class="cc-vessel-liquid cc-vessel-hump" d="' + HUMP + '"/><path class="cc-vessel-liquid cc-vessel-splash-ripple" d="' + RIPPLE + '"/>' +
-      '<g transform="translate(7.5 0)">' + crest("cc-vessel-crest cc-vessel-crest-left") + crest("cc-vessel-splash-crest") + "</g>" +
-      '<g transform="translate(26.5 0) scale(-1 1)">' + crest("cc-vessel-crest cc-vessel-crest-right") + "</g></g></g>" +
-      '<g class="cc-vessel-bubbles">' + bubbles + "</g><g>" + pops + "</g></g></g>" +
-      '<rect class="cc-vessel-wall" x="6" y="-30" width="22" height="67" rx="6" clip-path="url(#' + id + '-top)"/>' +
-      '<path class="cc-vessel-brim" d="M2 ' + BRIM + 'H32"/></svg>';
+      '<rect class="tt-vessel-wash tt-vessel-in" x="7.5" y="-30" width="19" height="65.5" rx="4.5" clip-path="url(#' + id + '-top)"/>' +
+      '<g clip-path="url(#' + id + ')"><g class="tt-vessel-level">' +
+      '<g class="tt-vessel-splash-tilt"><path class="tt-vessel-liquid tt-vessel-back" d="' + BACK + '"/><g class="tt-vessel-tilt">' +
+      '<path class="tt-vessel-liquid" d="' + BODY + '"/><path class="tt-vessel-liquid tt-vessel-hump" d="' + HUMP + '"/><path class="tt-vessel-liquid tt-vessel-splash-ripple" d="' + RIPPLE + '"/>' +
+      '<g transform="translate(7.5 0)">' + crest("tt-vessel-crest tt-vessel-crest-left") + crest("tt-vessel-splash-crest") + "</g>" +
+      '<g transform="translate(26.5 0) scale(-1 1)">' + crest("tt-vessel-crest tt-vessel-crest-right") + "</g></g></g>" +
+      '<g class="tt-vessel-bubbles">' + bubbles + "</g><g>" + pops + "</g></g></g>" +
+      '<rect class="tt-vessel-wall" x="6" y="-30" width="22" height="67" rx="6" clip-path="url(#' + id + '-top)"/>' +
+      '<path class="tt-vessel-brim" d="M2 ' + BRIM + 'H32"/></svg>';
   }
 
   // vessel draws a fill level against the dashed line that means full. share is 0 to 1, tone is
-  // "accent" (the --cc-pic-c colour, the accent by default), "warn" or "err". It rises from the
+  // "accent" (the --tt-pic-c colour, the accent by default), "warn" or "err". It rises from the
   // floor to its level once it is in the page; setLevel moves it there again.
   function vessel(opts) {
     opts = opts || {};
     var wrap = document.createElement("span");
-    wrap.className = "cc-vessel";
-    wrap.innerHTML = vesselSvg("cc-vessel-" + (++vesselN));
-    var svg = wrap.querySelector("svg"), level = wrap.querySelector(".cc-vessel-level");
+    wrap.className = "tt-vessel";
+    wrap.innerHTML = vesselSvg("tt-vessel-" + (++vesselN));
+    var svg = wrap.querySelector("svg"), level = wrap.querySelector(".tt-vessel-level");
     var shown = null;
     function place(y) {
       level.style.transform = "translateY(" + y.toFixed(2) + "px)";
-      svg.style.setProperty("--cc-vessel-depth", (FLOOR - y).toFixed(2));
+      svg.style.setProperty("--tt-vessel-depth", (FLOOR - y).toFixed(2));
     }
     var api = {
       el: wrap,
@@ -108,9 +108,9 @@
       // A splash still running starts over rather than adding to itself: reading the layout
       // applies the removal, so the class added back starts a new animation.
       splash: function () {
-        svg.classList.remove("cc-vessel-splashing");
+        svg.classList.remove("tt-vessel-splashing");
         void svg.getBoundingClientRect();
-        svg.classList.add("cc-vessel-splashing");
+        svg.classList.add("tt-vessel-splashing");
         return api;
       }
     };
@@ -125,10 +125,10 @@
   // drawCheck draws GlimStone's checkmark into container. pathLength 1 lets a 1 to 0 dash offset
   // draw the whole glyph whatever its length. Each call puts a fresh node in, so it draws again.
   function drawCheck(container, label) {
-    var old = container.querySelector(":scope > .cc-check");
+    var old = container.querySelector(":scope > .tt-check");
     if (old) container.removeChild(old);
-    var svg = svgEl("svg", { "class": "cc-check", viewBox: "0 0 16 16", role: label ? "img" : null, "aria-label": label || null, "aria-hidden": label ? null : "true" });
-    svgEl("path", { "class": "cc-check-draw", d: "M3.5 8.5 6.5 11.5 12.5 4.5", pathLength: "1" }, svg);
+    var svg = svgEl("svg", { "class": "tt-check", viewBox: "0 0 16 16", role: label ? "img" : null, "aria-label": label || null, "aria-hidden": label ? null : "true" });
+    svgEl("path", { "class": "tt-check-draw", d: "M3.5 8.5 6.5 11.5 12.5 4.5", pathLength: "1" }, svg);
     container.appendChild(svg);
     return svg;
   }
@@ -171,23 +171,23 @@
     var line = curve(from, to), size = opts.size || 3;
     var every = (opts.gap || 44) / TRAVEL, crossing = line.length / TRAVEL;
     var count = Math.max(1, Math.ceil(crossing / every)), loop = count * every, share = Math.min(1, crossing / loop);
-    var g = svgEl("g", { "class": "cc-flow" }, svg);
-    svgEl("path", { "class": "cc-flow-line", d: line.d }, g);
-    var packets = svgEl("g", { "class": "cc-flow-packets", "data-packets": count }, g);
+    var g = svgEl("g", { "class": "tt-flow" }, svg);
+    svgEl("path", { "class": "tt-flow-line", d: line.d }, g);
+    var packets = svgEl("g", { "class": "tt-flow-packets", "data-packets": count }, g);
     var frame = 0, gone = false;
 
     function draw() {
       while (packets.firstChild) packets.removeChild(packets.firstChild);
       if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
       if (still()) {
-        for (var i = 0; i < count; i++) { var p = line.at((i + 0.5) / count); svgEl("circle", { "class": "cc-flow-packet", cx: fixed(p[0]), cy: fixed(p[1]), r: size }, packets); }
+        for (var i = 0; i < count; i++) { var p = line.at((i + 0.5) / count); svgEl("circle", { "class": "tt-flow-packet", cx: fixed(p[0]), cy: fixed(p[1]), r: size }, packets); }
         return;
       }
       for (var n = 0; n < count; n++) {
         var one = svgEl("g", { opacity: "0" }, packets), begin = fixed(n * every) + "s", dur = fixed(loop) + "s";
         svgEl("animateMotion", { path: line.d, begin: begin, dur: dur, repeatCount: "indefinite", calcMode: "linear", keyPoints: "0;1;1", keyTimes: "0;" + fixed(share) + ";1" }, one);
         svgEl("animate", { attributeName: "opacity", begin: begin, dur: dur, repeatCount: "indefinite", calcMode: "discrete", values: "1;0", keyTimes: "0;" + fixed(share) }, one);
-        svgEl("circle", { "class": "cc-flow-packet", r: size }, one);
+        svgEl("circle", { "class": "tt-flow-packet", r: size }, one);
       }
       if (opts.land) watchLandings();
     }
@@ -199,8 +199,8 @@
       var tick = function () {
         if (gone || !g.isConnected) return;
         var now = svg.getCurrentTime(), v = opts.land;
-        if (now >= crossing && landings(now) > landings(last) && !(now - (v.__ccLanded || -Infinity) < SETTLE)) { v.__ccLanded = now; v.splash(); }
-        if (now < last) v.__ccLanded = -Infinity;
+        if (now >= crossing && landings(now) > landings(last) && !(now - (v.__ttLanded || -Infinity) < SETTLE)) { v.__ttLanded = now; v.splash(); }
+        if (now < last) v.__ttLanded = -Infinity;
         last = now;
         frame = window.requestAnimationFrame(tick);
       };
@@ -223,14 +223,14 @@
   // it stands in. It shows the share rounded down, so it never reads 100 % before the end.
   function ring(label) {
     var wrap = document.createElement("span");
-    wrap.className = "cc-ring";
+    wrap.className = "tt-ring";
     wrap.setAttribute("role", "progressbar");
     wrap.setAttribute("aria-valuemin", "0");
     wrap.setAttribute("aria-valuemax", "100");
     if (label) wrap.setAttribute("aria-label", label);
-    wrap.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="cc-ring-track" cx="20" cy="20" r="16.5"/>' +
-      '<circle class="cc-ring-arc" cx="20" cy="20" r="16.5" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 20 20)"/></svg><span class="cc-ring-pct"></span>';
-    var arc = wrap.querySelector(".cc-ring-arc"), pct = wrap.querySelector(".cc-ring-pct");
+    wrap.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="tt-ring-track" cx="20" cy="20" r="16.5"/>' +
+      '<circle class="tt-ring-arc" cx="20" cy="20" r="16.5" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 20 20)"/></svg><span class="tt-ring-pct"></span>';
+    var arc = wrap.querySelector(".tt-ring-arc"), pct = wrap.querySelector(".tt-ring-pct");
     var api = {
       el: wrap,
       set: function (share) {
@@ -245,8 +245,8 @@
     return api;
   }
 
-  window.CCPictures = {
-    sloshBar: window.CCTheme && window.CCTheme.slosh,
+  window.TTPictures = {
+    sloshBar: window.TTTheme && window.TTTheme.slosh,
     vessel: vessel,
     drawCheck: drawCheck,
     flow: flow,

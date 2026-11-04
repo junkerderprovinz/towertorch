@@ -8,17 +8,17 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 const CLEAR = /^(transparent|none|initial|unset|inherit)\b/;
 
 const MODES = {
-  normal: ['cc-popups-on', 'cc-docker-on'],
-  reactive: ['cc-popups-on', 'cc-docker-on', 'cc-shares-rbneutral', 'cc-header-rbneutral'],
-  light: ['cc-popups-on', 'cc-docker-on', 'Theme--white'],
+  normal: ['tt-popups-on', 'tt-docker-on'],
+  reactive: ['tt-popups-on', 'tt-docker-on', 'tt-shares-rbneutral', 'tt-header-rbneutral'],
+  light: ['tt-popups-on', 'tt-docker-on', 'Theme--white'],
 };
 
 const FEET = [
-  ['Cancel in a .cc-win', 'settings', { tag: 'span', classes: ['cc-win-btn'], inside: ['.cc-win', '.cc-win-act'] }],
-  ['a deleting answer in a .cc-win', 'settings', { tag: 'span', classes: ['cc-win-btn', 'cc-win-del'], inside: ['.cc-win', '.cc-win-act'] }],
-  ['a link in a .cc-win foot', 'settings', { tag: 'a', classes: ['cc-win-btn', 'cc-win-link'], inside: ['.cc-win', '.cc-win-act'] }],
-  ['Cancel in an editor', 'docker', { tag: 'span', classes: ['cc-btn'], inside: ['.cc-pop', '.cc-pop-act'] }],
-  ['Cancel in the gear menu', 'docker', { tag: 'span', classes: ['cc-btn'], inside: ['.cc-menu'] }],
+  ['Cancel in a .tt-win', 'settings', { tag: 'span', classes: ['tt-win-btn'], inside: ['.tt-win', '.tt-win-act'] }],
+  ['a deleting answer in a .tt-win', 'settings', { tag: 'span', classes: ['tt-win-btn', 'tt-win-del'], inside: ['.tt-win', '.tt-win-act'] }],
+  ['a link in a .tt-win foot', 'settings', { tag: 'a', classes: ['tt-win-btn', 'tt-win-link'], inside: ['.tt-win', '.tt-win-act'] }],
+  ['Cancel in an editor', 'docker', { tag: 'span', classes: ['tt-btn'], inside: ['.tt-pop', '.tt-pop-act'] }],
+  ['Cancel in the gear menu', 'docker', { tag: 'span', classes: ['tt-btn'], inside: ['.tt-menu'] }],
   ['Unraid\'s Cancel in a SweetAlert', 'every', { tag: 'button', classes: ['cancel'], inside: ['.sweet-alert', '.sa-button-container'] }],
   ['Unraid\'s Cancel in a SweetAlert 2', 'every', { tag: 'button', classes: ['swal-button', 'swal-button--cancel'], inside: ['.swal-modal', '.swal-footer'] }],
   ['Unraid\'s answers in a jQuery UI dialog', 'every', { tag: 'button', classes: [], inside: ['.ui-dialog', '.ui-dialog-buttonpane'] }],

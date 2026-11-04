@@ -45,22 +45,22 @@ function Node(tag, cls, text) {
 }
 
 const stubs = `
-  var MARK = "data-cc", LANG = "de", filterText = "", limits = {}, stats = {}, netSeen = {}, menuCalls = [], opened = [];
+  var MARK = "data-tt", LANG = "de", filterText = "", limits = {}, stats = {}, netSeen = {}, menuCalls = [], opened = [];
   var config = { bandwidths: [] };
   function el(tag, cls, text) { return Node(tag, cls, text); }
   function t(k) { return { cpuLimit: "CPU-Limit", ramLimit: "RAM-Limit", bandwidth: "Bandbreite", pause: "Pause" }[k] || k; }
   function norm(s) { return String(s || "").toLowerCase(); }
   function colOn() { return true; }
   function stampCardRainbow() {}
-  function cardIcon() { return el("span", "cc-card-icobox"); }
-  function planBadge() { return el("a", "cc-b cc-plan"); }
+  function cardIcon() { return el("span", "tt-card-icobox"); }
+  function planBadge() { return el("a", "tt-b tt-plan"); }
   function autostartSwitch() { return null; }
-  function stateBadge(c) { return el("span", "cc-badge cc-badge-" + c.state); }
+  function stateBadge(c) { return el("span", "tt-badge tt-badge-" + c.state); }
   function lastRunPill() { return null; }
-  function actionBars() { return { bar: el("div", "cc-actbar") }; }
-  function badgeInfo(k, v, kind) { var b = el("span", "cc-b cc-b-info cc-b-" + kind); b.appendChild(el("span", "cc-b-k", k)); b.appendChild(el("span", "cc-b-v", v)); return b; }
-  function limGear() { return el("span", "cc-limbtn"); }
-  function bwGear() { return el("span", "cc-limbtn"); }
+  function actionBars() { return { bar: el("div", "tt-actbar") }; }
+  function badgeInfo(k, v, kind) { var b = el("span", "tt-b tt-b-info tt-b-" + kind); b.appendChild(el("span", "tt-b-k", k)); b.appendChild(el("span", "tt-b-v", v)); return b; }
+  function limGear() { return el("span", "tt-limbtn"); }
+  function bwGear() { return el("span", "tt-limbtn"); }
   function cpuLimited() { return false; } function cpuPinned() { return false; } function ramLimited() { return false; }
   function bwTitle() { return ""; }
   function humanBytes(b) { return String(b); }
@@ -74,57 +74,57 @@ const api = new Function('Node', 'window',
   stubs + ['card', 'resLine', 'updateResGroup', 'bandwidthFor', 'bwHasLimit', 'limitItems', 'containerMenu'].map(grabFn).join('\n') +
   '\nreturn { card: card, update: updateResGroup, containerMenu: containerMenu, netSeen: netSeen, stats: stats, config: config, opened: opened, menuCalls: menuCalls };');
 
-const win = { CCTheme: { menu: (anchor, items) => win.last = { anchor, items } } };
+const win = { TTTheme: { menu: (anchor, items) => win.last = { anchor, items } } };
 const a = api(Node, win);
-const bwLine = (cd) => { const b = cd.querySelector('.cc-b-bw'); return b && b.closest('cc-resline'); };
+const bwLine = (cd) => { const b = cd.querySelector('.tt-b-bw'); return b && b.closest('tt-resline'); };
 
 console.log('\nA stopped container\'s card carries only its state');
 {
   const cd = a.card({ name: 'ClamAV', state: 'exited' });
-  ok('no resource group', !cd.querySelector('.cc-card-res'));
-  ok('no CPU, RAM or BW badge', !cd.querySelector('.cc-b-cpu') && !cd.querySelector('.cc-b-ram') && !cd.querySelector('.cc-b-bw'));
-  ok('no gear', !cd.querySelector('.cc-limbtn'));
-  ok('the state chip stays', !!cd.querySelector('.cc-badge-exited'));
+  ok('no resource group', !cd.querySelector('.tt-card-res'));
+  ok('no CPU, RAM or BW badge', !cd.querySelector('.tt-b-cpu') && !cd.querySelector('.tt-b-ram') && !cd.querySelector('.tt-b-bw'));
+  ok('no gear', !cd.querySelector('.tt-limbtn'));
+  ok('the state chip stays', !!cd.querySelector('.tt-badge-exited'));
   const paused = a.card({ name: 'Redis', state: 'paused' });
-  ok('a paused one has no values either', !paused.querySelector('.cc-card-res'));
+  ok('a paused one has no values either', !paused.querySelector('.tt-card-res'));
 }
 
 console.log('\nA running card shows the rate once there has been traffic');
 {
   a.stats.CouchDB = { cpu_percent: 0.5, mem_used: 10, mem_limit: 20, _rxr: 0, _txr: 0 };
   const cd = a.card({ name: 'CouchDB', state: 'running' });
-  ok('CPU and RAM show from the start', !!cd.querySelector('.cc-b-cpu') && !!cd.querySelector('.cc-b-ram'));
-  ok('the BW line waits while the rate is zero', bwLine(cd).classList.contains('cc-hidden'));
+  ok('CPU and RAM show from the start', !!cd.querySelector('.tt-b-cpu') && !!cd.querySelector('.tt-b-ram'));
+  ok('the BW line waits while the rate is zero', bwLine(cd).classList.contains('tt-hidden'));
   a.netSeen.CouchDB = true;
-  a.update(cd.querySelector('.cc-card-res'), a.stats.CouchDB, 'running');
-  ok('it shows once traffic has been seen, and stays at a zero sample', !bwLine(cd).classList.contains('cc-hidden'));
+  a.update(cd.querySelector('.tt-card-res'), a.stats.CouchDB, 'running');
+  ok('it shows once traffic has been seen, and stays at a zero sample', !bwLine(cd).classList.contains('tt-hidden'));
   a.config.bandwidths.push({ name: 'Plex', egress_kbit: 5000 });
   const capped = a.card({ name: 'Plex', state: 'running' });
-  ok('a set cap keeps the BW line in view without traffic', !bwLine(capped).classList.contains('cc-hidden'));
-  const rg = cd.querySelector('.cc-card-res');
+  ok('a set cap keeps the BW line in view without traffic', !bwLine(capped).classList.contains('tt-hidden'));
+  const rg = cd.querySelector('.tt-card-res');
   a.update(rg, null, 'exited');
-  ok('a card whose container stops before the next draw drops the group', rg.classList.contains('cc-res-idle'));
+  ok('a card whose container stops before the next draw drops the group', rg.classList.contains('tt-res-idle'));
 }
 
 console.log('\nA list row keeps its column but quiets a stopped container');
 {
-  const rg = Node('div', 'cc-rowbadges cc-resgroup'); rg.dataset.name = 'Redis';
-  rg.appendChild(Node('div', 'cc-resline')).appendChild(Node('span', 'cc-b cc-b-bw')).appendChild(Node('span', 'cc-b-v', '…'));
+  const rg = Node('div', 'tt-rowbadges tt-resgroup'); rg.dataset.name = 'Redis';
+  rg.appendChild(Node('div', 'tt-resline')).appendChild(Node('span', 'tt-b tt-b-bw')).appendChild(Node('span', 'tt-b-v', '…'));
   a.update(rg, { _rxr: 0, _txr: 0 }, 'running');
-  ok('a running row shows its rate at zero', !rg.querySelector('.cc-resline').classList.contains('cc-hidden') && rg.querySelector('.cc-b-v').textContent === '↓0 ↑0');
+  ok('a running row shows its rate at zero', !rg.querySelector('.tt-resline').classList.contains('tt-hidden') && rg.querySelector('.tt-b-v').textContent === '↓0 ↑0');
   a.update(rg, null, 'exited');
-  ok('a stopped row is marked idle', rg.classList.contains('cc-res-idle'));
+  ok('a stopped row is marked idle', rg.classList.contains('tt-res-idle'));
   a.update(rg, null, 'running');
-  ok('and comes back when it runs again', !rg.classList.contains('cc-res-idle'));
+  ok('and comes back when it runs again', !rg.classList.contains('tt-res-idle'));
   const flat = css.replace(/\/\*[\s\S]*?\*\//g, '');
-  ok('idle hides the badges and their gears', /\.cc-resgroup\.cc-res-idle > \.cc-resline \{ display: none; \}/.test(flat));
-  ok('idle shows one muted dash', /\.cc-resgroup\.cc-res-idle::before \{ content: "-"; color: var\(--cc-dim/.test(flat));
-  ok('an idle card group is left out', /\.cc-card-res\.cc-resgroup\.cc-res-idle \{ display: none !important; \}/.test(flat));
+  ok('idle hides the badges and their gears', /\.tt-resgroup\.tt-res-idle > \.tt-resline \{ display: none; \}/.test(flat));
+  ok('idle shows one muted dash', /\.tt-resgroup\.tt-res-idle::before \{ content: "-"; color: var\(--tt-dim/.test(flat));
+  ok('an idle card group is left out', /\.tt-card-res\.tt-resgroup\.tt-res-idle \{ display: none !important; \}/.test(flat));
 }
 
 console.log('\nThe menus open the limit editors');
 {
-  const tile = Node('span', 'cc-tile-icobtn');
+  const tile = Node('span', 'tt-tile-icobtn');
   a.containerMenu(tile, { name: 'ClamAV', state: 'exited' }, { links: [] });
   const labels = win.last.items.map((i) => i.label);
   ok('the tile menu offers CPU-Limit, RAM-Limit and Bandbreite', ['CPU-Limit', 'RAM-Limit', 'Bandbreite'].every((l) => labels.includes(l)), labels.join(', '));

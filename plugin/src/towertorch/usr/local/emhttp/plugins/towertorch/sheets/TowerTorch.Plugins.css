@@ -1,85 +1,85 @@
 /* The Plugins tab beyond the rows docker.css restyles: the small links beside the name and the
    version, the icon colouring gear on each logo, and the tile view (scripts/plugintiles.js). Every
-   rule waits for html.cc-on-plugins, which plugins.js sets on /Plugins alone, and the tile rules
-   for html.cc-plt-on as well. */
+   rule waits for html.tt-on-plugins, which plugins.js sets on /Plugins alone, and the tile rules
+   for html.tt-plt-on as well. */
 
 /* Support thread and changelog are text links in the accent ink, smaller than the name. */
-html.cc-on-plugins .cc-pluglink {
-  font-size: var(--cc-text-meta); font-weight: 500; line-height: 1.4; white-space: nowrap;
-  color: var(--cc-accent-ink, #FCC419) !important; text-decoration: none !important; cursor: pointer;
+html.tt-on-plugins .tt-pluglink {
+  font-size: var(--tt-text-meta); font-weight: 500; line-height: 1.4; white-space: nowrap;
+  color: var(--tt-accent-ink, #FCC419) !important; text-decoration: none !important; cursor: pointer;
 }
-html.cc-on-plugins .cc-pluglink:hover { text-decoration: underline !important; }
-html.cc-on-plugins .cc-pluglink:focus-visible { outline: none; text-decoration: underline !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent); border-radius: var(--cc-radius-control); }
+html.tt-on-plugins .tt-pluglink:hover { text-decoration: underline !important; }
+html.tt-on-plugins .tt-pluglink:focus-visible { outline: none; text-decoration: underline !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); border-radius: var(--tt-radius-control); }
 
 /* The gear opens the icon colouring of one plugin. It sits in the logo's corner and comes in with
    the pointer or the focus on its row or card; a touch screen has no hover, so there it stays.
    Opacity rather than display, so Tab still reaches it. */
-html.cc-on-plugins .cc-plugico { position: relative; }
-html.cc-on-plugins .cc-plugicm {
+html.tt-on-plugins .tt-plugico { position: relative; }
+html.tt-on-plugins .tt-plugicm {
   position: absolute; top: 2px; right: 2px; z-index: 1;
   display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;
-  width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); border-radius: var(--cc-radius-pill);
-  background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text, #e6e6e6); cursor: pointer;
-  opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s), background-color .12s;
+  width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); border-radius: var(--tt-radius-pill);
+  background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6); cursor: pointer;
+  opacity: 0; transition: opacity var(--tt-motion-fade-dur, 0s), background-color .12s;
 }
-html.cc-on-plugins .cc-plugicm .cc-glyph { width: 13px; height: 13px; }
-html.cc-on-plugins :is(#plugin_list > tr, .cc-plt-card):is(:hover, :focus-within) .cc-plugicm { opacity: 1; }
-html.cc-on-plugins .cc-plugicm:hover { background: var(--cc-rb-c, var(--cc-accent, #FCC419)); color: var(--cc-rb-ct, var(--cc-accent-text, #161616)); }
-@media (hover: none) { html.cc-on-plugins .cc-plugicm { opacity: 1; } }
+html.tt-on-plugins .tt-plugicm .tt-glyph { width: 13px; height: 13px; }
+html.tt-on-plugins :is(#plugin_list > tr, .tt-plt-card):is(:hover, :focus-within) .tt-plugicm { opacity: 1; }
+html.tt-on-plugins .tt-plugicm:hover { background: var(--tt-rb-c, var(--tt-accent, #FCC419)); color: var(--tt-rb-ct, var(--tt-accent-text, #161616)); }
+@media (hover: none) { html.tt-on-plugins .tt-plugicm { opacity: 1; } }
 
 /* The view switch leads the buttons plugins.js pins to the right end of the tab bar, like the
    switch on /Main and /Shares. */
-html.cc-on-plugins.cc-plt-on #cc-plugbtns > .cc-plt-vsw { display: inline-flex; align-items: center; }
-html.cc-on-plugins.cc-plt-on .cc-plt-seg { display: inline-flex; gap: 3px; padding: 3px; background: var(--cc-surface-base, #161616); border-radius: var(--cc-radius-pill); }
-html.cc-on-plugins.cc-plt-on .cc-plt-seg .cc-seg-btn {
-  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border: 0; border-radius: var(--cc-radius-pill);
-  background: transparent; color: var(--cc-text-hint); font-size: var(--cc-text-subline); line-height: 1; box-shadow: none; cursor: pointer; user-select: none;
-  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+html.tt-on-plugins.tt-plt-on #tt-plugbtns > .tt-plt-vsw { display: inline-flex; align-items: center; }
+html.tt-on-plugins.tt-plt-on .tt-plt-seg { display: inline-flex; gap: 3px; padding: 3px; background: var(--tt-surface-base, #161616); border-radius: var(--tt-radius-pill); }
+html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border: 0; border-radius: var(--tt-radius-pill);
+  background: transparent; color: var(--tt-text-hint); font-size: var(--tt-text-subline); line-height: 1; box-shadow: none; cursor: pointer; user-select: none;
+  transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
-html.cc-on-plugins.cc-plt-on .cc-plt-seg .cc-seg-btn .cc-glyph { width: 1em; height: 1em; flex: none; }
-html.cc-on-plugins.cc-plt-on .cc-plt-seg .cc-seg-btn:hover { background: var(--cc-chip); color: var(--cc-text); }
-html.cc-on-plugins.cc-plt-on .cc-plt-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-accent, #FCC419); color: var(--cc-accent-text, #161616); }
-html.cc-on-plugins.cc-plt-on.cc-shares-rbneutral .cc-plt-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-surface-3); color: var(--cc-text); }
-html.cc-on-plugins.cc-plt-on.cc-shares-rbneutral .cc-plt-vsw:hover .cc-plt-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-accent, #FCC419); color: var(--cc-accent-text, #161616); }
+html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
+html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }
+html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
+html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-vsw:hover .tt-plt-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }
 
 /* The tiles. Unraid's table stays in the page for its handlers and is hidden while they show. */
-html.cc-on-plugins.cc-plt-on .cc-plt-hidden { display: none !important; }
-html.cc-on-plugins.cc-plt-on .cc-plt-host { margin: 0 0 16px; }
-html.cc-on-plugins.cc-plt-on .cc-plt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); gap: 12px; }
-html.cc-on-plugins.cc-plt-on .cc-plt-empty { padding: 12px 0; color: var(--cc-text-dim); font-size: var(--cc-text-body); }
-html.cc-on-plugins.cc-plt-on .cc-plt-card {
+html.tt-on-plugins.tt-plt-on .tt-plt-hidden { display: none !important; }
+html.tt-on-plugins.tt-plt-on .tt-plt-host { margin: 0 0 16px; }
+html.tt-on-plugins.tt-plt-on .tt-plt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); gap: 12px; }
+html.tt-on-plugins.tt-plt-on .tt-plt-empty { padding: 12px 0; color: var(--tt-text-dim); font-size: var(--tt-text-body); }
+html.tt-on-plugins.tt-plt-on .tt-plt-card {
   display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 12px 14px;
-  background: var(--cc-card-bg, var(--cc-surface-1, #1e1e1e)); color: var(--cc-text); border-radius: var(--cc-radius-card);
-  font-size: var(--cc-text-body); line-height: 1.4; transition: transform .12s, box-shadow .12s;
+  background: var(--tt-card-bg, var(--tt-surface-1, #1e1e1e)); color: var(--tt-text); border-radius: var(--tt-radius-card);
+  font-size: var(--tt-text-body); line-height: 1.4; transition: transform .12s, box-shadow .12s;
 }
-html.cc-on-plugins.cc-plt-on .cc-plt-card:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }
-html.cc-on-plugins.cc-plt-on .cc-plt-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
-html.cc-on-plugins.cc-plt-on .cc-plt-id { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-html.cc-on-plugins.cc-plt-on .cc-plt-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; }
-html.cc-on-plugins.cc-plt-on .cc-plt-name { font-size: var(--cc-text-title); font-weight: 600; color: var(--cc-text) !important; text-decoration: none !important; overflow-wrap: anywhere; }
-html.cc-on-plugins.cc-plt-on a.cc-plt-name:hover { text-decoration: underline !important; }
-html.cc-on-plugins.cc-plt-on a.cc-plt-name:focus-visible { outline: none; text-decoration: underline !important; }
-html.cc-on-plugins.cc-plt-on .cc-plt-state { flex: none; align-self: flex-start; }
-html.cc-on-plugins.cc-plt-on .cc-plt-upd { cursor: pointer; }
-html.cc-on-plugins.cc-plt-on .cc-plt-upd:hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
-html.cc-on-plugins.cc-plt-on .cc-plt-upd:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent) !important; }
-html.cc-on-plugins.cc-plt-on .cc-plt-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-height: var(--cc-icon-badge, 26px); }
-html.cc-on-plugins.cc-plt-on .cc-plt-card .cc-b { display: inline-flex; gap: 5px; align-items: center; border-radius: var(--cc-radius-pill); padding: var(--cc-sm-pad, 3px 11px); font-size: var(--cc-sm-fs); }
-html.cc-on-plugins.cc-plt-on .cc-plt-card .cc-b .cc-b-k { opacity: .72; font-weight: 500; }
-html.cc-on-plugins.cc-plt-on .cc-plt-acts { margin-left: auto; display: inline-flex; gap: 5px; }
+html.tt-on-plugins.tt-plt-on .tt-plt-card:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }
+html.tt-on-plugins.tt-plt-on .tt-plt-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+html.tt-on-plugins.tt-plt-on .tt-plt-id { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+html.tt-on-plugins.tt-plt-on .tt-plt-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; }
+html.tt-on-plugins.tt-plt-on .tt-plt-name { font-size: var(--tt-text-title); font-weight: 600; color: var(--tt-text) !important; text-decoration: none !important; overflow-wrap: anywhere; }
+html.tt-on-plugins.tt-plt-on a.tt-plt-name:hover { text-decoration: underline !important; }
+html.tt-on-plugins.tt-plt-on a.tt-plt-name:focus-visible { outline: none; text-decoration: underline !important; }
+html.tt-on-plugins.tt-plt-on .tt-plt-state { flex: none; align-self: flex-start; }
+html.tt-on-plugins.tt-plt-on .tt-plt-upd { cursor: pointer; }
+html.tt-on-plugins.tt-plt-on .tt-plt-upd:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-on-plugins.tt-plt-on .tt-plt-upd:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+html.tt-on-plugins.tt-plt-on .tt-plt-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-height: var(--tt-icon-badge, 26px); }
+html.tt-on-plugins.tt-plt-on .tt-plt-card .tt-b { display: inline-flex; gap: 5px; align-items: center; border-radius: var(--tt-radius-pill); padding: var(--tt-sm-pad, 3px 11px); font-size: var(--tt-sm-fs); }
+html.tt-on-plugins.tt-plt-on .tt-plt-card .tt-b .tt-b-k { opacity: .72; font-weight: 500; }
+html.tt-on-plugins.tt-plt-on .tt-plt-acts { margin-left: auto; display: inline-flex; gap: 5px; }
 /* At phone width the status takes a line of its own under the name, still flush right. */
 @media (max-width: 540px) {
-  html.cc-on-plugins.cc-plt-on .cc-plt-head { flex-wrap: wrap; }
-  html.cc-on-plugins.cc-plt-on .cc-plt-state { flex: 1 0 100%; display: flex; justify-content: flex-end; }
+  html.tt-on-plugins.tt-plt-on .tt-plt-head { flex-wrap: wrap; }
+  html.tt-on-plugins.tt-plt-on .tt-plt-state { flex: 1 0 100%; display: flex; justify-content: flex-end; }
 }
 
 /* The reactive mode, as on the rows in docker.css: badges, trash and logo tile rest grey and take
    the card's colour while the pointer is on the card. The status pill keeps its own colour. */
-html.cc-on-plugins.cc-plt-on.cc-shares-rbneutral .cc-plt-card .cc-b-del { background: rgba(128, 128, 128, .18) !important; color: var(--cc-text-chip, #cfcfcf) !important; }
-html.cc-on-plugins.cc-plt-on.cc-shares-rbneutral .cc-plt-card:hover :is(.cc-b, .cc-b-del) {
-  background: var(--cc-rb-c, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-ct, var(--cc-accent-text, #161616)) !important;
+html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-card .tt-b-del { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-card:hover :is(.tt-b, .tt-b-del) {
+  background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important;
 }
-html.cc-on-plugins.cc-plt-on.cc-shares-rbneutral .cc-plt-card:hover .cc-b-del:hover {
-  background: color-mix(in srgb, var(--cc-rb-c, var(--cc-accent, #FCC419)) 85%, var(--cc-text, #e6e6e6)) !important;
+html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-card:hover .tt-b-del:hover {
+  background: color-mix(in srgb, var(--tt-rb-c, var(--tt-accent, #FCC419)) 85%, var(--tt-text, #e6e6e6)) !important;
 }
-html.cc-on-plugins.cc-plt-on.cc-shares-rbneutral.cc-plugins-iconbg .cc-plt-card:hover .cc-plugico { background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-accent, #FCC419))) !important; }
+html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral.tt-plugins-iconbg .tt-plt-card:hover .tt-plugico { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }

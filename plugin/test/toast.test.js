@@ -1,7 +1,7 @@
-// One toast component for every area (GlimStone, "Toasts"): CCTheme.toast in cc-theme.js.
+// One toast component for every area (GlimStone, "Toasts"): TTTheme.toast in tt-theme.js.
 // Each toast lasts four seconds, a new one stacks instead of replacing the last, and hover
 // or focus pauses the countdown and keeps what is left of it. docker.js's flash() and
-// header.js's ccToast() go through it, and the two old single-node toasts are gone.
+// header.js's ttToast() go through it, and the two old single-node toasts are gone.
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -45,11 +45,11 @@ const body = new El('body');
 const document = { body, createElement: (t) => new El(t), getElementById: (id) => body.children.find((c) => c.id === id) || null };
 let fadeOut = '0.16s';
 const getComputedStyle = () => ({ animationDuration: fadeOut });
-const theme = read('scripts/cc-theme.js');
+const theme = read('scripts/tt-theme.js');
 const toast = new Function('document', 'getComputedStyle', 'setTimeout', 'clearTimeout', 'Date',
   'var TOAST_MS = 4000;\n' + grabFn(theme, 'toast') + '\nreturn toast;')(document, getComputedStyle, setT, clearT, { now: () => now });
-const stack = () => document.getElementById('cc-toasts');
-const shown = () => (stack() ? stack().children.filter((c) => !c.classList.contains('cc-toast-out')) : []);
+const stack = () => document.getElementById('tt-toasts');
+const shown = () => (stack() ? stack().children.filter((c) => !c.classList.contains('tt-toast-out')) : []);
 const reset = () => { if (stack()) stack().children = []; timers = []; now = 0; };
 
 console.log('\nFour seconds, stacked');
@@ -58,7 +58,7 @@ console.log('\nFour seconds, stacked');
   toast('one'); toast('two', 'error');
   ok('a second toast stacks under the first', shown().length === 2 && shown()[1].textContent === 'two');
   ok('the stack is a polite live region', stack().attrs.role === 'status' && stack().attrs['aria-live'] === 'polite');
-  ok('kind "error" marks the toast', shown()[1].className === 'cc-toast cc-toast-err');
+  ok('kind "error" marks the toast', shown()[1].className === 'tt-toast tt-toast-err');
   advance(3999);
   ok('both still stand just before four seconds', shown().length === 2);
   advance(1);
@@ -119,16 +119,16 @@ console.log('\nClick dismisses, and the handle rewrites a progress note');
 console.log('\nEvery call site goes through it');
 {
   const header = read('scripts/header.js'), docker = read('scripts/docker.js');
-  ok('header.js ccToast() calls CCTheme.toast', /function ccToast\(msg, kind\) \{\s*try \{ return window\.CCTheme && window\.CCTheme\.toast \? window\.CCTheme\.toast\(msg, kind\)/.test(header));
-  ok('header.js builds no toast node of its own', !/cc-toast/.test(header));
+  ok('header.js ttToast() calls TTTheme.toast', /function ttToast\(msg, kind\) \{\s*try \{ return window\.TTTheme && window\.TTTheme\.toast \? window\.TTTheme\.toast\(msg, kind\)/.test(header));
+  ok('header.js builds no toast node of its own', !/tt-toast/.test(header));
   const flash = grabFn(docker, 'flash');
-  ok('docker.js flash() calls CCTheme.toast', /window\.CCTheme\.toast\(msg, kind\)/.test(flash));
+  ok('docker.js flash() calls TTTheme.toast', /window\.TTTheme\.toast\(msg, kind\)/.test(flash));
   ok('flash() rewrites a progress note instead of stacking', /flashToast\.update\(msg, kind\)/.test(flash) && /if \(!\/…\$\/\.test\(msg\)\) flashToast = null;/.test(flash));
-  ok('docker.js builds no toast node of its own', !/el\("div", "cc-toast"\)/.test(docker));
+  ok('docker.js builds no toast node of its own', !/el\("div", "tt-toast"\)/.test(docker));
   const css = read('styles/docker.css') + read('sheets/TowerTorch.Header.css');
-  ok('the old toast styles are gone', !/#cc-toast\b|\.cc-toast-show/.test(css));
-  ok('no toast sets its own font stack', !/\.cc-toast[^{]*\{[^}]*font-family/.test(css) && !/\.cc-toast[^{]*\{[^}]*font:/.test(css));
-  ok('a toast has no border line', /\.cc-toast \{[^}]*border: none;/.test(css));
+  ok('the old toast styles are gone', !/#tt-toast\b|\.tt-toast-show/.test(css));
+  ok('no toast sets its own font stack', !/\.tt-toast[^{]*\{[^}]*font-family/.test(css) && !/\.tt-toast[^{]*\{[^}]*font:/.test(css));
+  ok('a toast has no border line', /\.tt-toast \{[^}]*border: none;/.test(css));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

@@ -1,6 +1,6 @@
 // A control on the settings page that cannot act right now still answers a press: a shut row's
 // switch or selector, a choice that is not available yet and the line of a locked row shake, or
-// glow in the focus halo where nothing may move. The helper lives in cc-theme.js, so every CC
+// glow in the focus halo where nothing may move. The helper lives in tt-theme.js, so every TowerTorch
 // window can use it.
 const fs = require('fs');
 const path = require('path');
@@ -18,7 +18,7 @@ function grabFn(src, name) {
   throw new Error('unbalanced function: ' + name);
 }
 const settings = read('scripts/settings.js');
-const theme = read('scripts/cc-theme.js');
+const theme = read('scripts/tt-theme.js');
 const header = read('sheets/TowerTorch.Header.css');
 
 class Ctl {
@@ -38,39 +38,39 @@ console.log('\nThe shared helper shakes, or glows where nothing may move');
   const { deny } = api((f) => { timers.push(f); return timers.length; }, () => {});
   const el = new Ctl();
   deny(el);
-  ok('a press marks the control with the refusal and its shake', el.cls.has('cc-deny') && el.cls.has('cc-shake'));
+  ok('a press marks the control with the refusal and its shake', el.cls.has('tt-deny') && el.cls.has('tt-shake'));
   timers.forEach((f) => f());
-  ok('and both come off again', !el.cls.has('cc-deny') && !el.cls.has('cc-shake'));
-  ok('every CC window reaches it through CCTheme', /fail: fail, deny: deny,/.test(theme));
-  const rule = /\.cc-shake\.cc-deny \{ animation: cc-deny-halo [^}]*!important; \}/.exec(header);
-  ok('without motion the refusal is the focus halo, not the fading pulse', !!rule && /@keyframes cc-deny-halo \{[^}]*\}\s*30% \{ box-shadow: 0 0 0 3px color-mix\(in srgb, var\(--cc-accent, #FCC419\) 45%, transparent\); \}/.test(header));
-  const gate = 'html:not([data-cc-motion="off"]) .cc-shake';
-  ok('with motion allowed the shake wins over the halo', header.indexOf(gate + ' { animation: cc-shake') > header.indexOf('.cc-shake.cc-deny') && cmp(specificity(gate), specificity('.cc-shake.cc-deny')) > 0, specificity(gate) + ' vs ' + specificity('.cc-shake.cc-deny'));
+  ok('and both come off again', !el.cls.has('tt-deny') && !el.cls.has('tt-shake'));
+  ok('every TowerTorch window reaches it through TTTheme', /fail: fail, deny: deny,/.test(theme));
+  const rule = /\.tt-shake\.tt-deny \{ animation: tt-deny-halo [^}]*!important; \}/.exec(header);
+  ok('without motion the refusal is the focus halo, not the fading pulse', !!rule && /@keyframes tt-deny-halo \{[^}]*\}\s*30% \{ box-shadow: 0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\); \}/.test(header));
+  const gate = 'html:not([data-tt-motion="off"]) .tt-shake';
+  ok('with motion allowed the shake wins over the halo', header.indexOf(gate + ' { animation: tt-shake') > header.indexOf('.tt-shake.tt-deny') && cmp(specificity(gate), specificity('.tt-shake.tt-deny')) > 0, specificity(gate) + ' vs ' + specificity('.tt-shake.tt-deny'));
 }
 
 console.log('\nThe settings page refuses a press on what cannot act');
 {
   const denied = [];
   const root = { contains: () => true, addEventListener() {} };
-  const refuse = new Function('root', 'window', grabFn(settings, 'refuse') + 'return refuse;')(root, { CCTheme: { deny: (el) => denied.push(el) } });
+  const refuse = new Function('root', 'window', grabFn(settings, 'refuse') + 'return refuse;')(root, { TTTheme: { deny: (el) => denied.push(el) } });
   const press = (hits, type, key) => {
     const ev = { type, key, stopped: false, prevented: false, target: { closest: (sel) => hits[sel] || null }, preventDefault() { this.prevented = true; }, stopPropagation() { this.stopped = true; } };
     refuse(ev); return ev;
   };
   const toggle = { name: 'toggle' }, option = { name: 'folder' }, lock = { name: 'lockby' };
-  let ev = press({ '.cc-set-disabled :is(.cc-seg, .cc-set-toggle, .cc-set-numwrap)': toggle }, 'click');
+  let ev = press({ '.tt-set-disabled :is(.tt-seg, .tt-set-toggle, .tt-set-numwrap)': toggle }, 'click');
   ok('a switch in a shut row shakes and never flips', denied[0] === toggle && ev.stopped && ev.prevented);
   ev = press({ '[aria-disabled=true]': option }, 'keydown', 'Enter');
   ok('a choice that is not available refuses Enter as well', denied[1] === option && ev.stopped);
-  ev = press({ '.cc-set-locked .cc-set-lockby': lock }, 'click');
+  ev = press({ '.tt-set-locked .tt-set-lockby': lock }, 'click');
   ok('the line of a locked row shakes, its button stays free', denied[2] === lock && ev.stopped);
   ev = press({ '[aria-disabled=true]': option }, 'keydown', 'ArrowRight');
   ok('other keys pass through untouched', denied.length === 3 && !ev.stopped);
   ev = press({}, 'click');
   ok('a press on a working control passes through untouched', denied.length === 3 && !ev.stopped);
   ok('it listens on the page root in the capture phase, before the control hears it', /root\.addEventListener\("click", refuse, true\);\s*root\.addEventListener\("keydown", refuse, true\);/.test(settings));
-  ok('a shut row shows that it takes no press', /"#cc-settings \.cc-set-disabled :is\(\.cc-seg, \.cc-seg-btn, \.cc-set-toggle, \.cc-set-numwrap\)\{cursor:not-allowed\}"/.test(settings) && /"#cc-settings \.cc-set-disabled input\{pointer-events:none\}"/.test(settings));
-  ok('a disabled dropdown choice shakes too', /if \(sel\.options\[idx\]\.disabled\) \{ if \(window\.CCTheme && window\.CCTheme\.deny\) window\.CCTheme\.deny\(ev\.currentTarget\); return; \}/.test(settings));
+  ok('a shut row shows that it takes no press', /"#tt-settings \.tt-set-disabled :is\(\.tt-seg, \.tt-seg-btn, \.tt-set-toggle, \.tt-set-numwrap\)\{cursor:not-allowed\}"/.test(settings) && /"#tt-settings \.tt-set-disabled input\{pointer-events:none\}"/.test(settings));
+  ok('a disabled dropdown choice shakes too', /if \(sel\.options\[idx\]\.disabled\) \{ if \(window\.TTTheme && window\.TTTheme\.deny\) window\.TTTheme\.deny\(ev\.currentTarget\); return; \}/.test(settings));
 }
 
 console.log('\nA selector keeps an unavailable choice in view and refuses it');
@@ -79,7 +79,7 @@ console.log('\nA selector keeps an unavailable choice in view and refuses it');
   const doc = { activeElement: null };
   const el = (tag, cls, txt) => { const n = new Ctl(); (cls || '').split(' ').filter(Boolean).forEach((c) => n.cls.add(c)); n.textContent = txt || ''; return n; };
   const make = new Function('el', 'segGlyph', 'document', 'window', grabFn(settings, 'modeSelector') + 'return modeSelector;');
-  const box = make(el, () => new Ctl(), doc, { CCTheme: { deny: (b) => denied.push(b) } })([['list', 'Liste'], ['grid', 'Raster'], ['folder', 'Ordner', null, true]], 'grid', (v) => picks.push(v));
+  const box = make(el, () => new Ctl(), doc, { TTTheme: { deny: (b) => denied.push(b) } })([['list', 'Liste'], ['grid', 'Raster'], ['folder', 'Ordner', null, true]], 'grid', (v) => picks.push(v));
   const [, grid, folder] = box.kids;
   ok('the choice is marked as unavailable', folder.attrs['aria-disabled'] === 'true' && grid.attrs['aria-disabled'] === undefined);
   folder.on.click[0]();
@@ -114,10 +114,10 @@ console.log('\nEvery colour pick repaints what shows it');
 console.log('\nAn area\'s badge preview shows what its own tab paints');
 {
   const block = /pvBadges = \(\{([\s\S]*?)\}\)\[P\]\(\);/.exec(settings);
-  ok('every area with badges has its own samples', !!block && ['ccd.', 'ccv.', 'ccp.', 'ccm.', 'ccs.', 'cct.', 'ccf.'].every((p) => block[1].includes('"' + p + '": function')));
-  ok('no area previews the Docker menu tab, which its colour never reaches', !/"cc-navtab cc-navtab-on", "Docker"\)\s*\]/.test(settings) && !!block && !/navtab/.test(block[1]));
-  ok('the VM samples are VM names and the VM badges', !!block && /"ccv\.": function \(\) \{ return \[mkName\("Windows 11"\), mkVal\("CPU", "4"\), mkVal\("RAM", "8G"\), mkName\("Home Assistant"\), mkVal\("IP", "\.20\.30"\), mkVal\("BW", "100M"\)\]; \}/.test(block[1]));
-  ok('with the rainbow or a flag the accent gives way to a line naming the colour mode, and no preview shows', /if \(palMode\) cA\.appendChild\(lockRow\(accLabel, T\("Folgt dem Farbmodus", "Follows the colour mode"\)/.test(settings) && /if \(!palMode\) \{ cA\.appendChild\(el\("div", "cc-set-lbl", T\("Vorschau", "Preview"\)\)\); cA\.appendChild\(pv\); \}/.test(settings));
+  ok('every area with badges has its own samples', !!block && ['ttd.', 'ttv.', 'ttp.', 'ttm.', 'tts.', 'ttt.', 'ttf.'].every((p) => block[1].includes('"' + p + '": function')));
+  ok('no area previews the Docker menu tab, which its colour never reaches', !/"tt-navtab tt-navtab-on", "Docker"\)\s*\]/.test(settings) && !!block && !/navtab/.test(block[1]));
+  ok('the VM samples are VM names and the VM badges', !!block && /"ttv\.": function \(\) \{ return \[mkName\("Windows 11"\), mkVal\("CPU", "4"\), mkVal\("RAM", "8G"\), mkName\("Home Assistant"\), mkVal\("IP", "\.20\.30"\), mkVal\("BW", "100M"\)\]; \}/.test(block[1]));
+  ok('with the rainbow or a flag the accent gives way to a line naming the colour mode, and no preview shows', /if \(palMode\) cA\.appendChild\(lockRow\(accLabel, T\("Folgt dem Farbmodus", "Follows the colour mode"\)/.test(settings) && /if \(!palMode\) \{ cA\.appendChild\(el\("div", "tt-set-lbl", T\("Vorschau", "Preview"\)\)\); cA\.appendChild\(pv\); \}/.test(settings));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

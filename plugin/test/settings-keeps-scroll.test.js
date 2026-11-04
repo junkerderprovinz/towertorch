@@ -21,9 +21,9 @@ ok('render notes the position before it empties the root', /var keepY = window\.
 ok('and scrolls back to it once the cards are in', /paintCardHeads\(\);\s*if \(window\.scrollY !== keepY\) window\.scrollTo\(0, keepY\);\s*\}$/.test(render));
 
 console.log('\nThe colour mode keeps the focus on itself');
-ok('its row carries a class of its own', /var modeRow = el\("div", "cc-set-row cc-set-inline cc-set-colourmode"\);/.test(settings));
-ok('the pick focuses the chosen mode without scrolling', /root\.querySelector\("\.cc-set-colourmode \.cc-seg-on"\); if \(on\) on\.focus\(\{ preventScroll: true \}\);/.test(settings));
-ok('and never the first selector on the page', !/root\.querySelector\("\.cc-set-mode \.cc-seg-on"\)/.test(settings));
+ok('its row carries a class of its own', /var modeRow = el\("div", "tt-set-row tt-set-inline tt-set-colourmode"\);/.test(settings));
+ok('the pick focuses the chosen mode without scrolling', /root\.querySelector\("\.tt-set-colourmode \.tt-seg-on"\); if \(on\) on\.focus\(\{ preventScroll: true \}\);/.test(settings));
+ok('and never the first selector on the page', !/root\.querySelector\("\.tt-set-mode \.tt-seg-on"\)/.test(settings));
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
 process.exit(fail ? 1 : 0);

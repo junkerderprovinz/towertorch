@@ -1,4 +1,4 @@
-// The cc.* mirror pushes one change set at a time and never adopts the engine's
+// The tt.* mirror pushes one change set at a time and never adopts the engine's
 // copy of a key whose local value has not landed there yet, including from a
 // config read that went out while the key's push was still on the wire.
 //
@@ -58,7 +58,7 @@ const COPIES = [
     io: (e) => ({ api: (m, p, b) => e.request(m, b, p).then((r) => { if (r === null) throw new Error('HTTP 500'); return r; }) }),
   },
   {
-    file: 'cc-theme.js', push: 'push', unsynced: 'unsynced', adopt: 'adopt',
+    file: 'tt-theme.js', push: 'push', unsynced: 'unsynced', adopt: 'adopt',
     vars: 'var pending = {}, sending = {}, pushing = false, queued = false;', pending: 'pending',
     io: (e) => ({ apiGet: (p) => e.request('GET', null, p), apiPut: (p, b) => e.request('PUT', b, p) }),
   },
@@ -82,14 +82,14 @@ const COPIES = [
     console.log('\n' + c.file + ': one push on the wire at a time');
     {
       const { e, m } = boot();
-      m.write('cc.a', '1'); m.push();
-      m.write('cc.b', '2'); m.push();
+      m.write('tt.a', '1'); m.push();
+      m.write('tt.b', '2'); m.push();
       await tick();
       ok('the second push waits for the first', e.waiting.length === 1, e.waiting.length + ' requests out');
       await e.next();
-      ok('the first PUT carries the first key', e.server.ui_settings['cc.a'] === '1' && !('cc.b' in e.server.ui_settings), JSON.stringify(e.server.ui_settings));
+      ok('the first PUT carries the first key', e.server.ui_settings['tt.a'] === '1' && !('tt.b' in e.server.ui_settings), JSON.stringify(e.server.ui_settings));
       await e.next();
-      ok('the queued key follows in a second push once the first has landed', e.server.ui_settings['cc.b'] === '2' && e.server.ui_settings['cc.a'] === '1', JSON.stringify(e.server.ui_settings));
+      ok('the queued key follows in a second push once the first has landed', e.server.ui_settings['tt.b'] === '2' && e.server.ui_settings['tt.a'] === '1', JSON.stringify(e.server.ui_settings));
       ok('never more than one request open at once', e.maxOpen === 1, 'max ' + e.maxOpen);
       ok('nothing is left on the wire', e.waiting.length === 0);
     }
@@ -97,44 +97,44 @@ const COPIES = [
     console.log('\n' + c.file + ': adopt leaves a key alone until its push has landed');
     {
       const { e, store, m } = boot();
-      e.server.ui_settings = { 'cc.a': 'old' };
-      m.write('cc.a', 'new');
+      e.server.ui_settings = { 'tt.a': 'old' };
+      m.write('tt.a', 'new');
       const busy = m.unsynced();
       m.push();
-      m.adopt({ 'cc.a': 'old', 'cc.c': 'x' });
-      ok('a pending key keeps its local value', store['cc.a'] === 'new', store['cc.a']);
-      ok('a key with nothing pending is adopted as before', store['cc.c'] === 'x');
+      m.adopt({ 'tt.a': 'old', 'tt.c': 'x' });
+      ok('a pending key keeps its local value', store['tt.a'] === 'new', store['tt.a']);
+      ok('a key with nothing pending is adopted as before', store['tt.c'] === 'x');
       await e.next();
-      m.adopt({ 'cc.a': 'old' }, busy);
-      ok('a read that went out while the key was unsynced cannot revert it after the push lands', store['cc.a'] === 'new', store['cc.a']);
-      m.adopt({ 'cc.a': 'server' });
-      ok('a read issued after the push landed is adopted again', store['cc.a'] === 'server', store['cc.a']);
+      m.adopt({ 'tt.a': 'old' }, busy);
+      ok('a read that went out while the key was unsynced cannot revert it after the push lands', store['tt.a'] === 'new', store['tt.a']);
+      m.adopt({ 'tt.a': 'server' });
+      ok('a read issued after the push landed is adopted again', store['tt.a'] === 'server', store['tt.a']);
     }
 
     console.log('\n' + c.file + ': a failed push keeps its keys unsynced');
     {
       const { e, store, m } = boot();
-      m.write('cc.a', 'new'); m.push();
+      m.write('tt.a', 'new'); m.push();
       await e.next(true);
       ok('a failed push ends it', e.waiting.length === 0);
-      m.adopt({ 'cc.a': 'old' });
-      ok('the key is still protected from adopt', store['cc.a'] === 'new', store['cc.a']);
+      m.adopt({ 'tt.a': 'old' });
+      ok('the key is still protected from adopt', store['tt.a'] === 'new', store['tt.a']);
       m.push(); await e.next();
-      ok('the next push carries it', e.server.ui_settings['cc.a'] === 'new', JSON.stringify(e.server.ui_settings));
+      ok('the next push carries it', e.server.ui_settings['tt.a'] === 'new', JSON.stringify(e.server.ui_settings));
     }
 
     console.log('\n' + c.file + ': a fresh browser writes only what changed');
     {
       const { e, m } = boot();
-      e.server = { schedules: [{ id: 's1' }], watchdogs: [{ name: 'CCWB' }], ui_settings: { 'cc.accent': '#FCC419', 'cc.flag': 'dz', 'cc.lastver': '1.2.0-rc5' } };
-      m.write('cc.lastver', '1.2.0-rc8'); m.push();
+      e.server = { schedules: [{ id: 's1' }], watchdogs: [{ name: 'Caddy' }], ui_settings: { 'tt.accent': '#FCC419', 'tt.flag': 'dz', 'tt.lastver': '1.2.0-rc5' } };
+      m.write('tt.lastver', '1.2.0-rc8'); m.push();
       await tick();
       const w = e.waiting[0];
       ok('the push goes to the engine\'s merge, not over the whole config', w && w.method === 'PUT' && e.paths[0] === 'PUT uisettings', e.paths.join(','));
-      ok('and carries the changed key alone', w && JSON.stringify(w.body) === '{"cc.lastver":"1.2.0-rc8"}', w && JSON.stringify(w.body));
+      ok('and carries the changed key alone', w && JSON.stringify(w.body) === '{"tt.lastver":"1.2.0-rc8"}', w && JSON.stringify(w.body));
       await e.next();
-      ok('the rest of the engine\'s copy stays as it was', e.server.ui_settings['cc.accent'] === '#FCC419' && e.server.ui_settings['cc.flag'] === 'dz' && e.server.schedules.length === 1 && e.server.watchdogs.length === 1, JSON.stringify(e.server));
-      ok('the change lands', e.server.ui_settings['cc.lastver'] === '1.2.0-rc8');
+      ok('the rest of the engine\'s copy stays as it was', e.server.ui_settings['tt.accent'] === '#FCC419' && e.server.ui_settings['tt.flag'] === 'dz' && e.server.schedules.length === 1 && e.server.watchdogs.length === 1, JSON.stringify(e.server));
+      ok('the change lands', e.server.ui_settings['tt.lastver'] === '1.2.0-rc8');
     }
   }
   console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

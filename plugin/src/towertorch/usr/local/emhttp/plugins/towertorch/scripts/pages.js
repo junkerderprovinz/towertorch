@@ -1,7 +1,7 @@
 /* TowerTorch: single pages the area enhancers do not reach.
  *
  * Loaded on every page through TowerTorch.Pages.page. It names the current page in
- * html[data-cc-page] while master theming and the area the page belongs to are on, which is all
+ * html[data-tt-page] while master theming and the area the page belongs to are on, which is all
  * TowerTorch.Pages.css keys on, and does the few things CSS cannot: it translates two native
  * button captions, moves a hint printed under a field into an (i) bubble, gives the disk usage
  * chart a translated title and groups the VM templates into cards. A caption only changes on a
@@ -15,13 +15,13 @@
   function pn() { try { return location.pathname.replace(/\/+$/, ""); } catch (e) { return ""; } }
 
   // Route, page name and the area switch with its default. A page without a switch rides the area
-  // class its sheet rules combine with (cc-tools-on on /Settings and /Tools, cc-popups-on on /Apps).
+  // class its sheet rules combine with (tt-tools-on on /Settings and /Tools, tt-popups-on on /Apps).
   var PAGES = [
-    [/^\/Users\/(UserEdit|UserAdd)$/, "useredit", "cc.enable.settings", "1"],
-    [/^\/VMs\/(UpdateVM|AddVM)$/, "vmform", "cc.enable.vms", "1"],
-    [/^\/VMs\/VMTemplates$/, "vmtemplates", "cc.enable.vms", "1"],
-    [/^\/Stats$/, "stats", "cc.enable.shares", "0"],
-    [/^\/Main$/, "main", "cc.enable.main", "0"],
+    [/^\/Users\/(UserEdit|UserAdd)$/, "useredit", "tt.enable.settings", "1"],
+    [/^\/VMs\/(UpdateVM|AddVM)$/, "vmform", "tt.enable.vms", "1"],
+    [/^\/VMs\/VMTemplates$/, "vmtemplates", "tt.enable.vms", "1"],
+    [/^\/Stats$/, "stats", "tt.enable.shares", "0"],
+    [/^\/Main$/, "main", "tt.enable.main", "0"],
     [/^\/Main\/Device$/, "device", null],
     [/^\/Settings\/Userscripts$/i, "userscripts", null],
     [/^\/Settings\/nvidia-driver$/i, "nvidia", null],
@@ -31,7 +31,7 @@
     [/^\/Apps(\/|$)/, "apps", null]
   ];
   function pageName() {
-    if (g("cc.theming", "1") === "0") return "";
+    if (g("tt.theming", "1") === "0") return "";
     var p = pn();
     for (var i = 0; i < PAGES.length; i++) {
       var r = PAGES[i];
@@ -50,9 +50,9 @@
       var b = document.getElementById(id);
       if (!b || b.type !== "button" || b.name) continue;
       if (on) {
-        if (!b.hasAttribute("data-cc-orig")) b.setAttribute("data-cc-orig", b.value);
+        if (!b.hasAttribute("data-tt-orig")) b.setAttribute("data-tt-orig", b.value);
         b.value = T(POOL_BTNS[id][0], POOL_BTNS[id][1]);
-      } else if (b.hasAttribute("data-cc-orig")) { b.value = b.getAttribute("data-cc-orig"); b.removeAttribute("data-cc-orig"); }
+      } else if (b.hasAttribute("data-tt-orig")) { b.value = b.getAttribute("data-tt-orig"); b.removeAttribute("data-tt-orig"); }
     }
   }
 
@@ -65,28 +65,28 @@
     var dt = em.closest("dd").previousElementSibling;
     while (dt && dt.tagName !== "DT") dt = dt.previousElementSibling;
     if (!dt) return;
-    var text = em.textContent.trim(), own = dt.querySelector(".cc-pagehint"), help = dt.querySelector(".cc-toolsinfo:not(.cc-pagehint)");
+    var text = em.textContent.trim(), own = dt.querySelector(".tt-pagehint"), help = dt.querySelector(".tt-toolsinfo:not(.tt-pagehint)");
     if (on) {
-      em.classList.add("cc-hint-moved");
+      em.classList.add("tt-hint-moved");
       if (help) {
         if (own) own.parentNode.removeChild(own);
-        if (!help.hasAttribute("data-cc-tip-orig")) {
-          var orig = help.getAttribute("data-cc-tip") || "";
-          help.setAttribute("data-cc-tip-orig", orig);
-          help.setAttribute("data-cc-tip", orig ? orig + " " + text : text);
+        if (!help.hasAttribute("data-tt-tip-orig")) {
+          var orig = help.getAttribute("data-tt-tip") || "";
+          help.setAttribute("data-tt-tip-orig", orig);
+          help.setAttribute("data-tt-tip", orig ? orig + " " + text : text);
         }
       } else if (!own) {
         own = document.createElement("span");
-        own.className = "cc-toolsinfo cc-pagehint";
+        own.className = "tt-toolsinfo tt-pagehint";
         own.setAttribute("tabindex", "0");
-        own.setAttribute("data-cc-tip", text); own.setAttribute("aria-label", text);
+        own.setAttribute("data-tt-tip", text); own.setAttribute("aria-label", text);
         own.textContent = "ⓘ";
         dt.appendChild(own);
       }
     } else {
-      em.classList.remove("cc-hint-moved");
+      em.classList.remove("tt-hint-moved");
       if (own) own.parentNode.removeChild(own);
-      if (help && help.hasAttribute("data-cc-tip-orig")) { help.setAttribute("data-cc-tip", help.getAttribute("data-cc-tip-orig")); help.removeAttribute("data-cc-tip-orig"); }
+      if (help && help.hasAttribute("data-tt-tip-orig")) { help.setAttribute("data-tt-tip", help.getAttribute("data-tt-tip-orig")); help.removeAttribute("data-tt-tip-orig"); }
     }
   }
 
@@ -96,8 +96,8 @@
     [[t, T("Belegung", "Disk usage")], [s, T("in Prozent", "in percent")]].forEach(function (x) {
       var el = x[0]; if (!el) return;
       var span = el.querySelector("tspan") || el;
-      if (on) { if (!el.hasAttribute("data-cc-orig")) el.setAttribute("data-cc-orig", span.textContent); span.textContent = x[1]; }
-      else if (el.hasAttribute("data-cc-orig")) { span.textContent = el.getAttribute("data-cc-orig"); el.removeAttribute("data-cc-orig"); }
+      if (on) { if (!el.hasAttribute("data-tt-orig")) el.setAttribute("data-tt-orig", span.textContent); span.textContent = x[1]; }
+      else if (el.hasAttribute("data-tt-orig")) { span.textContent = el.getAttribute("data-tt-orig"); el.removeAttribute("data-tt-orig"); }
     });
   }
 
@@ -108,17 +108,17 @@
     var heads = document.querySelectorAll("#displaybox .vmheader");
     for (var i = 0; i < heads.length; i++) {
       var h = heads[i], box = h.parentElement;
-      if (on && !box.classList.contains("cc-vmt-group")) {
+      if (on && !box.classList.contains("tt-vmt-group")) {
         var g = document.createElement("div");
-        g.className = "cc-vmt-group";
-        if (!h.textContent.trim()) g.classList.add("cc-vmt-bare");
+        g.className = "tt-vmt-group";
+        if (!h.textContent.trim()) g.classList.add("tt-vmt-bare");
         box.insertBefore(g, h);
         for (var n = h; n && (n === h || (n.classList && n.classList.contains("vmtemplate")) || n.nodeType === 3);) {
           var next = n.nextSibling;
           g.appendChild(n);
           n = next;
         }
-      } else if (!on && box.classList.contains("cc-vmt-group")) {
+      } else if (!on && box.classList.contains("tt-vmt-group")) {
         while (box.firstChild) box.parentNode.insertBefore(box.firstChild, box);
         box.parentNode.removeChild(box);
       }
@@ -128,11 +128,11 @@
   var current = "";
   function apply() {
     var name = pageName(), root = document.documentElement;
-    if (name) root.setAttribute("data-cc-page", name); else root.removeAttribute("data-cc-page");
+    if (name) root.setAttribute("data-tt-page", name); else root.removeAttribute("data-tt-page");
     var was = current; current = name;
     if (name === "device" || was === "device") poolButtons(name === "device");
     // The bubble is the settings form's (i), so the hint moves only where the form rules apply.
-    var hint = name === "useredit" && root.classList.contains("cc-tools-on");
+    var hint = name === "useredit" && root.classList.contains("tt-tools-on");
     if (hint || was === "useredit") userHint(hint);
     if (name === "stats" || was === "stats") statsTitle(name === "stats");
     if (name === "vmtemplates" || was === "vmtemplates") templateGroups(name === "vmtemplates");
@@ -146,8 +146,8 @@
     setTimeout(apply, 1500);
     setTimeout(apply, 4000);
     window.addEventListener("resize", function () { if (current === "stats") setTimeout(function () { statsTitle(true); }, 300); });
-    // cc.stateCache is skipped because docker.js rewrites it every 9s.
-    window.addEventListener("storage", function (e) { try { if (e && e.key && e.key !== "cc.stateCache" && /^cc\./.test(e.key)) apply(); } catch (e2) {} });
+    // tt.stateCache is skipped because docker.js rewrites it every 9s.
+    window.addEventListener("storage", function (e) { try { if (e && e.key && e.key !== "tt.stateCache" && /^tt\./.test(e.key)) apply(); } catch (e2) {} });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

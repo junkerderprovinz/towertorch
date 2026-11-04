@@ -120,9 +120,9 @@ function page() {
       sw('hist', 'Historisch'), sw('shares', 'Freigaben'), sw('disks', 'Datenträger'),
     ]),
   ]);
-  const row = h('div', { class: 'cc-dk-udrow' }, [h('div', { class: 'show-disks' }), h('div', { class: 'show-shares' }), h('div', { class: 'show-disks' }, [h('div', { class: 'show-historical' })])]);
-  const head = h('div', { class: 'cc-card-head' }, [h('span', { class: 'left' }, ['Unassigned Devices'])]);
-  const sec = h('section', { 'data-cc-card': '1', class: 'cc-dk-box', role: 'tabpanel' }, [head, bar, row]);
+  const row = h('div', { class: 'tt-dk-udrow' }, [h('div', { class: 'show-disks' }), h('div', { class: 'show-shares' }), h('div', { class: 'show-disks' }, [h('div', { class: 'show-historical' })])]);
+  const head = h('div', { class: 'tt-card-head' }, [h('span', { class: 'left' }, ['Unassigned Devices'])]);
+  const sec = h('section', { 'data-tt-card': '1', class: 'tt-dk-box', role: 'tabpanel' }, [head, bar, row]);
   const root = h('html', {}, [h('div', { id: 'displaybox' }, [sec])]);
   return { root, sec, head, bar, row, ctrls: bar.querySelectorAll('a.info, .switch-button-background') };
 }
@@ -131,11 +131,11 @@ function load(lang) {
   if (!names) throw new Error('UD_NAMES not found');
   const body = [
     'function el(tag, cls, txt) { var n = new Elem(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }',
-    'function ccInfoIcon(tip) { var s = el("span", "cc-info"); s.setAttribute("data-tip", tip); return s; }',
+    'function ttInfoIcon(tip) { var s = el("span", "tt-info"); s.setAttribute("data-tip", tip); return s; }',
     'function g() { return "1"; } function idealText() { return "#161616"; } function mainAccent() { return "#FCC419"; }',
     names[0],
-    ...['ccUdCtrlsMove', 'ccUdCtrlsGather', 'ccUdPanel', 'ccUdPanelDrop', 'ccUdName', 'ccUdLabels', 'ccUdCtrlsHome'].map((n) => grabFn(shares, n)),
-    'return { move: ccUdCtrlsMove, home: ccUdCtrlsHome };',
+    ...['ttUdCtrlsMove', 'ttUdCtrlsGather', 'ttUdPanel', 'ttUdPanelDrop', 'ttUdName', 'ttUdLabels', 'ttUdCtrlsHome'].map((n) => grabFn(shares, n)),
+    'return { move: ttUdCtrlsMove, home: ttUdCtrlsHome };',
   ].join('\n');
   return (doc) => new Function('Elem', 'document', 'LANG', body)(Elem, doc, lang);
 }
@@ -146,22 +146,22 @@ console.log('\nIn the tiles the controls are a card of their own');
   const P = page(), ud = de(P.root);
   ud.move();
   const panel = P.row.lastElementChild;
-  ok('the card ends the row of UD\'s three cards', !!panel && panel.classList.contains('cc-ud-panel') && P.row.elems().length === 4);
-  const badge = panel && panel.querySelector(':scope > div.title > span.left > span.cc-b.cc-ud-h');
+  ok('the card ends the row of UD\'s three cards', !!panel && panel.classList.contains('tt-ud-panel') && P.row.elems().length === 4);
+  const badge = panel && panel.querySelector(':scope > div.title > span.left > span.tt-b.tt-ud-h');
   ok('under a badge built like theirs, named after the plugin', !!badge && badge.textContent === 'Unassigned Devices', badge && badge.textContent);
-  ok('the controls sit in it and not in the section head', !!panel.querySelector(':scope > .cc-ud-ctrls') && !P.head.querySelector('.cc-ud-ctrls'));
-  const units = panel.querySelectorAll('.cc-ud-unit');
+  ok('the controls sit in it and not in the section head', !!panel.querySelector(':scope > .tt-ud-ctrls') && !P.head.querySelector('.tt-ud-ctrls'));
+  const units = panel.querySelectorAll('.tt-ud-unit');
   ok('one line per control', units.length === 5, units.length);
   const want = ['Unassigned-Devices-Einstellungen', 'Datenträger neu einlesen', 'Historische Geräte anzeigen', 'Freigaben anzeigen', 'Datenträger anzeigen'];
-  const got = units.map((u) => { const l = u.firstChild; return l && l.classList.contains('cc-ud-lbl') ? l.firstChild.textContent : null; });
+  const got = units.map((u) => { const l = u.firstChild; return l && l.classList.contains('tt-ud-lbl') ? l.firstChild.textContent : null; });
   ok('each line starts with its name, in German on a German page', JSON.stringify(got) === JSON.stringify(want), JSON.stringify(got));
-  const infos = units.map((u) => u.querySelector(':scope > .cc-ud-lbl > .cc-info'));
+  const infos = units.map((u) => u.querySelector(':scope > .tt-ud-lbl > .tt-info'));
   ok('each name carries an (i) that says what the control does', infos.every((i) => i && /\.$/.test(i.getAttribute('data-tip') || '')), infos.map((i) => i && i.getAttribute('data-tip')).join(' | '));
   ok('and the control comes after it, at the end of the line', units.every((u, k) => u.children.indexOf(u.firstChild) < u.children.indexOf(P.ctrls[k])));
-  ok('they are UD\'s own gear, refresh and switch nodes, moved and not copied, so its handlers answer', P.ctrls.every((c, k) => c.closest('.cc-ud-unit') === units[k]) && !P.bar.querySelector('a, .switch-button-background'));
-  ok('gear and refresh are icon buttons like CC\'s others', P.ctrls.slice(0, 2).every((a) => a.classList.contains('cc-ud-icon')) && !P.ctrls.slice(2).some((t) => t.closest('a.cc-ud-icon')));
+  ok('they are UD\'s own gear, refresh and switch nodes, moved and not copied, so its handlers answer', P.ctrls.every((c, k) => c.closest('.tt-ud-unit') === units[k]) && !P.bar.querySelector('a, .switch-button-background'));
+  ok('gear and refresh are icon buttons like TowerTorch\'s others', P.ctrls.slice(0, 2).every((a) => a.classList.contains('tt-ud-icon')) && !P.ctrls.slice(2).some((t) => t.closest('a.tt-ud-icon')));
   ud.move(); ud.move();
-  ok('a later pass leaves one card with five names', P.root.querySelectorAll('.cc-ud-panel').length === 1 && panel.querySelectorAll('.cc-ud-lbl').length === 5);
+  ok('a later pass leaves one card with five names', P.root.querySelectorAll('.tt-ud-panel').length === 1 && panel.querySelectorAll('.tt-ud-lbl').length === 5);
   P.row.appendChild(h('div', { class: 'show-shares' }));
   ud.move();
   ok('and puts the card back at the end when a part lands after it', P.row.lastElementChild === panel);
@@ -171,51 +171,51 @@ console.log('\nOn an English page the names are English');
 {
   const P = page(), ud = en(P.root);
   ud.move();
-  const got = P.root.querySelectorAll('.cc-ud-lbl').map((l) => l.firstChild.textContent);
+  const got = P.root.querySelectorAll('.tt-ud-lbl').map((l) => l.firstChild.textContent);
   ok('each control is named as its UD tooltip says', JSON.stringify(got) === JSON.stringify(['Unassigned Devices settings', 'Refresh disks', 'Show historical devices', 'Show shares', 'Show disks']), JSON.stringify(got));
   const unknown = page();
   unknown.bar.querySelector('input.shares-switch').setAttribute('class', 'iso-switch');
   en(unknown.root).move();
-  ok('a switch a later UD build adds is named by its own tooltip', (unknown.root.querySelectorAll('.cc-ud-lbl')[3] || {}).textContent === tips.shares);
+  ok('a switch a later UD build adds is named by its own tooltip', (unknown.root.querySelectorAll('.tt-ud-lbl')[3] || {}).textContent === tips.shares);
 }
 
 console.log('\nIn the list the controls go back to the section head');
 {
   const P = page(), ud = de(P.root);
   ud.move();
-  P.sec.classList.remove('cc-dk-box');
+  P.sec.classList.remove('tt-dk-box');
   ud.move();
-  ok('the cluster stands in the head again', !!P.head.querySelector(':scope > .cc-ud-ctrls'));
-  ok('without names or card', P.root.querySelectorAll('.cc-ud-lbl, .cc-ud-unit, .cc-ud-panel').length === 0);
-  P.sec.classList.add('cc-dk-box');
+  ok('the cluster stands in the head again', !!P.head.querySelector(':scope > .tt-ud-ctrls'));
+  ok('without names or card', P.root.querySelectorAll('.tt-ud-lbl, .tt-ud-unit, .tt-ud-panel').length === 0);
+  P.sec.classList.add('tt-dk-box');
   ud.move();
-  ok('and back in the tiles they get their card again', P.row.lastElementChild.classList.contains('cc-ud-panel') && P.root.querySelectorAll('.cc-ud-lbl').length === 5);
+  ok('and back in the tiles they get their card again', P.row.lastElementChild.classList.contains('tt-ud-panel') && P.root.querySelectorAll('.tt-ud-lbl').length === 5);
   ud.home();
-  ok('sending them home gives UD its bar back as it was', P.bar.querySelectorAll('div.right.ud').length === 5 && !P.bar.hasAttribute('data-cc-ud-moved') && P.root.querySelectorAll('.cc-ud-lbl, .cc-ud-unit, .cc-ud-panel, .cc-ud-ctrls').length === 0);
+  ok('sending them home gives UD its bar back as it was', P.bar.querySelectorAll('div.right.ud').length === 5 && !P.bar.hasAttribute('data-tt-ud-moved') && P.root.querySelectorAll('.tt-ud-lbl, .tt-ud-unit, .tt-ud-panel, .tt-ud-ctrls').length === 0);
 }
 
 console.log('\nThe card is laid out like a settings card');
 {
   const disks = rules(read('sheets/TowerTorch.Disks.css'));
   const find = (re, media) => disks.find((r) => re.test(r.sel) && (media ? re.test(r.sel) && media.test(r.media) : !r.media));
-  const unit = find(/\.cc-ud-panel \.cc-ud-unit$/);
-  const lbl = find(/\.cc-ud-panel \.cc-ud-lbl$/);
+  const unit = find(/\.tt-ud-panel \.tt-ud-unit$/);
+  const lbl = find(/\.tt-ud-panel \.tt-ud-lbl$/);
   ok('a line is one row', !!unit && /display: flex !important; flex-direction: row; align-items: center;/.test(unit.body), unit && unit.body);
   ok('its name takes the start and pushes the control to the end', !!lbl && /flex: 1 1 auto/.test(lbl.body) && /margin-right: \d+px/.test(lbl.body), lbl && lbl.body);
-  const card = find(/\.cc-dk-udrow > \.cc-ud-panel$/);
+  const card = find(/\.tt-dk-udrow > \.tt-ud-panel$/);
   ok('the card is as wide as its lines beside the other three', !!card && /flex: none/.test(card.body));
-  const phone = disks.find((r) => /\.cc-dk-udrow > \.cc-ud-panel/.test(r.sel) && /max-width: 600px/.test(r.media));
+  const phone = disks.find((r) => /\.tt-dk-udrow > \.tt-ud-panel/.test(r.sel) && /max-width: 600px/.test(r.media));
   ok('and on a phone as wide as the screen, like them', !!phone && /flex: 1 1 100%/.test(phone.body));
-  const fill = rules(read('sheets/TowerTorch.Shares.css')).find((r) => r.sel.split(',').some((s) => /#displaybox \.cc-ud-panel > div\.title$/.test(s.trim())));
+  const fill = rules(read('sheets/TowerTorch.Shares.css')).find((r) => r.sel.split(',').some((s) => /#displaybox \.tt-ud-panel > div\.title$/.test(s.trim())));
   ok('its badge line has no fill, like the badge lines of UD\'s parts', !!fill && /background: none !important/.test(fill.body));
 }
 
 console.log('\nNo badge line keeps room for the controls');
 {
   const css = read('sheets/TowerTorch.Disks.css');
-  ok('shares.js measures nothing', !/ResizeObserver|--cc-ud-ctrls-w|ccUdCtrlsMeasure/.test(shares));
-  ok('no badge line keeps their width free', !/--cc-ud-ctrls-w/.test(css) && !rules(css).some((r) => /\.cc-dk-udrow.*div\.title/.test(r.sel) && /padding-right/.test(r.body)));
-  const head = rules(css).find((r) => /section\.cc-dk-box:has\(> \.cc-dk-udrow\) > \.cc-card-head$/.test(r.sel) && !r.media);
+  ok('shares.js measures nothing', !/ResizeObserver|--tt-ud-ctrls-w|ttUdCtrlsMeasure/.test(shares));
+  ok('no badge line keeps their width free', !/--tt-ud-ctrls-w/.test(css) && !rules(css).some((r) => /\.tt-dk-udrow.*div\.title/.test(r.sel) && /padding-right/.test(r.body)));
+  const head = rules(css).find((r) => /section\.tt-dk-box:has\(> \.tt-dk-udrow\) > \.tt-card-head$/.test(r.sel) && !r.media);
   ok('the section head that held them goes, so nothing lies over the cards', !!head && /^display: none;?$/.test(head.body), head && head.body);
 }
 

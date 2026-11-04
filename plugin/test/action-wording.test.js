@@ -50,7 +50,7 @@ console.log('\nThe run state speaks the interface language');
   ok('English shows the English one', run('en')('degraded') === 'degraded');
   ok('every engine state has a German word', ['pending', 'starting', 'ready', 'degraded', 'failed', 'skipped'].every((s) => run('de')(s) !== s));
   ok('an unknown state falls back to itself', run('de')('mystery') === 'mystery');
-  ok('the pill shows the label and keeps the raw state as its class', /el\("span", "cc-pill cc-pill-" \+ lr\.state, runLabel\(lr\.state\)\)/.test(grabFn(docker, 'lastRunPill')));
+  ok('the pill shows the label and keeps the raw state as its class', /el\("span", "tt-pill tt-pill-" \+ lr\.state, runLabel\(lr\.state\)\)/.test(grabFn(docker, 'lastRunPill')));
   ok('the dependency bubble uses the label too', /bad\.push\(d \+ " \(" \+ runLabel\(lr\.state\)/.test(docker));
 }
 

@@ -49,14 +49,14 @@ console.log('\nOn a German page the three English categories get German names');
     const x = heading(file, en);
     ok(file + ' is told by its page file', R.headPage(x.h.parentNode) === file.split('/').pop().replace('.page', ''));
     R.nameHead(x.h);
-    ok(en + ' becomes ' + de + ' and keeps the original for the teardown', x.text.nodeValue === de && x.attrs['data-cc-sgh-text'] === en);
+    ok(en + ' becomes ' + de + ' and keeps the original for the teardown', x.text.nodeValue === de && x.attrs['data-tt-sgh-text'] === en);
     R.nameHead(x.h);
-    ok('a second paint keeps the first original', x.attrs['data-cc-sgh-text'] === en);
+    ok('a second paint keeps the first original', x.attrs['data-tt-sgh-text'] === en);
   }
   for (const [file, label] of [['webGui/UNRAID-OS.page', 'Unraid OS'], ['webGui/About.page', 'Über'], ['plugins/dynamix.system.stats/SystemInformation.page', 'Systeminformation']]) {
     const x = heading(file, label);
     R.nameHead(x.h);
-    ok(label + ' stays as Unraid names it', x.text.nodeValue === label && !('data-cc-sgh-text' in x.attrs));
+    ok(label + ' stays as Unraid names it', x.text.nodeValue === label && !('data-tt-sgh-text' in x.attrs));
   }
   const odd = heading('plugins/other/Tools.page', 'Wizards');
   R.nameHead(odd.h);
@@ -71,7 +71,7 @@ for (const lang of ['en', 'fr', '']) {
 }
 
 console.log('\nThe teardown gives the original back');
-ok('clearHeads() restores the label and drops the marker', /if \(label\) label\.nodeValue = h\.getAttribute\("data-cc-sgh-text"\);\s*h\.removeAttribute\("data-cc-sgh-text"\);/.test(grabFn('clearHeads')));
+ok('clearHeads() restores the label and drops the marker', /if \(label\) label\.nodeValue = h\.getAttribute\("data-tt-sgh-text"\);\s*h\.removeAttribute\("data-tt-sgh-text"\);/.test(grabFn('clearHeads')));
 ok('paintHeads() names every heading it badges', /nameHead\(h\);/.test(grabFn('paintHeads')));
 
 console.log(`\n${pass} passed, ${fail} failed`);

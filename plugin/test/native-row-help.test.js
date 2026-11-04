@@ -1,6 +1,6 @@
 // Every setting carries an (i) (GlimStone rule 8). Unraid writes one help block after a list of
 // several rows, and that block explains the last labelled row, where Unraid also puts its help
-// cursor. The rows Unraid and two plugins ship without help get their bubble from CC's own table, keyed by the
+// cursor. The rows Unraid and two plugins ship without help get their bubble from TowerTorch's own table, keyed by the
 // field's name, and a plugin page without a German translation gets German labels.
 const fs = require('fs');
 const path = require('path');
@@ -17,11 +17,11 @@ class Text { constructor(v) { this.nodeType = 3; this.nodeValue = v; this.parent
 class El {
   constructor(tag, cls, kids) { this.tagName = tag.toUpperCase(); this.className = cls || ''; this.childNodes = []; this.attrs = {}; (kids || []).forEach((k) => this.appendChild(k)); }
   appendChild(k) { k.parentElement = this; this.childNodes.push(k); return k; }
-  closest(sel) { let e = this; while (e) { if (sel === '.cc-toolsinfo' && /\bcc-toolsinfo\b/.test(e.className)) return e; e = e.parentElement; } return null; }
+  closest(sel) { let e = this; while (e) { if (sel === '.tt-toolsinfo' && /\btt-toolsinfo\b/.test(e.className)) return e; e = e.parentElement; } return null; }
   setAttribute(k, v) { this.attrs[k] = v; }
   all() { return this.childNodes.filter((k) => k instanceof El).flatMap((k) => [k].concat(k.all())); }
   querySelector(sel) {
-    if (sel === '.cc-toolsinfo') return this.all().find((e) => /\bcc-toolsinfo\b/.test(e.className)) || null;
+    if (sel === '.tt-toolsinfo') return this.all().find((e) => /\btt-toolsinfo\b/.test(e.className)) || null;
     return this.all().find((e) => e.name && !/^(hidden|button|submit)$/.test(e.type)) || null;
   }
   querySelectorAll(sel) { return sel === ':scope > dt' ? this.childNodes.filter((k) => k.tagName === 'DT') : []; }
@@ -36,8 +36,8 @@ const doc = (dts) => ({
 });
 const T = (de) => de;
 const make = (dts, pathname) => new Function('document', 'NodeFilter', 'location', 'LANG', 'T',
-  fnSrc('ccLabelText') + fnSrc('ccHelpOwner') + varSrc('NTP_SRV', '];') + varSrc('PTP_SRV', '];') + varSrc('AMD_UNIT', '];') + varSrc('CC_ROW_HELP', '\n  };') + fnSrc('ccRowHelp') +
-  '\nreturn { ccHelpOwner: ccHelpOwner, ccRowHelp: ccRowHelp, CC_ROW_HELP: CC_ROW_HELP };')(doc(dts || []), { SHOW_TEXT: 4 }, { pathname: pathname || '/' }, 'de', T);
+  fnSrc('ttLabelText') + fnSrc('ttHelpOwner') + varSrc('NTP_SRV', '];') + varSrc('PTP_SRV', '];') + varSrc('AMD_UNIT', '];') + varSrc('TT_ROW_HELP', '\n  };') + fnSrc('ttRowHelp') +
+  '\nreturn { ttHelpOwner: ttHelpOwner, ttRowHelp: ttRowHelp, TT_ROW_HELP: TT_ROW_HELP };')(doc(dts || []), { SHOW_TEXT: 4 }, { pathname: pathname || '/' }, 'de', T);
 
 console.log('\nA help block after several rows');
 {
@@ -45,11 +45,11 @@ console.log('\nA help block after several rows');
   const status = new El('dt', '', [new Text('Array-Statusmeldung')]);
   const dl = new El('dl', '', [lang, new El('dd'), status, new El('dd')]);
   const fns = make();
-  ok('belongs to the last labelled row', fns.ccHelpOwner(dl) === status);
+  ok('belongs to the last labelled row', fns.ttHelpOwner(dl) === status);
   const avail = new El('dt', '', [new El('span', '', [new Text('Verfügbare Meldungen:')])]);
   const dl2 = new El('dl', '', [avail, new El('dd'), new El('dt'), new El('dd'), new El('dt'), new El('dd')]);
-  ok('empty structural rows after it do not count', fns.ccHelpOwner(dl2) === avail);
-  ok('the resolver asks for that row', header.includes('lab = pv.tagName === "DL" ? ccHelpOwner(pv) : pv;'));
+  ok('empty structural rows after it do not count', fns.ttHelpOwner(dl2) === avail);
+  ok('the resolver asks for that row', header.includes('lab = pv.tagName === "DL" ? ttHelpOwner(pv) : pv;'));
 }
 
 console.log('\nA row Unraid leaves without help');
@@ -61,20 +61,20 @@ console.log('\nA row Unraid leaves without help');
   const button = row('SMART-Bericht herunterladen', field('diskSpindownDelay', 'button'));
   const unknown = row('Something new', field('brand_new'));
   const gpu = row('Temperature Format', field('TEMPFORMAT'));
-  const hasInfo = (dt) => !!dt.querySelector('.cc-toolsinfo');
-  make([spindown, enabled, button, unknown, gpu], '/Main/Device').ccRowHelp();
+  const hasInfo = (dt) => !!dt.querySelector('.tt-toolsinfo');
+  make([spindown, enabled, button, unknown, gpu], '/Main/Device').ttRowHelp();
   ok('gets the bubble for its field, whatever the numbered suffix', hasInfo(spindown));
   ok('a generic name only counts on its own page', !hasInfo(enabled));
   ok('a button is an action, not a setting', !hasInfo(button));
-  ok('a field CC has no text for stays as it is', !hasInfo(unknown));
+  ok('a field TowerTorch has no text for stays as it is', !hasInfo(unknown));
   ok('a plugin page without German gets the German label', texts(gpu)[0].nodeValue === 'Temperatureinheit' && hasInfo(gpu));
-  make([enabled], '/Settings/Notifications').ccRowHelp();
+  make([enabled], '/Settings/Notifications').ttRowHelp();
   ok('and on its own page it does', hasInfo(enabled));
 }
 
 console.log('\nThe texts');
 {
-  const entries = Object.entries(make().CC_ROW_HELP);
+  const entries = Object.entries(make().TT_ROW_HELP);
   const sentence = (s) => /[.!?]$/.test(s);
   ok('every entry has a German and an English sentence', entries.every(([, e]) => sentence(e[0]) && sentence(e[1])), entries.filter(([, e]) => !sentence(e[0]) || !sentence(e[1])).map(([k]) => k).join(' '));
   const dashes = [String.fromCharCode(0x2013), String.fromCharCode(0x2014)];

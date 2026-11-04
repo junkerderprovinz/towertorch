@@ -12,30 +12,30 @@ const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 const header = read('scripts/header.js');
 const tokens = read('sheets/TowerTorch.Tokens.css');
 const body = (name) => { const i = header.indexOf('function ' + name + '('); return i < 0 ? '' : header.slice(i, header.indexOf('\n  }\n', i)); };
-const all = (el, prop, html) => candidates('every', Object.assign({ states: {}, html: ['cc-popups-on'].concat(html || []) }, el), prop);
+const all = (el, prop, html) => candidates('every', Object.assign({ states: {}, html: ['tt-popups-on'].concat(html || []) }, el), prop);
 const val = (el, prop, html) => { const c = all(el, prop, html); return c.length ? c[c.length - 1].value : null; };
 const up = { tag: 'a', classes: ['back_to_top'], attrs: { class: 'back_to_top' } };
 const down = { tag: 'a', classes: ['move_to_end'], attrs: { class: 'move_to_end' } };
 
 console.log('\nWhere they sit');
 {
-  ok('in the bottom corner, on whatever is docked there', val(down, 'bottom') === 'calc(var(--cc-arrows-floor, 0px) + 12px)' && val(up, 'bottom') === val(down, 'bottom'));
-  ok('not lifted for an action bar the page may not have', all(down, 'transform').length === 0 && !/--cc-actbar-h, 44px/.test(tokens));
-  ok('the down arrow at the content edge, the up arrow one chip to its left', /\+ var\(--cc-md-h, 30px\) \+ 6px\)$/.test(val(up, 'right')) && !/--cc-md-h/.test(val(down, 'right')));
-  ok('a chip of the small control height', val(down, 'width') === 'var(--cc-md-h, 30px)' && val(down, 'height') === 'var(--cc-md-h, 30px)');
+  ok('in the bottom corner, on whatever is docked there', val(down, 'bottom') === 'calc(var(--tt-arrows-floor, 0px) + 12px)' && val(up, 'bottom') === val(down, 'bottom'));
+  ok('not lifted for an action bar the page may not have', all(down, 'transform').length === 0 && !/--tt-actbar-h, 44px/.test(tokens));
+  ok('the down arrow at the content edge, the up arrow one chip to its left', /\+ var\(--tt-md-h, 30px\) \+ 6px\)$/.test(val(up, 'right')) && !/--tt-md-h/.test(val(down, 'right')));
+  ok('a chip of the small control height', val(down, 'width') === 'var(--tt-md-h, 30px)' && val(down, 'height') === 'var(--tt-md-h, 30px)');
 }
 
 console.log('\nWhen they show');
 {
-  const hides = (el, html) => all(el, 'opacity', html).some((d) => d.value === '0' && d.selector.includes(':not(.cc-arrows-live)'));
+  const hides = (el, html) => all(el, 'opacity', html).some((d) => d.value === '0' && d.selector.includes(':not(.tt-arrows-live)'));
   ok('at rest they are hidden', hides(down) && hides(up));
-  ok('and cannot be hit', all(down, 'pointer-events').some((d) => d.value === 'none' && d.selector.includes(':not(.cc-arrows-live)')));
-  ok('while the page scrolls they show', !hides(down, ['cc-arrows-live']) && !hides(up, ['cc-arrows-live']));
+  ok('and cannot be hit', all(down, 'pointer-events').some((d) => d.value === 'none' && d.selector.includes(':not(.tt-arrows-live)')));
+  ok('while the page scrolls they show', !hides(down, ['tt-arrows-live']) && !hides(up, ['tt-arrows-live']));
   ok('keyboard focus keeps one on screen', !hides(Object.assign({}, down, { states: { 'focus-visible': true } })));
-  ok('a pointer keeps one on screen, except on a touch screen', /@media \(hover: hover\) \{\s*html\.cc-popups-on:not\(\.cc-arrows-live\) :is\(a\.back_to_top, a\.move_to_end\):not\(:hover\):not\(:focus-visible\)/.test(tokens) && /@media \(hover: none\) \{\s*html\.cc-popups-on:not\(\.cc-arrows-live\) :is\(a\.back_to_top, a\.move_to_end\):not\(:focus-visible\) \{/.test(tokens));
-  ok('the fade runs only where motion is allowed', /@media \(prefers-reduced-motion: no-preference\) \{\s*html\.cc-popups-on:not\(\[data-cc-motion="off"\]\) :is\(a\.back_to_top, a\.move_to_end\) \{ transition: opacity \.3s/.test(tokens));
-  ok('and no rule outside that gate fades them', !all(down, 'transition').some((d) => /opacity/.test(d.value) && !d.selector.includes('data-cc-motion')));
-  ok('the down arrow still goes at the bottom of the page', val(down, 'opacity', ['cc-arrows-live', 'cc-footer-at-bottom']) === '0');
+  ok('a pointer keeps one on screen, except on a touch screen', /@media \(hover: hover\) \{\s*html\.tt-popups-on:not\(\.tt-arrows-live\) :is\(a\.back_to_top, a\.move_to_end\):not\(:hover\):not\(:focus-visible\)/.test(tokens) && /@media \(hover: none\) \{\s*html\.tt-popups-on:not\(\.tt-arrows-live\) :is\(a\.back_to_top, a\.move_to_end\):not\(:focus-visible\) \{/.test(tokens));
+  ok('the fade runs only where motion is allowed', /@media \(prefers-reduced-motion: no-preference\) \{\s*html\.tt-popups-on:not\(\[data-tt-motion="off"\]\) :is\(a\.back_to_top, a\.move_to_end\) \{ transition: opacity \.3s/.test(tokens));
+  ok('and no rule outside that gate fades them', !all(down, 'transition').some((d) => /opacity/.test(d.value) && !d.selector.includes('data-tt-motion')));
+  ok('the down arrow still goes at the bottom of the page', val(down, 'opacity', ['tt-arrows-live', 'tt-footer-at-bottom']) === '0');
 }
 
 // A minimal browser around the scroll handler: the timer runs by hand.
@@ -48,7 +48,7 @@ function load(docked) {
     setTimeout: (f, ms) => { timers.push([f, ms]); return timers.length; },
     clearTimeout: () => {},
   });
-  vm.runInContext('var ccArrowsIdle = 0, ccArrowsFloor = -1;\n' + ['ccArrowsFloorMeasure', 'ccArrowsWake'].map((n) => body(n) + '\n  }\n').join(''), ctx);
+  vm.runInContext('var ttArrowsIdle = 0, ttArrowsFloor = -1;\n' + ['ttArrowsFloorMeasure', 'ttArrowsWake'].map((n) => body(n) + '\n  }\n').join(''), ctx);
   return { ctx, cls, vars, timers };
 }
 const box = (position, top, height) => ({ position, getBoundingClientRect: () => ({ top, height }) });
@@ -56,17 +56,17 @@ const box = (position, top, height) => ({ position, getBoundingClientRect: () =>
 console.log('\nThe scroll handler');
 {
   const w = load([box('fixed', 744, 56)]);
-  w.ctx.ccArrowsWake();
-  ok('a scroll shows the arrows', w.cls.has('cc-arrows-live'));
-  ok('standing on a docked bar', w.vars['--cc-arrows-floor'] === '56px', w.vars['--cc-arrows-floor']);
+  w.ctx.ttArrowsWake();
+  ok('a scroll shows the arrows', w.cls.has('tt-arrows-live'));
+  ok('standing on a docked bar', w.vars['--tt-arrows-floor'] === '56px', w.vars['--tt-arrows-floor']);
   const [f, ms] = w.timers[w.timers.length - 1];
   ok('after a short rest', ms > 500 && ms < 3000, ms);
   f();
-  ok('they go again', !w.cls.has('cc-arrows-live'));
+  ok('they go again', !w.cls.has('tt-arrows-live'));
   const flow = load([box('relative', 744, 56), box('fixed', 820, 40)]);
-  flow.ctx.ccArrowsWake();
-  ok('a footer in the page flow or below the fold lifts nothing', flow.vars['--cc-arrows-floor'] === '0px', flow.vars['--cc-arrows-floor']);
-  ok('the scroll listener is passive', /window\.addEventListener\("scroll", ccArrowsWake, \{ passive: true \}\);/.test(header));
+  flow.ctx.ttArrowsWake();
+  ok('a footer in the page flow or below the fold lifts nothing', flow.vars['--tt-arrows-floor'] === '0px', flow.vars['--tt-arrows-floor']);
+  ok('the scroll listener is passive', /window\.addEventListener\("scroll", ttArrowsWake, \{ passive: true \}\);/.test(header));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

@@ -3,7 +3,7 @@
 // variants, the accent ink for text on the page, and the scrim behind a window.
 //
 // The values are GlimStone's (docs/design-language.md, "The palette" and "Tokens").
-// What the user saved is theirs: a stored cc.accent or cc.rbpal is read back as it
+// What the user saved is theirs: a stored tt.accent or tt.rbpal is read back as it
 // was, and only what a user who never chose sees changes.
 const fs = require('fs');
 const path = require('path');
@@ -35,27 +35,28 @@ function decl(block, name) { const m = new RegExp(name.replace(/-/g, '\\-') + ':
 const dark = darkBlock(TOKENS), light = lightBlock(TOKENS);
 
 console.log('\nThe default accent is Sunflower with its computed ink');
-ok('--cc-accent defaults to #FCC419', /^#FCC419$/i.test(decl(dark, '--cc-accent') || ''), decl(dark, '--cc-accent'));
-ok('--cc-accent-text defaults to the dark ink', decl(dark, '--cc-accent-text') === '#161616', decl(dark, '--cc-accent-text'));
-ok('no other sheet redeclares the accent on :root', files(DIR, ['.css']).every((f) => f.endsWith('Tokens.css') || !/--cc-accent:\s*#/.test(clean(fs.readFileSync(f, 'utf8')))));
+ok('--tt-accent defaults to #FCC419', /^#FCC419$/i.test(decl(dark, '--tt-accent') || ''), decl(dark, '--tt-accent'));
+ok('--tt-accent-text defaults to the dark ink', decl(dark, '--tt-accent-text') === '#161616', decl(dark, '--tt-accent-text'));
+// The login page is served without Tokens.css, so its sheet declares the accent itself.
+ok('no other sheet redeclares the accent on :root', files(DIR, ['.css']).every((f) => f.endsWith('Tokens.css') || f.endsWith('login.css') || !/--tt-accent:\s*#/.test(clean(fs.readFileSync(f, 'utf8')))));
 {
   const left = files(DIR, ['.css', '.js', '.page', '.php']).filter((f) => /#2f6feb/i.test(fs.readFileSync(f, 'utf8'))).map((f) => path.basename(f));
   ok('the old default blue is gone as a fallback everywhere', left.length === 0, left.join(', '));
 }
 
 console.log('\nThe accent as ink: derived from the accent, darker on a light ground');
-ok('--cc-accent-ink mixes the accent toward black by --cc-ink-mix', /^color-mix\(in srgb, var\(--cc-accent\) var\(--cc-ink-mix\), black\)$/.test(decl(dark, '--cc-accent-ink') || ''), decl(dark, '--cc-accent-ink'));
-ok('the dark themes do not darken it', decl(dark, '--cc-ink-mix') === '100%');
-ok('the light themes mix it 55%', decl(light, '--cc-ink-mix') === '55%', decl(light, '--cc-ink-mix'));
-ok('the light override does not redeclare the ink itself, so it keeps following the accent', decl(light, '--cc-accent-ink') == null);
+ok('--tt-accent-ink mixes the accent toward black by --tt-ink-mix', /^color-mix\(in srgb, var\(--tt-accent\) var\(--tt-ink-mix\), black\)$/.test(decl(dark, '--tt-accent-ink') || ''), decl(dark, '--tt-accent-ink'));
+ok('the dark themes do not darken it', decl(dark, '--tt-ink-mix') === '100%');
+ok('the light themes mix it 55%', decl(light, '--tt-ink-mix') === '55%', decl(light, '--tt-ink-mix'));
+ok('the light override does not redeclare the ink itself, so it keeps following the accent', decl(light, '--tt-accent-ink') == null);
 {
   const fav = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Favorites.css'), 'utf8');
   const tools = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tools.css'), 'utf8');
   const docker = fs.readFileSync(path.join(DIR, 'styles', 'docker.css'), 'utf8');
-  ok('the empty-favourites line is accent text, so it reads the ink', /#nofavs \{ color: var\(--cc-accent-ink,/.test(fav));
-  ok('links on the Tools pages read the ink', /#displaybox a:not\(\.button\) \{ color: var\(--cc-accent-ink,/.test(tools));
-  ok('the Tools (i) hover reads the ink', /\.cc-toolsinfo:hover \{ color: var\(--cc-accent-ink,/.test(tools));
-  ok('the Docker gear reads the ink', /\.cc-hgear:hover \{ color: var\(--cc-accent-ink,/.test(docker) && /\.cc-hgear-bar \{[^}]*color: var\(--cc-accent-ink,/.test(docker));
+  ok('the empty-favourites line is accent text, so it reads the ink', /#nofavs \{ color: var\(--tt-accent-ink,/.test(fav));
+  ok('links on the Tools pages read the ink', /#displaybox a:not\(\.button\) \{ color: var\(--tt-accent-ink,/.test(tools));
+  ok('the Tools (i) hover reads the ink', /\.tt-toolsinfo:hover \{ color: var\(--tt-accent-ink,/.test(tools));
+  ok('the Docker gear reads the ink', /\.tt-hgear:hover \{ color: var\(--tt-accent-ink,/.test(docker) && /\.tt-hgear-bar \{[^}]*color: var\(--tt-accent-ink,/.test(docker));
 }
 
 console.log('\nRainbow colours glyphs, never text');
@@ -63,13 +64,13 @@ console.log('\nRainbow colours glyphs, never text');
   const stat = /#alternateView td\.ca_stat \{([^}]*)\}/.exec(clean(TOKENS));
   const link = /#alternateView a \{([^}]*)\}/.exec(clean(TOKENS));
   const glyph = /#alternateView i\.fa \{([^}]*)\}/.exec(clean(TOKENS));
-  ok('the changelog figures keep the single accent', !!stat && /color: var\(--cc-accent,/.test(stat[1]) && !/--cc-rb-c/.test(stat[1]), stat && stat[1]);
-  ok('the changelog links keep the single accent', !!link && /color: var\(--cc-accent,/.test(link[1]) && !/--cc-rb-c/.test(link[1]), link && link[1]);
-  ok('the changelog glyphs take the position hue', !!glyph && /color: var\(--cc-rb-c,/.test(glyph[1]), glyph && glyph[1]);
+  ok('the changelog figures keep the single accent', !!stat && /color: var\(--tt-accent,/.test(stat[1]) && !/--tt-rb-c/.test(stat[1]), stat && stat[1]);
+  ok('the changelog links keep the single accent', !!link && /color: var\(--tt-accent,/.test(link[1]) && !/--tt-rb-c/.test(link[1]), link && link[1]);
+  ok('the changelog glyphs take the position hue', !!glyph && /color: var\(--tt-rb-c,/.test(glyph[1]), glyph && glyph[1]);
   const ddText = /\.dropdown-menu li > a \.ca_green \{([^}]*)\}/.exec(clean(TOKENS));
   const ddIcon = /\.dropdown-menu li > a i\.ca_fa-checkmark \{([^}]*)\}/.exec(clean(TOKENS));
-  ok('the page-size menu\'s active label is single-accent ink', !!ddText && /var\(--cc-accent-ink,/.test(ddText[1]) && !/--cc-rb-c/.test(ddText[1]));
-  ok('and its tick is the position hue as ink', !!ddIcon && /color-mix\(in srgb, var\(--cc-rb-c,[^;]*var\(--cc-ink-mix/.test(ddIcon[1]));
+  ok('the page-size menu\'s active label is single-accent ink', !!ddText && /var\(--tt-accent-ink,/.test(ddText[1]) && !/--tt-rb-c/.test(ddText[1]));
+  ok('and its tick is the position hue as ink', !!ddIcon && /color-mix\(in srgb, var\(--tt-rb-c,[^;]*var\(--tt-ink-mix/.test(ddIcon[1]));
 }
 
 console.log('\nThe state colours are GlimStone\'s, with light-theme variants');
@@ -81,9 +82,9 @@ const STATES = {
 for (const [s, v] of Object.entries(STATES)) {
   for (const [theme, block] of [['dark', dark], ['light', light]]) {
     const [fill, fg, ink] = v[theme];
-    ok(`--cc-${s} on ${theme} is ${fill}`, (decl(block, '--cc-' + s) || '').toLowerCase() === fill, decl(block, '--cc-' + s));
-    ok(`--cc-${s}-fg on ${theme} is ${fg}`, (decl(block, '--cc-' + s + '-fg') || '').toLowerCase() === fg, decl(block, '--cc-' + s + '-fg'));
-    ok(`--cc-${s}-ink on ${theme} is ${ink}`, (decl(block, '--cc-' + s + '-ink') || '').toLowerCase() === ink, decl(block, '--cc-' + s + '-ink'));
+    ok(`--tt-${s} on ${theme} is ${fill}`, (decl(block, '--tt-' + s) || '').toLowerCase() === fill, decl(block, '--tt-' + s));
+    ok(`--tt-${s}-fg on ${theme} is ${fg}`, (decl(block, '--tt-' + s + '-fg') || '').toLowerCase() === fg, decl(block, '--tt-' + s + '-fg'));
+    ok(`--tt-${s}-ink on ${theme} is ${ink}`, (decl(block, '--tt-' + s + '-ink') || '').toLowerCase() === ink, decl(block, '--tt-' + s + '-ink'));
   }
 }
 {
@@ -92,7 +93,7 @@ for (const [s, v] of Object.entries(STATES)) {
   for (const f of files(DIR, ['.css'])) {
     const re = /([^{}]+)\{([^}]*)\}/g; let m; const css = clean(fs.readFileSync(f, 'utf8'));
     while ((m = re.exec(css))) {
-      const st = /background(?:-color)?:\s*var\(--cc-(ok|warn|err),/.exec(m[2]);
+      const st = /background(?:-color)?:\s*var\(--tt-(ok|warn|err),/.exec(m[2]);
       if (st && /(^|[;\s])color:\s*#/.test(m[2])) off.push(path.basename(f) + ': ' + m[1].trim().slice(0, 70));
     }
   }
@@ -108,9 +109,9 @@ for (const [s, v] of Object.entries(STATES)) {
 }
 
 console.log('\nThe scrim behind a window');
-ok('dark: black at .72', decl(dark, '--cc-backdrop-dim') === 'rgba(0, 0, 0, .72)', decl(dark, '--cc-backdrop-dim'));
-ok('light: black at .62', decl(light, '--cc-backdrop-dim') === 'rgba(0, 0, 0, .62)', decl(light, '--cc-backdrop-dim'));
-ok('a 6px blur', decl(dark, '--cc-backdrop-blur') === 'blur(6px)', decl(dark, '--cc-backdrop-blur'));
+ok('dark: black at .72', decl(dark, '--tt-backdrop-dim') === 'rgba(0, 0, 0, .72)', decl(dark, '--tt-backdrop-dim'));
+ok('light: black at .62', decl(light, '--tt-backdrop-dim') === 'rgba(0, 0, 0, .62)', decl(light, '--tt-backdrop-dim'));
+ok('a 6px blur', decl(dark, '--tt-backdrop-blur') === 'blur(6px)', decl(dark, '--tt-backdrop-blur'));
 
 console.log('\nThe rainbow palette is GlimStone\'s Carbon 30 set, in every copy');
 {
@@ -122,9 +123,9 @@ console.log('\nThe rainbow palette is GlimStone\'s Carbon 30 set, in every copy'
   global.location = { pathname: '/Docker' };
   global.navigator = { language: 'en' };
   global.fetch = () => new Promise(() => {});
-  require(path.join(SCRIPTS, 'cc-theme.js'));
-  const T = global.window.CCTheme;
-  ok('CCTheme.RB is the GlimStone palette in order', JSON.stringify(T.RB) === JSON.stringify(GS_RAINBOW), JSON.stringify(T.RB));
+  require(path.join(SCRIPTS, 'tt-theme.js'));
+  const T = global.window.TTTheme;
+  ok('TTTheme.RB is the GlimStone palette in order', JSON.stringify(T.RB) === JSON.stringify(GS_RAINBOW), JSON.stringify(T.RB));
 
   // Every area keeps a local copy for a missed load order, and it has to be the same set.
   const stale = [];
@@ -140,24 +141,24 @@ console.log('\nThe rainbow palette is GlimStone\'s Carbon 30 set, in every copy'
   ok('every local fallback palette is the same set', stale.length === 0, stale.join(' | '));
 
   console.log('\nA user\'s saved colours are read back as they were');
-  store['cc.rainbow'] = '1'; store['cc.rainbowrot'] = '0';
+  store['tt.rainbow'] = '1'; store['tt.rainbowrot'] = '0';
   ok('with nothing saved the palette is the new default', T.rbColor(0, '#FCC419') === '#FF8389' && T.rbColor(5, '#FCC419') === '#1D99F3');
   const OLD = ['#d9433f', '#f97316', '#eab308', '#1f9d55', '#0ea5a4', '#2f6feb', '#8b5cf6', '#e05299'];
-  store['cc.rbpal'] = JSON.stringify(OLD);
+  store['tt.rbpal'] = JSON.stringify(OLD);
   ok('a palette saved from the old defaults keeps every colour', OLD.every((c, i) => T.rbColor(i, '#2f6feb') === c));
-  store['cc.rainbow'] = '0';
+  store['tt.rainbow'] = '0';
   ok('an accent picked from the old presets comes back unchanged', T.rbColor(3, '#2f6feb') === '#2f6feb');
-  ok('cc-theme.js writes neither key while it loads', !('cc.accent' in store) && store['cc.rbpal'] === JSON.stringify(OLD));
+  ok('tt-theme.js writes neither key while it loads', !('tt.accent' in store) && store['tt.rbpal'] === JSON.stringify(OLD));
 }
 
 console.log('\nThe accent presets are the GlimStone eight, all of them offered');
 {
   const settings = fs.readFileSync(path.join(SCRIPTS, 'settings.js'), 'utf8');
-  const m = /var PRESETS = (\[[^\]]*\]);/.exec(fs.readFileSync(path.join(SCRIPTS, 'cc-theme.js'), 'utf8'));
-  ok('PRESETS is declared once, in cc-theme.js beside the picker', !!m && /var PRESETS = window\.CCTheme\.PRESETS/.test(settings));
+  const m = /var PRESETS = (\[[^\]]*\]);/.exec(fs.readFileSync(path.join(SCRIPTS, 'tt-theme.js'), 'utf8'));
+  ok('PRESETS is declared once, in tt-theme.js beside the picker', !!m && /var PRESETS = window\.TTTheme\.PRESETS/.test(settings));
   ok('in GlimStone\'s order', !!m && JSON.stringify(JSON.parse(m[1])) === JSON.stringify(GS_PRESETS), m && m[1]);
   ok('no picker cuts the row short', !/PRESETS\.slice\(/.test(settings));
-  ok('the column matrix takes palette positions rather than a list of its own', /window\.CCTheme\.rbColor\(i, accent\)/.test(settings) && !/var RB = \["#1f9d55"/.test(settings));
+  ok('the column matrix takes palette positions rather than a list of its own', /window\.TTTheme\.rbColor\(i, accent\)/.test(settings) && !/var RB = \["#1f9d55"/.test(settings));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

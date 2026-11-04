@@ -82,23 +82,23 @@ function load(env) {
 }
 
 // Rows as plugins.js leaves them on a real server (made-up plugin names and links).
-const OK_ROW = `<tr id="demo" style="--cc-rb-c: #24d971; --cc-rb-ct: #161616;"><td data-ccp="1" data-cc-pname="Demo Plugin"><div class="cc-plugname"><div class="cc-plugico"><a href="/Settings/Demo" class="list"><img src="/plugins/demo/images/demo.png" class="list" style="filter: url(&quot;#cc-plug-tint-wht&quot;) !important;"></a><span class="cc-plugicm" data-ccp="1" data-tip="Icon-Färbung"></span></div><div class="cc-plugtxt"><div class="cc-plugtitle">Demo Plugin</div><a class="cc-pluglink cc-plugsup" href="https://forums.example/demo" target="_blank" data-ccp="1">Support-Thread</a></div></div></td>` +
-  `<td><span class="cc-desc" data-ccp="1"><div class="cc-descin"><p>Does a demo.</p></div></span></td>` +
-  `<td><span class="cc-b cc-b-info cc-b-von cc-b-pauthor cc-plugauth" data-ccp="1" style="background: rgb(46, 46, 46) !important;"><span class="cc-b-k">Von</span><span class="cc-b-v">Someone</span></span></td>` +
-  `<td id="vid-demo" data="20260519"><span class="fa fa-info-circle fa-fw big blue-text" onclick="openChanges('showchanges /tmp/plugins/demo.txt','Veröffentlichungshinweise')" style="display: none !important;"></span><div class="cc-plugver"><span class="cc-b cc-b-info cc-verb" data-ccp="1"><span class="cc-b-k">Version</span><span class="cc-b-v">2026.05.19</span></span><span class="cc-pluglink cc-plugchg" data-ccp="1" role="button" tabindex="0">Changelog</span></div></td>` +
-  `<td id="sid-demo" data="4"><span class="green-text" data-ccp="1" onclick="checkPlugin()" style="background: var(--cc-ok, #6fdc8c) !important;"><i class="fa fa-check fa-fw"></i>&nbsp;Auf dem neusten Stand</span></td>` +
-  `<td><input type="checkbox" data="demo.plg" class="remove cc-cb-del cc-cb-hidden" onclick="multiRemove()" data-ccp="1"><input type="button" id="demo:remove" data="demo.plg" class="remove cc-b-del cc-rm-native" value="Löschen" data-ccp="1"><span class="cc-b-del cc-b-delicon" role="button" tabindex="0" title="Plugin löschen" aria-label="Plugin löschen"><svg viewBox="0 0 14 14"></svg></span></td></tr>`;
-const UPDATE_ROW = `<tr id="other"><td data-ccp="1" data-cc-pname="Other"><div class="cc-plugname"><div class="cc-plugico"><i class="fa fa-users list"></i></div><div class="cc-plugtxt"><div class="cc-plugtitle">Other</div></div></div></td><td></td>` +
-  `<td><span class="cc-b cc-plugauth"><span class="cc-b-k">Von</span><span class="cc-b-v">Team</span></span></td>` +
-  `<td id="vid-other"><div class="cc-plugver"><span class="cc-b cc-plugnew"><span class="cc-b-k">Neu</span><span class="cc-b-v">2.0</span></span><span class="cc-b cc-verb"><span class="cc-b-k">Version</span><span class="cc-b-v">1.0</span></span></div></td>` +
-  `<td id="sid-other" data="0"><input type="button" id="other:update" data="other.plg" class="update" value="Aktualisieren" onclick='openInstall("plugin update other.plg","Plugin aktualisieren","other:update","loadlist");' style="background: var(--cc-warn, #ff832b) !important;" data-ccp="1"></td>` +
+const OK_ROW = `<tr id="demo" style="--tt-rb-c: #24d971; --tt-rb-ct: #161616;"><td data-ttp="1" data-tt-pname="Demo Plugin"><div class="tt-plugname"><div class="tt-plugico"><a href="/Settings/Demo" class="list"><img src="/plugins/demo/images/demo.png" class="list" style="filter: url(&quot;#tt-plug-tint-wht&quot;) !important;"></a><span class="tt-plugicm" data-ttp="1" data-tip="Icon-Färbung"></span></div><div class="tt-plugtxt"><div class="tt-plugtitle">Demo Plugin</div><a class="tt-pluglink tt-plugsup" href="https://forums.example/demo" target="_blank" data-ttp="1">Support-Thread</a></div></div></td>` +
+  `<td><span class="tt-desc" data-ttp="1"><div class="tt-descin"><p>Does a demo.</p></div></span></td>` +
+  `<td><span class="tt-b tt-b-info tt-b-von tt-b-pauthor tt-plugauth" data-ttp="1" style="background: rgb(46, 46, 46) !important;"><span class="tt-b-k">Von</span><span class="tt-b-v">Someone</span></span></td>` +
+  `<td id="vid-demo" data="20260519"><span class="fa fa-info-circle fa-fw big blue-text" onclick="openChanges('showchanges /tmp/plugins/demo.txt','Veröffentlichungshinweise')" style="display: none !important;"></span><div class="tt-plugver"><span class="tt-b tt-b-info tt-verb" data-ttp="1"><span class="tt-b-k">Version</span><span class="tt-b-v">2026.05.19</span></span><span class="tt-pluglink tt-plugchg" data-ttp="1" role="button" tabindex="0">Changelog</span></div></td>` +
+  `<td id="sid-demo" data="4"><span class="green-text" data-ttp="1" onclick="checkPlugin()" style="background: var(--tt-ok, #6fdc8c) !important;"><i class="fa fa-check fa-fw"></i>&nbsp;Auf dem neusten Stand</span></td>` +
+  `<td><input type="checkbox" data="demo.plg" class="remove tt-cb-del tt-cb-hidden" onclick="multiRemove()" data-ttp="1"><input type="button" id="demo:remove" data="demo.plg" class="remove tt-b-del tt-rm-native" value="Löschen" data-ttp="1"><span class="tt-b-del tt-b-delicon" role="button" tabindex="0" title="Plugin löschen" aria-label="Plugin löschen"><svg viewBox="0 0 14 14"></svg></span></td></tr>`;
+const UPDATE_ROW = `<tr id="other"><td data-ttp="1" data-tt-pname="Other"><div class="tt-plugname"><div class="tt-plugico"><i class="fa fa-users list"></i></div><div class="tt-plugtxt"><div class="tt-plugtitle">Other</div></div></div></td><td></td>` +
+  `<td><span class="tt-b tt-plugauth"><span class="tt-b-k">Von</span><span class="tt-b-v">Team</span></span></td>` +
+  `<td id="vid-other"><div class="tt-plugver"><span class="tt-b tt-plugnew"><span class="tt-b-k">Neu</span><span class="tt-b-v">2.0</span></span><span class="tt-b tt-verb"><span class="tt-b-k">Version</span><span class="tt-b-v">1.0</span></span></div></td>` +
+  `<td id="sid-other" data="0"><input type="button" id="other:update" data="other.plg" class="update" value="Aktualisieren" onclick='openInstall("plugin update other.plg","Plugin aktualisieren","other:update","loadlist");' style="background: var(--tt-warn, #ff832b) !important;" data-ttp="1"></td>` +
   `<td><input type="button" id="other:remove" data="other.plg" class="remove" value="Löschen"></td></tr>`;
 const NONE = `<tr><td colspan='6' style='text-align:center;padding-top:12px'><i class='fa fa-check-square-o icon'></i> Keine Plugins installiert</td><tr>`;
 
 console.log('\nThe hook');
 ok('Plugins.page loads plugintiles.js after plugins.js', /scripts\/plugins\.js[\s\S]*scripts\/plugintiles\.js/.test(page));
 ok('the sheet comes in by its basename, beside the page', fs.existsSync(path.join(DIR, 'sheets', 'TowerTorch.Plugins.css')) && !/TowerTorch\.Plugins\.css'\)/.test(page));
-ok('plugins.js hands over to the tiles after painting the rows', /if \(typeof window\.ccPluginTilesApply === "function"\) window\.ccPluginTilesApply\(\);\s*\} catch \(e\) \{\}\s*\}\s*\n\s*\/\/ Adopts/.test(plugins));
+ok('plugins.js hands over to the tiles after painting the rows', /if \(typeof window\.ttPluginTilesApply === "function"\) window\.ttPluginTilesApply\(\);\s*\} catch \(e\) \{\}\s*\}\s*\n\s*\/\/ Adopts/.test(plugins));
 
 console.log('\nEvery rule waits for the Plugins page, the tile rules for the tiles');
 {
@@ -109,25 +109,25 @@ console.log('\nEvery rule waits for the Plugins page, the tile rules for the til
   while ((m = re.exec(clean))) { const s = m[1].replace(/^\s*@media[^{]*\{/, '').trim(); if (s && !s.startsWith('@')) sels.push(s); }
   const parts = sels.flatMap((s) => splitTop(s).map((p) => p.trim()));
   ok('the sheet has rules', parts.length > 30, parts.length);
-  const loose = parts.filter((p) => !/^html\.cc-on-plugins[.\s:]/.test(p));
+  const loose = parts.filter((p) => !/^html\.tt-on-plugins[.\s:]/.test(p));
   ok('no selector applies off the Plugins page', loose.length === 0, loose.slice(0, 3).join(' | '));
-  const tile = parts.filter((p) => /cc-plt-/.test(p) && !/^html\.cc-on-plugins\.cc-plt-on/.test(p) && !/:is\(#plugin_list > tr, \.cc-plt-card\)/.test(p));
+  const tile = parts.filter((p) => /tt-plt-/.test(p) && !/^html\.tt-on-plugins\.tt-plt-on/.test(p) && !/:is\(#plugin_list > tr, \.tt-plt-card\)/.test(p));
   ok('no tile selector applies with the tiles off', tile.length === 0, tile.slice(0, 3).join(' | '));
-  ok('the script sets the gate on /Plugins alone, with the area on', /function live\(\) \{\s*return g\("cc\.theming", "1"\) !== "0" && g\("cc\.enable\.plugins", "1"\) !== "0" && pn\(\) === "\/Plugins" && !!document\.getElementById\("plugin_list"\);/.test(js));
-  ok('the columns are the Docker raster\'s, at least 400px', /\.cc-plt-grid \{ display: grid; grid-template-columns: repeat\(auto-fill, minmax\(min\(400px, 100%\), 1fr\)\);/.test(css));
+  ok('the script sets the gate on /Plugins alone, with the area on', /function live\(\) \{\s*return g\("tt\.theming", "1"\) !== "0" && g\("tt\.enable\.plugins", "1"\) !== "0" && pn\(\) === "\/Plugins" && !!document\.getElementById\("plugin_list"\);/.test(js));
+  ok('the columns are the Docker raster\'s, at least 400px', /\.tt-plt-grid \{ display: grid; grid-template-columns: repeat\(auto-fill, minmax\(min\(400px, 100%\), 1fr\)\);/.test(css));
 }
 
 console.log('\nThe readers follow the painted rows');
 {
-  const R = load({ window: { CCTheme: { icons: {}, glyph: () => '<svg class="cc-glyph"></svg>' } } });
+  const R = load({ window: { TTTheme: { icons: {}, glyph: () => '<svg class="tt-glyph"></svg>' } } });
   const list = R.readList(tbody(OK_ROW + UPDATE_ROW));
   const [demo, other] = list.plugins;
   ok('two plugins', list.plugins.length === 2 && !list.notice);
   ok('name, settings page and support thread', demo.name === 'Demo Plugin' && demo.launch === '/Settings/Demo' && demo.support === 'https://forums.example/demo');
-  ok('the logo is the painted one, inked as the row inks it', demo.logo && demo.logo.tagName === 'IMG' && /cc-plug-tint-wht/.test(demo.logo.getAttribute('style')));
+  ok('the logo is the painted one, inked as the row inks it', demo.logo && demo.logo.tagName === 'IMG' && /tt-plug-tint-wht/.test(demo.logo.getAttribute('style')));
   ok('author and version are the row\'s badges, the changelog its link', !!demo.author && R.clean(R.text(demo.version)) === 'Version2026.05.19' && !!demo.changelog && !demo.newer);
   ok('up to date: Unraid\'s words stay, no update button', !demo.update && /Auf dem neusten Stand/.test(R.text(demo.status)));
-  ok('the trash is the row\'s TowerTorch trash', demo.remove && /cc-b-delicon/.test(demo.remove.getAttribute('class')));
+  ok('the trash is the row\'s TowerTorch trash', demo.remove && /tt-b-delicon/.test(demo.remove.getAttribute('class')));
   ok('a glyph logo is read too', other.logo && other.logo.tagName === 'I' && other.launch === '');
   ok('a pending update: the button and the new version', other.update && other.update.getAttribute('value') === 'Aktualisieren' && !!other.newer && !other.status);
   ok('without the trash the native remove button stands in', other.remove && other.remove.getAttribute('type') === 'button');
@@ -136,19 +136,19 @@ console.log('\nThe readers follow the painted rows');
 
   const card = R.cardHtml(demo), card2 = R.cardHtml(other);
   ok('a card carries no inline handler and no id of the row', !/\son[a-z]+=/i.test(card + card2) && !/\sid=/.test(card + card2));
-  ok('the card shows the logo, the gear, the name as a link and the support link', /<img src="\/plugins\/demo\/images\/demo\.png"/.test(card) && /class="cc-plugicm"[^>]*data-act="icons"[^>]*data-tip="Icon-Färbung"/.test(card) && /<a class="cc-plt-name" href="\/Settings\/Demo"/.test(card) && /class="cc-pluglink cc-plugsup" href="https:\/\/forums\.example\/demo" target="_blank"/.test(card));
+  ok('the card shows the logo, the gear, the name as a link and the support link', /<img src="\/plugins\/demo\/images\/demo\.png"/.test(card) && /class="tt-plugicm"[^>]*data-act="icons"[^>]*data-tip="Icon-Färbung"/.test(card) && /<a class="tt-plt-name" href="\/Settings\/Demo"/.test(card) && /class="tt-pluglink tt-plugsup" href="https:\/\/forums\.example\/demo" target="_blank"/.test(card));
   ok('it keeps "Auf dem neusten Stand" visible', /Auf dem neusten Stand/.test(card));
-  ok('version, changelog link and trash at its foot', /cc-verb/.test(card) && /data-act="changelog">Changelog</.test(card) && /<span data-act="remove" class="cc-b-del cc-b-delicon"/.test(card));
-  ok('a pending update shows the button in the row\'s colour and the new version', /<span class="cc-plt-upd" role="button" tabindex="0" data-act="update" style="background: var\(--cc-warn, #ff832b\) !important;">Aktualisieren<\/span>/.test(card2) && /cc-plugnew/.test(card2));
+  ok('version, changelog link and trash at its foot', /tt-verb/.test(card) && /data-act="changelog">Changelog</.test(card) && /<span data-act="remove" class="tt-b-del tt-b-delicon"/.test(card));
+  ok('a pending update shows the button in the row\'s colour and the new version', /<span class="tt-plt-upd" role="button" tabindex="0" data-act="update" style="background: var\(--tt-warn, #ff832b\) !important;">Aktualisieren<\/span>/.test(card2) && /tt-plugnew/.test(card2));
 }
 
 console.log('\nThe actions click the row\'s own controls');
 {
   let pop = null;
-  const W = { CCTheme: { icons: { popover: (at, scope, name) => { pop = [at, scope, name]; } }, glyph: () => '' } };
+  const W = { TTTheme: { icons: { popover: (at, scope, name) => { pop = [at, scope, name]; } }, glyph: () => '' } };
   const R = load({ window: W });
   const [demo, other] = R.readList(tbody(OK_ROW + UPDATE_ROW)).plugins;
-  const c = { __ccPlugin: demo }, c2 = { __ccPlugin: other };
+  const c = { __ttPlugin: demo }, c2 = { __ttPlugin: other };
   R.run('changelog', c);
   ok('Changelog clicks the row\'s link, whose handler opens Unraid\'s notes', demo.changelog.clicks === 1);
   R.run('remove', c);
@@ -160,9 +160,9 @@ console.log('\nThe actions click the row\'s own controls');
   R.run('icons', c, 'anchor');
   ok('the gear opens the icon colouring of this plugin', pop && pop[0] === 'anchor' && pop[1] === 'plugin' && pop[2] === 'Demo Plugin');
 
-  const tree = parse('<div class="cc-plt-card"><span data-act="changelog">x</span><b>y</b></div>');
+  const tree = parse('<div class="tt-plt-card"><span data-act="changelog">x</span><b>y</b></div>');
   const card = tree.children[0];
-  card.__ccPlugin = demo;
+  card.__ttPlugin = demo;
   let stopped = 0;
   const ev = (target) => ({ target, preventDefault() {}, stopPropagation() { stopped++; } });
   R.onClick(ev(card.children[0]));
@@ -176,39 +176,39 @@ console.log('\nThe view: one switch and one key');
   const store = {};
   const R = load({ store });
   ok('unset, the page shows tiles', R.view() === 'tiles');
-  store['cc.pluginview'] = 'list';
-  ok('cc.pluginview = list shows Unraid\'s list', R.view() === 'list');
-  ok('the switch writes cc.pluginview', /var KEY = "cc\.pluginview";/.test(js) && /s\(KEY, o\[0\]\)/.test(js));
-  ok('there is one switch, leading the buttons pinned to the tab bar', (js.match(/el\("span", "cc-plt-vsw"\)/g) || []).length === 1 && /document\.getElementById\("cc-plugbtns"\)/.test(js) && /host\.insertBefore\(sw, host\.firstChild\)/.test(js));
+  store['tt.pluginview'] = 'list';
+  ok('tt.pluginview = list shows Unraid\'s list', R.view() === 'list');
+  ok('the switch writes tt.pluginview', /var KEY = "tt\.pluginview";/.test(js) && /s\(KEY, o\[0\]\)/.test(js));
+  ok('there is one switch, leading the buttons pinned to the tab bar', (js.match(/el\("span", "tt-plt-vsw"\)/g) || []).length === 1 && /document\.getElementById\("tt-plugbtns"\)/.test(js) && /host\.insertBefore\(sw, host\.firstChild\)/.test(js));
   ok('it offers Liste and Kacheln with the view glyphs', /\[\["list", "ViewList"\], \["tiles", "ViewGrid"\]\]/.test(js) && /list: "Liste", tiles: "Kacheln"/.test(js));
   const settings = read('scripts/settings.js');
   const row = grabFn(settings, 'pluginViewRow');
-  ok('the settings row writes the same key and nothing else', /set\("cc\.pluginview", v\);/.test(row) && (row.match(/set\(/g) || []).length === 1);
-  ok('it starts from tiles as the page does', /var cur = get\("cc\.pluginview", "tiles"\) === "list" \? "list" : "tiles";/.test(row));
+  ok('the settings row writes the same key and nothing else', /set\("tt\.pluginview", v\);/.test(row) && (row.match(/set\(/g) || []).length === 1);
+  ok('it starts from tiles as the page does', /var cur = get\("tt\.pluginview", "tiles"\) === "list" \? "list" : "tiles";/.test(row));
   ok('it sits in the Plugins tab', /pluginViewRow\(cPV\);\s*wrapPlugin\.appendChild\(cPV\);/.test(settings));
-  ok('a card writes its markup only when it changed', /function setHtml\(n, v\) \{ if \(n && n\.__ccHtml !== v\)/.test(js));
+  ok('a card writes its markup only when it changed', /function setHtml\(n, v\) \{ if \(n && n\.__ttHtml !== v\)/.test(js));
 }
 
 console.log('\nCompact rows with the gear on the logo');
 {
   const row = grabFn(plugins, 'paintRow');
-  ok('no Icon badge under the name any more', !/"Icon"/.test(plugins) && !/cc-b cc-plugicm/.test(plugins));
+  ok('no Icon badge under the name any more', !/"Icon"/.test(plugins) && !/tt-b tt-plugicm/.test(plugins));
   ok('the gear sits in the logo box', /var gear = iconGear\(nm\);\s*if \(gear\) icoWrap\.appendChild\(gear\);/.test(row));
   const gear = grabFn(plugins, 'iconGear');
-  ok('it carries the CC tooltip "Icon-Färbung" and opens the shared popover', /"Icon-Färbung"/.test(gear) && /g\.setAttribute\("data-tip", tip\)/.test(gear) && /icons\.popover\(g, "plugin", name/.test(gear) && /pressable\(g\)/.test(gear));
-  ok('support and changelog are small links beside the name and the version, with the Help and What\'s new glyphs', /labelled\(el\("a", "cc-pluglink cc-plugsup"\), "Help"/.test(row) && /labelled\(el\("span", "cc-pluglink cc-plugchg"\), "WhatsNew", "Changelog"\)/.test(row));
-  ok('the gear shows on hover and focus, and always on a touch screen', /:is\(#plugin_list > tr, \.cc-plt-card\):is\(:hover, :focus-within\) \.cc-plugicm \{ opacity: 1; \}/.test(css) && /@media \(hover: none\) \{ html\.cc-on-plugins \.cc-plugicm \{ opacity: 1; \} \}/.test(css));
-  ok('hidden by opacity, so Tab still reaches it', /\.cc-plugicm \{[^}]*opacity: 0;/.test(css) && !/\.cc-plugicm \{[^}]*(display: none|visibility: hidden)/.test(css));
+  ok('it carries the TowerTorch tooltip "Icon-Färbung" and opens the shared popover', /"Icon-Färbung"/.test(gear) && /g\.setAttribute\("data-tip", tip\)/.test(gear) && /icons\.popover\(g, "plugin", name/.test(gear) && /pressable\(g\)/.test(gear));
+  ok('support and changelog are small links beside the name and the version, with the Help and What\'s new glyphs', /labelled\(el\("a", "tt-pluglink tt-plugsup"\), "Help"/.test(row) && /labelled\(el\("span", "tt-pluglink tt-plugchg"\), "WhatsNew", "Changelog"\)/.test(row));
+  ok('the gear shows on hover and focus, and always on a touch screen', /:is\(#plugin_list > tr, \.tt-plt-card\):is\(:hover, :focus-within\) \.tt-plugicm \{ opacity: 1; \}/.test(css) && /@media \(hover: none\) \{ html\.tt-on-plugins \.tt-plugicm \{ opacity: 1; \} \}/.test(css));
+  ok('hidden by opacity, so Tab still reaches it', /\.tt-plugicm \{[^}]*opacity: 0;/.test(css) && !/\.tt-plugicm \{[^}]*(display: none|visibility: hidden)/.test(css));
   const docker = read('styles/docker.css');
-  ok('the name and the support link share one line', /\.cc-plugtxt \{ display: flex; align-items: baseline; gap: 10px; min-width: 0; \}/.test(docker));
-  ok('so do the version and the changelog link, a pending update above them', /\.cc-plugver \{ display: grid; grid-template-columns: auto auto;/.test(docker) && /\.cc-plugver > \.cc-plugnew \{ grid-column: 1 \/ -1;/.test(docker));
+  ok('the name and the support link share one line', /\.tt-plugtxt \{ display: flex; align-items: baseline; gap: 10px; min-width: 0; \}/.test(docker));
+  ok('so do the version and the changelog link, a pending update above them', /\.tt-plugver \{ display: grid; grid-template-columns: auto auto;/.test(docker) && /\.tt-plugver > \.tt-plugnew \{ grid-column: 1 \/ -1;/.test(docker));
 }
 
 console.log('\nFull-colour logos keep their shading on the badge');
 {
   const row = grabFn(plugins, 'paintRow');
   ok('the reactive badge rests grey, so its logos take the white ink', /var badgeInk = reactive\(\) \? "#fff" : rowInk/.test(row));
-  ok('the adopt branch shades instead of inking', /ensureShadeAs\("cc-plug-tint-svg-blk", "cc-plug-tint-blk", false\)/.test(row) && /ensureShadeAs\("cc-plug-tint-svg-wht", "cc-plug-tint-wht", true\)/.test(row));
+  ok('the adopt branch shades instead of inking', /ensureShadeAs\("tt-plug-tint-svg-blk", "tt-plug-tint-blk", false\)/.test(row) && /ensureShadeAs\("tt-plug-tint-svg-wht", "tt-plug-tint-wht", true\)/.test(row));
   // The matrix row a luminance L maps through, at full strength.
   let vals = '';
   const doc = { getElementById: () => null, createElement: () => ({ style: {}, dataset: {}, set innerHTML(v) { vals = /values="([^"]+)"/.exec(v)[1]; } }), body: { appendChild() {} } };

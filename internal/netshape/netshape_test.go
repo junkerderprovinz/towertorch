@@ -8,7 +8,7 @@ import (
 
 func TestUlRuleSpec(t *testing.T) {
 	got := strings.Join(ulRuleSpec(10000), " ")
-	for _, want := range []string{"-m hashlimit", "--hashlimit-above", "--hashlimit-name ccul", "-j DROP"} {
+	for _, want := range []string{"-m hashlimit", "--hashlimit-above", "--hashlimit-name ttul", "-j DROP"} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("ulRuleSpec missing %q: %q", want, got)
 		}
@@ -26,7 +26,7 @@ func TestApply_NoIngress_BadPID(t *testing.T) {
 
 func TestDlRuleSpec(t *testing.T) {
 	got := dlRuleSpec(8000) // 1,000,000 B/s with a burst of two seconds
-	want := []string{"-m", "hashlimit", "--hashlimit-above", "1000000b/s", "--hashlimit-burst", "2000000b", "--hashlimit-name", "ccdl", "-j", "DROP"}
+	want := []string{"-m", "hashlimit", "--hashlimit-above", "1000000b/s", "--hashlimit-burst", "2000000b", "--hashlimit-name", "ttdl", "-j", "DROP"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("dlRuleSpec =\n %v\nwant\n %v", got, want)
 	}
@@ -43,7 +43,7 @@ func TestDlRateAndBurstFloors(t *testing.T) {
 
 func TestIptArgs(t *testing.T) {
 	got := iptArgs(4242, "-F", dlChain)
-	want := []string{"-t", "4242", "-n", "iptables", "-w", "-F", "CC_DL"}
+	want := []string{"-t", "4242", "-n", "iptables", "-w", "-F", "TT_DL"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("iptArgs = %v, want %v", got, want)
 	}

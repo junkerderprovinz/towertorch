@@ -1,4 +1,4 @@
-// In a CC window and in the windows CC themes on the Docker tab, a row reads label first and
+// In a TowerTorch window and in the windows TowerTorch themes on the Docker tab, a row reads label first and
 // switch last: the words and their (i) at the left, the switch at the far right, as the
 // "Im Startplan verwalten" row has always done.
 const fs = require('fs');
@@ -28,21 +28,21 @@ console.log('\nThe Startplan window');
   for (const [row, sw, what] of [['mrow', 'manageTog', 'Im Startplan verwalten'], ['wHead', 'wEn', 'Auto-Start'], ['wUrow', 'wU', 'bei „unhealthy“'], ['wXrow', 'wX', 'bei Absturz'], ['nHead', 'nEn', 'Auto-Stop bei Leerlauf']]) {
     const kids = order(row);
     ok(what + ': the words come first', /^el\("span"/.test(kids[0] || ''), kids.join(' | '));
-    ok(what + ': a spacer pushes the switch to the far right, where it is the last child', kids[kids.length - 1] === sw && kids[kids.length - 2] === 'el("span", "cc-set-spacer")', kids.join(' | '));
+    ok(what + ': a spacer pushes the switch to the far right, where it is the last child', kids[kids.length - 1] === sw && kids[kids.length - 2] === 'el("span", "tt-set-spacer")', kids.join(' | '));
   }
   ok('the (i) of Auto-Stop stays beside its words, before the spacer', order('nHead')[1] === 'infoBubble(t("idleFoot"))');
   const sheet = read('styles/docker.css');
-  ok('the spacer takes the free room', /\.cc-set-spacer \{ flex: 1; \}/.test(sheet));
+  ok('the spacer takes the free room', /\.tt-set-spacer \{ flex: 1; \}/.test(sheet));
 }
 
 console.log('\nShipLog\'s auto-update switch');
 {
-  // ShipLog's own rules, as its sheet ships them, loaded after CC's so they win every tie.
+  // ShipLog's own rules, as its sheet ships them, loaded after TowerTorch's so they win every tie.
   const shiplog = {
     name: 'shiplog/styles/docker.css',
     css: '.sl-bubble .sl-au-row{position:relative;display:inline-flex;align-items:center;gap:9px;cursor:pointer}' +
       '.sl-bubble .sl-au-track{position:relative;width:34px;height:18px;flex:none;border-radius:999px;background:var(--sl-line2)}' +
-      '.sl-bubble .sl-au-cb:checked + .sl-au-track{background:var(--cc-accent,#ff8c2f)}' +
+      '.sl-bubble .sl-au-cb:checked + .sl-au-track{background:var(--tt-accent,#ff8c2f)}' +
       '.sl-bubble .sl-au-state{flex:1 1 160px;min-width:0}'
   };
   const page = PAGES.docker.concat([shiplog]);
@@ -51,9 +51,9 @@ console.log('\nShipLog\'s auto-update switch');
   ok('the label lets its parts take their own places in the bar', win(['sl-au-row'], 'display', 'label') === 'contents');
   ok('the switch stands last', win(['sl-au-track'], 'order') === '3' && win(['sl-au-info'], 'order') === '2', win(['sl-au-track'], 'order') + ' ' + win(['sl-au-info'], 'order'));
   ok('and is pushed to the far right', win(['sl-au-track'], 'margin-inline-start') === 'auto');
-  ok('at GlimStone\'s switch size, in the shape engine', win(['sl-au-track'], 'width') === '44px' && win(['sl-au-track'], 'height') === '24px' && win(['sl-au-track'], 'border-radius') === 'var(--cc-radius-pill)');
+  ok('at GlimStone\'s switch size, in the shape engine', win(['sl-au-track'], 'width') === '44px' && win(['sl-au-track'], 'height') === '24px' && win(['sl-au-track'], 'border-radius') === 'var(--tt-radius-pill)');
   const on = candidates(page, { tag: 'span', classes: ['sl-au-track'], attrs: { class: 'sl-au-track' }, states: { checked: true }, inside: ['.sl-bubble'], prev: ['.sl-au-cb:checked'] }, 'background').pop();
-  ok('switched on, it takes the colour chain', on && /var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent/.test(on.value), on && on.selector + ' ' + on.value);
+  ok('switched on, it takes the colour chain', on && /var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent/.test(on.value), on && on.selector + ' ' + on.value);
   ok('the save state gets a line of its own below', win(['sl-au-state'], 'flex-basis') === '100%');
   const docker = read('scripts/docker.js');
   ok('the rainbow gives the switch a slot of its own, without painting its off state', /\.sl-x, \.sl-au-track"\)\)/.test(docker) && /if \(neutral \|\| bn\.classList\.contains\("sl-au-track"\)\)/.test(docker));

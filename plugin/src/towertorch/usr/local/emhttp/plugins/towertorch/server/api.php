@@ -5,7 +5,7 @@
  * forwarded; nothing else reaches the engine, and the engine itself never
  * exposes Docker create/exec/build. The browser never touches the Docker socket.
  */
-$sock  = getenv('CC_SOCK') ?: '/var/run/towertorch.sock';
+$sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // state/stats: read-only; action: start|stop|restart|pause|unpause (the engine
 // validates the container name against the live list and never exposes
 // create/exec/build); plan/apply: the start-order plan. Nothing else is forwarded.

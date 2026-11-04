@@ -42,9 +42,9 @@ const stubs = `
   var CSS = { escape: function (s) { return s; } };
 `;
 const badges = [];
-const doc = { querySelectorAll: (sel) => badges.filter((b) => sel === '.cc-badge[data-name="' + b.dataset.name + '"]') };
+const doc = { querySelectorAll: (sel) => badges.filter((b) => sel === '.tt-badge[data-name="' + b.dataset.name + '"]') };
 const drawn = [];
-const win = { CCPictures: { drawCheck: (host, label) => { drawn.push([host, label]); } } };
+const win = { TTPictures: { drawCheck: (host, label) => { drawn.push([host, label]); } } };
 const api = new Function('Node', 'window', 'document', stubs + ['confirmCheck', 'confirmAction', 'doAction', 'saveEditor', 'savePlan', 'apply'].map(grabFn).join('\n') +
   '\nvar CHECK_HOLD = 1600, SAVE_HOLD = 700;' +
   '\nreturn { doAction: doAction, saveEditor: saveEditor, savePlan: savePlan, timers: timers, setPop: function (p) { openPop = p; }, closed: function () { return closed; }, rendered: function () { return rendered; } };')(Node, win, doc);
@@ -54,24 +54,24 @@ const run = (ms) => { const due = api.timers.filter((x) => x.ms === ms); due.for
 (async () => {
   console.log('\nA start draws its check beside the state badges');
   {
-    const row = Node('div', 'cc-card-cornerrow'), dot = Node('span', 'cc-badge');
+    const row = Node('div', 'tt-card-cornerrow'), dot = Node('span', 'tt-badge');
     dot.dataset.name = 'Plex'; row.insertBefore(dot); badges.push(dot);
     api.doAction('Plex', 'start');
     await tick(); await tick(); await tick();
-    ok('the check stands right before the badge', row.kids[0].cls.has('cc-done-check') && row.kids[1] === dot);
+    ok('the check stands right before the badge', row.kids[0].cls.has('tt-done-check') && row.kids[1] === dot);
     ok('it is drawn by the shared picture kit, named for the screen reader', drawn.length === 1 && drawn[0][0] === row.kids[0] && drawn[0][1] === 'done');
     run(1600);
-    ok('and leaves again after a moment', !has(row, 'cc-done-check') && row.kids.length === 1);
+    ok('and leaves again after a moment', !has(row, 'tt-done-check') && row.kids.length === 1);
   }
 
   console.log('\nSaving the plan\'s window draws on its button, then closes');
   {
-    const pop = { id: 'pop' }, btn = Node('span', 'cc-btn'), label = Node('#text');
+    const pop = { id: 'pop' }, btn = Node('span', 'tt-btn'), label = Node('#text');
     btn.insertBefore(label);
     api.setPop(pop); drawn.length = 0;
     api.saveEditor('Plex', null, [], null, false, btn);
     await tick(); await tick(); await tick(); await tick();
-    ok('the check comes before the label', btn.kids[0].cls.has('cc-done-check') && btn.kids[1] === label);
+    ok('the check comes before the label', btn.kids[0].cls.has('tt-done-check') && btn.kids[1] === label);
     ok('the window is still open while it draws', api.closed() === 0);
     ok('the view behind it is already redrawn', api.rendered() === 1);
     run(700);
@@ -86,21 +86,21 @@ const run = (ms) => { const due = api.timers.filter((x) => x.ms === ms); due.for
 
   console.log('\nThe plan\'s save in the menu draws on its button');
   {
-    const btn = Node('button', 'cc-btn'); btn.insertBefore(Node('#text'));
+    const btn = Node('button', 'tt-btn'); btn.insertBefore(Node('#text'));
     api.savePlan(false, btn);
     await tick(); await tick();
-    ok('a plain save', btn.kids[0].cls.has('cc-done-check'));
-    const fire = Node('button', 'cc-btn'); fire.insertBefore(Node('#text'));
+    ok('a plain save', btn.kids[0].cls.has('tt-done-check'));
+    const fire = Node('button', 'tt-btn'); fire.insertBefore(Node('#text'));
     api.savePlan(true, fire);
     await tick(); await tick(); await tick(); await tick();
-    ok('a save that starts the plan, once the start is through', fire.kids[0].cls.has('cc-done-check'));
+    ok('a save that starts the plan, once the start is through', fire.kids[0].cls.has('tt-done-check'));
   }
 
   console.log('\nThe update window draws its check in the status badge');
   {
     ok('a finished update draws instead of showing a still glyph', /sb\.setAttribute\("aria-label", "Fertig"\); sb\.innerHTML = ""; confirmCheck\(sb\);/.test(src));
-    ok('the finished badge leaves with its check', /#cc-ctout-status\.cc-ctout-done:not\(:has\(\.cc-done-check\)\) \{ visibility: hidden; \}/.test(css));
-    ok('a check in a button or the badge takes its ink', /:is\(\.cc-btn, #cc-ctout-status\) > \.cc-done-check \{ color: inherit;/.test(css));
+    ok('the finished badge leaves with its check', /#tt-ctout-status\.tt-ctout-done:not\(:has\(\.tt-done-check\)\) \{ visibility: hidden; \}/.test(css));
+    ok('a check in a button or the badge takes its ink', /:is\(\.tt-btn, #tt-ctout-status\) > \.tt-done-check \{ color: inherit;/.test(css));
   }
 
   console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

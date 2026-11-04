@@ -129,39 +129,39 @@ for (const L of LAYOUTS) {
   const coreRows = tb.children.filter((r) => r.cls.has('cpu_open') && r.byCls('usage-disk').length);
   const api = load(tb);
   api.buildCores();
-  const grids = tb.byCls('cc-cores');
+  const grids = tb.byCls('tt-cores');
   ok('one grid per physical CPU', grids.length === L.packages.length, grids.length);
   grids.forEach((box, p) => {
     const groups = box.children;
-    const heads = groups.map((g) => { const h = g.children.find((c) => c.cls.has('cc-cores-head')); return h ? [h.children[0].textContent, h.children[1].textContent] : [null, null]; });
+    const heads = groups.map((g) => { const h = g.children.find((c) => c.cls.has('tt-cores-head')); return h ? [h.children[0].textContent, h.children[1].textContent] : [null, null]; });
     ok('CPU ' + p + ': the groups and their headings follow the core types Unraid prints', JSON.stringify(heads) === JSON.stringify(L.groups), JSON.stringify(heads));
     const pairs = L.packages[p];
-    const cores = box.byCls('cc-core');
+    const cores = box.byCls('tt-core');
     ok('CPU ' + p + ': one tile per physical core', cores.length === pairs.length, cores.length);
     ok('CPU ' + p + ': a core with two threads spans two columns, one with one thread a single column',
-      cores.every((c, i) => c.cls.has('cc-core-ht') === (pairs[i].length === 2) && c.children.length === pairs[i].length));
-    const labels = box.byCls('cc-thr-n').map((n) => n.textContent);
+      cores.every((c, i) => c.cls.has('tt-core-ht') === (pairs[i].length === 2) && c.children.length === pairs[i].length));
+    const labels = box.byCls('tt-thr-n').map((n) => n.textContent);
     const want = pairs.flatMap((pr) => pr.map((n, k) => (k ? 'HT ' : 'CPU ') + n));
     ok('CPU ' + p + ': every thread once, in Unraid\'s order, named after its bar', JSON.stringify(labels) === JSON.stringify(want), labels.slice(0, 6).join(','));
   });
   const threads = L.packages.flat(2);
-  const lost = threads.filter((n) => { const bar = tb.byId('cpu' + n); const load = tb.byCls('cpu' + n)[0]; return !bar || !load || !bar.parentNode.parentNode.parentNode.cls.has('cc-thr') || load.parentNode !== bar.parentNode.parentNode; });
+  const lost = threads.filter((n) => { const bar = tb.byId('cpu' + n); const load = tb.byCls('cpu' + n)[0]; return !bar || !load || !bar.parentNode.parentNode.parentNode.cls.has('tt-thr') || load.parentNode !== bar.parentNode.parentNode; });
   ok('Unraid still finds every load and bar by id and class, inside the grid', lost.length === 0, lost.slice(0, 5).join(','));
   ok('no load cell was copied', threads.every((n) => tb.byCls('cpu' + n).length === 1));
-  const hosts = coreRows.filter((r) => r.cls.has('cc-cores-host'));
-  ok('the grid sits in the first core row of each CPU, a row Unraid already watches', hosts.length === L.packages.length && hosts.every((r) => r.cls.has('cpu_open') && r.children.some((c) => c.cls.has('cc-cores-td'))));
-  ok('every other core row is set aside', coreRows.filter((r) => r.cls.has('cc-cores-spent')).length === coreRows.length - L.packages.length);
+  const hosts = coreRows.filter((r) => r.cls.has('tt-cores-host'));
+  ok('the grid sits in the first core row of each CPU, a row Unraid already watches', hosts.length === L.packages.length && hosts.every((r) => r.cls.has('cpu_open') && r.children.some((c) => c.cls.has('tt-cores-td'))));
+  ok('every other core row is set aside', coreRows.filter((r) => r.cls.has('tt-cores-spent')).length === coreRows.length - L.packages.length);
   api.buildCores();
-  ok('a second pass builds nothing twice', tb.byCls('cc-cores').length === L.packages.length);
+  ok('a second pass builds nothing twice', tb.byCls('tt-cores').length === L.packages.length);
   api.unbuildCores();
   ok('switched off, the rows are exactly as Unraid printed them', tb.html() === before);
 }
 
 console.log('\nThe sheet');
-ok('set aside rows stay hidden even when Unraid shows the core rows again', /tr\.cpu_open\.cc-cores-spent \{ display: none !important; \}/.test(css));
-ok('four columns at desktop width', /\.cc-cores-grid \{[^}]*repeat\(4, minmax\(0, 1fr\)\)/.test(css));
-ok('a hyperthreaded pair keeps to one row', /\.cc-core-ht \{ grid-column: span 2;/.test(css));
-ok('the live values use tabular figures', /\.cc-thr \.load \{[^}]*tabular-nums/.test(css));
+ok('set aside rows stay hidden even when Unraid shows the core rows again', /tr\.cpu_open\.tt-cores-spent \{ display: none !important; \}/.test(css));
+ok('four columns at desktop width', /\.tt-cores-grid \{[^}]*repeat\(4, minmax\(0, 1fr\)\)/.test(css));
+ok('a hyperthreaded pair keeps to one row', /\.tt-core-ht \{ grid-column: span 2;/.test(css));
+ok('the live values use tabular figures', /\.tt-thr \.load \{[^}]*tabular-nums/.test(css));
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
 process.exit(fail ? 1 : 0);

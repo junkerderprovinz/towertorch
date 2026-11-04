@@ -17,10 +17,10 @@ function grabFn(src, name) {
   throw new Error('unbalanced function: ' + name);
 }
 
-// dismissPop over a stubbed window and CCTheme.ask.
+// dismissPop over a stubbed window and TTTheme.ask.
 function harness(unsaved) {
   const asked = [], log = [];
-  const win = { CCTheme: { ask: (o) => asked.push(o) } };
+  const win = { TTTheme: { ask: (o) => asked.push(o) } };
   const pop = { _unsaved: unsaved == null ? undefined : () => unsaved };
   const env = new Function('window', 'pop', 'log',
     'var openPop = pop; function t(k) { return { discardTitle: "Ungespeicherte Änderungen verwerfen?", discard: "Verwerfen", keepEditing: "Weiter bearbeiten" }[k]; }' +
@@ -56,8 +56,8 @@ console.log('\nThe question');
 }
 
 console.log('\nEvery way out asks');
-ok('the close badge, Escape and the scrim, through the modal', /window\.CCTheme\.modal\(pop, \{ opener: anchor, onDismiss: dismissPop \}\)/.test(docker));
-ok('a click outside, but not a click in the question itself', /!e\.target\.closest\("\.cc-plan, \.cc-drop, \.cc-dlg"\)\) dismissPop\(\);/.test(docker));
+ok('the close badge, Escape and the scrim, through the modal', /window\.TTTheme\.modal\(pop, \{ opener: anchor, onDismiss: dismissPop \}\)/.test(docker));
+ok('a click outside, but not a click in the question itself', /!e\.target\.closest\("\.tt-plan, \.tt-drop, \.tt-dlg"\)\) dismissPop\(\);/.test(docker));
 ok('Escape without a modal', /if \(e\.key === "Escape"\) \{ try \{ dismissPop\(\);/.test(docker));
 
 console.log('\nThe Startplan window keeps a draft');

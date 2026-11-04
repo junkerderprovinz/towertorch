@@ -1,9 +1,9 @@
-// Drives header.js's ccLoadState() spinner election against a DOM shim.
+// Drives header.js's ttLoadState() spinner election against a DOM shim.
 //
-// The overlay's display comes from an inline override ccLoadState sets and clears,
+// The overlay's display comes from an inline override ttLoadState sets and clears,
 // not from a stylesheet rule: an unconditional !important could never lose to
 // Unraid's own inline display:none and left the dimmed overlay up for good. The
-// same pass holds the overlay open through data-cc-held while docker.js is still
+// same pass holds the overlay open through data-tt-held while docker.js is still
 // painting, so the two assertions that matter are that the override is granted
 // only while elected or held, and that it is released the moment it is not.
 const fs = require('fs');
@@ -50,7 +50,7 @@ class N {
 }
 function computedDisplay(el) { return el.style.display || el.nativeDisplay; }
 
-// Pull ccLoadState and its helpers out of header.js.
+// Pull ttLoadState and its helpers out of header.js.
 const src = fs.readFileSync(HEADER, 'utf8');
 function grab(name) {
   const i = src.indexOf('function ' + name + '(');
@@ -59,96 +59,96 @@ function grab(name) {
   for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } }
   throw new Error('unbalanced function: ' + name);
 }
-const code = ['ccLoader', 'ccMountLoader', 'ccUnmountLoader', 'ccLoadState'].map(grab).join('\n');
+const code = ['ttLoader', 'ttMountLoader', 'ttUnmountLoader', 'ttLoadState'].map(grab).join('\n');
 const html = new N('html');
-html.classList.add('cc-popups-on');
+html.classList.add('tt-popups-on');
 const document = {
   documentElement: html,
   querySelector: s => html._match(s.trim()) ? html : html.querySelector(s),
   querySelectorAll: s => html.querySelectorAll(s),
   getElementById: () => null,
 };
-const { ccLoadState } = new Function('document', 'getComputedStyle', code + '\nreturn {ccLoadState};')(
+const { ttLoadState } = new Function('document', 'getComputedStyle', code + '\nreturn {ttLoadState};')(
   document, el => ({ display: computedDisplay(el) }));
 
 let failed = false;
 function check(label, cond) { console.log((cond ? '  PASS  ' : '  FAIL  ') + label); if (!cond) failed = true; }
 
-console.log('div.spinner.fixed is genuinely shown by Unraid (nativeDisplay=block, no CC involvement yet)');
+console.log('div.spinner.fixed is genuinely shown by Unraid (nativeDisplay=block, no TowerTorch involvement yet)');
 {
   const sp = new N('div'); sp.classList.add('spinner'); sp.classList.add('fixed'); html.appendChild(sp);
-  html.classList.remove('cc-enh-busy');
-  ccLoadState();
+  html.classList.remove('tt-enh-busy');
+  ttLoadState();
   check('gets elected and forced to flex !important', sp.style.display === 'flex' && sp.style.getPropertyValue('display') === 'flex');
-  check('root is marked cc-loading / data-cc-load=fixed', html.classList.contains('cc-loading') && html.getAttribute('data-cc-load') === 'fixed');
+  check('root is marked tt-loading / data-tt-load=fixed', html.classList.contains('tt-loading') && html.getAttribute('data-tt-load') === 'fixed');
   html.children.length = 0; // reset
 }
 
 console.log('\ndiv.spinner.fixed already hidden by Unraid, with the enhancer idle');
 {
   const sp = new N('div'); sp.classList.add('spinner'); sp.classList.add('fixed'); sp.nativeDisplay = 'none'; html.appendChild(sp);
-  html.classList.remove('cc-enh-busy');
-  ccLoadState();
+  html.classList.remove('tt-enh-busy');
+  ttLoadState();
   check('is left alone: no inline display override at all', sp.style.getPropertyValue('display') === '');
   check('computed display stays none, not stuck visible', computedDisplay(sp) === 'none');
-  check('root is not marked loading', !html.classList.contains('cc-loading'));
+  check('root is not marked loading', !html.classList.contains('tt-loading'));
   html.children.length = 0;
 }
 
-console.log('\nUnraid already hid it, but docker.js is still painting (cc-enh-busy)');
+console.log('\nUnraid already hid it, but docker.js is still painting (tt-enh-busy)');
 {
   const sp = new N('div'); sp.classList.add('spinner'); sp.classList.add('fixed'); sp.nativeDisplay = 'none'; html.appendChild(sp);
-  html.classList.add('cc-enh-busy');
-  ccLoadState();
-  check('held element is marked data-cc-held', sp.getAttribute('data-cc-held') === '1');
+  html.classList.add('tt-enh-busy');
+  ttLoadState();
+  check('held element is marked data-tt-held', sp.getAttribute('data-tt-held') === '1');
   check('is force-elected to flex !important despite Unraid hiding it', sp.style.display === 'flex' && sp.style.getPropertyValue('display') === 'flex');
-  check('root still reads as loading while held', html.classList.contains('cc-loading'));
+  check('root still reads as loading while held', html.classList.contains('tt-loading'));
 
-  console.log('  -> the enhancer finishes and cc-enh-busy is cleared');
-  html.classList.remove('cc-enh-busy');
-  ccLoadState();
-  check('data-cc-held is cleared', !sp.hasAttribute('data-cc-held'));
+  console.log('  -> the enhancer finishes and tt-enh-busy is cleared');
+  html.classList.remove('tt-enh-busy');
+  ttLoadState();
+  check('data-tt-held is cleared', !sp.hasAttribute('data-tt-held'));
   check('the forced inline display is removed', sp.style.getPropertyValue('display') === '');
-  check('root no longer reads as loading', !html.classList.contains('cc-loading'));
+  check('root no longer reads as loading', !html.classList.contains('tt-loading'));
   html.children.length = 0;
 }
 
 console.log('\na hold sustained across several 60ms poll ticks neither flickers nor releases early');
 {
   const sp = new N('div'); sp.classList.add('spinner'); sp.classList.add('fixed'); sp.nativeDisplay = 'none'; html.appendChild(sp);
-  html.classList.add('cc-enh-busy');
+  html.classList.add('tt-enh-busy');
   for (let tick = 1; tick <= 3; tick++) {
-    ccLoadState();
-    check('tick ' + tick + ': still held and flex', sp.getAttribute('data-cc-held') === '1' && sp.style.display === 'flex');
+    ttLoadState();
+    check('tick ' + tick + ': still held and flex', sp.getAttribute('data-tt-held') === '1' && sp.style.display === 'flex');
   }
-  html.classList.remove('cc-enh-busy');
-  ccLoadState();
-  check('released after the busy tick ends', !sp.hasAttribute('data-cc-held') && sp.style.getPropertyValue('display') === '');
+  html.classList.remove('tt-enh-busy');
+  ttLoadState();
+  check('released after the busy tick ends', !sp.hasAttribute('data-tt-held') && sp.style.getPropertyValue('display') === '');
   html.children.length = 0;
 }
 
 console.log('\nvisibility Unraid itself holds does not flicker off across several ticks');
 {
   const sp = new N('div'); sp.classList.add('spinner'); sp.classList.add('fixed'); sp.nativeDisplay = 'block'; html.appendChild(sp);
-  html.classList.remove('cc-enh-busy');
+  html.classList.remove('tt-enh-busy');
   for (let tick = 1; tick <= 3; tick++) {
-    ccLoadState();
-    check('tick ' + tick + ': stays elected and flex', sp.style.display === 'flex' && html.classList.contains('cc-loading'));
+    ttLoadState();
+    check('tick ' + tick + ': stays elected and flex', sp.style.display === 'flex' && html.classList.contains('tt-loading'));
   }
   sp.nativeDisplay = 'none'; // Unraid hides it
-  ccLoadState();
-  check('releases once Unraid hides it', sp.style.getPropertyValue('display') === '' && !html.classList.contains('cc-loading'));
+  ttLoadState();
+  check('releases once Unraid hides it', sp.style.getPropertyValue('display') === '' && !html.classList.contains('tt-loading'));
   html.children.length = 0;
 }
 
 console.log('\nan unrelated in-page spinner must never be force-elected as the fixed overlay');
 {
   const sp = new N('div'); sp.classList.add('spinner'); sp.nativeDisplay = 'none'; html.appendChild(sp); // no .fixed
-  html.classList.add('cc-enh-busy');
-  ccLoadState();
-  check('no held attribute: only div.spinner.fixed can be held', !sp.hasAttribute('data-cc-held'));
-  check('root is not loading, with nothing up and nothing to hold', !html.classList.contains('cc-loading'));
-  html.classList.remove('cc-enh-busy');
+  html.classList.add('tt-enh-busy');
+  ttLoadState();
+  check('no held attribute: only div.spinner.fixed can be held', !sp.hasAttribute('data-tt-held'));
+  check('root is not loading, with nothing up and nothing to hold', !html.classList.contains('tt-loading'));
+  html.classList.remove('tt-enh-busy');
   html.children.length = 0;
 }
 

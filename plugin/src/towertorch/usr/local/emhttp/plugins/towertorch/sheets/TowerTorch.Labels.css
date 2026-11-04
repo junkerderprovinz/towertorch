@@ -1,86 +1,86 @@
 /* TowerTorch: GlimStone's label engine on the Unraid buttons TowerTorch draws as badges
- * (scripts/labels.js). labels.js puts the mode on <html> as data-cc-labels-buttons and marks each
- * button whose caption has a glyph with data-cc-lbl, the glyph's name. Text mode marks nothing,
+ * (scripts/labels.js). labels.js puts the mode on <html> as data-tt-labels-buttons and marks each
+ * button whose caption has a glyph with data-tt-lbl, the glyph's name. Text mode marks nothing,
  * so there the buttons stay as the area sheets draw them. The glyph is a background layer of the
- * button, drawn in its ink as --cc-lbl-img. labels.js places the layer at --cc-lbl-bp, sizes it at
- * --cc-lbl-bs and pads the button by --cc-lbl-ps and --cc-lbl-pe, all inline and all set here per
+ * button, drawn in its ink as --tt-lbl-img. labels.js places the layer at --tt-lbl-bp, sizes it at
+ * --tt-lbl-bs and pads the button by --tt-lbl-ps and --tt-lbl-pe, all inline and all set here per
  * mode and state, and sets what it measured on the button:
- *   --cc-lbl-pl, --cc-lbl-pr  the button's own padding
- *   --cc-lbl-tw               the width of its caption
- *   --cc-lbl-gs               the glyph beside a caption, as tall as the caption's text
- *   --cc-lbl-h                the button's height, the side of its square in glyph mode
- *   --cc-lbl-w                its width with glyph and caption, which reactive opens to
- *   --cc-lbl-gap              the gap between glyph and caption
+ *   --tt-lbl-pl, --tt-lbl-pr  the button's own padding
+ *   --tt-lbl-tw               the width of its caption
+ *   --tt-lbl-gs               the glyph beside a caption, as tall as the caption's text
+ *   --tt-lbl-h                the button's height, the side of its square in glyph mode
+ *   --tt-lbl-w                its width with glyph and caption, which reactive opens to
+ *   --tt-lbl-gap              the gap between glyph and caption
  * The rules that size the square sit in a cascade layer: an important declaration in a layer
  * outranks every unlayered important one, and the area sheets reach these buttons through one or
  * two ids with !important on their width. */
 
 /* Reactive's opening rides on the motion engine: wild opens over 320ms with an overshoot, subtle
    over 160ms, off and a system that asks for reduced motion show the words at once. */
-html { --cc-motion-label-dur: 0s; --cc-motion-label-ease: ease-out; }
+html { --tt-motion-label-dur: 0s; --tt-motion-label-ease: ease-out; }
 @media (prefers-reduced-motion: no-preference) {
-  html { --cc-motion-label-dur: 320ms; --cc-motion-label-ease: cubic-bezier(.34, 1.56, .64, 1); }
-  html[data-cc-motion="subtle"] { --cc-motion-label-dur: 160ms; --cc-motion-label-ease: ease-out; }
-  html[data-cc-motion="off"] { --cc-motion-label-dur: 0s; }
+  html { --tt-motion-label-dur: 320ms; --tt-motion-label-ease: cubic-bezier(.34, 1.56, .64, 1); }
+  html[data-tt-motion="subtle"] { --tt-motion-label-dur: 160ms; --tt-motion-label-ease: ease-out; }
+  html[data-tt-motion="off"] { --tt-motion-label-dur: 0s; }
 }
 
 /* Glyph and caption: the caption moves over by the glyph and the gap, and the two are centred
    together, as the button centres its caption alone. */
-html[data-cc-labels-buttons] [data-cc-lbl] {
-  --cc-lbl-ps: calc(var(--cc-lbl-pl) + var(--cc-lbl-gs) + var(--cc-lbl-gap));
-  --cc-lbl-pe: var(--cc-lbl-pr);
-  --cc-lbl-bs: var(--cc-lbl-gs) var(--cc-lbl-gs);
-  --cc-lbl-bp: calc(50% + (var(--cc-lbl-pl) - var(--cc-lbl-pr) - var(--cc-lbl-gap) - var(--cc-lbl-tw)) / 2) center;
+html[data-tt-labels-buttons] [data-tt-lbl] {
+  --tt-lbl-ps: calc(var(--tt-lbl-pl) + var(--tt-lbl-gs) + var(--tt-lbl-gap));
+  --tt-lbl-pe: var(--tt-lbl-pr);
+  --tt-lbl-bs: var(--tt-lbl-gs) var(--tt-lbl-gs);
+  --tt-lbl-bp: calc(50% + (var(--tt-lbl-pl) - var(--tt-lbl-pr) - var(--tt-lbl-gap) - var(--tt-lbl-tw)) / 2) center;
 }
 /* The glyph alone sits in the middle of a square, and GlimStone's glyph alone in its square is
    half the square. Reactive rests the same way, with its glyph at the caption's size. */
-html[data-cc-labels-buttons="glyph"] [data-cc-lbl],
-html[data-cc-labels-buttons="reactive"] [data-cc-lbl]:not(:is(:hover, :focus-visible):not(:disabled)) {
-  --cc-lbl-ps: 0px; --cc-lbl-pe: 0px; --cc-lbl-bp: center;
+html[data-tt-labels-buttons="glyph"] [data-tt-lbl],
+html[data-tt-labels-buttons="reactive"] [data-tt-lbl]:not(:is(:hover, :focus-visible):not(:disabled)) {
+  --tt-lbl-ps: 0px; --tt-lbl-pe: 0px; --tt-lbl-bp: center;
 }
-html[data-cc-labels-buttons="glyph"] [data-cc-lbl] { --cc-lbl-bs: calc(var(--cc-lbl-h) / 2) calc(var(--cc-lbl-h) / 2); }
+html[data-tt-labels-buttons="glyph"] [data-tt-lbl] { --tt-lbl-bs: calc(var(--tt-lbl-h) / 2) calc(var(--tt-lbl-h) / 2); }
 
-@layer cc-labels {
+@layer tt-labels {
   /* The square. The caption stays the button's value and accessible name and is only not painted. */
-  html:is([data-cc-labels-buttons="glyph"], [data-cc-labels-buttons="reactive"]) [data-cc-lbl]:not([data-cc-lbl-off]) {
-    width: var(--cc-lbl-h) !important; min-width: 0 !important; max-width: none !important;
+  html:is([data-tt-labels-buttons="glyph"], [data-tt-labels-buttons="reactive"]) [data-tt-lbl]:not([data-tt-lbl-off]) {
+    width: var(--tt-lbl-h) !important; min-width: 0 !important; max-width: none !important;
     overflow: hidden !important; -webkit-text-fill-color: transparent !important;
   }
   /* Reactive: the caption opens under the pointer and on keyboard focus. A disabled button never
      opens; its caption is in its bubble instead. */
-  html[data-cc-labels-buttons="reactive"] [data-cc-lbl]:not([data-cc-lbl-off]):is(:hover, :focus-visible):not(:disabled) {
-    width: var(--cc-lbl-w) !important; -webkit-text-fill-color: currentColor !important;
+  html[data-tt-labels-buttons="reactive"] [data-tt-lbl]:not([data-tt-lbl-off]):is(:hover, :focus-visible):not(:disabled) {
+    width: var(--tt-lbl-w) !important; -webkit-text-fill-color: currentColor !important;
   }
   /* The area sheets' own colour transitions are named again, since this one replaces them. */
-  html[data-cc-labels-buttons="reactive"] [data-cc-lbl]:not([data-cc-lbl-off], [data-cc-lbl-still]) {
-    transition: width var(--cc-motion-label-dur) var(--cc-motion-label-ease), padding var(--cc-motion-label-dur) var(--cc-motion-label-ease),
-      background-position var(--cc-motion-label-dur) var(--cc-motion-label-ease), -webkit-text-fill-color calc(var(--cc-motion-label-dur) * .6) ease-out,
+  html[data-tt-labels-buttons="reactive"] [data-tt-lbl]:not([data-tt-lbl-off], [data-tt-lbl-still]) {
+    transition: width var(--tt-motion-label-dur) var(--tt-motion-label-ease), padding var(--tt-motion-label-dur) var(--tt-motion-label-ease),
+      background-position var(--tt-motion-label-dur) var(--tt-motion-label-ease), -webkit-text-fill-color calc(var(--tt-motion-label-dur) * .6) ease-out,
       background-color .12s, color .12s, filter .12s !important;
   }
-  html[data-cc-labels-buttons] [data-cc-lbl-still] { transition: none !important; }
+  html[data-tt-labels-buttons] [data-tt-lbl-still] { transition: none !important; }
 }
 
-/* TowerTorch's own buttons (CCTheme.labelled) hold their glyph and their words as two spans. The
+/* TowerTorch's own buttons (TTTheme.labelled) hold their glyph and their words as two spans. The
    words keep their place in the accessible tree in every mode and only lose their width. With
    theming off the buttons show their words alone, as text mode does. */
-html:not([data-cc-labels-buttons]) .cc-lb-g { display: none; }
-html[data-cc-labels-buttons] .cc-lb-g { display: inline-flex; flex: none; line-height: 0; vertical-align: -.125em; margin-inline-end: .45em; }
-html[data-cc-labels-buttons] .cc-lb-g .cc-glyph { vertical-align: 0; }
-html[data-cc-labels-buttons] .cc-lb-l { display: inline-block; white-space: nowrap; vertical-align: bottom; }
-html[data-cc-labels-buttons="text"] .cc-lb-g { display: none; }
-html:is([data-cc-labels-buttons="glyph"], [data-cc-labels-buttons="reactive"]) .cc-lb-g { margin-inline-end: 0; }
-html:is([data-cc-labels-buttons="glyph"], [data-cc-labels-buttons="reactive"]) .cc-lb-l { max-width: 0; opacity: 0; overflow: hidden; }
-html[data-cc-labels-buttons="reactive"] .cc-lb:is(:hover, :focus-visible) .cc-lb-g { margin-inline-end: .45em; }
-html[data-cc-labels-buttons="reactive"] .cc-lb:is(:hover, :focus-visible) .cc-lb-l { max-width: 16em; opacity: 1; }
-html[data-cc-labels-buttons="reactive"] .cc-lb-g {
-  transition: margin-inline-end var(--cc-motion-label-dur) var(--cc-motion-label-ease);
+html:not([data-tt-labels-buttons]) .tt-lb-g { display: none; }
+html[data-tt-labels-buttons] .tt-lb-g { display: inline-flex; flex: none; line-height: 0; vertical-align: -.125em; margin-inline-end: .45em; }
+html[data-tt-labels-buttons] .tt-lb-g .tt-glyph { vertical-align: 0; }
+html[data-tt-labels-buttons] .tt-lb-l { display: inline-block; white-space: nowrap; vertical-align: bottom; }
+html[data-tt-labels-buttons="text"] .tt-lb-g { display: none; }
+html:is([data-tt-labels-buttons="glyph"], [data-tt-labels-buttons="reactive"]) .tt-lb-g { margin-inline-end: 0; }
+html:is([data-tt-labels-buttons="glyph"], [data-tt-labels-buttons="reactive"]) .tt-lb-l { max-width: 0; opacity: 0; overflow: hidden; }
+html[data-tt-labels-buttons="reactive"] .tt-lb:is(:hover, :focus-visible) .tt-lb-g { margin-inline-end: .45em; }
+html[data-tt-labels-buttons="reactive"] .tt-lb:is(:hover, :focus-visible) .tt-lb-l { max-width: 16em; opacity: 1; }
+html[data-tt-labels-buttons="reactive"] .tt-lb-g {
+  transition: margin-inline-end var(--tt-motion-label-dur) var(--tt-motion-label-ease);
 }
-html[data-cc-labels-buttons="reactive"] .cc-lb-l {
-  transition: max-width var(--cc-motion-label-dur) var(--cc-motion-label-ease), opacity calc(var(--cc-motion-label-dur) * .6) ease-out;
+html[data-tt-labels-buttons="reactive"] .tt-lb-l {
+  transition: max-width var(--tt-motion-label-dur) var(--tt-motion-label-ease), opacity calc(var(--tt-motion-label-dur) * .6) ease-out;
 }
 /* The view switches, the New folder tile and the menu's buttons set the space between glyph and
    words with their own gap, which goes while the words are hidden so the glyph sits in the middle. */
-html[data-cc-labels-buttons] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings) > .cc-lb-g,
-html[data-cc-labels-buttons="reactive"] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings).cc-lb:is(:hover, :focus-visible) > .cc-lb-g { margin-inline-end: 0; }
-html[data-cc-labels-buttons="glyph"] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings).cc-lb,
-html[data-cc-labels-buttons="reactive"] :is(.cc-seg-btn, .cc-tile-new, .cc-menu-newfolder, .cc-menu-settings).cc-lb:not(:hover, :focus-visible) { gap: 0 !important; }
+html[data-tt-labels-buttons] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings) > .tt-lb-g,
+html[data-tt-labels-buttons="reactive"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb:is(:hover, :focus-visible) > .tt-lb-g { margin-inline-end: 0; }
+html[data-tt-labels-buttons="glyph"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb,
+html[data-tt-labels-buttons="reactive"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb:not(:hover, :focus-visible) { gap: 0 !important; }

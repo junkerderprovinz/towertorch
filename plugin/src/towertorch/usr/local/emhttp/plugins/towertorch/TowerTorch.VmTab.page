@@ -1,13 +1,13 @@
 Menu="Buttons:98"
 Title="TowerTorch"
 Icon="towertorch.png"
-Link="cc-vmtab-hook"
+Link="tt-vmtab-hook"
 ---
 <?php
 /* Registered under Menu="Buttons" so Unraid auto-injects sheets/TowerTorch.VmTab.css into
    the <head> of every page, like the Header/Shares/SettingsGrid hooks; a <link> in a Menu="VMs"
-   page does not load. All rules are gated behind html.cc-vms-on, which vms.js sets only when the
-   VM area and master theming are on. Link="cc-vmtab-hook" renders a bare <div> instead of a
+   page does not load. All rules are gated behind html.tt-vms-on, which vms.js sets only when the
+   VM area and master theming are on. Link="tt-vmtab-hook" renders a bare <div> instead of a
    visible icon.
 
    vms.js loads here as well: /VMs is Tabs="true", so a title-less child page goes through the

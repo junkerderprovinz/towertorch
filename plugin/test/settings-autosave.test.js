@@ -85,10 +85,10 @@ function harness(engine) {
 
   console.log('\nThe page wires it up');
   {
-    ok('no Save button is left on either card', !/cc-set-save/.test(settings) && !/saveNotify\(save5\)|saveShape\(save6\)/.test(settings));
+    ok('no Save button is left on either card', !/tt-set-save/.test(settings) && !/saveNotify\(save5\)|saveShape\(save6\)/.test(settings));
     ok('the switch saves on change and reverts itself', /saveNotify\(ntg, function \(\) \{ notify\.unraid = !v; ntg\._setOn\(!v\); \}\)/.test(settings));
-    ok('the webhook saves after quiet', /afterQuiet\("notify", function \(\) \{ saveNotify\(document\.getElementById\("cc-set-webhook"\)\); \}\)/.test(settings));
-    ok('the interface saves after quiet', /afterQuiet\("shape", function \(\) \{ saveShape\(document\.getElementById\("cc-set-iface"\)\); \}\)/.test(settings));
+    ok('the webhook saves after quiet', /afterQuiet\("notify", function \(\) \{ saveNotify\(document\.getElementById\("tt-set-webhook"\)\); \}\)/.test(settings));
+    ok('the interface saves after quiet', /afterQuiet\("shape", function \(\) \{ saveShape\(document\.getElementById\("tt-set-iface"\)\); \}\)/.test(settings));
     ok('the save goes through the config lock', /return withConfigLock\(function \(\) \{/.test(grabFn(settings, 'saveConfigField')));
   }
 

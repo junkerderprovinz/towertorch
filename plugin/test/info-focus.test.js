@@ -1,6 +1,6 @@
 // The (i) glyph shows keyboard focus with TowerTorch's 3px accent halo. It has no fill
 // of its own, so an opacity step alone reads exactly like hover (GlimStone asks for visible
-// focus here; CC answers with its halo, since it draws no rings or borders anywhere).
+// focus here; TowerTorch answers with its halo, since it draws no rings or borders anywhere).
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -12,9 +12,9 @@ const clean = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
 console.log('\nThe halo');
 const tokens = clean(read('sheets/TowerTorch.Tokens.css'));
-const body = (/(^|\})\s*\.cc-info:focus-visible \{([^}]*)\}/.exec(tokens) || [])[2] || '';
-ok('Tokens.css, loaded on every page, gives .cc-info a focus-visible rule', body.length > 0);
-ok('it draws the 3px accent halo', /box-shadow: 0 0 0 3px color-mix\(in srgb, var\(--cc-accent, #FCC419\) 45%, transparent\) !important;/.test(body));
+const body = (/(^|\})\s*\.tt-info:focus-visible \{([^}]*)\}/.exec(tokens) || [])[2] || '';
+ok('Tokens.css, loaded on every page, gives .tt-info a focus-visible rule', body.length > 0);
+ok('it draws the 3px accent halo', /box-shadow: 0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\) !important;/.test(body));
 ok('with a plain fallback for a browser without color-mix', /box-shadow: 0 0 0 3px rgba\(252, 196, 25, \.42\) !important;/.test(body));
 ok('round, following the ring the glyph draws', /border-radius: 50%;/.test(body));
 ok('and no outline ring', /outline: none !important;/.test(body));
@@ -25,14 +25,14 @@ ok('focused, the glyph is at full strength', /opacity: 1 !important;/.test(body)
 // later, takes it away again.
 console.log('\nNothing takes it away again, across every sheet a page loads');
 const { candidates, cmp } = require('./cascade');
-const INFO = { tag: 'span', classes: ['cc-info'], attrs: { class: 'cc-info', tabindex: '0', 'data-tip': 'x', 'aria-label': 'x' }, states: { focus: true, 'focus-visible': true } };
-const HALO = /^0 0 0 3px color-mix\(in srgb, var\(--cc-accent, #FCC419\) 45%, transparent\)$/;
+const INFO = { tag: 'span', classes: ['tt-info'], attrs: { class: 'tt-info', tabindex: '0', 'data-tip': 'x', 'aria-label': 'x' }, states: { focus: true, 'focus-visible': true } };
+const HALO = /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)$/;
 const winner = (page, prop, el) => { const c = candidates(page, el || INFO, prop); return c[c.length - 1]; };
 {
-  const sheets = [{ name: 'a.css', css: '.cc-info:focus-visible { box-shadow: 0 0 0 3px red !important; }' },
+  const sheets = [{ name: 'a.css', css: '.tt-info:focus-visible { box-shadow: 0 0 0 3px red !important; }' },
     { name: 'b.css', css: 'html.x :is(a, [tabindex]):focus-visible { box-shadow: none !important; }' }];
   ok('the resolver sees a heavier blanket rule in a later sheet win', winner(sheets, 'box-shadow').value === 'none');
-  sheets[1].css = 'html.x :is(a, [tabindex]):where(:not(.cc-info)):focus-visible { box-shadow: none !important; }';
+  sheets[1].css = 'html.x :is(a, [tabindex]):where(:not(.tt-info)):focus-visible { box-shadow: none !important; }';
   ok('and lets the halo through once the rule leaves the glyph out', winner(sheets, 'box-shadow').value === '0 0 0 3px red');
 }
 for (const page of ['every', 'docker', 'settings']) {
@@ -55,7 +55,7 @@ for (const page of ['every', 'docker', 'settings']) {
   const TAB = { tag: 'span', classes: [], attrs: { tabindex: '0' }, states: { focus: true, 'focus-visible': true } };
   ok('so does any other [tabindex] element', winner('docker', 'box-shadow', TAB).value === 'none');
 }
-ok('the shared infoIcon() makes the glyph reachable by Tab', /s\.setAttribute\("tabindex", "0"\)/.test(read('scripts/cc-theme.js')));
+ok('the shared infoIcon() makes the glyph reachable by Tab', /s\.setAttribute\("tabindex", "0"\)/.test(read('scripts/tt-theme.js')));
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
 process.exit(fail ? 1 : 0);

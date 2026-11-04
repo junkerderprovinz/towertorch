@@ -63,8 +63,8 @@ function load(f, extra) {
   byId.primary = f.shareCachePool;
   const window = { initDropdown: () => log.push('initDropdown') };
   const document = { forms: { share_edit: f }, getElementById: (id) => byId[id] || null, querySelector: () => null };
-  const src = ['ccFloor', 'ccFillShare', 'ccReadIntoNew'].map((n) => grabFn(js, n)).join('\n') +
-    '\nfunction ccSyncGroup() { log.push("sync"); }\nreturn { ccFloor, ccFillShare, ccReadIntoNew };';
+  const src = ['ttFloor', 'ttFillShare', 'ttReadIntoNew'].map((n) => grabFn(js, n)).join('\n') +
+    '\nfunction ttSyncGroup() { log.push("sync"); }\nreturn { ttFloor, ttFillShare, ttReadIntoNew };';
   return { api: new Function('window', 'document', 'Event', 'log', src)(window, document, function (t) { this.type = t; }, log), byId };
 }
 const picked = (s) => s.options[s.selectedIndex].value;
@@ -73,9 +73,9 @@ const ticked = (s) => s.options.filter((o) => o.selected).map((o) => o.value).jo
 console.log('\nA floor goes in as a size Unraid reads back');
 {
   const { api } = load(addForm());
-  ok('kilobytes become the largest whole unit with one decimal', api.ccFloor(97628454) === '97.6 GB' && api.ccFloor(976434990) === '976.4 GB', api.ccFloor(97628454));
-  ok('a small floor stays in kilobytes', api.ccFloor(512) === '512 KB');
-  ok('the decimal is a dot, the one parseDiskSize reads', !/,/.test(api.ccFloor(1234567)));
+  ok('kilobytes become the largest whole unit with one decimal', api.ttFloor(97628454) === '97.6 GB' && api.ttFloor(976434990) === '976.4 GB', api.ttFloor(97628454));
+  ok('a small floor stays in kilobytes', api.ttFloor(512) === '512 KB');
+  ok('the decimal is a dot, the one parseDiskSize reads', !/,/.test(api.ttFloor(1234567)));
 }
 
 console.log('\nRead fills the visible fields of the add form');
@@ -83,7 +83,7 @@ console.log('\nRead fills the visible fields of the add form');
   log.length = 0;
   const f = addForm();
   const { api, byId } = load(f);
-  api.ccFillShare(f, { useCache: 'prefer', cachePool: 'fastcache', cachePool2: '', allocator: 'mostfree', splitLevel: '1', include: 'disk1,disk3', exclude: '', floor: '97628454', cow: 'no' });
+  api.ttFillShare(f, { useCache: 'prefer', cachePool: 'fastcache', cachePool2: '', allocator: 'mostfree', splitLevel: '1', include: 'disk1,disk3', exclude: '', floor: '97628454', cow: 'no' });
   ok('primary storage is the pool, secondary the array', picked(f.shareCachePool) === 'fastcache' && picked(byId.secondary) === '1');
   ok('the mover runs from secondary to primary, as prefer means', byId.direction.selectedIndex === 1);
   ok('allocation and split level land in both storage sections', picked(f.shareAllocator1) === 'mostfree' && picked(f.shareAllocator2) === 'mostfree' && picked(f.shareSplitLevel1) === '1' && picked(f.shareSplitLevel2) === '1');
@@ -99,7 +99,7 @@ console.log('\nRead fills the visible fields of the add form');
   log.length = 0;
   const f = addForm();
   const { api, byId } = load(f);
-  api.ccFillShare(f, { useCache: 'no', cachePool: '', cachePool2: '', allocator: 'highwater', splitLevel: '', include: '', exclude: 'disk2', floor: '0', cow: 'auto' });
+  api.ttFillShare(f, { useCache: 'no', cachePool: '', cachePool2: '', allocator: 'highwater', splitLevel: '', include: '', exclude: 'disk2', floor: '0', cow: 'auto' });
   ok('an array share stays on the array, with no secondary storage and no mover direction', picked(f.shareCachePool) === '' && picked(byId.secondary) === '0' && !log.includes('direction:change'));
   ok('no floor leaves the field to Unraid\'s own default', f.shareFloor.value === '');
   ok('the excluded disk is ticked', ticked(f.shareExclude1) === 'disk2');
@@ -108,7 +108,7 @@ console.log('\nRead fills the visible fields of the add form');
   const f = addForm();
   const { api } = load(f);
   f.shareName.value = 'media';
-  api.ccFillShare(f, { useCache: 'only', cachePool: 'cache' });
+  api.ttFillShare(f, { useCache: 'only', cachePool: 'cache' });
   ok('a name typed first keeps its place and the focus stays where it is', f.shareName.value === 'media' && !f.shareName.focused);
 }
 
@@ -116,24 +116,24 @@ console.log('\nOnly the add page takes Read over');
 {
   const button = () => ({ attrs: {}, onclick: 'readShare()', hasAttribute(k) { return k in this.attrs; }, setAttribute(k, v) { this.attrs[k] = v; } });
   const add = addForm(), b1 = button();
-  load(add, { readshare: b1 }).api.ccReadIntoNew();
-  ok('on the add page Read gets a handler of its own', typeof b1.onclick === 'function' && b1.attrs['data-cc-read'] === '1');
+  load(add, { readshare: b1 }).api.ttReadIntoNew();
+  ok('on the add page Read gets a handler of its own', typeof b1.onclick === 'function' && b1.attrs['data-tt-read'] === '1');
   const again = b1.onclick;
-  load(add, { readshare: b1 }).api.ccReadIntoNew();
+  load(add, { readshare: b1 }).api.ttReadIntoNew();
   ok('a second pass leaves it as it is', b1.onclick === again);
   const edit = addForm('media'), b2 = button();
-  load(edit, { readshare: b2, cmdEditShare: {} }).api.ccReadIntoNew();
-  ok('on an existing share\'s page Unraid\'s Read stays', b2.onclick === 'readShare()' && !('data-cc-read' in b2.attrs));
-  ok('it is wired from the share page pass', /ccSelects\(box\);\s*ccReadIntoNew\(\);/.test(grabFn(js, 'enhanceShareDetail')));
-  ok('it reads the settings where Unraid\'s Read does', /window\.jQuery\.get\("\/webGui\/include\/ShareData\.php", \{ name: from\.value \}/.test(grabFn(js, 'ccReadIntoNew')));
+  load(edit, { readshare: b2, cmdEditShare: {} }).api.ttReadIntoNew();
+  ok('on an existing share\'s page Unraid\'s Read stays', b2.onclick === 'readShare()' && !('data-tt-read' in b2.attrs));
+  ok('it is wired from the share page pass', /ttSelects\(box\);\s*ttReadIntoNew\(\);/.test(grabFn(js, 'enhanceShareDetail')));
+  ok('it reads the settings where Unraid\'s Read does', /window\.jQuery\.get\("\/webGui\/include\/ShareData\.php", \{ name: from\.value \}/.test(grabFn(js, 'ttReadIntoNew')));
 }
 
 console.log('\nThe settings card stands in the middle');
 {
-  ok('the row is a grid around one 920px column, centred', /\.cc-split-row \{\s*display: grid; grid-template-columns: minmax\(0, 920px\); justify-content: center;/.test(css));
+  ok('the row is a grid around one 920px column, centred', /\.tt-split-row \{\s*display: grid; grid-template-columns: minmax\(0, 920px\); justify-content: center;/.test(css));
   ok('with room for the copy card, the form takes the middle of three columns and the copy card the right one',
-    /@media \(min-width: 1880px\) \{[^@]*grid-template-columns: minmax\(0, 1fr\) minmax\(0, 920px\) minmax\(0, 1fr\);[^@]*\.cc-main-col \{ grid-column: 2; \}[^@]*\.cc-side-card \{ grid-column: 3; grid-row: 1; \}/.test(css));
-  ok('the form column has no flex basis that would pin it to the left edge', !/\.cc-main-col \{ flex: 0 1 920px/.test(css));
+    /@media \(min-width: 1880px\) \{[^@]*grid-template-columns: minmax\(0, 1fr\) minmax\(0, 920px\) minmax\(0, 1fr\);[^@]*\.tt-main-col \{ grid-column: 2; \}[^@]*\.tt-side-card \{ grid-column: 3; grid-row: 1; \}/.test(css));
+  ok('the form column has no flex basis that would pin it to the left edge', !/\.tt-main-col \{ flex: 0 1 920px/.test(css));
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

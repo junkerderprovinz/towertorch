@@ -27,7 +27,7 @@ function grabObj(src, start) {
   throw new Error('unbalanced: ' + start);
 }
 
-const theme = read('scripts/cc-theme.js'), tiles = read('scripts/sharetiles.js'), shares = read('scripts/shares.js'), css = read('sheets/TowerTorch.Shares.css');
+const theme = read('scripts/tt-theme.js'), tiles = read('scripts/sharetiles.js'), shares = read('scripts/shares.js'), css = read('sheets/TowerTorch.Shares.css');
 const gs = theme.indexOf('var GLYPHS = {'), ge = theme.indexOf('\n  };', gs);
 const GLYPHS = new Function('return ' + theme.slice(gs + 'var GLYPHS = '.length, ge + 4) + ';')();
 const glyph = new Function('GLYPHS', grabFn(theme, 'glyph') + '\nreturn glyph;')(GLYPHS);
@@ -36,7 +36,7 @@ const glyphOf = (html) => { const vb = /viewBox="([^"]+)"/.exec(html || ''); ret
 // The tile's shield, built from sharetiles.js in the page language.
 function tileShield(lang, sh) {
   const src = ['var LANG = "' + lang + '";', grabObj(tiles, 'var TXT = {'), grabFn(tiles, 't'), grabFn(tiles, 'esc'), grabFn(tiles, 'glyph'), grabFn(tiles, 'shield'), 'return shield;'].join('\n');
-  const html = new Function('window', src)({ CCTheme: { glyph } })(sh);
+  const html = new Function('window', src)({ TTTheme: { glyph } })(sh);
   const at = (k) => { const m = new RegExp(' ' + k + '="([^"]*)"').exec(html); return m ? m[1].replace(/&amp;/g, '&') : null; };
   return { html, cls: at('class'), tip: at('data-tip'), label: at('aria-label'), tab: at('tabindex'), role: at('role'), glyph: glyphOf(html) };
 }
@@ -63,7 +63,7 @@ function nameCell(orbCls, words) {
 function listShield(lang, cell) {
   const src = ['var LANG = "' + lang + '";', /var T = \{[^\n]+\};/.exec(shares)[0], grabFn(shares, 't'), grabFn(shares, 'el'), grabFn(shares, 'statusPill'), 'return statusPill;'].join('\n');
   const doc = { createElement: (t) => node(t) };
-  const sb = new Function('window', 'document', src)({ CCTheme: { glyph } }, doc)(cell.td);
+  const sb = new Function('window', 'document', src)({ TTTheme: { glyph } }, doc)(cell.td);
   if (!sb) return null;
   return { cls: sb.className, tip: sb.getAttribute('data-tip'), label: sb.getAttribute('aria-label'), tab: sb.getAttribute('tabindex'), role: sb.getAttribute('role'), glyph: glyphOf(sb.innerHTML) };
 }
@@ -79,48 +79,48 @@ for (const n of ['ShieldOn', 'ShieldAlert', 'Shield']) ok(n + ' is in the set', 
 console.log('\nA tile wears a shield whose glyph says the state');
 {
   const okS = tileShield('de', { prot: 'ok', protTip: 'Alle Dateien geschützt' });
-  ok('protected: the shield with the check, in the protected colour', okS.glyph === 'ShieldOn' && okS.cls === 'cc-shield cc-shield-ok', okS.html.slice(0, 80));
+  ok('protected: the shield with the check, in the protected colour', okS.glyph === 'ShieldOn' && okS.cls === 'tt-shield tt-shield-ok', okS.html.slice(0, 80));
   ok('its bubble and its name are Unraid\'s own words', okS.tip === 'Alle Dateien geschützt' && okS.label === okS.tip);
   ok('it is a picture the keyboard can reach, so the bubble opens on focus too', okS.role === 'img' && okS.tab === '0');
   const warn = tileShield('de', { prot: 'warn', protTip: '' });
-  ok('not fully protected: the shield with the exclamation mark', warn.glyph === 'ShieldAlert' && warn.cls === 'cc-shield cc-shield-warn');
+  ok('not fully protected: the shield with the exclamation mark', warn.glyph === 'ShieldAlert' && warn.cls === 'tt-shield tt-shield-warn');
   ok('without Unraid\'s words it says so itself, in German', warn.tip === 'Nicht alles geschützt');
   ok('and in English', tileShield('en', { prot: 'warn', protTip: '' }).tip === 'Not fully protected' && tileShield('en', { prot: 'ok', protTip: '' }).tip === 'Protected');
   const idle = tileShield('de', { prot: 'idle', protTip: '' });
-  ok('any other orb: the plain shield, which claims nothing', idle.glyph === 'Shield' && idle.cls === 'cc-shield cc-shield-idle' && idle.tip === 'Schutz unbekannt');
+  ok('any other orb: the plain shield, which claims nothing', idle.glyph === 'Shield' && idle.cls === 'tt-shield tt-shield-idle' && idle.tip === 'Schutz unbekannt');
   ok('a share without an orb has no shield', tileShield('de', { prot: '', protTip: '' }).html === '');
-  ok('the tiles draw no dot', !/cc-sht-dot/.test(tiles) && !/cc-sht-dot/.test(css));
+  ok('the tiles draw no dot', !/tt-sht-dot/.test(tiles) && !/tt-sht-dot/.test(css));
 }
 
 console.log('\nThe list wears the same shield');
 {
   const g = nameCell('fa fa-circle orb green-orb', 'Alle Dateien geschützt');
   const okS = listShield('de', g);
-  ok('protected: the same glyph and classes as on the tile', okS && okS.glyph === 'ShieldOn' && okS.cls === 'cc-shield cc-shield-ok', okS && okS.cls);
+  ok('protected: the same glyph and classes as on the tile', okS && okS.glyph === 'ShieldOn' && okS.cls === 'tt-shield tt-shield-ok', okS && okS.cls);
   ok('its bubble is the orb\'s own words, not a title', okS.tip === 'Alle Dateien geschützt' && okS.label === okS.tip && okS.role === 'img' && okS.tab === '0');
   ok('Unraid\'s orb steps aside', g.a.style.props.display === 'none !important');
   const y = listShield('de', nameCell('fa fa-warning orb yellow-orb', 'Einige oder alle Dateien sind ungeschützt'));
-  ok('not fully protected: the shield with the exclamation mark', y.glyph === 'ShieldAlert' && y.cls === 'cc-shield cc-shield-warn' && y.tip === 'Einige oder alle Dateien sind ungeschützt');
+  ok('not fully protected: the shield with the exclamation mark', y.glyph === 'ShieldAlert' && y.cls === 'tt-shield tt-shield-warn' && y.tip === 'Einige oder alle Dateien sind ungeschützt');
   const bare = listShield('en', nameCell('fa fa-warning orb', null));
   ok('a warning orb without words still reads as not fully protected', bare.glyph === 'ShieldAlert' && bare.tip === 'Not fully protected');
   const grey = listShield('de', nameCell('fa fa-circle orb grey-orb', ''));
-  ok('any other orb: the plain shield, as on the tile', grey.glyph === 'Shield' && grey.cls === 'cc-shield cc-shield-idle' && grey.tip === 'Schutz unbekannt');
+  ok('any other orb: the plain shield, as on the tile', grey.glyph === 'Shield' && grey.cls === 'tt-shield tt-shield-idle' && grey.tip === 'Schutz unbekannt');
   ok('a name cell without an orb gets nothing', listShield('de', { td: node('td') }) === null);
   ok('both views use the same fallback words', ['protected', 'partly', 'unknown'].every((k) => {
     const a = new Function(grabObj(tiles, 'var TXT = {') + 'return TXT;')(), b = new Function(/var T = \{[^\n]+\};/.exec(shares)[0] + 'return T;')();
     return a.de[k] && a.de[k] === b.de[k] && a.en[k] === b.en[k];
   }));
-  ok('the list draws no dot', !/cc-dot-(un)?prot/.test(shares) && !/\.cc-dot\b/.test(css));
+  ok('the list draws no dot', !/tt-dot-(un)?prot/.test(shares) && !/\.tt-dot\b/.test(css));
 }
 
 console.log('\nThe colours say the state in every mode');
 {
   const rule = (sel) => { const m = new RegExp(sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{([^}]*)\\}').exec(css); return m ? m[1] : ''; };
-  ok('protected draws in the ok ink, which the light themes darken', /color: var\(--cc-ok-ink, #6fdc8c\)/.test(rule('html.cc-shares-on #displaybox .cc-shield-ok')));
-  ok('not fully protected in the warning ink', /color: var\(--cc-warn-ink, #ff832b\)/.test(rule('html.cc-shares-on #displaybox .cc-shield-warn')));
-  ok('the plain shield stays dim', /color: var\(--cc-text-dim2\)/.test(rule('html.cc-shares-on #displaybox .cc-shield')));
-  ok('the shield is as tall as the title text, in both views', /font-size: var\(--cc-text-title\)/.test(rule('html.cc-shares-on #displaybox .cc-shield')));
-  ok('no accent or rainbow colour reaches it', !/\.cc-shield[^{]*\{[^}]*(--cc-rb|accent)[^}]*color/.test(css.replace(/:focus-visible[^}]*\}/g, '')));
+  ok('protected draws in the ok ink, which the light themes darken', /color: var\(--tt-ok-ink, #6fdc8c\)/.test(rule('html.tt-shares-on #displaybox .tt-shield-ok')));
+  ok('not fully protected in the warning ink', /color: var\(--tt-warn-ink, #ff832b\)/.test(rule('html.tt-shares-on #displaybox .tt-shield-warn')));
+  ok('the plain shield stays dim', /color: var\(--tt-text-dim2\)/.test(rule('html.tt-shares-on #displaybox .tt-shield')));
+  ok('the shield is as tall as the title text, in both views', /font-size: var\(--tt-text-title\)/.test(rule('html.tt-shares-on #displaybox .tt-shield')));
+  ok('no accent or rainbow colour reaches it', !/\.tt-shield[^{]*\{[^}]*(--tt-rb|accent)[^}]*color/.test(css.replace(/:focus-visible[^}]*\}/g, '')));
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

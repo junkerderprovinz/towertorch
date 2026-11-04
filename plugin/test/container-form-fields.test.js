@@ -19,12 +19,12 @@ function grabFn(src, name) {
 
 console.log('\nA select on the container form gets one dropdown');
 {
-  // ccWrapPageSelects() on a page with one wrappable select, counting what it wraps.
+  // ttWrapPageSelects() on a page with one wrappable select, counting what it wraps.
   const sweep = (pathname) => {
     const wrapped = [];
     const sel = { options: [1, 2], closest: () => null, getBoundingClientRect: () => ({ width: 200, height: 30 }) };
-    const document = { documentElement: { classList: { contains: (c) => c === 'cc-popups-on' } }, querySelectorAll: () => [sel] };
-    new Function('document', 'location', 'ccToolsWrapSelect', grabFn(header, 'ccWrapPageSelects') + '\nccWrapPageSelects();')(document, { pathname }, (s) => wrapped.push(s));
+    const document = { documentElement: { classList: { contains: (c) => c === 'tt-popups-on' } }, querySelectorAll: () => [sel] };
+    new Function('document', 'location', 'ttToolsWrapSelect', grabFn(header, 'ttWrapPageSelects') + '\nttWrapPageSelects();')(document, { pathname }, (s) => wrapped.push(s));
     return wrapped.length;
   };
   ok('the header leaves the edit form\'s selects to docker.js', sweep('/Docker/UpdateContainer') === 0);
@@ -38,7 +38,7 @@ console.log('\nA form label loses its colon and its leading spaces');
     const nd = { nodeType: 3, textContent: text };
     const host = { childNodes: [nd], attrs: {}, getAttribute(k) { return this.attrs[k] || null; }, setAttribute(k, v) { this.attrs[k] = v; } };
     new Function('host', grabFn(docker, 'ctStripColon') + '\nctStripColon(host);')(host);
-    return { text: nd.textContent, orig: host.attrs['data-cc-lab'] };
+    return { text: nd.textContent, orig: host.attrs['data-tt-lab'] };
   };
   ok('an env var label starts at its first letter', strip('  WebUI Port (HTTP):').text === 'WebUI Port (HTTP)', JSON.stringify(strip('  WebUI Port (HTTP):')));
   ok('a plain label keeps its words', strip('Name:').text === 'Name');
@@ -48,16 +48,16 @@ console.log('\nA form label loses its colon and its leading spaces');
 console.log('\nLabels at the start, fields at the end, at a reading width');
 {
   const rule = (sel) => { const i = css.indexOf(sel + ' {'); return i < 0 ? '' : css.slice(i, css.indexOf('}', i)); };
-  ok('the rows keep the settings cards\' width', /max-width:\s*920px/.test(rule('html.cc-docker-on.cc-on-addct #canvas form dl')));
-  ok('and stand in the middle of the window', /margin-inline:\s*auto/.test(rule('html.cc-docker-on.cc-on-addct #canvas form dl')));
-  ok('the title bar stands over them', /max-width:\s*920px;\s*margin-inline:\s*auto/.test(rule('html.cc-docker-on.cc-on-addct #canvas div.title')));
+  ok('the rows keep the settings cards\' width', /max-width:\s*920px/.test(rule('html.tt-docker-on.tt-on-addct #canvas form dl')));
+  ok('and stand in the middle of the window', /margin-inline:\s*auto/.test(rule('html.tt-docker-on.tt-on-addct #canvas form dl')));
+  ok('the title bar stands over them', /max-width:\s*920px;\s*margin-inline:\s*auto/.test(rule('html.tt-docker-on.tt-on-addct #canvas div.title')));
   const { candidates } = require('./cascade');
-  const bar = { tag: 'div', classes: ['title'], attrs: {}, states: { 'first-child': true }, html: ['cc-docker-on', 'cc-on-addct'], inside: ['#displaybox', '.content'] };
+  const bar = { tag: 'div', classes: ['title'], attrs: {}, states: { 'first-child': true }, html: ['tt-docker-on', 'tt-on-addct'], inside: ['#displaybox', '.content'] };
   const top = candidates('docker', bar, 'margin-top').pop();
   ok('the title bar keeps the gap under the main menu that the Docker list keeps', !!top && top.value === '20px', top && top.selector);
-  ok('a label stands at the start of its column', /justify-self:\s*start/.test(rule('html.cc-docker-on.cc-on-addct #canvas form dl > dt > span.cc-varlab')));
-  ok('a text field runs to the row\'s end', /width:\s*100%/.test(rule('html.cc-docker-on.cc-on-addct #canvas form dl > dd > :is(input[type="text"], input[type="number"], input[type="password"], textarea)')));
-  ok('a switch stands at the row\'s end', /justify-content:\s*flex-end/.test(rule('html.cc-docker-on.cc-on-addct #canvas form dl > dd > span.flex-row:has(> .switch-button-background)')));
+  ok('a label stands at the start of its column', /justify-self:\s*start/.test(rule('html.tt-docker-on.tt-on-addct #canvas form dl > dt > span.tt-varlab')));
+  ok('a text field runs to the row\'s end', /width:\s*100%/.test(rule('html.tt-docker-on.tt-on-addct #canvas form dl > dd > :is(input[type="text"], input[type="number"], input[type="password"], textarea)')));
+  ok('a switch stands at the row\'s end', /justify-content:\s*flex-end/.test(rule('html.tt-docker-on.tt-on-addct #canvas form dl > dd > span.flex-row:has(> .switch-button-background)')));
 }
 
 console.log('\nOnly a colour variable gets a colour swatch');
@@ -71,8 +71,8 @@ console.log('\nOnly a colour variable gets a colour swatch');
 
   // ctColorSwatch() hands each field to the shared swatch, which colour-picker-shared.test.js covers.
   const handed = [];
-  const window = { CCTheme: { colorSwatch(inp, opts) { const sw = { attrs: {}, cls: [], classList: { add: (c) => sw.cls.push(c) }, setAttribute(k, v) { sw.attrs[k] = v; } }; handed.push([inp, opts]); return sw; } } };
-  const swatch = new Function('window', 'MARK', grabFn(docker, 'ctColorSwatch') + '\nreturn ctColorSwatch;')(window, 'data-cc');
+  const window = { TTTheme: { colorSwatch(inp, opts) { const sw = { attrs: {}, cls: [], classList: { add: (c) => sw.cls.push(c) }, setAttribute(k, v) { sw.attrs[k] = v; } }; handed.push([inp, opts]); return sw; } } };
+  const swatch = new Function('window', 'MARK', grabFn(docker, 'ctColorSwatch') + '\nreturn ctColorSwatch;')(window, 'data-tt');
   const a = { value: '#111111' }, b = { value: '222222' }, c = { value: '' };
   swatch(a, { textContent: 'Accent colour:' }); swatch(b, null); swatch(c, null);
   ok('each field gets a swatch of its own, named after its row', handed[0][0] === a && handed[1][0] === b && handed[0][1].label === 'Accent colour');

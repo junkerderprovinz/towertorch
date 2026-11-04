@@ -42,9 +42,9 @@ ok('the shared switch row puts the (i) beside its name', /function inlineRow\(la
 
 console.log('\nThe rows built by hand carry one too');
 {
-  const areas = /\[\s*\["cc\.enable\.main"[\s\S]*?\]\.forEach/.exec(settings)[0];
-  const rows = [...areas.matchAll(/\["(cc\.enable\.\w+)", T\("[^"]+", "[^"]+"\), "[01]"(, T\("[^"]+", "[^"]+"\))?\]/g)];
-  ok('every area switch but the favourites has its sentence', rows.length === 8 && rows.every((r) => r[1] === 'cc.enable.favorites' || r[2]), rows.filter((r) => !r[2]).map((r) => r[1]).join(' '));
+  const areas = /\[\s*\["tt\.enable\.main"[\s\S]*?\]\.forEach/.exec(settings)[0];
+  const rows = [...areas.matchAll(/\["(tt\.enable\.\w+)", T\("[^"]+", "[^"]+"\), "[01]"(, T\("[^"]+", "[^"]+"\))?\]/g)];
+  ok('every area switch but the favourites has its sentence', rows.length === 8 && rows.every((r) => r[1] === 'tt.enable.favorites' || r[2]), rows.filter((r) => !r[2]).map((r) => r[1]).join(' '));
   ok('the favourites rows build their own (i)', (/var natRow[\s\S]*?nlw\.appendChild\(infoIcon\(/.test(settings)) && /lw\.appendChild\(infoIcon\(T\("Gestaltet den Favoriten-Tab/.test(settings));
   for (const [what, list] of [['status island', /\["uptime"[\s\S]*?\]\.forEach/], ['header icon', /\["lang"[\s\S]*?\]\.forEach/]]) {
     const body = list.exec(settings)[0], items = body.split('\n').filter((l) => /^\s*\["\w+"/.test(l));
@@ -52,10 +52,10 @@ console.log('\nThe rows built by hand carry one too');
   }
   const cols = /var COLS = \[([\s\S]*?)\];/.exec(settings)[1].split('\n').filter((l) => /key:/.test(l));
   ok('every column of the matrix has its sentence', cols.length === 13 && cols.every((l) => /help: T\(/.test(l)));
-  ok('and the column name carries it', /el\("td", "cc-set-cname", c\.label\)\)\.appendChild\(infoIcon\(c\.help\)\)/.test(settings));
+  ok('and the column name carries it', /el\("td", "tt-set-cname", c\.label\)\)\.appendChild\(infoIcon\(c\.help\)\)/.test(settings));
   ok('an area set apart says how it goes back', /T\("Dieser Bereich hat eine eigene Farbe/.test(settings));
   for (const lbl of ['Ausnahme hinzufügen", "Add an exception', 'Webhook-URL", "Webhook URL', 'Schnittstelle", "Interface']) {
-    const i = settings.indexOf('"cc-set-rl", T("' + lbl + '")');
+    const i = settings.indexOf('"tt-set-rl", T("' + lbl + '")');
     ok(lbl.split('"')[0] + ' has its (i)', i > 0 && /infoIcon\(/.test(settings.slice(i, i + 400)));
   }
 }
@@ -71,18 +71,18 @@ ok('the icon colouring has no jargon', !/Ink-Flatten|Luminanz-Tint|Ink flatten|L
 
 console.log('\nThe page has no heading');
 {
-  const i = settings.indexOf('  function render() {'), top = settings.slice(i, settings.indexOf('var body = el("div", "cc-set-body")', i));
-  ok('no logo, wordmark or claim above the tabs', !/cc-set-logo|cc-set-brand[^n]|cc-set-claim|Firepower/.test(top));
+  const i = settings.indexOf('  function render() {'), top = settings.slice(i, settings.indexOf('var body = el("div", "tt-set-body")', i));
+  ok('no logo, wordmark or claim above the tabs', !/tt-set-logo|tt-set-brand[^n]|tt-set-claim|Firepower/.test(top));
 }
 
 console.log('\nOne font and a phone-width page');
 {
   const i = settings.indexOf('st.textContent ='), sheet = (settings.slice(i, settings.indexOf('document.head.appendChild(st)', i)).match(/"(?:[^"\\]|\\.)*"/g) || []).map((s) => JSON.parse(s)).join('\n');
-  ok('the page takes the theme\'s face', /#cc-settings\{font-family:inherit\}/.test(sheet));
+  ok('the page takes the theme\'s face', /#tt-settings\{font-family:inherit\}/.test(sheet));
   const narrow = sheet.slice(sheet.indexOf('@media (max-width:1023px){'));
-  ok('a row that is too narrow puts its control under its name, at the row\'s end', /\.cc-set-row\.cc-set-inline\{flex-wrap:wrap;row-gap:8px\}/.test(narrow) && /\.cc-set-row\.cc-set-inline > :last-child\{margin-left:auto;max-width:100%\}/.test(narrow));
-  ok('a selector wider than the card breaks into rows', /\.cc-seg\.cc-set-mode\{display:flex;flex-wrap:wrap/.test(narrow) && /\.cc-set-mode \.cc-seg-btn\{flex:1 0 auto\}/.test(narrow));
-  ok('so do the buttons at a row\'s end and the swatches', /\.cc-set-colend\{flex-wrap:wrap/.test(narrow) && /\.cc-set-swatches\.cc-fill\{flex-wrap:wrap\}/.test(narrow) && /\.cc-set-fieldrow\{flex-wrap:wrap/.test(narrow));
+  ok('a row that is too narrow puts its control under its name, at the row\'s end', /\.tt-set-row\.tt-set-inline\{flex-wrap:wrap;row-gap:8px\}/.test(narrow) && /\.tt-set-row\.tt-set-inline > :last-child\{margin-left:auto;max-width:100%\}/.test(narrow));
+  ok('a selector wider than the card breaks into rows', /\.tt-seg\.tt-set-mode\{display:flex;flex-wrap:wrap/.test(narrow) && /\.tt-set-mode \.tt-seg-btn\{flex:1 0 auto\}/.test(narrow));
+  ok('so do the buttons at a row\'s end and the swatches', /\.tt-set-colend\{flex-wrap:wrap/.test(narrow) && /\.tt-set-swatches\.tt-fill\{flex-wrap:wrap\}/.test(narrow) && /\.tt-set-fieldrow\{flex-wrap:wrap/.test(narrow));
   ok('the narrow rules come last, after the selector\'s own grid', sheet.lastIndexOf('display:inline-grid') < sheet.indexOf('@media (max-width:1023px){'));
 }
 

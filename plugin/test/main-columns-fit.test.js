@@ -25,7 +25,7 @@ const CHAR = 8, PAD = 10;   // the canvas stub draws every character 8px wide; e
 const LABEL = HEADS.map((h) => h.toUpperCase().length * CHAR + 2 * PAD + 2);
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 function rig(roomPx) {
-  const store = { 'cc.main.colpx': JSON.stringify(SAVED) };
+  const store = { 'tt.main.colpx': JSON.stringify(SAVED) };
   let resize = null;
   const mk = (tag) => (tag === 'canvas'
     ? { getContext: () => ({ font: '', measureText: (s) => ({ width: s.length * CHAR }) }) }
@@ -34,7 +34,7 @@ function rig(roomPx) {
   const table = {
     cls: new Set(), style: {}, cg: null, parentNode: { clientWidth: roomPx },
     classList: { add(c) { table.cls.add(c); }, remove(c) { table.cls.delete(c); }, toggle(c, on) { on ? table.cls.add(c) : table.cls.delete(c); }, contains: (c) => table.cls.has(c) },
-    querySelector: (s) => (s === ':scope > colgroup[data-cc-colw]' ? table.cg : s === 'thead tr' ? head : null),
+    querySelector: (s) => (s === ':scope > colgroup[data-tt-colw]' ? table.cg : s === 'thead tr' ? head : null),
     insertBefore(cg) { table.cg = cg; },
     getBoundingClientRect: () => ({ width: roomPx }),
   };
@@ -43,8 +43,8 @@ function rig(roomPx) {
   const getComputedStyle = () => ({ textTransform: 'uppercase', fontStyle: 'normal', fontWeight: '700', fontSize: '12px', fontFamily: 'sans-serif', letterSpacing: 'normal', paddingLeft: PAD + 'px', paddingRight: PAD + 'px' });
   const localStorage = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = v; }, removeItem: (k) => { delete store[k]; } };
   const g = (k, d) => { const v = localStorage.getItem(k); return v == null ? d : v; };
-  const make = new Function('document', 'window', 'getComputedStyle', 'localStorage', 'g', 'el', 'mtText', grabFn(shares, 'ccColFactory') + '\nreturn ccColFactory;')(document, window, getComputedStyle, localStorage, g, mk, (s) => s);
-  const cols = make({ key: 'cc.main.colpx', n: 11, sel: 'table' });
+  const make = new Function('document', 'window', 'getComputedStyle', 'localStorage', 'g', 'el', 'mtText', grabFn(shares, 'ttColFactory') + '\nreturn ttColFactory;')(document, window, getComputedStyle, localStorage, g, mk, (s) => s);
+  const cols = make({ key: 'tt.main.colpx', n: 11, sel: 'table' });
   const widths = () => table.cg.children.map((c) => parseInt(c.style.width, 10));
   return { cols, table, widths, store, setRoom: (px) => { table.parentNode.clientWidth = px; }, resize: () => resize && resize() };
 }
@@ -60,7 +60,7 @@ console.log('\nSaved widths on a narrower page');
   const free = w.map((v, i) => i).filter((i) => w[i] > LABEL[i] && w[i] > 40);
   const k = free.map((i) => w[i] / SAVED[i]);
   ok('the columns above their labels shrink in one proportion, so a wide name column stays wide', free.length > 3 && Math.max(...k) - Math.min(...k) < 0.01, k.map((x) => x.toFixed(3)).join(','));
-  ok('the saved widths stay as they were', r.store['cc.main.colpx'] === JSON.stringify(SAVED));
+  ok('the saved widths stay as they were', r.store['tt.main.colpx'] === JSON.stringify(SAVED));
   r.setRoom(2400); r.resize();
   ok('on a wider window they grow back to the saved widths', r.widths().join() === SAVED.join(), r.widths().join());
 }
@@ -77,9 +77,9 @@ console.log('\nA page narrower than the labels need');
 
 console.log('\nA drag');
 {
-  const down = grabFn(grabFn(shares, 'ccColFactory'), 'down');
+  const down = grabFn(grabFn(shares, 'ttColFactory'), 'down');
   ok('starts from the header cells as drawn, not from the saved set', /var w = \[\]; for \(var k = 0; k < n; k\+\+\) w\.push\(Math\.max\(min, Math\.round\(h\.children\[k\]\.getBoundingClientRect\(\)\.width\)\)\);/.test(down) && !/read\(\)/.test(down));
-  ok('and widens the table instead of fitting it', /set\(drag\.w\);/.test(grabFn(grabFn(shares, 'ccColFactory'), 'move')));
+  ok('and widens the table instead of fitting it', /set\(drag\.w\);/.test(grabFn(grabFn(shares, 'ttColFactory'), 'move')));
 }
 
 console.log('\nThe array operations on a narrow page');
@@ -91,9 +91,9 @@ console.log('\nThe array operations on a narrow page');
   const find = (re) => rules.find((r) => re.test(r.selector));
   const tr = find(/table\.array_status tr$/);
   ok('the label and the control stack in one track', tr && tr.decls.some((d) => d.prop === 'grid-template-columns' && d.value === 'minmax(0, 1fr)'));
-  const pc = find(/\.cc-aop-pcard$/);
+  const pc = find(/\.tt-aop-pcard$/);
   ok('the parity card follows the buttons in the flow', pc && pc.decls.some((d) => d.prop === 'position' && d.value === 'static'));
-  const brow = find(/\.cc-aop-brow$/), sw = find(/\.cc-aop-toggle$/);
+  const brow = find(/\.tt-aop-brow$/), sw = find(/\.tt-aop-toggle$/);
   ok('a switch beside a button wraps under it', brow && brow.decls.some((d) => d.prop === 'flex-wrap' && d.value === 'wrap') && sw && sw.decls.some((d) => d.prop === 'white-space' && d.value === 'normal'));
   const ud = find(/:is\(\.show-disks, \.show-shares\)$/);
   ok('the unassigned-device tables scroll inside their own box', ud && ud.decls.some((d) => d.prop === 'overflow-x' && d.value === 'auto'));
@@ -104,9 +104,9 @@ console.log('\nThe header on a phone');
   const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8');
   const at = css.indexOf('/* On a phone the name and the island');
   const block = css.slice(css.indexOf('@media (max-width: 767.98px) {', at), css.indexOf('\n}\n', at));
-  ok('the island goes under a long server name instead of past the edge', /#header \{ flex-wrap: wrap;/.test(block) && /#cc-island \{[^}]*order: 3; flex: 1 0 100%;/.test(block));
-  ok('its three rows flow as one run of chips', /\.cc-isl-row:empty \{ display: contents; \}/.test(block));
-  ok('only the values worth a glance stay', /\[data-cc-chip="up"\], \[data-cc-chip="os"\], \[data-cc-chip="ver"\], \[data-cc-chip="net"\], \[data-cc-chip="docker"\]\) \{ display: none; \}/.test(block));
+  ok('the island goes under a long server name instead of past the edge', /#header \{ flex-wrap: wrap;/.test(block) && /#tt-island \{[^}]*order: 3; flex: 1 0 100%;/.test(block));
+  ok('its three rows flow as one run of chips', /\.tt-isl-row:empty \{ display: contents; \}/.test(block));
+  ok('only the values worth a glance stay', /\[data-tt-chip="up"\], \[data-tt-chip="os"\], \[data-tt-chip="ver"\], \[data-tt-chip="net"\], \[data-tt-chip="docker"\]\) \{ display: none; \}/.test(block));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

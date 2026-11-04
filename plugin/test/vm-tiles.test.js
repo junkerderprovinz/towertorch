@@ -129,13 +129,13 @@ function vmRow(doc, name, uuid, checked) {
 }
 
 const doc = setup();
-const win = { CCTheme: { infoIcon: (tip) => { const s = doc.createElement('span'); s.className = 'cc-info'; s.setAttribute('data-tip', tip); return s; } } };
+const win = { TTTheme: { infoIcon: (tip) => { const s = doc.createElement('span'); s.className = 'tt-info'; s.setAttribute('data-tip', tip); return s; } } };
 let actionBars = 0;
 const api = new Function('document', 'window', 'localStorage', 'ls', 'stubs',
-  'var LANG = "de", VMVIEW_KEY = "cc.vmview", vmLims = {}, rowData = stubs.rowData;\n' +
-  'function vmActionBars() { stubs.bars(); var b = el("div", "cc-actbar"); return { bar: b, sig: "" }; }\n' +
-  'function vmGear(name, which) { return el("span", "cc-limbtn cc-lim-" + which); }\n' +
-  'function vmResLine(b, g) { var l = el("div", "cc-resline"); l.appendChild(b); if (g) l.appendChild(g); return l; }\n' +
+  'var LANG = "de", VMVIEW_KEY = "tt.vmview", vmLims = {}, rowData = stubs.rowData;\n' +
+  'function vmActionBars() { stubs.bars(); var b = el("div", "tt-actbar"); return { bar: b, sig: "" }; }\n' +
+  'function vmGear(name, which) { return el("span", "tt-limbtn tt-lim-" + which); }\n' +
+  'function vmResLine(b, g) { var l = el("div", "tt-resline"); l.appendChild(b); if (g) l.appendChild(g); return l; }\n' +
   'function limSet() { return { cpu: false, ram: false, bw: false }; }\n' +
   'function vmBwText() { return "-"; }\n' +
   'function vmRowData(tr) { return rowData(tr); }\n' +
@@ -149,12 +149,12 @@ const api = new Function('document', 'window', 'localStorage', 'ls', 'stubs',
 console.log('\nThe view');
 {
   ok('the list is the default', api.currentView() === 'list');
-  store['cc.vmview'] = 'grid';
+  store['tt.vmview'] = 'grid';
   ok('the stored choice brings the tiles', api.currentView() === 'grid');
-  store['cc.theming'] = '0';
+  store['tt.theming'] = '0';
   ok('but never with theming off', api.currentView() === 'list');
-  delete store['cc.theming']; delete store['cc.vmview'];
-  ok('the switch writes the one key the view reads', /localStorage\.setItem\(VMVIEW_KEY, o\[0\]\)/.test(grabFn('ensureViewToggle')) && /var VMVIEW_KEY = "cc\.vmview"/.test(src));
+  delete store['tt.theming']; delete store['tt.vmview'];
+  ok('the switch writes the one key the view reads', /localStorage\.setItem\(VMVIEW_KEY, o\[0\]\)/.test(grabFn('ensureViewToggle')) && /var VMVIEW_KEY = "tt\.vmview"/.test(src));
   ok('and carries the shared list and tile glyphs', /"ViewList"\]/.test(grabFn('ensureViewToggle')) && /"ViewGrid"\]/.test(grabFn('ensureViewToggle')));
   ok('the switch is a pressed state, not a checkbox', /aria-pressed/.test(grabFn('applyView')) && !/checkbox/.test(grabFn('ensureViewToggle')));
 }
@@ -184,7 +184,7 @@ const rows = { CasaOS: vmRow(doc, 'CasaOS', 'u1', false), MOS: vmRow(doc, 'MOS',
 tbody.appendChild(rows.CasaOS); tbody.appendChild(rows.MOS);
 const base = (name, uuid, state, ips) => ({ name, uuid, state, label: state === 'running' ? 'Gestartet' : 'Gestoppt', cpu: '2', ram: '3G', disks: { disks: '2 / 24G', cds: '0 / 2', link: null, snapLabel: 'Snapshots', snapVal: 'Keine' }, graphics: 'VNC:auto', ips, auto: false, ctx: state });
 const data = { CasaOS: base('CasaOS', 'u1', 'exited', []), MOS: base('MOS', 'u2', 'running', ['192.168.20.55/24', '2a02:8388::55/64']) };
-rows.CasaOS.style.setProperty('--cc-rb-c', '#FF8389');
+rows.CasaOS.style.setProperty('--tt-rb-c', '#FF8389');
 
 console.log('\nThe tiles stand beside the table');
 api.renderVmGrid();
@@ -193,39 +193,39 @@ const grid = api.holder() && api.holder().firstChild;
   ok('in a container of their own, ahead of the table', api.holder() && api.holder().nextSibling === table && api.holder().parentNode === box);
   ok('the table rows stay where Unraid put them', tbody.children.length === 2 && tbody.children[0] === rows.CasaOS);
   ok('one tile per VM, in the table order', grid.children.map((c) => c.getAttribute('data-name')).join() === 'CasaOS,MOS');
-  ok('a tile takes its row\'s rainbow slot', grid.children[0].style.getPropertyValue('--cc-rb-c') === '#FF8389');
-  ok('the CSS hides the table only in the tile view', /html\.cc-vms-on\.cc-vmgrid #displaybox #kvm_table \{ display: none !important; \}/.test(css));
-  ok('and lays the tiles out on the Docker grid\'s column width', /\.cc-vm-grid \{ display: grid; grid-template-columns: repeat\(auto-fill, minmax\(min\(400px, 100%\), 1fr\)\); gap: var\(--cc-card-space\); \}/.test(css));
+  ok('a tile takes its row\'s rainbow slot', grid.children[0].style.getPropertyValue('--tt-rb-c') === '#FF8389');
+  ok('the CSS hides the table only in the tile view', /html\.tt-vms-on\.tt-vmgrid #displaybox #kvm_table \{ display: none !important; \}/.test(css));
+  ok('and lays the tiles out on the Docker grid\'s column width', /\.tt-vm-grid \{ display: grid; grid-template-columns: repeat\(auto-fill, minmax\(min\(400px, 100%\), 1fr\)\); gap: var\(--tt-card-space\); \}/.test(css));
 }
 
 console.log('\nA tile');
 {
   const [casa, mos] = grid.children;
-  const ico = casa.querySelector('.cc-vmc-icobox > .img');
+  const ico = casa.querySelector('.tt-vmc-icobox > .img');
   ok('the logo box holds a copy of the row\'s icon', ico && ico.getAttribute('src') === '/x.png');
   ok('without the inline tint the row carries, so the icon pass paints it afresh', ico && ico.getAttribute('style') == null);
-  ok('the icon pass reaches the tile icons', /\.cc-vm-grid \.cc-vmc-icobox > \.img/.test(grabFn('vmImgs')) && /closest\("tr, \.cc-vmc"\)/.test(grabFn('vmIconName')));
-  ok('the name heads the tile with the row\'s warning beside it', casa.querySelector('.cc-vmc-title').textContent === 'CasaOS' && !!casa.querySelector('.cc-vmc-title > i.fa-warning'));
-  ok('the addresses run as one line under the name', mos.querySelector('.cc-vmc-ip').textContent === '192.168.20.55/24 · 2a02:8388::55/64');
-  const noip = casa.querySelector('.cc-vmc-ip .cc-vmb-noip');
-  ok('without an address the line is a dash', noip && noip.querySelector('.cc-vmb-noip-dash').textContent === '-');
-  ok('with the guest agent explained in its (i)', noip && /QEMU-Gast-Agent/.test(noip.querySelector('.cc-info').getAttribute('data-tip')));
-  ok('a stopped VM shows its state in the corner', casa.querySelector('.cc-vmc-state .cc-badge-exited').textContent === 'Gestoppt');
-  ok('a running one shows none, the normal case', !mos.querySelector('.cc-vmc-state'));
-  ok('the actions stand in their own row', casa.children[1].classList.contains('cc-vmc-actbar') && !!casa.querySelector('.cc-vmc-actbar > .cc-actbar'));
-  const res = casa.querySelector('.cc-vmc-res');
-  ok('the resource badges sit at the foot', casa.children[casa.children.length - 1] === res && res.getAttribute('data-cc-vm') === 'CasaOS');
-  const kinds = res.querySelectorAll('.cc-b-k').map((k) => k.textContent).join();
+  ok('the icon pass reaches the tile icons', /\.tt-vm-grid \.tt-vmc-icobox > \.img/.test(grabFn('vmImgs')) && /closest\("tr, \.tt-vmc"\)/.test(grabFn('vmIconName')));
+  ok('the name heads the tile with the row\'s warning beside it', casa.querySelector('.tt-vmc-title').textContent === 'CasaOS' && !!casa.querySelector('.tt-vmc-title > i.fa-warning'));
+  ok('the addresses run as one line under the name', mos.querySelector('.tt-vmc-ip').textContent === '192.168.20.55/24 · 2a02:8388::55/64');
+  const noip = casa.querySelector('.tt-vmc-ip .tt-vmb-noip');
+  ok('without an address the line is a dash', noip && noip.querySelector('.tt-vmb-noip-dash').textContent === '-');
+  ok('with the guest agent explained in its (i)', noip && /QEMU-Gast-Agent/.test(noip.querySelector('.tt-info').getAttribute('data-tip')));
+  ok('a stopped VM shows its state in the corner', casa.querySelector('.tt-vmc-state .tt-badge-exited').textContent === 'Gestoppt');
+  ok('a running one shows none, the normal case', !mos.querySelector('.tt-vmc-state'));
+  ok('the actions stand in their own row', casa.children[1].classList.contains('tt-vmc-actbar') && !!casa.querySelector('.tt-vmc-actbar > .tt-actbar'));
+  const res = casa.querySelector('.tt-vmc-res');
+  ok('the resource badges sit at the foot', casa.children[casa.children.length - 1] === res && res.getAttribute('data-tt-vm') === 'CasaOS');
+  const kinds = res.querySelectorAll('.tt-b-k').map((k) => k.textContent).join();
   ok('CPU, RAM, BW, vDisks, CD and Snapshots in that order', kinds === 'CPU,RAM,BW,vDisks,CD,Snapshots', kinds);
-  ok('CPU, RAM, BW and vDisks each with their gear', ['cpu', 'ram', 'bw', 'disk'].every((w) => res.querySelector('.cc-lim-' + w)));
+  ok('CPU, RAM, BW and vDisks each with their gear', ['cpu', 'ram', 'bw', 'disk'].every((w) => res.querySelector('.tt-lim-' + w)));
   ok('the graphics close the row', res.children[res.children.length - 1].textContent === 'VNC:auto');
 }
 
 console.log('\nThe autostart switch works the row\'s own control');
 {
-  const casa = grid.children[0], tg = casa.querySelector('.cc-vmc-auto');
-  ok('it is a switch, not a checkbox', tg && tg.getAttribute('role') === 'switch' && tg.classList.contains('cc-set-toggle'));
-  ok('it starts in the row\'s state', tg.getAttribute('aria-checked') === 'false' && grid.children[1].querySelector('.cc-vmc-auto').getAttribute('aria-checked') === 'true');
+  const casa = grid.children[0], tg = casa.querySelector('.tt-vmc-auto');
+  ok('it is a switch, not a checkbox', tg && tg.getAttribute('role') === 'switch' && tg.classList.contains('tt-set-toggle'));
+  ok('it starts in the row\'s state', tg.getAttribute('aria-checked') === 'false' && grid.children[1].querySelector('.tt-vmc-auto').getAttribute('aria-checked') === 'true');
   tg.click();
   const input = rows.CasaOS.querySelector('input.autostart');
   ok('a click goes through Unraid\'s switchButton, whose change handler saves it', input.saved === 1 && input.checked === true);
@@ -239,7 +239,7 @@ console.log('\nA pass redraws only what changed');
   ok('an unchanged VM keeps its tile', grid.children[0] === casa && grid.children[1] === mos && actionBars === built);
   data.MOS = Object.assign({}, data.MOS, { state: 'exited', label: 'Gestoppt', ctx: 'exited' });
   api.renderVmGrid();
-  ok('a VM that stopped gets a fresh tile', grid.children[1] !== mos && !!grid.children[1].querySelector('.cc-vmc-state'));
+  ok('a VM that stopped gets a fresh tile', grid.children[1] !== mos && !!grid.children[1].querySelector('.tt-vmc-state'));
   ok('and the others stay as they were', grid.children[0] === casa);
   tbody.insertBefore(rows.MOS, rows.CasaOS);
   api.renderVmGrid();
@@ -253,8 +253,8 @@ console.log('\nA pass redraws only what changed');
 
 console.log('\nOn a phone');
 {
-  ok('the corner becomes one row under the name', /@media \(max-width: 540px\) \{ html\.cc-vms-on \.cc-vmc-corner \{ flex: 1 0 100%; flex-direction: row-reverse;/.test(css));
-  ok('and the switch gets a line under the sub-tabs', /@media \(max-width: 600px\) \{\s*html\.cc-vms-on #displaybox > nav\.tabs \{ flex-wrap: wrap;/.test(css));
+  ok('the corner becomes one row under the name', /@media \(max-width: 540px\) \{ html\.tt-vms-on \.tt-vmc-corner \{ flex: 1 0 100%; flex-direction: row-reverse;/.test(css));
+  ok('and the switch gets a line under the sub-tabs', /@media \(max-width: 600px\) \{\s*html\.tt-vms-on #displaybox > nav\.tabs \{ flex-wrap: wrap;/.test(css));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

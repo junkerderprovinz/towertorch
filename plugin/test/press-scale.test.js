@@ -26,16 +26,16 @@ console.log('\nThe press rule');
 ok('it sits inside the no-preference gate', gate.length > 0);
 const rule = (/(html :is\([\s\S]*?)\{([^}]*)\}/.exec(gate) || []);
 const sel = rule[1] || '', body = rule[2] || '';
-ok('it scales through the scale property, from the level token', /^\s*scale:\s*var\(--cc-motion-press-scale, 1\);\s*$/.test(body), body.trim());
+ok('it scales through the scale property, from the level token', /^\s*scale:\s*var\(--tt-motion-press-scale, 1\);\s*$/.test(body), body.trim());
 ok('it sets no transform', !/transform/.test(body));
 ok('it waits for :active', /\):active/.test(sel));
-ok('a disabled control does not give way', /:not\(:disabled, \[aria-disabled="true"\], \.cc-actoff\)/.test(sel));
+ok('a disabled control does not give way', /:not\(:disabled, \[aria-disabled="true"\], \.tt-actoff\)/.test(sel));
 
 console.log('\nThe buttons and clickable badges it reaches');
-const listed = (sel.match(/\.(cc|sl)-[a-z0-9-]+/g) || []).map((s) => s.slice(1));
-for (const c of ['cc-btn', 'cc-abtn', 'cc-actbtn', 'cc-limbtn', 'cc-bulkbtn', 'cc-b-copy', 'cc-badge-toggle', 'cc-plan', 'cc-seg-btn', 'cc-set-tab', 'cc-sched-x', 'cc-b-del', 'sl-chip']) ok(c + ' is pressed', listed.includes(c));
+const listed = (sel.match(/\.(tt|sl)-[a-z0-9-]+/g) || []).map((s) => s.slice(1));
+for (const c of ['tt-btn', 'tt-abtn', 'tt-actbtn', 'tt-limbtn', 'tt-bulkbtn', 'tt-b-copy', 'tt-badge-toggle', 'tt-plan', 'tt-seg-btn', 'tt-set-tab', 'tt-sched-x', 'tt-b-del', 'sl-chip']) ok(c + ' is pressed', listed.includes(c));
 const scripts = fs.readdirSync(path.join(DIR, 'scripts')).filter((f) => f.endsWith('.js')).map((f) => read('scripts/' + f)).join('\n');
-const gone = listed.filter((c) => c.startsWith('cc-') && !new RegExp('[ "\']' + c + '(?![a-z0-9-])').test(scripts));
+const gone = listed.filter((c) => c.startsWith('tt-') && !new RegExp('[ "\']' + c + '(?![a-z0-9-])').test(scripts));
 ok('every listed class is one a script still sets', gone.length === 0, gone.join(' '));
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

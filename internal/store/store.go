@@ -52,37 +52,37 @@ func (s *Store) LoadConfig() (model.Config, error) {
 
 // adoptAreas maps each area whose logos can have a tile of their own to the key that says it
 // keeps its own colours and the prefix of those colours.
-var adoptAreas = map[string]string{"cc.styledocker": "ccd.", "cc.stylevms": "ccv.", "cc.styleplugin": "ccp."}
+var adoptAreas = map[string]string{"tt.styledocker": "ttd.", "tt.stylevms": "ttv.", "tt.styleplugin": "ttp."}
 
 // keepAdoptedTiles turns the tile and tint switches on once for a config that adopts the badge
 // colours, globally and for every area with colours of its own, so its logos keep the tile and
-// the ink adopting gave them. cc-theme.js runs the same step in the browser. cc.iconadoptsplit
+// the ink adopting gave them. tt-theme.js runs the same step in the browser. tt.iconadoptsplit
 // marks it done, so a switch turned off later stays off.
 func keepAdoptedTiles(ui map[string]string) {
-	adopt, seen := ui["cc.iconbgrainbow"]
-	if !seen || ui["cc.iconadoptsplit"] != "" {
+	adopt, seen := ui["tt.iconbgrainbow"]
+	if !seen || ui["tt.iconadoptsplit"] != "" {
 		return
 	}
 	if adopt == "1" {
-		ui["cc.iconbg"], ui["cc.icontint"] = "1", "1"
+		ui["tt.iconbg"], ui["tt.icontint"] = "1", "1"
 		for key, prefix := range adoptAreas {
 			if ui[key] == "0" {
 				ui[prefix+"iconbg"], ui[prefix+"icontint"] = "1", "1"
 			}
 		}
 	}
-	ui["cc.iconadoptsplit"] = "1"
+	ui["tt.iconadoptsplit"] = "1"
 }
 
 // gridAdoptAreas lists the Settings and Tools grids the way adoptAreas lists the other areas.
-var gridAdoptAreas = map[string]string{"cc.stylesettings": "ccs.", "cc.styletools": "cct."}
+var gridAdoptAreas = map[string]string{"tt.stylesettings": "tts.", "tt.styletools": "ttt."}
 
 // keepAdoptedGridTiles takes the keepAdoptedTiles step for the Settings and Tools grids under a
-// marker of its own, cc.iconadoptgrid, so a config that has already run that step gets it for
-// the grids as well. cc-theme.js runs the same step in the browser.
+// marker of its own, tt.iconadoptgrid, so a config that has already run that step gets it for
+// the grids as well. tt-theme.js runs the same step in the browser.
 func keepAdoptedGridTiles(ui map[string]string) {
-	adopt, seen := ui["cc.iconbgrainbow"]
-	if !seen || ui["cc.iconadoptgrid"] != "" {
+	adopt, seen := ui["tt.iconbgrainbow"]
+	if !seen || ui["tt.iconadoptgrid"] != "" {
 		return
 	}
 	if adopt == "1" {
@@ -92,28 +92,28 @@ func keepAdoptedGridTiles(ui map[string]string) {
 			}
 		}
 	}
-	ui["cc.iconadoptgrid"] = "1"
+	ui["tt.iconadoptgrid"] = "1"
 }
 
-// splitToolsKeys copies the Settings keys to the Tools keys once, as cc-theme.js
+// splitToolsKeys copies the Settings keys to the Tools keys once, as tt-theme.js
 // does in the browser, so a page adopting the mirror on another origin finds
-// /Tools unchanged. A set cc.styletools marks the copy as done.
+// /Tools unchanged. A set tt.styletools marks the copy as done.
 func splitToolsKeys(ui map[string]string) {
 	if ui == nil {
 		return
 	}
-	if _, done := ui["cc.styletools"]; done {
+	if _, done := ui["tt.styletools"]; done {
 		return
 	}
-	adopt, seen := ui["cc.stylesettings"]
+	adopt, seen := ui["tt.stylesettings"]
 	for k, v := range ui {
-		rest, ok := strings.CutPrefix(k, "ccs.")
+		rest, ok := strings.CutPrefix(k, "tts.")
 		if !ok {
 			continue
 		}
 		seen = true
-		if _, set := ui["cct."+rest]; !set {
-			ui["cct."+rest] = v
+		if _, set := ui["ttt."+rest]; !set {
+			ui["ttt."+rest] = v
 		}
 	}
 	if !seen {
@@ -122,14 +122,14 @@ func splitToolsKeys(ui map[string]string) {
 	if adopt == "" {
 		adopt = "1"
 	}
-	ui["cc.styletools"] = adopt
+	ui["tt.styletools"] = adopt
 }
 
 // uiValueNames maps UI setting values stored under an older name to the current
 // one, so a browser adopting the mirror on a new origin gets the current name.
 var uiValueNames = map[string]map[string]string{
-	"cc.anim":       {"0": "off", "1": "subtle", "2": "wild"},
-	"cc.badgeshape": {"pill": "round", "rounded": "soft", "circle": "round"},
+	"tt.anim":       {"0": "off", "1": "subtle", "2": "wild"},
+	"tt.badgeshape": {"pill": "round", "rounded": "soft", "circle": "round"},
 }
 
 func renameUIValues(ui map[string]string) {

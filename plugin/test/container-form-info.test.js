@@ -21,7 +21,7 @@ const grabVar = (name) => new RegExp('  var ' + name + ' = \\{[\\s\\S]*?\\n  \\}
 function node(tag, opts) {
   const n = Object.assign({ tagName: tag, kids: [], attrs: {}, q: {}, qa: {}, cls: new Set() }, opts || {});
   n.classList = { contains: (c) => n.cls.has(c) };
-  n.querySelector = (s) => (s === ':scope > .cc-info' ? n.kids.find((k) => k.isInfo) || null : n.q[s] || null);
+  n.querySelector = (s) => (s === ':scope > .tt-info' ? n.kids.find((k) => k.isInfo) || null : n.q[s] || null);
   n.querySelectorAll = (s) => n.qa[s] || [];
   n.appendChild = (c) => { n.kids.push(c); c.parentNode = n; return c; };
   n.setAttribute = (k, v) => { n.attrs[k] = String(v); };
@@ -31,7 +31,7 @@ function node(tag, opts) {
 // One row: a dt and its dd in a dl, the dl in a wrapper.
 function row(o) {
   const dt = node('DT'), dd = node('DD'), dl = node('DL', { cfg: o.cfg }), wrap = node('DIV');
-  if (o.span) { const sp = node('SPAN'); sp.cls.add('cc-varlab'); dt.q[':scope > span.cc-varlab'] = sp; dt.host = sp; sp.kids = []; } else { dt.cls.add('cc-dtlab'); dt.host = dt; }
+  if (o.span) { const sp = node('SPAN'); sp.cls.add('tt-varlab'); dt.q[':scope > span.tt-varlab'] = sp; dt.host = sp; sp.kids = []; } else { dt.cls.add('tt-dtlab'); dt.host = dt; }
   if (o.field) dd.q['select[name], select[id], input[name]:not([type=hidden]), input[id]:not([type=hidden]), textarea[name]'] = o.field;
   if (o.notes) dd.qa['.boxed > span.orange-text'] = o.notes;
   dt.parentNode = dl; dt.nextElementSibling = dd; dl.parentElement = wrap;
@@ -40,8 +40,8 @@ function row(o) {
 }
 function run(dts, lang) {
   const document = { querySelectorAll: (s) => (s === '#canvas form dl > dt' ? dts : []) };
-  const window = { CCTheme: { infoIcon: (tip) => { const s = node('SPAN', { isInfo: true }); s.tip = tip; return s; } } };
-  new Function('document', 'window', 'LANG', 'MARK', grabVar('CT_HELP') + grabVar('CT_KIND_HELP') + grabFn(docker, 'ctHelpText') + grabFn(docker, 'ctInfoBubbles') + '\nctInfoBubbles();')(document, window, lang, 'data-cc');
+  const window = { TTTheme: { infoIcon: (tip) => { const s = node('SPAN', { isInfo: true }); s.tip = tip; return s; } } };
+  new Function('document', 'window', 'LANG', 'MARK', grabVar('CT_HELP') + grabVar('CT_KIND_HELP') + grabFn(docker, 'ctHelpText') + grabFn(docker, 'ctInfoBubbles') + '\nctInfoBubbles();')(document, window, lang, 'data-tt');
 }
 const tipOf = (dt) => { const i = dt.host.kids.find((k) => k.isInfo); return i ? i.tip : null; };
 
@@ -70,7 +70,7 @@ console.log('\nTemplate variables');
   const p = row({ span: true, cfg: bare, notes: [] });
   run([v, p], 'de');
   ok('a variable takes its template\'s description', tipOf(v) === desc, tipOf(v));
-  ok('which then leaves the page, while the container port line stays', moved.attrs['data-cc-help'] === '1' && !kept.attrs['data-cc-help']);
+  ok('which then leaves the page, while the container port line stays', moved.attrs['data-tt-help'] === '1' && !kept.attrs['data-tt-help']);
   ok('one without a description says what its kind does', /Ordner am Server/.test(tipOf(p) || ''), tipOf(p));
 }
 
@@ -86,10 +86,10 @@ console.log('\nAny other row');
 console.log('\nThe label sweep and the sheet');
 {
   const labels = grabFn(docker, 'ctVarLabels');
-  ok('the label sweep never takes an (i) for a label', /dt > span:not\(\.cc-info\), \.ui-dialog dl > dt > span:not\(\.cc-info\)/.test(labels) && /dt\.querySelector\(":scope > span:not\(\.cc-info\)"\)/.test(labels));
+  ok('the label sweep never takes an (i) for a label', /dt > span:not\(\.tt-info\), \.ui-dialog dl > dt > span:not\(\.tt-info\)/.test(labels) && /dt\.querySelector\(":scope > span:not\(\.tt-info\)"\)/.test(labels));
   ok('the form pass adds the bubbles and the teardown takes them back', /ctInfoBubbles\(\);/.test(grabFn(docker, 'ctApply')) && /ctInfoBubblesTeardown\(\);/.test(grabFn(docker, 'ctApply')));
-  ok('a moved description is hidden', /#canvas \.boxed span\.orange-text\[data-cc-help\] \{ display: none !important; \}/.test(css));
-  ok('the (i) stands after the required dot, in the label\'s ink', /#canvas dl > dt \.cc-info \{ order: 1; color: inherit; \}/.test(css));
+  ok('a moved description is hidden', /#canvas \.boxed span\.orange-text\[data-tt-help\] \{ display: none !important; \}/.test(css));
+  ok('the (i) stands after the required dot, in the label\'s ink', /#canvas dl > dt \.tt-info \{ order: 1; color: inherit; \}/.test(css));
 }
 
 console.log('\n' + (fail ? 'FAILED' : 'OK') + '  ' + pass + ' passed' + (fail ? ', ' + fail + ' failed' : ''));

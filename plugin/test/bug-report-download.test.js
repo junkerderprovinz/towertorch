@@ -1,12 +1,12 @@
 // The bug report button saves the engine's redacted report as a download and then opens GitHub's
 // bug form, where the file is attached. The form's tab opens inside the click, before the request,
 // so a popup blocker lets it through; a failed request closes it again and shakes the button.
-// ccapi.php forwards the engine's endpoint and nothing else new.
+// ttapi.php forwards the engine's endpoint and nothing else new.
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
-const proxy = fs.readFileSync(path.join(DIR, 'server/ccapi.php'), 'utf8');
+const proxy = fs.readFileSync(path.join(DIR, 'server/ttapi.php'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -22,18 +22,18 @@ async function run(answer) {
   const log = { opened: [], clicked: [], toasts: [], fails: [], fetched: '' };
   const tab = { opener: 'page', closed: false, location: { href: 'about:blank' }, close() { this.closed = true; } };
   const ctl = { tag: 'span' };
-  const unit = { querySelector: (s) => (s === '.cc-rbtn' ? ctl : null) };
+  const unit = { querySelector: (s) => (s === '.tt-rbtn' ? ctl : null) };
   const anchor = { click() { log.clicked.push(this.download); } };
   const win = {
     open: (u, t) => { log.opened.push([u, t]); return tab; },
-    CCTheme: { toast: (m) => log.toasts.push(m) }
+    TTTheme: { toast: (m) => log.toasts.push(m) }
   };
   const doc = { body: { appendChild() {}, removeChild() {} } };
   const fetch = (u) => { log.fetched = u; return answer instanceof Error ? Promise.reject(answer) : Promise.resolve(answer); };
-  const fn = new Function('window', 'document', 'fetch', 'URL', 'setTimeout', 'el', 'T', 'failed', 'PROXY', 'REPO', 'CC_VER',
+  const fn = new Function('window', 'document', 'fetch', 'URL', 'setTimeout', 'el', 'T', 'failed', 'PROXY', 'REPO', 'TT_VER',
     grabFn(settings, 'downloadBugReport') + '\nreturn downloadBugReport;')(
     win, doc, fetch, { createObjectURL: () => 'blob:x', revokeObjectURL() {} }, () => {}, () => anchor, (d, e) => e,
-    (c, m) => log.fails.push([c, m]), '/plugins/towertorch/server/ccapi.php', 'https://github.com/junkerderprovinz/towertorch', '1.2.0');
+    (c, m) => log.fails.push([c, m]), '/plugins/towertorch/server/ttapi.php', 'https://github.com/junkerderprovinz/towertorch', '1.2.0');
   fn(unit);
   await new Promise((r) => setTimeout(r, 0));
   await new Promise((r) => setTimeout(r, 0));
@@ -44,7 +44,7 @@ async function run(answer) {
   console.log('\nA report that arrives is saved and the form opens');
   {
     const { log, tab } = await run({ ok: true, blob: () => Promise.resolve('report') });
-    ok('it asks the engine through the proxy', log.fetched === '/plugins/towertorch/server/ccapi.php?path=bugreport');
+    ok('it asks the engine through the proxy', log.fetched === '/plugins/towertorch/server/ttapi.php?path=bugreport');
     ok('the form\'s tab opens inside the click, before the answer', log.opened.length === 1 && log.opened[0][0] === 'about:blank');
     ok('that tab gets no handle on this page', tab.opener === null);
     ok('the file is saved under a dated name', log.clicked.length === 1 && /^towertorch-bugreport-\d{8}-\d{6}\.txt$/.test(log.clicked[0]), log.clicked[0]);

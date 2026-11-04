@@ -26,9 +26,9 @@ const decl = (b, prop) => ((new RegExp('(?:^|;)\\s*' + prop + ':\\s*([^;]+)').ex
 
 console.log('\nOne header for all three tables');
 {
-  const dk = body(docker, 'html.cc-docker-on table.cc-enh thead th');
-  const pl = body(docker, 'html.cc-on-plugins table.cc-plug thead th');
-  const vmh = body(vm, 'html.cc-vms-on #displaybox table.tablesorter thead th');
+  const dk = body(docker, 'html.tt-docker-on table.tt-enh thead th');
+  const pl = body(docker, 'html.tt-on-plugins table.tt-plug thead th');
+  const vmh = body(vm, 'html.tt-vms-on #displaybox table.tablesorter thead th');
   for (const prop of ['background', 'color', 'letter-spacing', 'font-weight', 'text-transform']) {
     ok('Plugins header ' + prop + ' as on Docker', !!pl && decl(pl, prop) === decl(dk, prop), decl(pl, prop) + ' vs ' + decl(dk, prop));
     ok('VM header ' + prop + ' as on Docker', !!vmh && decl(vmh, prop) === decl(dk, prop), decl(vmh, prop) + ' vs ' + decl(dk, prop));
@@ -37,43 +37,43 @@ console.log('\nOne header for all three tables');
 
 console.log('\nThe VM row');
 {
-  const cell = body(vm, 'html.cc-vms-on #displaybox #kvm_list tr.sortable > td');
+  const cell = body(vm, 'html.tt-vms-on #displaybox #kvm_list tr.sortable > td');
   ok('every cell is centred', /vertical-align: middle !important/.test(cell || ''), cell);
-  const vg = body(vm, 'html.cc-vms-on #kvm_list .cc-limbtn'), dg = body(docker, '.cc-limbtn');
+  const vg = body(vm, 'html.tt-vms-on #kvm_list .tt-limbtn'), dg = body(docker, '.tt-limbtn');
   ok('the gear has the Docker gear\'s margin', decl(vg, 'margin') === decl(dg, 'margin'), decl(vg, 'margin') + ' vs ' + decl(dg, 'margin'));
-  const dot = body(vm, 'html.cc-vms-on #kvm_list td.vm-name .inner > span.state.cc-badge'), ddot = body(docker, '.cc-enh .cc-ct-dotrow > .cc-badge');
+  const dot = body(vm, 'html.tt-vms-on #kvm_list td.vm-name .inner > span.state.tt-badge'), ddot = body(docker, '.tt-enh .tt-ct-dotrow > .tt-badge');
   for (const prop of ['width', 'height', 'border-radius', 'font-size', 'box-shadow']) ok('the state is the Docker dot: ' + prop, !!dot && decl(dot, prop) === decl(ddot, prop), decl(dot, prop) + ' vs ' + decl(ddot, prop));
   ok('its label goes into the tooltip', /st\.setAttribute\("data-tip", txt\);/.test(vmsJs));
   ok('and comes out again when theming goes off', /st\.className = "state"; st\.style\.cssText = ""; st\.removeAttribute\("data-tip"\);/.test(vmsJs));
-  const vrest = body(vm, 'html.cc-vms-on.cc-vm-iconbg.cc-vm-rbneutral #kvm_list td.vm-name .outer > span.hand');
-  const drest = body(docker, 'html.cc-shares-rbneutral.cc-docker-on .cc-enh.cc-docker-iconbg #docker_list td.ct-name .outer > span.hand');
+  const vrest = body(vm, 'html.tt-vms-on.tt-vm-iconbg.tt-vm-rbneutral #kvm_list td.vm-name .outer > span.hand');
+  const drest = body(docker, 'html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg #docker_list td.ct-name .outer > span.hand');
   ok('a resting tile in the reactive mode is the Docker tile\'s grey', !!vrest && decl(vrest, 'background') === decl(drest, 'background'), decl(vrest, 'background') + ' vs ' + decl(drest, 'background'));
 }
 
 console.log('\nThe logo tile shows under the same switch on all three tabs');
 {
   ok('Docker: the Logo tiles switch alone', /function iconBgOn\(\) \{ return effc\("iconbg"\) === "1"; \}/.test(dockerJs));
-  ok('Plugins: the same', /function iconBgOnP\(\) \{ return eff\("iconbg"\) === "1"; \}/.test(plugJs) && /classList\.toggle\("cc-plugins-iconbg", iconBgOnP\(\)\)/.test(plugJs) && /var ibgOn = iconBgOnP\(\);/.test(plugJs));
+  ok('Plugins: the same', /function iconBgOnP\(\) \{ return eff\("iconbg"\) === "1"; \}/.test(plugJs) && /classList\.toggle\("tt-plugins-iconbg", iconBgOnP\(\)\)/.test(plugJs) && /var ibgOn = iconBgOnP\(\);/.test(plugJs));
   ok('VMs: the same', /function iconBgOnV\(\) \{ return effK\("iconbg"\) === "1"; \}/.test(vmsJs) && /var ibgOn = iconBgOnV\(\);/.test(vmsJs) && !/effK\("iconbg"\) !== "1"\) return;/.test(vmsJs));
 }
 
 console.log('\nThe names read in the text colour, as on the Plugins and VM tabs');
 {
-  const nm = body(docker, '.cc-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .appname a');
+  const nm = body(docker, '.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .appname a');
   ok('a container name takes the row\'s text colour, not Unraid\'s link blue', decl(nm, 'color') === 'inherit !important', nm);
 }
 
 console.log('\nThe plugin row');
 {
-  const cell = body(docker, '.cc-plug #plugin_list > tr > td');
-  ok('the padding follows the density', /padding-top: var\(--cc-density, 9px\)/.test(cell || '') && /padding-bottom: var\(--cc-density, 9px\)/.test(cell || ''), cell);
-  ok('the logo stands as far from the name as on Docker', decl(body(docker, '.cc-plugname'), 'gap') === decl(body(docker, '.cc-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer'), 'gap'));
-  const box = body(docker, '.cc-plugico');
-  ok('every logo sits in one fixed square', decl(box, 'width') === 'var(--cc-logo-img, 62px)' && decl(box, 'height') === 'var(--cc-logo-img, 62px)', box);
+  const cell = body(docker, '.tt-plug #plugin_list > tr > td');
+  ok('the padding follows the density', /padding-top: var\(--tt-density, 9px\)/.test(cell || '') && /padding-bottom: var\(--tt-density, 9px\)/.test(cell || ''), cell);
+  ok('the logo stands as far from the name as on Docker', decl(body(docker, '.tt-plugname'), 'gap') === decl(body(docker, '.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer'), 'gap'));
+  const box = body(docker, '.tt-plugico');
+  ok('every logo sits in one fixed square', decl(box, 'width') === 'var(--tt-logo-img, 62px)' && decl(box, 'height') === 'var(--tt-logo-img, 62px)', box);
   ok('centred in it', decl(box, 'align-items') === 'center' && decl(box, 'justify-content') === 'center');
-  ok('docker.js sets the density this way', /var dens = localStorage\.getItem\("cc\.density"\); root\.setProperty\("--cc-density", \{ compact: "5px", normal: "9px", airy: "14px" \}\[dens\] \|\| "9px"\)/.test(dockerJs));
-  ok('plugins.js sets it the same way', /setProperty\("--cc-density", \{ compact: "5px", normal: "9px", airy: "14px" \}\[ls\("cc\.density"\)\] \|\| "9px"\)/.test(plugJs));
-  ok('vms.js sets it the same way', /setProperty\("--cc-density", \{ compact: "5px", normal: "9px", airy: "14px" \}\[ls\("cc\.density"\)\] \|\| "9px"\)/.test(vmsJs));
+  ok('docker.js sets the density this way', /var dens = localStorage\.getItem\("tt\.density"\); root\.setProperty\("--tt-density", \{ compact: "5px", normal: "9px", airy: "14px" \}\[dens\] \|\| "9px"\)/.test(dockerJs));
+  ok('plugins.js sets it the same way', /setProperty\("--tt-density", \{ compact: "5px", normal: "9px", airy: "14px" \}\[ls\("tt\.density"\)\] \|\| "9px"\)/.test(plugJs));
+  ok('vms.js sets it the same way', /setProperty\("--tt-density", \{ compact: "5px", normal: "9px", airy: "14px" \}\[ls\("tt\.density"\)\] \|\| "9px"\)/.test(vmsJs));
 }
 
 console.log('\nEvery plugin logo is cropped to the same fill');
@@ -87,7 +87,7 @@ console.log('\nEvery plugin logo is cropped to the same fill');
   const api = new Function('Image', 'document', 'var normCache = {};' + grab('plugSetIconSrc') + grab('applyNorm') + grab('normalizeIcon') + '; return { set: plugSetIconSrc, norm: normalizeIcon };')(Img, document);
   const img = { attrs: { src: '/plugins/x/x.png' }, getAttribute(k) { return k === 'src' ? this.src || this.attrs.src : (k in this.attrs ? this.attrs[k] : null); }, setAttribute(k, v) { if (k === 'src') this.src = v; else this.attrs[k] = v; }, removeAttribute(k) { delete this.attrs[k]; } };
   img.src = '/plugins/x/x.png';
-  api.set(img, '/plugins/towertorch/server/ccapi.php?path=iconsvg&name=x');
+  api.set(img, '/plugins/towertorch/server/ttapi.php?path=iconsvg&name=x');
   api.norm(img);
   const probe = probes[probes.length - 1];
   ok('the fetched logo is measured, not the plugin\'s own', !!probe && /iconsvg/.test(probe.src || ''), probe && probe.src);
@@ -96,7 +96,7 @@ console.log('\nEvery plugin logo is cropped to the same fill');
   ok('paintRow crops whatever source the pipeline chose', /plugSetIconSrc\(el2, plan\.url\);\s*normalizeIcon\(el2\);/.test(plugJs));
   // A crop fills 82% of its square, and a font glyph fills its em box.
   ok('a glyph logo is drawn at the crop\'s 82%, inline', /var GLYPH = "calc\(" \+ LOGO \+ " \* \.82\)";/.test(plugJs) && /el2\.style\.setProperty\("font-size", GLYPH, "important"\);/.test(plugJs));
-  ok('and in the sheet that holds through a re-render', /\.cc-plugico i \{[^}]*font-size: calc\(var\(--cc-logo-img, 62px\) \* \.82\) !important;/.test(docker));
+  ok('and in the sheet that holds through a re-render', /\.tt-plugico i \{[^}]*font-size: calc\(var\(--tt-logo-img, 62px\) \* \.82\) !important;/.test(docker));
   ok('the crop fills 82% of its square', /var OUT = 192, avail = OUT \* 0\.82/.test(plugJs));
 }
 

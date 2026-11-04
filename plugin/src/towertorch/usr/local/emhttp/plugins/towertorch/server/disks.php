@@ -11,9 +11,9 @@
  */
 header('Content-Type: application/json');
 
-$state = getenv('CC_EMHTTP') ?: '/var/local/emhttp';
-$cfgFile = getenv('CC_DYNAMIX_CFG') ?: '/boot/config/plugins/dynamix/dynamix.cfg';
-$defFile = getenv('CC_DYNAMIX_DEFAULT') ?: '/usr/local/emhttp/plugins/dynamix/default.cfg';
+$state = getenv('TT_EMHTTP') ?: '/var/local/emhttp';
+$cfgFile = getenv('TT_DYNAMIX_CFG') ?: '/boot/config/plugins/dynamix/dynamix.cfg';
+$defFile = getenv('TT_DYNAMIX_DEFAULT') ?: '/usr/local/emhttp/plugins/dynamix/default.cfg';
 
 function ini($file, $sections = true) {
     $v = is_file($file) ? @parse_ini_file($file, $sections) : false;

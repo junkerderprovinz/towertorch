@@ -1,10 +1,10 @@
-// CCTheme.edge and CCTheme.placeAt, taken from cc-theme.js and bound to a test's own window and
+// TTTheme.edge and TTTheme.placeAt, taken from tt-theme.js and bound to a test's own window and
 // document, for the tests that place a window, a menu or a bubble.
 const fs = require('fs');
 const { DIR } = require('./cascade');
 const path = require('path');
 
-const src = fs.readFileSync(path.join(DIR, 'scripts', 'cc-theme.js'), 'utf8');
+const src = fs.readFileSync(path.join(DIR, 'scripts', 'tt-theme.js'), 'utf8');
 function grab(name) {
   const i = src.indexOf('function ' + name + '(');
   let d = 0;

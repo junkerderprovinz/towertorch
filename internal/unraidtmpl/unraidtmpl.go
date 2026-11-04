@@ -229,7 +229,7 @@ func writeAtomic(path string, data []byte) error {
 	// The temp name is unique so two writers to the same path cannot clobber each
 	// other's partial file, and the fsync has to precede the rename: a rename alone
 	// does not flush the data to the USB flash.
-	f, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".cc-*.tmp")
+	f, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".tt-*.tmp")
 	if err != nil {
 		return err
 	}

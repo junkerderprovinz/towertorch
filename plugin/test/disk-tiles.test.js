@@ -1,6 +1,6 @@
 // The disk tiles on /Main (TowerTorch.Disks.page, .css, disks.js, server/disks.php).
 // What can quietly break it:
-//   · a rule that is not gated on html.cc-dk-on restyles /Main with the Start area off
+//   · a rule that is not gated on html.tt-dk-on restyles /Main with the Start area off
 //   · a reader that only knows the plain nchan rows and loses a disk once shares.js has badged them
 //   · an action that runs anything other than the call Unraid's own control carries
 //   · a second view switch, or a key per section that the page switch cannot take back
@@ -77,8 +77,8 @@ const PARITY = `<tr><td><a class='view'></a><a class='info'><i id='dev-parity' c
 const DISK1 = `<tr><td><a class='view' href="/Main/Browse?dir=/mnt/disk1"><i class="icon-u-tab" title="Durchsuchen /mnt/disk1"></i></a><a class='info'><i id='dev-disk1' class='fa fa-circle orb grey-orb' style='cursor:pointer' onclick="toggle_state('Device','disk1','up')"></i><span>Datenträger im Standby-Modus (heruntergefahren)<br>Zum Starten des Datenträgers klicken</span></a><a href="/Main/Device?name=disk1">Datenträger 1</a></td><td class='desc'><a class='info hand' onclick="openTerminal('disklog','sdf','')"><i class='icon-disk icon'></i><span>Datenträgerprotokoll</span></a><span style='font-family:bitstream'>WDC_WD161KRYZ-01AGBB0_TESTDSK1</span> - 16 TB (sdf)</td><td>*</td><td><span class='diskio'>0.0 B/s</span><span class='number'>75,282,084</span></td><td><span class='diskio'>0.0 B/s</span><span class='number'>11,703,195</span></td><td><a class='info'><i class='fa fa-exclamation-triangle orange-text'></i><span>Device errors: 3</span></a>&nbsp;3</td><td>xfs</td><td>16 TB</td><td><div class='usage-disk'><span style='width:87.711422734358%' class=''></span><span>14.0 TB</span></div></td><td><div class='usage-disk'><span style='width:12.288577265642%' class=''></span><span>1.97 TB</span></div></td></tr>`;
 const TOTAL = `<tr class='tr_last'><td><a class='info'><i class='fa fa-toggle-down control' onclick="toggle_state('Device','disk*','down')"></i><span>Herunterfahren</span></a></td><td><a class='static'><i class='icon-disks icon'></i></a><span></span>Array aus zwei Datenträgern</td><td>37&#8201;&#176;C</td><td><span class='diskio'>0.0 B/s</span><span class='number'>1</span></td><td><span class='diskio'>12.5 MB/s</span><span class='number'>2</span></td><td>0</td><td></td><td>16 TB</td><td><div class='usage-disk'><span style='width:87.7%' class=''></span><span>14.0 TB</span></div></td><td><div class='usage-disk'><span style='width:12.3%' class=''></span><span>1.97 TB</span></div></td></tr>`;
 // The same disk once shares.js has badged it: a Browse column, the link moved there, cells wrapped.
-const DISK1_BADGED = `<tr data-cc-main="1" style="--cc-rb-c: #FF832B; --cc-rb-ct: #161616;"><td><a class="info" data-cc-tip="Datenträger im Standby-Modus (heruntergefahren)
-Zum Starten des Datenträgers klicken"><i id="dev-disk1" class="fa fa-circle orb grey-orb" style="cursor:pointer" onclick="toggle_state('Device','disk1','up')"></i><span>Datenträger im Standby-Modus (heruntergefahren)<br>Zum Starten des Datenträgers klicken</span></a><a href="/Main/Device?name=disk1" class="cc-b cc-b-name">Datenträger 1</a></td><td class="cc-browse-col"><a class="view cc-b-browse" href="/Main/Browse?dir=/mnt/disk1"><span class="cc-b-lab">Durchsuchen</span></a></td><td class="desc cc-bcell"><span class="cc-b"><span class="cc-b-v"><a class="info hand" onclick="openTerminal('disklog','sdf','')" data-cc-tip="Datenträgerprotokoll"><i class="icon-disk icon"></i><span>Datenträgerprotokoll</span></a><span style="font-family:bitstream">WDC_WD161KRYZ-01AGBB0_TESTDSK1</span> - 16 TB (sdf)</span></span></td><td>*</td><td class="cc-bcell"><span class="cc-b"><span class="cc-b-v"><span class="diskio">0.0 B/s</span><span class="number" style="display: none;">75,282,084</span></span></span></td><td class="cc-bcell"><span class="cc-b"><span class="cc-b-v"><span class="diskio">0.0 B/s</span><span class="number" style="display: none;">11,703,195</span></span></span></td><td class="cc-bcell"><span class="cc-b"><span class="cc-b-v"><a class='info'><i class='fa fa-exclamation-triangle orange-text'></i><span>Device errors: 3</span></a>&nbsp;3</span></span></td><td class="cc-bcell"><span class="cc-b"><span class="cc-b-v">xfs</span></span></td><td class="cc-bcell"><span class="cc-b"><span class="cc-b-v">16 TB</span></span></td><td><div class="usage-disk"><span style="width: 87.7114%; --cc-slosh-phase: -10.227s;" class="cc-slosh-edge cc-fill-amber"></span><span>14.0 TB</span></div></td><td><div class="usage-disk"><span style="width: 12.2886%; --cc-slosh-phase: -10.227s;" class="cc-slosh-edge cc-fill-amber"></span><span>1.97 TB</span></div></td></tr>`;
+const DISK1_BADGED = `<tr data-tt-main="1" style="--tt-rb-c: #FF832B; --tt-rb-ct: #161616;"><td><a class="info" data-tt-tip="Datenträger im Standby-Modus (heruntergefahren)
+Zum Starten des Datenträgers klicken"><i id="dev-disk1" class="fa fa-circle orb grey-orb" style="cursor:pointer" onclick="toggle_state('Device','disk1','up')"></i><span>Datenträger im Standby-Modus (heruntergefahren)<br>Zum Starten des Datenträgers klicken</span></a><a href="/Main/Device?name=disk1" class="tt-b tt-b-name">Datenträger 1</a></td><td class="tt-browse-col"><a class="view tt-b-browse" href="/Main/Browse?dir=/mnt/disk1"><span class="tt-b-lab">Durchsuchen</span></a></td><td class="desc tt-bcell"><span class="tt-b"><span class="tt-b-v"><a class="info hand" onclick="openTerminal('disklog','sdf','')" data-tt-tip="Datenträgerprotokoll"><i class="icon-disk icon"></i><span>Datenträgerprotokoll</span></a><span style="font-family:bitstream">WDC_WD161KRYZ-01AGBB0_TESTDSK1</span> - 16 TB (sdf)</span></span></td><td>*</td><td class="tt-bcell"><span class="tt-b"><span class="tt-b-v"><span class="diskio">0.0 B/s</span><span class="number" style="display: none;">75,282,084</span></span></span></td><td class="tt-bcell"><span class="tt-b"><span class="tt-b-v"><span class="diskio">0.0 B/s</span><span class="number" style="display: none;">11,703,195</span></span></span></td><td class="tt-bcell"><span class="tt-b"><span class="tt-b-v"><a class='info'><i class='fa fa-exclamation-triangle orange-text'></i><span>Device errors: 3</span></a>&nbsp;3</span></span></td><td class="tt-bcell"><span class="tt-b"><span class="tt-b-v">xfs</span></span></td><td class="tt-bcell"><span class="tt-b"><span class="tt-b-v">16 TB</span></span></td><td><div class="usage-disk"><span style="width: 87.7114%; --tt-slosh-phase: -10.227s;" class="tt-slosh-edge tt-fill-amber"></span><span>14.0 TB</span></div></td><td><div class="usage-disk"><span style="width: 12.2886%; --tt-slosh-phase: -10.227s;" class="tt-slosh-edge tt-fill-amber"></span><span>1.97 TB</span></div></td></tr>`;
 const POOL = `<tr class='pool_header' id='pool_cache'><td><a class='view' href="/Main/Browse?dir=/mnt/cache"><i class="icon-u-tab"></i></a><a href="/Main/Device?name=cache">Cache</a></td><td class='desc'><i class="fa fa-bullseye title"></i> Data Partition <a href='/Main/Device?name=cache#poolsummary' title='View pool details'>(ONLINE)</a></td><td colspan='4'></td><td>btrfs</td><td>2 TB</td><td><div class='usage-disk'><span style='width:40.5%' class=''></span><span>811 GB</span></div></td><td><div class='usage-disk'><span style='width:59.5%' class=''></span><span>1.19 TB</span></div></td></tr><tr><td><span style='padding-left:16px'></span><a class='view'></a><a class='info'><i id='dev-cache' class='fa fa-circle orb green-orb' style='cursor:pointer' onclick="toggle_state('Device','cache','down')"></i><span>Normaler Betrieb</span></a><a href="/Main/Device?name=cache">Device 1</a></td><td class='desc'><a class='info hand' onclick="openTerminal('disklog','nvme0n1','')"><i class='icon-nvme icon'></i><span>Datenträgerprotokoll</span></a><span style='font-family:bitstream'>Samsung_SSD_9100_PRO_2TB_TESTNVME</span> - 2 TB (nvme0n1)</td><td>40&#8201;&#176;C</td><td><span class='diskio'>8.2 KB/s</span><span class='number'>4</span></td><td><span class='diskio'>53,5 KB/s</span><span class='number'>2</span></td><td>0</td><td colspan='4'></td></tr><tr><td><span style='padding-left:16px'></span><a class='view'></a><a class='info'><i id='dev-cache2' class='fa fa-circle orb grey-orb' style='cursor:pointer' onclick="toggle_state('Device','cache2','up')"></i><span>Standby</span></a><a href="/Main/Device?name=cache2">Device 2</a></td><td class='desc'><a class='info hand' onclick="openTerminal('disklog','sdg','')"><i class='icon-nvme icon'></i><span>Datenträgerprotokoll</span></a><span style='font-family:bitstream'>Samsung_SSD_850_EVO_500GB_TESTSATA</span> - 500 GB (sdg)</td><td>*</td><td><span class='diskio'>0.0 B/s</span><span class='number'>1</span></td><td><span class='diskio'>0.0 B/s</span><span class='number'>1</span></td><td>0</td><td colspan='4'></td></tr>`;
 const BOOT = `<tr><td><a class='view' href="/Main/Browse?dir=/boot"><i class="icon-u-tab"></i></a><a class='info'><i class='fa fa-circle orb green-orb'></i><span>Normaler Betrieb</span></a><a href="/Main/Boot?name=flash">Boot(Flash)</a></td><td class='desc'><a class='info hand' onclick="openTerminal('disklog','sda','')"><i class='icon-usb icon'></i><span>Datenträgerprotokoll</span></a><span style='font-family:bitstream'>SanDisk_Cruzer_Blade_TESTUSB-0:0</span> - 63.1 GB (sda)</td><td>*</td><td><span class='diskio'>0.0 B/s</span><span class='number'>1</span></td><td><span class='diskio'>0.0 B/s</span><span class='number'>1</span></td><td>0</td><td>vfat</td><td>63 GB</td><td><div class='usage-disk'><span style='width:5.9%' class=''></span><span>3.71 GB</span></div></td><td><div class='usage-disk'><span style='width:94.1%' class=''></span><span>59.3 GB</span></div></td></tr><tr><td><span class='left'><i class='fa fa-magic title'></i> Internal Boot</span></td><td class='desc'>No internal boot setup detected. Launch <a href="/Tools/Wizards/InternalBootWizard">Internal Boot</a> to configure one.</td><td colspan='8'></td></tr>`;
 // A stopped array: the identification cell holds the assignment dropdown.
@@ -89,10 +89,10 @@ const UD_NONE = `<tr><td colspan='11' style='text-align:center;'>No Unassigned D
 
 console.log('\nThe hook');
 ok('the page is a Buttons hook, so its sheet loads on every page', /^Menu="Buttons:\d+"/m.test(page));
-ok('it renders no icon', /^Link="cc-disks-hook"/m.test(page));
+ok('it renders no icon', /^Link="tt-disks-hook"/m.test(page));
 ok('it loads disks.js', /scripts\/disks\.js/.test(page));
 
-console.log('\nEvery rule waits for html.cc-dk-on');
+console.log('\nEvery rule waits for html.tt-dk-on');
 {
   const clean = css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/@keyframes[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '');
   const sels = [];
@@ -101,38 +101,38 @@ console.log('\nEvery rule waits for html.cc-dk-on');
   while ((m = re.exec(clean))) { const s = m[1].replace(/^\s*@media[^{]*\{/, '').trim(); if (s && !s.startsWith('@')) sels.push(s); }
   ok('the sheet has rules', sels.length > 40, sels.length);
   const loose = [];
-  for (const s of sels) for (const part of splitTop(s)) if (!/^html\.cc-dk-on/.test(part.trim())) loose.push(part.trim());
+  for (const s of sels) for (const part of splitTop(s)) if (!/^html\.tt-dk-on/.test(part.trim())) loose.push(part.trim());
   ok('no selector applies without the gate', loose.length === 0, loose.slice(0, 4).join(' | '));
-  ok('the script sets the gate only where the Start area styles /Main', /function live\(\) \{\s*return g\("cc\.theming", "1"\) !== "0" && g\("cc\.enable\.main", "0"\) !== "0" && pn\(\) === "\/Main" && !!document\.querySelector\("#displaybox nav\.tabs"\);/.test(js));
+  ok('the script sets the gate only where the Start area styles /Main', /function live\(\) \{\s*return g\("tt\.theming", "1"\) !== "0" && g\("tt\.enable\.main", "0"\) !== "0" && pn\(\) === "\/Main" && !!document\.querySelector\("#displaybox nav\.tabs"\);/.test(js));
 }
 
 console.log('\nThe motion stays inside the gate and stops at "off"');
 {
-  const media = css.slice(css.indexOf('@media (prefers-reduced-motion: no-preference) {\n  html.cc-dk-on:not'));
-  const anims = [...css.matchAll(/^\s*(html[^\n{]*)\{[^}\n]*\banimation:\s*cc-dk-/gm)].map((m) => m[1]);
+  const media = css.slice(css.indexOf('@media (prefers-reduced-motion: no-preference) {\n  html.tt-dk-on:not'));
+  const anims = [...css.matchAll(/^\s*(html[^\n{]*)\{[^}\n]*\banimation:\s*tt-dk-/gm)].map((m) => m[1]);
   ok('there are animations', anims.length >= 6, anims.length);
-  ok('each one names the quiet level and none the lively one', anims.every((s) => /:not\(\[data-cc-motion="off"\]\)/.test(s)) && !/data-cc-motion="(wild|subtle)"\]/.test(css));
+  ok('each one names the quiet level and none the lively one', anims.every((s) => /:not\(\[data-tt-motion="off"\]\)/.test(s)) && !/data-tt-motion="(wild|subtle)"\]/.test(css));
   ok('they all sit in the no-preference block', anims.every((s) => media.includes(s)));
   const tokens = read('sheets/TowerTorch.Tokens.css');
-  for (const d of ['spin', 'seek', 'swing', 'blink', 'flow', 'rise', 'stagger']) ok('the platter, arm, LED, data flow and entrance read --cc-motion-disk-' + d, (css.includes('var(--cc-motion-disk-' + d) || js.includes('getPropertyValue("--cc-motion-disk-' + d + '")')) && (tokens.match(new RegExp('--cc-motion-disk-' + d + ':', 'g')) || []).length === 4);
-  ok('the entrance ends at transform: none', /@keyframes cc-dk-in \{[^}]*\}[^}]*to \{ transform: none;/.test(css));
-  ok('no CSS animation turns the platter, so nothing can stop it dead', !/cc-dk-spin/.test(css) && !/\.cc-dk-plat \{[^}]*animation/.test(css));
-  const outside = css.slice(0, css.indexOf('@media (prefers-reduced-motion: no-preference) {\n  html.cc-dk-on:not'));
-  ok('the LED blinks with every second the disk reads or writes, and outside the gate it is lit without blinking', /\.cc-dk-card\.cc-dk-access \.cc-dk-led \{ animation: cc-dk-blink/.test(media) && /html\.cc-dk-on #displaybox \.cc-dk-card\.cc-dk-access \.cc-dk-led \{ fill: var\(--cc-dk-c/.test(outside) && /c\.classList\.toggle\("cc-dk-access", busy\(d\)\);/.test(grabFn(js, 'patch')) && !/cc-dk-blink/.test(outside.replace(/@keyframes[^\n]*/g, '')));
-  ok('a resting disk dims its LED, a waiting one glows faintly', /\.cc-dk-card\.cc-dk-down \.cc-dk-led \{ opacity: \.45; \}/.test(css) && /\.cc-dk-card:not\(\.cc-dk-down\) \.cc-dk-led \{ fill: color-mix\(/.test(css));
+  for (const d of ['spin', 'seek', 'swing', 'blink', 'flow', 'rise', 'stagger']) ok('the platter, arm, LED, data flow and entrance read --tt-motion-disk-' + d, (css.includes('var(--tt-motion-disk-' + d) || js.includes('getPropertyValue("--tt-motion-disk-' + d + '")')) && (tokens.match(new RegExp('--tt-motion-disk-' + d + ':', 'g')) || []).length === 4);
+  ok('the entrance ends at transform: none', /@keyframes tt-dk-in \{[^}]*\}[^}]*to \{ transform: none;/.test(css));
+  ok('no CSS animation turns the platter, so nothing can stop it dead', !/tt-dk-spin/.test(css) && !/\.tt-dk-plat \{[^}]*animation/.test(css));
+  const outside = css.slice(0, css.indexOf('@media (prefers-reduced-motion: no-preference) {\n  html.tt-dk-on:not'));
+  ok('the LED blinks with every second the disk reads or writes, and outside the gate it is lit without blinking', /\.tt-dk-card\.tt-dk-access \.tt-dk-led \{ animation: tt-dk-blink/.test(media) && /html\.tt-dk-on #displaybox \.tt-dk-card\.tt-dk-access \.tt-dk-led \{ fill: var\(--tt-dk-c/.test(outside) && /c\.classList\.toggle\("tt-dk-access", busy\(d\)\);/.test(grabFn(js, 'patch')) && !/tt-dk-blink/.test(outside.replace(/@keyframes[^\n]*/g, '')));
+  ok('a resting disk dims its LED, a waiting one glows faintly', /\.tt-dk-card\.tt-dk-down \.tt-dk-led \{ opacity: \.45; \}/.test(css) && /\.tt-dk-card:not\(\.tt-dk-down\) \.tt-dk-led \{ fill: color-mix\(/.test(css));
   const hdd = new Function('OWN', grabFn(js, 'drawHdd') + '\nreturn drawHdd;')({})({ parity: false });
-  const platAt = hdd.indexOf('class="cc-dk-plat"');
-  ok('the platter is an HTML layer between the case and the arm, so the compositor keeps it turning while the page is busy', /<div class="cc-dk-plat"><svg /.test(hdd) && !/<(?:g|svg|circle|path)\b[^>]*class="[^"]*cc-dk-plat/.test(hdd) && hdd.indexOf('r="55"') < platAt && platAt < hdd.indexOf('class="cc-dk-arm"') && /<\/svg><\/div><svg /.test(hdd.slice(platAt)) && !/:is\([^)]*\.cc-dk-plat/.test(css));
-  ok('it takes the place and scale the case\'s viewBox gives it', /\.cc-dk-hdd \{ container-type: size; \}/.test(css) && /\.cc-dk-plat \{ --cc-dk-u: min\(100cqw \/ 194, 100cqh \/ 130\); position: absolute; left: calc\(50% - 75 \* var\(--cc-dk-u\)\); top: calc\(50% - 53 \* var\(--cc-dk-u\)\); width: calc\(106 \* var\(--cc-dk-u\)\); height: calc\(106 \* var\(--cc-dk-u\)\); \}/.test(css) && /viewBox="3 3 194 130"/.test(hdd) && /viewBox="25 15 106 106"/.test(hdd));
-  ok('every drawing keeps its LED', ['drawHdd', 'drawSsd', 'drawNvme', 'drawUsb'].every((n) => /class="cc-dk-led"/.test(grabFn(js, n))));
+  const platAt = hdd.indexOf('class="tt-dk-plat"');
+  ok('the platter is an HTML layer between the case and the arm, so the compositor keeps it turning while the page is busy', /<div class="tt-dk-plat"><svg /.test(hdd) && !/<(?:g|svg|circle|path)\b[^>]*class="[^"]*tt-dk-plat/.test(hdd) && hdd.indexOf('r="55"') < platAt && platAt < hdd.indexOf('class="tt-dk-arm"') && /<\/svg><\/div><svg /.test(hdd.slice(platAt)) && !/:is\([^)]*\.tt-dk-plat/.test(css));
+  ok('it takes the place and scale the case\'s viewBox gives it', /\.tt-dk-hdd \{ container-type: size; \}/.test(css) && /\.tt-dk-plat \{ --tt-dk-u: min\(100cqw \/ 194, 100cqh \/ 130\); position: absolute; left: calc\(50% - 75 \* var\(--tt-dk-u\)\); top: calc\(50% - 53 \* var\(--tt-dk-u\)\); width: calc\(106 \* var\(--tt-dk-u\)\); height: calc\(106 \* var\(--tt-dk-u\)\); \}/.test(css) && /viewBox="3 3 194 130"/.test(hdd) && /viewBox="25 15 106 106"/.test(hdd));
+  ok('every drawing keeps its LED', ['drawHdd', 'drawSsd', 'drawNvme', 'drawUsb'].every((n) => /class="tt-dk-led"/.test(grabFn(js, n))));
   const flowDots = new Function(grabFn(js, 'flowDots') + '\nreturn flowDots;')();
-  ok('an SSD has a light that passes over its lines, an NVMe stick three dots from its contacts, a USB stick three beside its label', /class="cc-dk-sweep"/.test(grabFn(js, 'drawSsd')) && /id="cc-dk-sweep"/.test(grabFn(js, 'defs')) && /flowDots\(22, \[60, 68, 76\]\)/.test(grabFn(js, 'drawNvme')) && /flowDots\(66, \[50, 86, 50\]\)/.test(grabFn(js, 'drawUsb')) && (flowDots(22, [60, 68, 76]).match(/class="cc-dk-flow cc-dk-st( cc-dk-n[23])?"/g) || []).length === 3);
-  const busyOnly = ['cc-dk-sweep', 'cc-dk-bars', 'cc-dk-flow'].map((k) => [...media.matchAll(new RegExp('^\\s*(html[^\\n{]*)\\{[^}\\n]*animation: ' + k + ' ', 'gm'))].map((m) => m[1]));
-  ok('the data flows only while the drive reads or writes', busyOnly.every((l) => l.length === 1 && /\.cc-dk-card\.cc-dk-busy /.test(l[0])), busyOnly.join(' | '));
-  ok('each flow runs on the dial alone, and disks.js sets its pace', ['cc-dk-sweep var(--cc-motion-disk-flow) ', 'cc-dk-bars calc(var(--cc-motion-disk-flow) * .8) ', 'cc-dk-flow var(--cc-motion-disk-flow) '].every((k) => media.includes('animation: ' + k)) && !/--cc-dk-k/.test(media.split('\n').filter((l) => /cc-dk-(sweep|bar|flow)/.test(l)).join('\n')) && /"cc-dk-sweep": 1, "cc-dk-bars": 1, "cc-dk-flow": 1/.test(js));
-  ok('outside the gate the light and the dots are hidden, so a still frame and an idle drive show neither', /html\.cc-dk-on #displaybox :is\(\.cc-dk-sweep, \.cc-dk-flow\) \{ opacity: 0; \}/.test(outside) && !/cc-dk-(sweep|bars|flow) /.test(outside.replace(/@keyframes[^\n]*/g, '')));
-  const v = (lvl) => { const m = new RegExp(lvl + ' \\{[^}]*--cc-motion-disk-flow:\\s*([^;]+);').exec(tokens); return m && m[1].trim(); };
-  ok('the flow dial moves at the lively levels and stands at "off" and outside the gate', v('html\\[data-cc-motion="off"\\]') === '60s' && /^html \{[^}]*--cc-motion-disk-flow:\s*60s;/m.test(tokens) && /--cc-motion-disk-flow:\s*\.9s;/.test(tokens) && /--cc-motion-disk-flow:\s*2\.4s;/.test(tokens));
+  ok('an SSD has a light that passes over its lines, an NVMe stick three dots from its contacts, a USB stick three beside its label', /class="tt-dk-sweep"/.test(grabFn(js, 'drawSsd')) && /id="tt-dk-sweep"/.test(grabFn(js, 'defs')) && /flowDots\(22, \[60, 68, 76\]\)/.test(grabFn(js, 'drawNvme')) && /flowDots\(66, \[50, 86, 50\]\)/.test(grabFn(js, 'drawUsb')) && (flowDots(22, [60, 68, 76]).match(/class="tt-dk-flow tt-dk-st( tt-dk-n[23])?"/g) || []).length === 3);
+  const busyOnly = ['tt-dk-sweep', 'tt-dk-bars', 'tt-dk-flow'].map((k) => [...media.matchAll(new RegExp('^\\s*(html[^\\n{]*)\\{[^}\\n]*animation: ' + k + ' ', 'gm'))].map((m) => m[1]));
+  ok('the data flows only while the drive reads or writes', busyOnly.every((l) => l.length === 1 && /\.tt-dk-card\.tt-dk-busy /.test(l[0])), busyOnly.join(' | '));
+  ok('each flow runs on the dial alone, and disks.js sets its pace', ['tt-dk-sweep var(--tt-motion-disk-flow) ', 'tt-dk-bars calc(var(--tt-motion-disk-flow) * .8) ', 'tt-dk-flow var(--tt-motion-disk-flow) '].every((k) => media.includes('animation: ' + k)) && !/--tt-dk-k/.test(media.split('\n').filter((l) => /tt-dk-(sweep|bar|flow)/.test(l)).join('\n')) && /"tt-dk-sweep": 1, "tt-dk-bars": 1, "tt-dk-flow": 1/.test(js));
+  ok('outside the gate the light and the dots are hidden, so a still frame and an idle drive show neither', /html\.tt-dk-on #displaybox :is\(\.tt-dk-sweep, \.tt-dk-flow\) \{ opacity: 0; \}/.test(outside) && !/tt-dk-(sweep|bars|flow) /.test(outside.replace(/@keyframes[^\n]*/g, '')));
+  const v = (lvl) => { const m = new RegExp(lvl + ' \\{[^}]*--tt-motion-disk-flow:\\s*([^;]+);').exec(tokens); return m && m[1].trim(); };
+  ok('the flow dial moves at the lively levels and stands at "off" and outside the gate', v('html\\[data-tt-motion="off"\\]') === '60s' && /^html \{[^}]*--tt-motion-disk-flow:\s*60s;/m.test(tokens) && /--tt-motion-disk-flow:\s*\.9s;/.test(tokens) && /--tt-motion-disk-flow:\s*2\.4s;/.test(tokens));
 }
 
 console.log('\nThe readers follow Unraid\'s rows');
@@ -185,7 +185,7 @@ console.log('\nThe actions run only the row\'s own calls');
   const loc = { href: '/Main' };
   const R = load({ window: win, location: loc });
   const d1 = R.readArray(tbody(DISK1)).disks[0];
-  const card = { classList: { add() {} }, __ccDisk: d1 };
+  const card = { classList: { add() {} }, __ttDisk: d1 };
   R.act('spin', card);
   ok('spin calls toggle_state(\'Device\', \'disk1\', \'up\')', JSON.stringify(calls.pop()) === JSON.stringify(['toggle_state', 'Device', 'disk1', 'up']));
   R.act('log', card);
@@ -193,14 +193,14 @@ console.log('\nThe actions run only the row\'s own calls');
   R.act('browse', card);
   ok('browse goes where the row\'s browse link goes', loc.href === '/Main/Browse?dir=/mnt/disk1');
   const u = R.readUd(tbody(UD)).disks[0];
-  R.act('spin', { classList: { add() {} }, __ccDisk: u });
+  R.act('spin', { classList: { add() {} }, __ttDisk: u });
   ok('a UD disk spins down through spinDownDisk(\'sdh\')', JSON.stringify(calls.pop()) === JSON.stringify(['spinDownDisk', 'sdh']));
   ok('a handler outside the list is never parsed', R.parseCall("alert('x')") === null && R.parseCall('disk_op(this, "umount", "sdh")') === null);
 
   // A click on the card opens the settings page; one on a badge runs the badge and not the link.
-  const tree = parse('<div class="cc-dk-card"><span class="cc-dk-ib" data-act="spin">x</span><span class="cc-info">i</span><b>y</b></div>');
+  const tree = parse('<div class="tt-dk-card"><span class="tt-dk-ib" data-act="spin">x</span><span class="tt-info">i</span><b>y</b></div>');
   const cardEl = tree.children[0];
-  cardEl.__ccDisk = d1; cardEl.classList = { add() {} };
+  cardEl.__ttDisk = d1; cardEl.classList = { add() {} };
   const ev = (t) => ({ target: t, stopPropagation() {} });
   loc.href = '/Main';
   R.onClick(ev(cardEl.children[2]));
@@ -217,15 +217,15 @@ console.log('\nThe view: one switch and one key for the whole page');
   const store = {};
   const R = load({ g: (k, d) => (k in store ? store[k] : d) });
   ok('unset, the page shows tiles', R.view() === 'tiles');
-  store['cc.diskview'] = 'list';
-  ok('cc.diskview = list shows the list', R.view() === 'list');
-  store['cc.diskview.pools'] = 'tiles';
+  store['tt.diskview'] = 'list';
+  ok('tt.diskview = list shows the list', R.view() === 'list');
+  store['tt.diskview.pools'] = 'tiles';
   ok('a key left from a per-section switch changes nothing', R.view() === 'list');
-  ok('the page switch writes cc.diskview', /s\(KEY, o\[0\]\)/.test(js) && /var KEY = "cc\.diskview";/.test(js) && !/KEY \+ "\."/.test(js));
-  ok('there is one switch, at the right end of the tab bar before Unraid\'s own controls', /nav\.insertBefore\(sw, nav\.querySelector\(":scope > span\.status"\)\)/.test(js) && (js.match(/el\("div", "cc-dk-vsw"\)/g) || []).length === 1);
+  ok('the page switch writes tt.diskview', /s\(KEY, o\[0\]\)/.test(js) && /var KEY = "tt\.diskview";/.test(js) && !/KEY \+ "\."/.test(js));
+  ok('there is one switch, at the right end of the tab bar before Unraid\'s own controls', /nav\.insertBefore\(sw, nav\.querySelector\(":scope > span\.status"\)\)/.test(js) && (js.match(/el\("div", "tt-dk-vsw"\)/g) || []).length === 1);
   const settings = read('scripts/settings.js');
   const row = grabFn(settings, 'diskViewRow');
-  ok('the settings row writes the same key and nothing else', /set\("cc\.diskview", v\);/.test(row) && !/del\(/.test(row));
+  ok('the settings row writes the same key and nothing else', /set\("tt\.diskview", v\);/.test(row) && !/del\(/.test(row));
   ok('its bubble points to the switch on the page', /Der Schalter oben im Tab Start stellt dasselbe um\./.test(row) && /The switch at the top of the Main tab changes the same setting\./.test(row));
   ok('it offers Liste and Kacheln with the view glyphs', /\[\["list", T\("Liste", "List"\), "IconViewList"\], \["tiles", T\("Kacheln", "Tiles"\), "IconViewGrid"\]\]/.test(row));
   ok('it has a bubble and a preview right under its selector', /, help\)\);/.test(row) && /viewPreview\(opts, diskSketch\)/.test(row) && /c\.appendChild\(slot\); c\.appendChild\(prev\.el\);/.test(row));
@@ -239,30 +239,30 @@ console.log('\nThe tile view hides the table controls');
   const hidden = [];
   let m;
   while ((m = hide.exec(rules))) hidden.push(...splitTop(m[1]).map((x) => x.trim()));
-  ok('Unraid\'s span.status in the tab bar goes in the tile view', hidden.includes('html.cc-dk-on.cc-dk-tiled #displaybox nav.tabs > span.status'));
-  // Shares.css shows it in section view with html.cc-shares-on.cc-on-main.cc-sections-main, four classes.
-  ok('in section view the hide outranks Shares.css', hidden.includes('html.cc-dk-on.cc-dk-tiled.cc-on-main.cc-sections-main #displaybox .cc-card-head > span.status'));
-  ok('only while no disk table of the array, the pools or the boot device shows', /root\.classList\.toggle\("cc-dk-tiled", tiles && !all\.some\(function \(S\) \{\s*return S\.key !== "ud"/.test(js));
-  ok('Unassigned Devices keeps its controls, which still act on the tiles', !hidden.some((x) => /cc-ud-ctrls/.test(x)) && !/cc-ud-ctrls[^{}]*\{[^}]*(display: none|visibility: hidden|opacity: 0)/.test(rules));
+  ok('Unraid\'s span.status in the tab bar goes in the tile view', hidden.includes('html.tt-dk-on.tt-dk-tiled #displaybox nav.tabs > span.status'));
+  // Shares.css shows it in section view with html.tt-shares-on.tt-on-main.tt-sections-main, four classes.
+  ok('in section view the hide outranks Shares.css', hidden.includes('html.tt-dk-on.tt-dk-tiled.tt-on-main.tt-sections-main #displaybox .tt-card-head > span.status'));
+  ok('only while no disk table of the array, the pools or the boot device shows', /root\.classList\.toggle\("tt-dk-tiled", tiles && !all\.some\(function \(S\) \{\s*return S\.key !== "ud"/.test(js));
+  ok('Unassigned Devices keeps its controls, which still act on the tiles', !hidden.some((x) => /tt-ud-ctrls/.test(x)) && !/tt-ud-ctrls[^{}]*\{[^}]*(display: none|visibility: hidden|opacity: 0)/.test(rules));
 }
 
 console.log('\nEvery pool and section keeps its badge and stands beside the others where it fits');
 {
-  ok('each pool is headed by its own section badge', /'<span class="cc-dk-pb">' \+ esc\(p\.name\)/.test(js) && /\.cc-dk-pb \{[^}]*min-height: var\(--cc-sec-h, 22px\)[^}]*text-transform: uppercase/.test(css));
-  ok('the boot device keeps its own section', !/cc-dk-merged/.test(js + css) && /function drawPools\(host, pools\)/.test(js));
-  ok('the pools and the boot device are the sections that stand side by side', /S\.sec\.classList\.toggle\("cc-dk-side", tiles && !S\.data\.offline && \(S\.key === "pools" \|\| S\.key === "boot"\)\)/.test(js));
-  ok('such a section is as wide as its content and as tall as its row, the page wraps the rest', /\.cc-sections-main #displaybox \{ display: flex; flex-wrap: wrap;/.test(css) && /#displaybox > section\.cc-dk-side \{ flex: 0 1 auto; align-self: stretch; width: auto; \}/.test(css));
-  ok('a grid is as wide as its cards and wraps them when squeezed', /grid\.style\.setProperty\("--cc-dk-n", items\.length\)/.test(js) && /\.cc-dk-grid \{ display: grid; grid-template-columns: repeat\(auto-fill, minmax\(260px, 1fr\)\); gap: 12px; width: calc\(var\(--cc-dk-n, 1\) \* 272px - 12px\); max-width: 100%; \}/.test(css));
-  ok('the array card hugs its row of disks', /\.cc-dk-host\[data-cc-dk="array"\] \{\s*box-sizing: border-box; width: fit-content; max-width: 100%;/.test(css));
-  ok('the summary strips and the boot hint do not widen their card', /:is\(\.cc-dk-pool, \.cc-dk-host\) > :is\(\.cc-dk-sum, \.cc-dk-notes\) \{ contain: inline-size; \}/.test(css));
-  ok('on a phone every card takes the full width', /@media \(max-width: 600px\) \{[^@]*\.cc-dk-grid \{ grid-template-columns: minmax\(0, 1fr\); width: auto; \}/.test(css));
+  ok('each pool is headed by its own section badge', /'<span class="tt-dk-pb">' \+ esc\(p\.name\)/.test(js) && /\.tt-dk-pb \{[^}]*min-height: var\(--tt-sec-h, 22px\)[^}]*text-transform: uppercase/.test(css));
+  ok('the boot device keeps its own section', !/tt-dk-merged/.test(js + css) && /function drawPools\(host, pools\)/.test(js));
+  ok('the pools and the boot device are the sections that stand side by side', /S\.sec\.classList\.toggle\("tt-dk-side", tiles && !S\.data\.offline && \(S\.key === "pools" \|\| S\.key === "boot"\)\)/.test(js));
+  ok('such a section is as wide as its content and as tall as its row, the page wraps the rest', /\.tt-sections-main #displaybox \{ display: flex; flex-wrap: wrap;/.test(css) && /#displaybox > section\.tt-dk-side \{ flex: 0 1 auto; align-self: stretch; width: auto; \}/.test(css));
+  ok('a grid is as wide as its cards and wraps them when squeezed', /grid\.style\.setProperty\("--tt-dk-n", items\.length\)/.test(js) && /\.tt-dk-grid \{ display: grid; grid-template-columns: repeat\(auto-fill, minmax\(260px, 1fr\)\); gap: 12px; width: calc\(var\(--tt-dk-n, 1\) \* 272px - 12px\); max-width: 100%; \}/.test(css));
+  ok('the array card hugs its row of disks', /\.tt-dk-host\[data-tt-dk="array"\] \{\s*box-sizing: border-box; width: fit-content; max-width: 100%;/.test(css));
+  ok('the summary strips and the boot hint do not widen their card', /:is\(\.tt-dk-pool, \.tt-dk-host\) > :is\(\.tt-dk-sum, \.tt-dk-notes\) \{ contain: inline-size; \}/.test(css));
+  ok('on a phone every card takes the full width', /@media \(max-width: 600px\) \{[^@]*\.tt-dk-grid \{ grid-template-columns: minmax\(0, 1fr\); width: auto; \}/.test(css));
   const ud = grabFn(js, 'udRow');
-  ok('Unassigned Devices\' parts move into one wrapping row, and only those', /hasCls\(c, "show-disks"\) \|\| hasCls\(c, "show-shares"\)/.test(ud) && /el\("div", "cc-dk-udrow"\)/.test(ud) && /\.cc-dk-udrow \{ display: flex; flex-wrap: wrap;/.test(css));
-  ok('each of the three is a card of its own with its badge on the edge', /\.cc-dk-box \.cc-dk-udrow > \* \{\s*box-sizing: border-box; padding: 0 16px 16px; background: var\(--cc-dk-sec\);/.test(css) && /margin: calc\(var\(--cc-sec-h, 22px\) \/ -2\) 0 13px !important;/.test(css));
-  ok('beside the tables the disks are one card wide and take the rest of the row', /\.cc-dk-udrow > \.show-disks:not\(:has\(> \.show-historical\)\) \{ flex: 1 1 292px; max-width: max-content; \}/.test(css) && /\.usage-disk:not\(\.sys\):not\(\.mm\) \{ min-width: 72px; \}/.test(css));
-  ok('every section badge sits on its card\'s top edge', /section\.cc-dk-box > \.cc-card-head \{\s*position: absolute; top: 0; left: 16px; z-index: 1; transform: translateY\(-50%\);/.test(css) && /\.cc-dk-aopt \{ position: absolute; top: 0; left: 16px; z-index: 1; display: flex; margin: 0; transform: translateY\(-50%\); \}/.test(css));
-  ok('the array and parity states are chips filled in the state colour with its ink', /\.cc-aop-pills > \.cc-aop-status\.cc-aop-ok \{ background: var\(--cc-ok\); color: var\(--cc-ok-fg\); \}/.test(css) && /\.cc-aop-pills > \.cc-aop-status\.cc-aop-warn \{ background: var\(--cc-warn\); color: var\(--cc-warn-fg\); \}/.test(css) && /\.cc-aop-pills > \.cc-b\.cc-aop-status \{[^}]*background: var\(--cc-err\); color: var\(--cc-err-fg\);/.test(css));
-  ok('the chips carry no state dot, not even the one Shares.css gives a green state', /\.cc-aop-pills > \.cc-aop-status::before \{ content: none; \}/.test(css));
+  ok('Unassigned Devices\' parts move into one wrapping row, and only those', /hasCls\(c, "show-disks"\) \|\| hasCls\(c, "show-shares"\)/.test(ud) && /el\("div", "tt-dk-udrow"\)/.test(ud) && /\.tt-dk-udrow \{ display: flex; flex-wrap: wrap;/.test(css));
+  ok('each of the three is a card of its own with its badge on the edge', /\.tt-dk-box \.tt-dk-udrow > \* \{\s*box-sizing: border-box; padding: 0 16px 16px; background: var\(--tt-dk-sec\);/.test(css) && /margin: calc\(var\(--tt-sec-h, 22px\) \/ -2\) 0 13px !important;/.test(css));
+  ok('beside the tables the disks are one card wide and take the rest of the row', /\.tt-dk-udrow > \.show-disks:not\(:has\(> \.show-historical\)\) \{ flex: 1 1 292px; max-width: max-content; \}/.test(css) && /\.usage-disk:not\(\.sys\):not\(\.mm\) \{ min-width: 72px; \}/.test(css));
+  ok('every section badge sits on its card\'s top edge', /section\.tt-dk-box > \.tt-card-head \{\s*position: absolute; top: 0; left: 16px; z-index: 1; transform: translateY\(-50%\);/.test(css) && /\.tt-dk-aopt \{ position: absolute; top: 0; left: 16px; z-index: 1; display: flex; margin: 0; transform: translateY\(-50%\); \}/.test(css));
+  ok('the array and parity states are chips filled in the state colour with its ink', /\.tt-aop-pills > \.tt-aop-status\.tt-aop-ok \{ background: var\(--tt-ok\); color: var\(--tt-ok-fg\); \}/.test(css) && /\.tt-aop-pills > \.tt-aop-status\.tt-aop-warn \{ background: var\(--tt-warn\); color: var\(--tt-warn-fg\); \}/.test(css) && /\.tt-aop-pills > \.tt-b\.tt-aop-status \{[^}]*background: var\(--tt-err\); color: var\(--tt-err-fg\);/.test(css));
+  ok('the chips carry no state dot, not even the one Shares.css gives a green state', /\.tt-aop-pills > \.tt-aop-status::before \{ content: none; \}/.test(css));
   const lv = grabFn(js, 'level');
   ok('beside the pools the boot cards drop by a pool\'s badge row, wrapped below they do not', /pool\.closest\("section"\)\.getBoundingClientRect\(\)\.top - boot\.closest\("section"\)\.getBoundingClientRect\(\)\.top\) < 1/.test(lv) && /boot\.style\.paddingTop = lift > 0 \? lift \+ "px" : "";/.test(lv));
   ok('the levelling follows every render and a resize', /\n    level\(\);\n  \}/.test(js) && /window\.addEventListener\("resize", level\);/.test(js));
@@ -282,11 +282,11 @@ console.log('\nEvery pool and section keeps its badge and stands beside the othe
 
 console.log('\nThe capacity has a badge of its own');
 {
-  ok('beside the name on every card that knows its size', /<span class="cc-dk-nb">' \+ esc\(d\.name\) \+ "<\/span>" \+ \(d\.size \? '<span class="cc-dk-cap">' \+ esc\(cap\(d\.size\)\)/.test(js));
+  ok('beside the name on every card that knows its size', /<span class="tt-dk-nb">' \+ esc\(d\.name\) \+ "<\/span>" \+ \(d\.size \? '<span class="tt-dk-cap">' \+ esc\(cap\(d\.size\)\)/.test(js));
   const R = load({});
   ok('whole sizes read as Unraid prints them', R.cap(18e12) === '18 TB' && R.cap(500e9) === '500 GB' && R.cap(63.1e9) === '63 GB');
   ok('a size under ten keeps its decimal', R.cap(1.5e12) === '1.5 TB' && R.cap(2e12) === '2 TB');
-  ok('the drawing keeps a margin to the edge of its well', /\.cc-dk-art \{[^}]*height: 140px;/.test(css) && /\.cc-dk-art \.cc-dk-drive \{ position: absolute; inset: 14px 12px;/.test(css));
+  ok('the drawing keeps a margin to the edge of its well', /\.tt-dk-art \{[^}]*height: 140px;/.test(css) && /\.tt-dk-art \.tt-dk-drive \{ position: absolute; inset: 14px 12px;/.test(css));
 }
 
 console.log('\nA card shows only what deviates');
@@ -298,17 +298,17 @@ console.log('\nA card shows only what deviates');
   extra.sdf = { smart: 'ok' };
   ok('a healthy disk with SMART ok and no errors shows no chip', chips(disk({})) === '');
   extra.sdf = { smart: 'warn', tip: 'Reallocated sectors: 8' };
-  ok('a SMART warning shows the moment disks.php reports it', /class="cc-dk-chip cc-dk-warn" data-tip="Reallocated sectors: 8"[^>]*>.*SMART-Warnung/.test(chips(disk({}))));
+  ok('a SMART warning shows the moment disks.php reports it', /class="tt-dk-chip tt-dk-warn" data-tip="Reallocated sectors: 8"[^>]*>.*SMART-Warnung/.test(chips(disk({}))));
   extra.sdf = { smart: 'fail' };
-  ok('a failed SMART test shows in red', /cc-dk-chip cc-dk-err[^>]*>.*SMART-Fehler/.test(chips(disk({}))));
+  ok('a failed SMART test shows in red', /tt-dk-chip tt-dk-err[^>]*>.*SMART-Fehler/.test(chips(disk({}))));
   extra.sdf = { smart: 'ok' };
   const err = chips(disk({ errors: 3, errTip: 'Device errors: 3' }));
-  ok('errors show in red with their count and Unraid\'s bubble', /^<span class="cc-dk-chip cc-dk-err" data-tip="Device errors: 3">3 Fehler<\/span>$/.test(err), err);
+  ok('errors show in red with their count and Unraid\'s bubble', /^<span class="tt-dk-chip tt-dk-err" data-tip="Device errors: 3">3 Fehler<\/span>$/.test(err), err);
   ok('a disk Unassigned Devices counts no errors for shows none', chips(disk({ errors: null })) === '');
-  ok('a state that is not normal keeps its chip', /cc-dk-chip cc-dk-err/.test(chips(disk({ state: 'err', stateTip: 'Datenträger deaktiviert' }))));
+  ok('a state that is not normal keeps its chip', /tt-dk-chip tt-dk-err/.test(chips(disk({ state: 'err', stateTip: 'Datenträger deaktiviert' }))));
   ok('the chips are written again on every refill, so they follow the feed', /setHtml\(c\.querySelector\('\[data-f="chips"\]'\), chipsHtml\(d\)\);/.test(grabFn(js, 'patch')) && !/smartOk/.test(js));
-  ok('an empty chip row takes no room', /html\.cc-dk-on #displaybox \.cc-dk-chips:empty,/.test(css) && !/\.cc-dk-chips \{[^}]*min-height/.test(css));
-  ok('read and write show only while the disk is busy, the temperature always', /<div class="cc-dk-rate">' \+ esc\(t\("read"\)\)/.test(js) && /<div class="cc-dk-rate">' \+ esc\(t\("write"\)\)/.test(js) && /html\.cc-dk-on #displaybox \.cc-dk-card:not\(\.cc-dk-busy\) \.cc-dk-rate \{ display: none; \}/.test(css) && /<div>' \+ esc\(t\("temp"\)\)/.test(js));
+  ok('an empty chip row takes no room', /html\.tt-dk-on #displaybox \.tt-dk-chips:empty,/.test(css) && !/\.tt-dk-chips \{[^}]*min-height/.test(css));
+  ok('read and write show only while the disk is busy, the temperature always', /<div class="tt-dk-rate">' \+ esc\(t\("read"\)\)/.test(js) && /<div class="tt-dk-rate">' \+ esc\(t\("write"\)\)/.test(js) && /html\.tt-dk-on #displaybox \.tt-dk-card:not\(\.tt-dk-busy\) \.tt-dk-rate \{ display: none; \}/.test(css) && /<div>' \+ esc\(t\("temp"\)\)/.test(js));
 }
 
 console.log('\nThe array is a card of its own, first among its disks, with a vessel for its drawing');
@@ -354,41 +354,41 @@ console.log('\nThe array is a card of its own, first among its disks, with a ves
   const pictures = { vessel(o) { const v = { el: dom('span'), o, level: null, tone: null, setLevel(s) { v.level = s; return v; }, setTone(t) { v.tone = t; return v; } }; made.push(v); return v; } };
   const helpers = ['totalCard', 'fillTone', 'setText', 'setHtml', 't', 'esc', 'fill', 'el', 'cap', 'bytes', 'clean', 'rate', 'lvl', 'ink', 'hold'];
   const src = ['var TXT = ' + /var TXT = (\{[\s\S]*?\n  \});/.exec(js)[1] + ';', grabVar(js, 'POW'), grabVar(js, 'INFO'), grabVar(js, 'HOLD')].concat(helpers.map((n) => grabFn(js, n))).join('\n') + '\nreturn totalCard;';
-  const totalCard = new Function('window', 'document', 'LANG', 'nf', 'setTimeout', 'clearTimeout', src)({ CCPictures: pictures }, { createElement: dom }, 'de', { format: String }, () => 0, () => {});
+  const totalCard = new Function('window', 'document', 'LANG', 'nf', 'setTimeout', 'clearTimeout', src)({ TTPictures: pictures }, { createElement: dom }, 'de', { format: String }, () => 0, () => {});
   const grid = dom('div');
   const total = { label: 'Array aus fünf Datenträgern', temp: { shown: 34, c: 34, unit: 'C' }, rdText: '0.0 B/s', wrText: '0.0 B/s', fs: { size: '52 TB', used: '43.9 TB', free: '8.12 TB', pct: 84.4 } };
   const c = totalCard(grid, total, '');
   grid.appendChild(c);
   const v = made[0];
   const f = (k) => c.querySelector('[data-f="' + k + '"]');
-  ok('a card like a disk\'s: the drawing well, the name row, the use row and the readings', c.classList.contains('cc-dk-card') && c.classList.contains('cc-dk-total') && ['cc-dk-art', 'cc-dk-namerow', 'cc-dk-model', 'cc-dk-use', 'cc-dk-io'].every((k) => !!c.querySelector('.' + k)));
-  ok('the vessel stands in the drawing well, with the array\'s share and a label', c.querySelector('.cc-dk-art').children[0] === v.el && Math.abs(v.o.share - 0.844) < 1e-9 && Math.abs(v.level - 0.844) < 1e-9 && v.o.label === 'Füllstand des Arrays');
-  ok('its badge says Array beside the whole size', c.querySelector('.cc-dk-nb').textContent === 'Array' && f('cap').textContent === '52 TB');
+  ok('a card like a disk\'s: the drawing well, the name row, the use row and the readings', c.classList.contains('tt-dk-card') && c.classList.contains('tt-dk-total') && ['tt-dk-art', 'tt-dk-namerow', 'tt-dk-model', 'tt-dk-use', 'tt-dk-io'].every((k) => !!c.querySelector('.' + k)));
+  ok('the vessel stands in the drawing well, with the array\'s share and a label', c.querySelector('.tt-dk-art').children[0] === v.el && Math.abs(v.o.share - 0.844) < 1e-9 && Math.abs(v.level - 0.844) < 1e-9 && v.o.label === 'Füllstand des Arrays');
+  ok('its badge says Array beside the whole size', c.querySelector('.tt-dk-nb').textContent === 'Array' && f('cap').textContent === '52 TB');
   ok('Unraid\'s label stands where a disk names its model', f('label').textContent === 'Array aus fünf Datenträgern');
-  ok('used, share and free read as on a disk card, the bar at the share', f('used').textContent === '43.9 TB' && f('pct').textContent === '84' && f('free').textContent === '8.12 TB frei' && f('fill').style.width === '84.4%' && f('fill').classList.contains('cc-dk-warn'));
+  ok('used, share and free read as on a disk card, the bar at the share', f('used').textContent === '43.9 TB' && f('pct').textContent === '84' && f('free').textContent === '8.12 TB frei' && f('fill').style.width === '84.4%' && f('fill').classList.contains('tt-dk-warn'));
   ok('the bubble names used and size and when the vessel changes colour', f('tip').getAttribute('data-tip') === '43.9 TB von 52 TB belegt. Ab 90 % wird das Gefäß orange, über 95 % rot.');
-  ok('the temperature is the average, and says so in its bubble', /Ø 34 °C/.test(f('temp').__ccHtml) && f('temp').getAttribute('data-tip') === 'Mittelwert der Datenträger, die gerade eine Temperatur melden');
-  ok('below 90 % the vessel takes the accent, and an idle array shows no rates', v.tone === 'accent' && !c.classList.contains('cc-dk-busy'));
-  ok('it takes no focus and opens nothing, so no key or click leads anywhere', !('tabindex' in c.attrs) && !('role' in c.attrs) && !c.__ccDisk);
+  ok('the temperature is the average, and says so in its bubble', /Ø 34 °C/.test(f('temp').__ttHtml) && f('temp').getAttribute('data-tip') === 'Mittelwert der Datenträger, die gerade eine Temperatur melden');
+  ok('below 90 % the vessel takes the accent, and an idle array shows no rates', v.tone === 'accent' && !c.classList.contains('tt-dk-busy'));
+  ok('it takes no focus and opens nothing, so no key or click leads anywhere', !('tabindex' in c.attrs) && !('role' in c.attrs) && !c.__ttDisk);
   totalCard(grid, Object.assign({}, total, { rdText: '3.1 MB/s', fs: Object.assign({}, total.fs, { pct: 90 }) }), '');
-  ok('reading, it shows the rates, as a busy disk does', c.classList.contains('cc-dk-busy') && f('rd').textContent === '3.1 MB/s');
-  ok('from 90 % the vessel turns orange, on the same card and vessel', made.length === 1 && grid.querySelector(':scope > .cc-dk-total') === c && v.tone === 'warn' && v.level === 0.9);
+  ok('reading, it shows the rates, as a busy disk does', c.classList.contains('tt-dk-busy') && f('rd').textContent === '3.1 MB/s');
+  ok('from 90 % the vessel turns orange, on the same card and vessel', made.length === 1 && grid.querySelector(':scope > .tt-dk-total') === c && v.tone === 'warn' && v.level === 0.9);
   totalCard(grid, Object.assign({}, total, { fs: Object.assign({}, total.fs, { pct: 95 }) }), '');
   ok('95 % is still orange', v.tone === 'warn');
   totalCard(grid, Object.assign({}, total, { temp: null, fs: Object.assign({}, total.fs, { pct: 95.2 }) }), '#FF832B');
   ok('past 95 % it turns red', v.tone === 'err');
-  ok('with every disk asleep the temperature reads as on a disk that measures none', /cc-dk-idle"><\/span>\*$/.test(f('temp').__ccHtml));
-  ok('in the rainbow it wears its colour and the ink that goes with it', c.style.props['--cc-dk-c'] === '#FF832B' && c.style.props['--cc-dk-ct'] === '#161616');
+  ok('with every disk asleep the temperature reads as on a disk that measures none', /tt-dk-idle"><\/span>\*$/.test(f('temp').__ttHtml));
+  ok('in the rainbow it wears its colour and the ink that goes with it', c.style.props['--tt-dk-c'] === '#FF832B' && c.style.props['--tt-dk-ct'] === '#161616');
   ok('without a file system the card goes', totalCard(grid, Object.assign({}, total, { fs: null }), '') === null && grid.children.length === 0);
   const rs = grabFn(js, 'renderSection');
-  ok('the render makes it the grid\'s lead and counts it in the grid\'s width', /var lead = S\.key === "array" \? totalCard\(grid, data\.total, colourAt\(data\.disks\.length\)\) : null;/.test(rs) && /grid\.style\.setProperty\("--cc-dk-n", data\.disks\.length \+ \(lead \? 1 : 0\)\);/.test(rs) && /fillGrid\(grid, cardsOf\(data\.disks, 0\), colourAt, lead\);/.test(rs));
+  ok('the render makes it the grid\'s lead and counts it in the grid\'s width', /var lead = S\.key === "array" \? totalCard\(grid, data\.total, colourAt\(data\.disks\.length\)\) : null;/.test(rs) && /grid\.style\.setProperty\("--tt-dk-n", data\.disks\.length \+ \(lead \? 1 : 0\)\);/.test(rs) && /fillGrid\(grid, cardsOf\(data\.disks, 0\), colourAt, lead\);/.test(rs));
   ok('the mover still reads the array\'s share from the totals row', /arrayUse = data\.total && data\.total\.fs;/.test(rs));
-  ok('no strip and no vessel column are left beside the disks', !/cc-dk-vessel|arrayVessel/.test(js + css) && !/sumHtml\(data\.total/.test(js));
-  ok('its vessel sits in the middle of the well, as large as before', /\.cc-dk-total \.cc-vessel \{[^}]*position: absolute; inset: 0; width: 88px; height: 104px; margin: auto;/.test(css));
-  ok('it keeps the plain cursor and its surface under the pointer', /\.cc-dk-total \{ cursor: default; \}/.test(css) && /\.cc-dk-total:is\(:hover, :focus-within\) \{ background: var\(--cc-dk-card\); \}/.test(css));
+  ok('no strip and no vessel column are left beside the disks', !/tt-dk-vessel|arrayVessel/.test(js + css) && !/sumHtml\(data\.total/.test(js));
+  ok('its vessel sits in the middle of the well, as large as before', /\.tt-dk-total \.tt-vessel \{[^}]*position: absolute; inset: 0; width: 88px; height: 104px; margin: auto;/.test(css));
+  ok('it keeps the plain cursor and its surface under the pointer', /\.tt-dk-total \{ cursor: default; \}/.test(css) && /\.tt-dk-total:is\(:hover, :focus-within\) \{ background: var\(--tt-dk-card\); \}/.test(css));
 
   const fg = new Function('kids', 'attr', 'ink', 'shapeOf', 'newCard', 'patch', grabFn(js, 'fillGrid') + '\nreturn fillGrid;')(
-    (n) => n.children.slice(), (n, k) => n.getAttribute(k) || '', () => '', (d) => d.key, (d) => { const n = dom('div'); n.setAttribute('data-key', d.key); n.__ccShape = d.key; return n; }, () => {});
+    (n) => n.children.slice(), (n, k) => n.getAttribute(k) || '', () => '', (d) => d.key, (d) => { const n = dom('div'); n.setAttribute('data-key', d.key); n.__ttShape = d.key; return n; }, () => {});
   const g2 = dom('div'), lead = dom('div');
   const items = ['parity', 'disk1'].map((k, i) => ({ d: { key: k }, ctx: {}, n: i }));
   fg(g2, items, () => '');
@@ -422,11 +422,11 @@ console.log('\nA disk that reads in bursts keeps working, and its platter runs u
     Object.defineProperty(spin, 'playbackRate', { get: () => rate, set: (v) => { rate = v; spin.assigned++; } });
     Object.assign(spin, { updatePlaybackRate(v) { rate = v; }, pause() { spin.playState = 'paused'; }, play() { spin.playState = 'running'; }, cancel() { spin.cancelled = true; },
       effect: { getTiming: () => ({ duration: spin.duration }), updateTiming: (t) => { spin.duration = t.duration; } } });
-    const flow = { animationName: 'cc-dk-flow', playbackRate: 1 };
+    const flow = { animationName: 'tt-dk-flow', playbackRate: 1 };
     const plat = { animate: (kf, o) => { spin.made++; spin.duration = o.duration; spin.kf = kf; return spin; } };
     const card = { isConnected: true, classList: { contains: (c) => cls.has(c), toggle: (c, on) => (on ? cls.add(c) : cls.delete(c)) },
-      querySelector: (s) => (s === '.cc-dk-plat' ? plat : null), getAnimations: () => [flow, { animationName: 'cc-dk-blink', playbackRate: 1 }] };
-    const feed = (rd) => { const d = { rd, wr: 0, down: false }; if (M.busy(d)) card.__ccPace = M.pace(d); M.hold(card, M.busy(d), M.motion); };
+      querySelector: (s) => (s === '.tt-dk-plat' ? plat : null), getAnimations: () => [flow, { animationName: 'tt-dk-blink', playbackRate: 1 }] };
+    const feed = (rd) => { const d = { rd, wr: 0, down: false }; if (M.busy(d)) card.__ttPace = M.pace(d); M.hold(card, M.busy(d), M.motion); };
     const samples = [];
     const run = (ms) => {
       const end = env.now + ms;
@@ -437,7 +437,7 @@ console.log('\nA disk that reads in bursts keeps working, and its platter runs u
         due.forEach((t) => t.f());
         const fr = env.frames; env.frames = [];
         fr.forEach((f) => f(env.now));
-        samples.push({ t: env.now, busy: cls.has('cc-dk-busy'), rate: spin.playState === 'running' ? spin.playbackRate : 0, flow: flow.playbackRate });
+        samples.push({ t: env.now, busy: cls.has('tt-dk-busy'), rate: spin.playState === 'running' ? spin.playbackRate : 0, flow: flow.playbackRate });
       }
     };
     return { env, M, cls, spin, flow, feed, run, samples };
@@ -461,7 +461,7 @@ console.log('\nA disk that reads in bursts keeps working, and its platter runs u
   a.run(2600);
   const tail = a.samples.filter((s) => !s.busy);
   const down = tail.slice(1).map((s, i) => s.rate - tail[i].rate);
-  ok('then it stops being busy', tail.length > 0 && !a.cls.has('cc-dk-busy'));
+  ok('then it stops being busy', tail.length > 0 && !a.cls.has('tt-dk-busy'));
   ok('the platter coasts down in small steps', down.every((d) => d <= 0 && d > -0.06) && tail.some((s) => s.rate > 0.3 && s.rate < 0.7), tail.slice(0, 6).map((s) => s.rate.toFixed(2)).join(' '));
   ok('and stays where it ran out, paused rather than reset', a.spin.playState === 'paused' && !a.spin.cancelled && a.env.frames.length === 0);
 
@@ -496,17 +496,17 @@ console.log('\nA disk that reads in bursts keeps working, and its platter runs u
 
 console.log('\nThe boot hint stands beside the boot card');
 {
-  ok('a hint turns the boot section into a row, the hint a column as tall as the card', /\.cc-dk-host\[data-cc-dk="boot"\]:has\(> \.cc-dk-notes\) \{ display: flex; align-items: stretch; gap: 12px; \}/.test(css) && /\.cc-dk-host\[data-cc-dk="boot"\] > \.cc-dk-notes \{\s*flex: 0 0 168px;[^}]*margin-top: 0;/.test(css));
-  ok('the hint reads quiet, in dimmed text on a faint surface', /\.cc-dk-host\[data-cc-dk="boot"\] > \.cc-dk-notes \{[^}]*background: color-mix\(in srgb, var\(--cc-dk-card\) 50%, transparent\); color: var\(--cc-text-dim\);/.test(css));
-  ok('on a phone it goes back under the card', /@media \(max-width: 600px\) \{\s*html\.cc-dk-on #displaybox \.cc-dk-host\[data-cc-dk="boot"\]:has\(> \.cc-dk-notes\) \{ display: block; \}\s*html\.cc-dk-on #displaybox \.cc-dk-host\[data-cc-dk="boot"\] > \.cc-dk-notes \{ margin-top: 12px; \}/.test(css));
+  ok('a hint turns the boot section into a row, the hint a column as tall as the card', /\.tt-dk-host\[data-tt-dk="boot"\]:has\(> \.tt-dk-notes\) \{ display: flex; align-items: stretch; gap: 12px; \}/.test(css) && /\.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{\s*flex: 0 0 168px;[^}]*margin-top: 0;/.test(css));
+  ok('the hint reads quiet, in dimmed text on a faint surface', /\.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{[^}]*background: color-mix\(in srgb, var\(--tt-dk-card\) 50%, transparent\); color: var\(--tt-text-dim\);/.test(css));
+  ok('on a phone it goes back under the card', /@media \(max-width: 600px\) \{\s*html\.tt-dk-on #displaybox \.tt-dk-host\[data-tt-dk="boot"\]:has\(> \.tt-dk-notes\) \{ display: block; \}\s*html\.tt-dk-on #displaybox \.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{ margin-top: 12px; \}/.test(css));
   const kidsOf = [];
-  const host = { children: kidsOf, querySelector: () => kidsOf.find((k) => k.className.includes('cc-dk-notes')) || null, appendChild: (n) => { kidsOf.push(n); return n; }, removeChild: (n) => { kidsOf.splice(kidsOf.indexOf(n), 1); } };
+  const host = { children: kidsOf, querySelector: () => kidsOf.find((k) => k.className.includes('tt-dk-notes')) || null, appendChild: (n) => { kidsOf.push(n); return n; }, removeChild: (n) => { kidsOf.splice(kidsOf.indexOf(n), 1); } };
   const notesStrip = new Function('el', 'setHtml', grabFn(js, 'notesStrip') + '\nreturn notesStrip;')((t, c) => ({ tagName: t, className: c }), (n, h) => { n.html = h; });
-  kidsOf.push({ className: 'cc-dk-grid' });
+  kidsOf.push({ className: 'tt-dk-grid' });
   notesStrip(host, [{ innerHTML: 'Kein internes Boot-Setup erkannt. <a href="/Tools/Wizards/InternalBootWizard">Internal Boot</a> starten.' }]);
-  ok('the hint follows the card, its link kept', kidsOf.length === 2 && kidsOf[1].className === 'cc-dk-sum cc-dk-notes' && /<a href="\/Tools\/Wizards\/InternalBootWizard">Internal Boot<\/a>/.test(kidsOf[1].html));
+  ok('the hint follows the card, its link kept', kidsOf.length === 2 && kidsOf[1].className === 'tt-dk-sum tt-dk-notes' && /<a href="\/Tools\/Wizards\/InternalBootWizard">Internal Boot<\/a>/.test(kidsOf[1].html));
   notesStrip(host, []);
-  ok('without a hint the section keeps the card alone, as before', kidsOf.length === 1 && kidsOf[0].className === 'cc-dk-grid');
+  ok('without a hint the section keeps the card alone, as before', kidsOf.length === 1 && kidsOf[0].className === 'tt-dk-grid');
 }
 
 console.log('\ndisks.php reads emhttp\'s own files');
@@ -518,7 +518,7 @@ console.log('\ndisks.php reads emhttp\'s own files');
   try { execFileSync('php', ['-v'], { stdio: 'ignore' }); php = 'php'; } catch (e) {}
   if (!php) ok('php is not installed here, so the endpoint check is skipped', true);
   else {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-disks-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tt-disks-'));
     fs.mkdirSync(path.join(tmp, 'smart'));
     fs.writeFileSync(path.join(tmp, 'disks.ini'), '["parity"]\nname="parity"\ndevice="sde"\nrotational="1"\n["disk1"]\nname="disk1"\ndevice="sdf"\nrotational="1"\nhotTemp="40"\nmaxTemp="50"\n["cache"]\nname="cache"\ndevice="nvme0n1"\nrotational="0"\n["disk2"]\nname="disk2"\ndevice="sdd"\nrotational="1"\n');
     const head = 'smartctl 7.4\n\n=== START OF READ SMART DATA SECTION ===\n';
@@ -529,7 +529,7 @@ console.log('\ndisks.php reads emhttp\'s own files');
     fs.writeFileSync(path.join(tmp, 'smart', 'cache'), head + 'SMART overall-health self-assessment test result: PASSED\n\nPercentage Used:                    7%\nPower On Hours:                     1,215\n');
     fs.writeFileSync(path.join(tmp, 'monitor.ini'), '');
     fs.writeFileSync(path.join(tmp, 'dynamix.cfg'), '[display]\nhot="46"\nmax="56"\n');
-    const run = () => JSON.parse(execFileSync(php, ['-n', path.join(DIR, 'server', 'disks.php')], { env: Object.assign({}, process.env, { CC_EMHTTP: tmp, CC_DYNAMIX_CFG: path.join(tmp, 'dynamix.cfg'), CC_DYNAMIX_DEFAULT: path.join(tmp, 'none.cfg') }) }).toString());
+    const run = () => JSON.parse(execFileSync(php, ['-n', path.join(DIR, 'server', 'disks.php')], { env: Object.assign({}, process.env, { TT_EMHTTP: tmp, TT_DYNAMIX_CFG: path.join(tmp, 'dynamix.cfg'), TT_DYNAMIX_DEFAULT: path.join(tmp, 'none.cfg') }) }).toString());
     let out = run();
     ok('a passing disk is ok, with its power-on hours and the display thresholds', out.sde && out.sde.smart === 'ok' && out.sde.hours === 19756 && out.sde.hot === 46 && out.sde.max === 56, JSON.stringify(out.sde));
     ok('a reallocated sector is a warning that names the attribute', out.sdf && out.sdf.smart === 'warn' && /Reallocated Sector Ct: 8/.test(out.sdf.tip), JSON.stringify(out.sdf));

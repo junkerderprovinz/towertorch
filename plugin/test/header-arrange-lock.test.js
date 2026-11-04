@@ -11,15 +11,15 @@ const body = (name) => { const i = src.indexOf('function ' + name + '('); return
 
 console.log('\nOne lock per page');
 {
-  const lock = body('ccArrangeLock');
+  const lock = body('ttArrangeLock');
   ok('Unraid\'s own lock is found anywhere in the menu, so the Docker tab gets no second one', /var native = document\.querySelector\("#menu \.nav-item\.LockButton"\)/.test(lock));
   ok('the look-alike is only added where Unraid has none', /if \(native\) \{\s*if \(injected\) injected\.remove\(\);/.test(lock));
 }
 
 console.log('\nThe lock while arranging');
 {
-  ok('both locks are recognised', /function isNavLock\(it\) \{ return it\.id === "cc-lock-item" \|\| it\.classList\.contains\("LockButton"\); \}/.test(src));
-  ok('the lock does not wiggle', /if \(!isNavLock\(it\)\) it\.classList\.add\("cc-nav-wiggle"\)/.test(body('enterReorder')));
+  ok('both locks are recognised', /function isNavLock\(it\) \{ return it\.id === "tt-lock-item" \|\| it\.classList\.contains\("LockButton"\); \}/.test(src));
+  ok('the lock does not wiggle', /if \(!isNavLock\(it\)\) it\.classList\.add\("tt-nav-wiggle"\)/.test(body('enterReorder')));
   ok('a press on the lock never starts a drag', /if \(e\.button !== 0 \|\| isNavLock\(it\)\) return;/.test(body('wireNavItem')));
 }
 
@@ -27,18 +27,18 @@ console.log('\nArranging moves nothing on the page');
 {
   const { candidates } = require('./cascade');
   const win = (el, prop, arranging) => {
-    const html = ['cc-header-on', 'cc-popups-on'].concat(arranging ? ['cc-arrange'] : []);
+    const html = ['tt-header-on', 'tt-popups-on'].concat(arranging ? ['tt-arrange'] : []);
     const c = candidates('every', Object.assign({ attrs: {}, states: {}, html }, el), prop);
     return c.length ? c[c.length - 1].value : null;
   };
-  const trig = { tag: 'span', classes: [], attrs: { 'data-cc-trig': 'bell' }, inside: ['.cc-iconproxy'] };
+  const trig = { tag: 'span', classes: [], attrs: { 'data-tt-trig': 'bell' }, inside: ['.tt-iconproxy'] };
   ok('the ghost takes the bell\'s and the burger\'s slot instead of sitting beside them', win(trig, 'display', true) === 'none');
-  const island = { tag: 'span', classes: [], attrs: {}, id: 'cc-island' };
+  const island = { tag: 'span', classes: [], attrs: {}, id: 'tt-island' };
   ok('the island keeps its row gap', win(island, 'gap', true) === win(island, 'gap', false), win(island, 'gap', true));
-  const row = { tag: 'span', classes: ['cc-isl-row'], inside: ['#cc-island'], states: { empty: true } };
+  const row = { tag: 'span', classes: ['tt-isl-row'], inside: ['#tt-island'], states: { empty: true } };
   ok('an empty row keeps its height', win(row, 'min-height', true) === win(row, 'min-height', false), win(row, 'min-height', true));
-  const lastTrig = { tag: 'span', classes: [], attrs: { 'data-cc-trig': 'burger' }, inside: ['.nav-tile', '.right', '.nav-item', '.util'], states: { 'last-child': true } };
-  const end = candidates('every', Object.assign({ html: ['cc-header-on'] }, lastTrig), 'margin-right').filter((d) => d.value === '0' && d.selector.includes('[data-cc-trig]'));
+  const lastTrig = { tag: 'span', classes: [], attrs: { 'data-tt-trig': 'burger' }, inside: ['.nav-tile', '.right', '.nav-item', '.util'], states: { 'last-child': true } };
+  const end = candidates('every', Object.assign({ html: ['tt-header-on'] }, lastTrig), 'margin-right').filter((d) => d.value === '0' && d.selector.includes('[data-tt-trig]'));
   ok('a trailing bell or burger ends the row at its icon, as the ghost does', end.length > 0);
 }
 

@@ -51,9 +51,9 @@ console.log('\nThe last tab is Info, with three cards in GlimStone order');
   ok('a mail link opens no empty tab', /if \(!\/\^mailto:\/\.test\(o\.href\)\)/.test(btn));
   ok('the old plain links are gone', !/function linkBtn/.test(settings));
   ok('every button carries its mark, Buy Me a Coffee its own artwork', /art: BRAND_MARKS\.coffee/.test(block) && /mark: BRAND_MARKS\.paypal/.test(block) && /mark: BRAND_MARKS\.bitcoin/.test(block) && /mark: BRAND_MARKS\.github/.test(block) && /mark: BRAND_MARKS\.mail/.test(block) && /mark: BRAND_MARKS\.bug/.test(block));
-  ok('the give row stands a blank line under its sentence', /"#cc-settings \.cc-rbtn-rows\.cc-set-give\{margin-top:calc\(var\(--cc-text-body\) \* 1\.5\)\}"/.test(settings));
-  ok('the prose runs ragged, never justified', /"#cc-settings \.cc-set-prose\{text-align:start\}"/.test(settings));
-  ok('a brand takes its own colour only under the pointer', /#cc-settings \.cc-rbtn-unit:hover \.cc-rbtn\{background:var\(--cc-tile\);color:var\(--cc-tile-ink\)/.test(settings));
+  ok('the give row stands a blank line under its sentence', /"#tt-settings \.tt-rbtn-rows\.tt-set-give\{margin-top:calc\(var\(--tt-text-body\) \* 1\.5\)\}"/.test(settings));
+  ok('the prose runs ragged, never justified', /"#tt-settings \.tt-set-prose\{text-align:start\}"/.test(settings));
+  ok('a brand takes its own colour only under the pointer', /#tt-settings \.tt-rbtn-unit:hover \.tt-rbtn\{background:var\(--tt-tile\);color:var\(--tt-tile-ink\)/.test(settings));
 }
 
 console.log('\nEvery version links to its release page');
@@ -86,37 +86,37 @@ console.log('\nThe update check shows its verdict on the button');
 (async () => {
   const run = async (answer, ver) => {
     const fails = [];
-    const btn = el('span', 'cc-btn cc-set-check');
+    const btn = el('span', 'tt-btn tt-set-check');
     const fetch = () => answer instanceof Error ? Promise.reject(answer) : Promise.resolve(answer);
-    const check = new Function('fetch', 'T', 'failed', 'CC_VER', 'window', consts + '\n' + grabFn(settings, 'labelled') + '\n' + grabFn(settings, 'verCmp') + '\n' + grabFn(settings, 'checkUpdates') + '\nreturn checkUpdates;')(
+    const check = new Function('fetch', 'T', 'failed', 'TT_VER', 'window', consts + '\n' + grabFn(settings, 'labelled') + '\n' + grabFn(settings, 'verCmp') + '\n' + grabFn(settings, 'checkUpdates') + '\nreturn checkUpdates;')(
       fetch, (d, e) => e, (c, m) => fails.push([c, m]), ver || '1.0.0', {});
     await check(btn);
     return { btn, fails };
   };
   const json = (o) => ({ ok: true, json: () => Promise.resolve(o) });
   const cur = await run(json({ tag_name: 'v1.0.0' }));
-  ok('the latest release turns it green', cur.btn.classList.contains('cc-set-chk-ok') && cur.btn.textContent === 'Up to date');
+  ok('the latest release turns it green', cur.btn.classList.contains('tt-set-chk-ok') && cur.btn.textContent === 'Up to date');
   const newer = await run(json({ tag_name: 'v1.1.0' }));
-  ok('a newer release turns it orange with the number', newer.btn.classList.contains('cc-set-chk-new') && newer.btn.textContent === '1.1.0 available');
-  ok('and leaves green behind', !newer.btn.classList.contains('cc-set-chk-ok'));
+  ok('a newer release turns it orange with the number', newer.btn.classList.contains('tt-set-chk-new') && newer.btn.textContent === '1.1.0 available');
+  ok('and leaves green behind', !newer.btn.classList.contains('tt-set-chk-ok'));
   const rc = await run(json({ tag_name: 'v0.9.0' }), '1.0.0-rc1');
-  ok('a release candidate does not offer the older release as an update', rc.btn.classList.contains('cc-set-chk-ok'), rc.btn.textContent);
+  ok('a release candidate does not offer the older release as an update', rc.btn.classList.contains('tt-set-chk-ok'), rc.btn.textContent);
   const rcDone = await run(json({ tag_name: 'v1.0.0' }), '1.0.0-rc1');
   ok('but does offer its own release', rcDone.btn.textContent === '1.0.0 available');
   const down = await run({ ok: false, status: 403, json: () => Promise.resolve({}) });
-  ok('a failed check turns it red', down.btn.classList.contains('cc-set-chk-bad') && down.btn.textContent === 'Check failed');
+  ok('a failed check turns it red', down.btn.classList.contains('tt-set-chk-bad') && down.btn.textContent === 'Check failed');
   ok('and shakes it with the reason in a toast', down.fails.length === 1 && down.fails[0][0] === down.btn && /HTTP 403/.test(down.fails[0][1]));
   const off = await run(new Error('offline'));
-  ok('a network error is a failure too', off.btn.classList.contains('cc-set-chk-bad') && off.fails.length === 1);
+  ok('a network error is a failure too', off.btn.classList.contains('tt-set-chk-bad') && off.fails.length === 1);
   ok('it asks the latest release of this repository', /var LATEST_API = "https:\/\/api\.github\.com\/repos\/junkerderprovinz\/towertorch\/releases\/latest";/.test(settings));
   for (const [cls, tok] of [['ok', 'ok'], ['new', 'warn'], ['bad', 'err']]) {
-    ok('the ' + cls + ' verdict takes the ' + tok + ' state colour and its ink', new RegExp('#cc-settings \\.cc-set-check\\.cc-set-chk-' + cls + ' \\{ background: var\\(--cc-' + tok + ', [^)]+\\); color: var\\(--cc-' + tok + '-fg').test(css));
+    ok('the ' + cls + ' verdict takes the ' + tok + ' state colour and its ink', new RegExp('#tt-settings \\.tt-set-check\\.tt-set-chk-' + cls + ' \\{ background: var\\(--tt-' + tok + ', [^)]+\\); color: var\\(--tt-' + tok + '-fg').test(css));
   }
 
   console.log('\nEach version appears once');
-  ok('the footer line is gone', !/verLine|cc-set-version-foot/.test(settings) && !/\.cc-set-version\b/.test(css));
-  ok('the gear menu shows no version', !/CC_VER|UI v|daemonVersion/.test(docker));
-  ok('the gear menu reports the engine only while it is down', /if \(daemonUp === false\) m\.appendChild\(el\("div", "cc-menu-status cc-bad-text", t\("daemonDown"\)\)\);/.test(docker) && !/engine up/.test(docker));
+  ok('the footer line is gone', !/verLine|tt-set-version-foot/.test(settings) && !/\.tt-set-version\b/.test(css));
+  ok('the gear menu shows no version', !/TT_VER|UI v|daemonVersion/.test(docker));
+  ok('the gear menu reports the engine only while it is down', /if \(daemonUp === false\) m\.appendChild\(el\("div", "tt-menu-status tt-bad-text", t\("daemonDown"\)\)\);/.test(docker) && !/engine up/.test(docker));
 
   console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
   process.exit(fail ? 1 : 0);

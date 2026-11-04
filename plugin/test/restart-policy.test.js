@@ -86,9 +86,9 @@ console.log('\nAn unknown or blank current policy preselects "no"');
 console.log('\nThe warning badge is a semantic-warn info badge carrying the tooltip');
 {
   const b = api.restartWarnBadge();
-  ok('carries the base info-badge class', b.classList.contains('cc-b') && b.classList.contains('cc-b-info'));
-  ok('carries the semantic warn class rather than an accent or rainbow one', b.classList.contains('cc-b-warn'));
-  ok('carries the kind class the column system needs', b.classList.contains('cc-b-restart'));
+  ok('carries the base info-badge class', b.classList.contains('tt-b') && b.classList.contains('tt-b-info'));
+  ok('carries the semantic warn class rather than an accent or rainbow one', b.classList.contains('tt-b-warn'));
+  ok('carries the kind class the column system needs', b.classList.contains('tt-b-restart'));
   ok('shows the warn glyph and the label', b.textContent.indexOf('⚠') >= 0 && b.textContent.indexOf(api.T.en.rpWarn) >= 0, JSON.stringify(b.textContent));
   ok('the tooltip is the reboot warning', b.getAttribute('data-tip') === api.T.en.rpWarnTip, JSON.stringify(b.getAttribute('data-tip')));
 }

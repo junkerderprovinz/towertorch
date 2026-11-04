@@ -1,4 +1,4 @@
-// CC hides the dot on ShipLog's changelog chip and paints the chip itself, keyed on the dot's
+// TowerTorch hides the dot on ShipLog's changelog chip and paints the chip itself, keyed on the dot's
 // class. A state without its own rule falls to the grey of an up-to-date chip, so each coloured
 // state needs a rule in the plain modes and one for the row hover of the reactive mode.
 //
@@ -19,9 +19,9 @@ function ruleBody(sheet, selector) {
   return m ? m[2] : null;
 }
 
-const ROW = '.cc-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip';
-const HOVER = 'html.cc-shares-rbneutral.cc-docker-on .cc-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip';
-const STATES = { low: '--cc-ok', mid: '--cc-warn', high: '--cc-err', crit: '--cc-err', info: '--cc-info' };
+const ROW = '.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip';
+const HOVER = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip';
+const STATES = { low: '--tt-ok', mid: '--tt-warn', high: '--tt-err', crit: '--tt-err', info: '--tt-info' };
 
 console.log('\nEvery coloured ShipLog chip state has a colour at rest and on the reactive row hover');
 for (const [cls, token] of Object.entries(STATES)) {
@@ -40,7 +40,7 @@ console.log('\nEvery chip state reads, with the cascade resolved and the tokens 
   const lum = (hex) => { const n = parseInt(hex.slice(1), 16); const l = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * l(n >> 16 & 255) + 0.7152 * l(n >> 8 & 255) + 0.0722 * l(n & 255); };
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
   const six = (h) => (/^#[0-9a-f]{3}$/i.test(h) ? '#' + h.slice(1).split('').map((c) => c + c).join('') : h);
-  const MODES = { plain: { html: ['cc-docker-on'], hover: false }, 'reactive row hover': { html: ['cc-docker-on', 'cc-shares-rbneutral'], hover: true } };
+  const MODES = { plain: { html: ['tt-docker-on'], hover: false }, 'reactive row hover': { html: ['tt-docker-on', 'tt-shares-rbneutral'], hover: true } };
   for (const [theme, light] of [['dark', false], ['light', true]]) {
     const map = tokens(light);
     for (const [mode, m] of Object.entries(MODES)) for (const cls of Object.keys(STATES)) {
@@ -60,23 +60,23 @@ console.log('\nThe up-to-date chip stays the neutral grey the pinned one is told
   ok('the plain chip rests on #4a4a4a', /background:\s*#4a4a4a/.test(ruleBody(css, ROW) || ''));
 }
 
-console.log('\n--cc-info resolves to a colour on <html>');
+console.log('\n--tt-info resolves to a colour on <html>');
 {
-  const m = /--cc-info:\s*([^;]+);/.exec(tokens);
-  ok('--cc-info is declared', !!m);
-  ok('--cc-info is a literal, not a var() that could refer to itself', !!m && /^#[0-9a-fA-F]{6}$/.test(m[1].trim()), m && m[1]);
-  ok('--cc-info-fg is the dark ink the blue takes', /--cc-info-fg:\s*#161616;/.test(tokens));
+  const m = /--tt-info:\s*([^;]+);/.exec(tokens);
+  ok('--tt-info is declared', !!m);
+  ok('--tt-info is a literal, not a var() that could refer to itself', !!m && /^#[0-9a-fA-F]{6}$/.test(m[1].trim()), m && m[1]);
+  ok('--tt-info-fg is the dark ink the blue takes', /--tt-info-fg:\s*#161616;/.test(tokens));
 }
 
-// enhanceShipLogBubble() stamps --cc-rb-c on all three window buttons in the reactive mode and
+// enhanceShipLogBubble() stamps --tt-rb-c on all three window buttons in the reactive mode and
 // leaves the paint to this rule, so a button missing from it stays grey under the pointer.
 console.log('\nIn the reactive mode every button of the changelog window colours on hover');
 {
-  const HOVER_SEL = 'html.cc-shares-rbneutral .sl-bubble .sl-upd:not(.sl-upd-off):hover, html.cc-shares-rbneutral .sl-bubble .sl-gh:hover, html.cc-shares-rbneutral .sl-bubble .sl-x:hover';
+  const HOVER_SEL = 'html.tt-shares-rbneutral .sl-bubble .sl-upd:not(.sl-upd-off):hover, html.tt-shares-rbneutral .sl-bubble .sl-gh:hover, html.tt-shares-rbneutral .sl-bubble .sl-x:hover';
   const body = ruleBody(css, HOVER_SEL);
   ok('one hover rule covers update, repository and close', body != null);
-  ok('it paints the stamped --cc-rb-c', /background:\s*var\(--cc-rb-c,/.test(body || ''), body);
-  ok('with the stamped ink', /color:\s*var\(--cc-rb-ct,/.test(body || ''), body);
+  ok('it paints the stamped --tt-rb-c', /background:\s*var\(--tt-rb-c,/.test(body || ''), body);
+  ok('with the stamped ink', /color:\s*var\(--tt-rb-ct,/.test(body || ''), body);
   const js = fs.readFileSync(path.join(DIR, 'scripts', 'docker.js'), 'utf8');
   ok('docker.js stamps the close button and the auto-update switch too', /querySelectorAll\("\.sl-upd:not\(\.sl-upd-off\), \.sl-gh, \.sl-x, \.sl-au-track"\)/.test(js));
 }
@@ -87,28 +87,28 @@ console.log('\nThe close button hovers in the accent like the repository button 
 {
   const body = ruleBody(css, '.sl-bubble .sl-x:hover');
   ok('a hover rule for the close button exists', body != null);
-  ok('it reads the stamp, then the accent', /background:\s*var\(--cc-rb-c,\s*var\(--cc-accent,/.test(body || ''), body);
-  ok('with the accent text', /color:\s*var\(--cc-rb-ct,\s*var\(--cc-accent-text,/.test(body || ''), body);
+  ok('it reads the stamp, then the accent', /background:\s*var\(--tt-rb-c,\s*var\(--tt-accent,/.test(body || ''), body);
+  ok('with the accent text', /color:\s*var\(--tt-rb-ct,\s*var\(--tt-accent-text,/.test(body || ''), body);
   ok('and outranks ShipLog\'s own neutral hover', /!important/.test(body || ''), body);
 }
 
 console.log('\nThe ShipLog window follows the shape engine');
 {
   const { PAGES, candidates } = require('./cascade');
-  // ShipLog's own radius rules, which read a --cc-b-radius CC never sets, loaded after CC's.
+  // ShipLog's own radius rules, which read a --tt-b-radius TowerTorch never sets, loaded after TowerTorch's.
   const shiplog = { name: 'shiplog/styles/docker.css', css:
-    '.sl-bubble{border-radius:min(var(--cc-b-radius,14px),14px)}' +
-    'html.cc-header-on .sl-bubble .sl-sec{border-radius:min(var(--cc-b-radius,10px),10px)}' +
-    'html.cc-header-on .sl-bubble .sl-aubar{border-radius:min(var(--cc-b-radius,10px),10px)}' +
-    'html.cc-header-on .sl-bubble h4{border-radius:var(--cc-b-radius,999px)}' +
-    'html.cc-header-on .sl-bubble .sl-unmaint-note h4{border-radius:var(--cc-b-radius,999px)}' +
+    '.sl-bubble{border-radius:min(var(--tt-b-radius,14px),14px)}' +
+    'html.tt-header-on .sl-bubble .sl-sec{border-radius:min(var(--tt-b-radius,10px),10px)}' +
+    'html.tt-header-on .sl-bubble .sl-aubar{border-radius:min(var(--tt-b-radius,10px),10px)}' +
+    'html.tt-header-on .sl-bubble h4{border-radius:var(--tt-b-radius,999px)}' +
+    'html.tt-header-on .sl-bubble .sl-unmaint-note h4{border-radius:var(--tt-b-radius,999px)}' +
     '.sl-bubble .sl-ai{border-radius:4px}' };
   const page = PAGES.docker.concat([shiplog]);
-  const radius = (tag, classes, inside) => { const c = candidates(page, { tag, classes, attrs: { class: classes.join(' ') }, states: {}, html: ['cc-header-on', 'cc-docker-on'], inside }, 'border-radius'); return c.length ? c[c.length - 1].value : null; };
-  ok('the window is a card', radius('div', ['sl-bubble'], []) === 'var(--cc-radius-card)');
-  ok('its cards are controls', radius('div', ['sl-sec'], ['.sl-bubble']) === 'var(--cc-radius-control)' && radius('div', ['sl-aubar'], ['.sl-bubble']) === 'var(--cc-radius-control)' && radius('div', ['sl-unmaint-note'], ['.sl-bubble']) === 'var(--cc-radius-control)');
-  ok('the section badges, "Neueste Releases" and the AI summary among them, are pills', radius('h4', [], ['.sl-bubble', '.sl-sec']) === 'var(--cc-radius-pill)' && radius('h4', [], ['.sl-bubble', '.sl-unmaint-note']) === 'var(--cc-radius-pill)', radius('h4', [], ['.sl-bubble', '.sl-sec']));
-  ok('and so is the model tag inside the summary badge', radius('span', ['sl-ai'], ['.sl-bubble', 'h4']) === 'var(--cc-radius-pill)');
+  const radius = (tag, classes, inside) => { const c = candidates(page, { tag, classes, attrs: { class: classes.join(' ') }, states: {}, html: ['tt-header-on', 'tt-docker-on'], inside }, 'border-radius'); return c.length ? c[c.length - 1].value : null; };
+  ok('the window is a card', radius('div', ['sl-bubble'], []) === 'var(--tt-radius-card)');
+  ok('its cards are controls', radius('div', ['sl-sec'], ['.sl-bubble']) === 'var(--tt-radius-control)' && radius('div', ['sl-aubar'], ['.sl-bubble']) === 'var(--tt-radius-control)' && radius('div', ['sl-unmaint-note'], ['.sl-bubble']) === 'var(--tt-radius-control)');
+  ok('the section badges, "Neueste Releases" and the AI summary among them, are pills', radius('h4', [], ['.sl-bubble', '.sl-sec']) === 'var(--tt-radius-pill)' && radius('h4', [], ['.sl-bubble', '.sl-unmaint-note']) === 'var(--tt-radius-pill)', radius('h4', [], ['.sl-bubble', '.sl-sec']));
+  ok('and so is the model tag inside the summary badge', radius('span', ['sl-ai'], ['.sl-bubble', 'h4']) === 'var(--tt-radius-pill)');
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

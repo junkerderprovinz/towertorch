@@ -5,10 +5,10 @@
 //      while the slot holds a device. An empty slot prints the label as a bare
 //      text node, and a stopped row carries no td.desc either, so neither of
 //      enhanceMainName's selectors reaches it.
-//   2. ccSlotTip mirrors the full device string into a title, so the bubble can
+//   2. ttSlotTip mirrors the full device string into a title, so the bubble can
 //      replace the native hover reveal that overlapped the Temp column.
 //   3. The Parity/Data separator is a content-free tr.tr_last, which otherwise
-//      inherits the totals-bar tint. ccVoidRow stamps the empty tr_last rows and
+//      inherits the totals-bar tint. ttVoidRow stamps the empty tr_last rows and
 //      leaves the ones with content, the totals bar and the "Slots:" row.
 //
 // The markup below is device_list's own output for fsState=Stopped, covering the
@@ -119,9 +119,9 @@ function grab(name) {
   for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } }
   throw new Error('unbalanced: ' + name);
 }
-const code = ['el', 'enhanceMainName', 'ccSlotTip', 'ccVoidRow'].map(grab).join('\n');
-const { enhanceMainName, ccSlotTip, ccVoidRow } =
-  new Function('document', code + '\nreturn {enhanceMainName, ccSlotTip, ccVoidRow};')(global.document);
+const code = ['el', 'enhanceMainName', 'ttSlotTip', 'ttVoidRow'].map(grab).join('\n');
+const { enhanceMainName, ttSlotTip, ttVoidRow } =
+  new Function('document', code + '\nreturn {enhanceMainName, ttSlotTip, ttVoidRow};')(global.document);
 
 // The DOM device_list emits while the array is stopped.
 const mk = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
@@ -181,7 +181,7 @@ function totalsRow() {                           // the started array's totals b
   const b = mk('td'); txt(b, 'Array of five devices'); tr.appendChild(b);
   return tr;
 }
-const nameBadge = tr => tr.querySelector('.cc-b-name');
+const nameBadge = tr => tr.querySelector('.tt-b-name');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -197,14 +197,14 @@ console.log('\nEvery slot gets the name badge');
 {
   const a = assignedRow('Datenträger 1'); enhanceMainName(a);
   const b = nameBadge(a);
-  ok('assigned slot: the link is tagged', !!b && b.tagName === 'A' && b.classList.contains('cc-b'), b && b.tagName);
+  ok('assigned slot: the link is tagged', !!b && b.tagName === 'A' && b.classList.contains('tt-b'), b && b.tagName);
   ok('assigned label intact', b && b.textContent === 'Datenträger 1', b && JSON.stringify(b.textContent));
 
   for (const label of ['Parität 2', 'Datenträger 5']) {
     const tr = emptyRow(label); enhanceMainName(tr);
     const n = nameBadge(tr);
     ok('empty slot "' + label + '": bare text is wrapped in a span badge',
-      !!n && n.tagName === 'SPAN' && n.classList.contains('cc-b') && n.classList.contains('cc-b-name'), n ? n.tagName : 'NONE');
+      !!n && n.tagName === 'SPAN' && n.classList.contains('tt-b') && n.classList.contains('tt-b-name'), n ? n.tagName : 'NONE');
     ok('empty slot "' + label + '": label text preserved', n && n.textContent === label, n && JSON.stringify(n.textContent));
   }
 }
@@ -222,53 +222,53 @@ console.log('\nenhanceMainName is idempotent, the nchan refill re-entering it ev
 {
   const tr = emptyRow('Datenträger 7');
   enhanceMainName(tr); enhanceMainName(tr); enhanceMainName(tr);
-  ok('exactly one name badge after three passes', tr.querySelectorAll('.cc-b-name').length === 1,
-    tr.querySelectorAll('.cc-b-name').length + ' badges');
+  ok('exactly one name badge after three passes', tr.querySelectorAll('.tt-b-name').length === 1,
+    tr.querySelectorAll('.tt-b-name').length + ' badges');
 }
 
-console.log('\nccSlotTip: the full device string reaches the bubble');
+console.log('\nttSlotTip: the full device string reaches the bubble');
 {
-  const tr = assignedRow('Datenträger 1'); ccSlotTip(tr);
+  const tr = assignedRow('Datenträger 1'); ttSlotTip(tr);
   const s = tr.querySelector('select.slot');
   ok('the title carries the selected option text', s.getAttribute('title') === DEV1, JSON.stringify(s.getAttribute('title')));
 
-  const e = emptyRow('Datenträger 5'); ccSlotTip(e);
+  const e = emptyRow('Datenträger 5'); ttSlotTip(e);
   ok('an unassigned slot tips its placeholder', e.querySelector('select.slot').getAttribute('title') === NO_DEV);
 
-  // ccTipSweep moves [title] to [data-cc-tip] and strips the title, which a later
+  // ttTipSweep moves [title] to [data-tt-tip] and strips the title, which a later
   // pass must leave that way.
-  s.removeAttribute('title'); s.setAttribute('data-cc-tip', DEV1);
-  ccSlotTip(tr);
-  ok('no churn once ccTipSweep has converted it', s.getAttribute('title') === null, JSON.stringify(s.getAttribute('title')));
+  s.removeAttribute('title'); s.setAttribute('data-tt-tip', DEV1);
+  ttSlotTip(tr);
+  ok('no churn once ttTipSweep has converted it', s.getAttribute('title') === null, JSON.stringify(s.getAttribute('title')));
 
   const plain = mk('tr', 'offline'); plain.appendChild(mk('td'));
-  ccSlotTip(plain);
+  ttSlotTip(plain);
   ok('a row without a slot select does nothing and does not throw', true);
 }
 
-console.log('\nccVoidRow: the separator is the tr_last without content');
+console.log('\nttVoidRow: the separator is the tr_last without content');
 {
-  const sep = separatorRow(); ccVoidRow(sep);
-  ok('the Parity/Data separator is stamped', sep.classList.contains('cc-tr-void'));
+  const sep = separatorRow(); ttVoidRow(sep);
+  ok('the Parity/Data separator is stamped', sep.classList.contains('tt-tr-void'));
 
-  const slots = slotsRow(); ccVoidRow(slots);
-  ok('the "Slots:" control row keeps its bar', !slots.classList.contains('cc-tr-void'));
+  const slots = slotsRow(); ttVoidRow(slots);
+  ok('the "Slots:" control row keeps its bar', !slots.classList.contains('tt-tr-void'));
 
-  const tot = totalsRow(); ccVoidRow(tot);
-  ok('the totals bar keeps its bar', !tot.classList.contains('cc-tr-void'));
+  const tot = totalsRow(); ttVoidRow(tot);
+  ok('the totals bar keeps its bar', !tot.classList.contains('tt-tr-void'));
 
   // enhanceMainRow widens the separator's colspan before the stamp.
   sep.children[0].setAttribute('colspan', '11');
-  ccVoidRow(sep);
-  ok('still stamped after the colspan widening', sep.classList.contains('cc-tr-void'));
+  ttVoidRow(sep);
+  ok('still stamped after the colspan widening', sep.classList.contains('tt-tr-void'));
 
   // A cell holding only an nbsp is empty as well, which :empty does not see.
-  const nb = separatorRow(); nb.children[0].textContent = ' '; ccVoidRow(nb);
-  ok('a cell holding only an nbsp counts as empty', nb.classList.contains('cc-tr-void'));
+  const nb = separatorRow(); nb.children[0].textContent = ' '; ttVoidRow(nb);
+  ok('a cell holding only an nbsp counts as empty', nb.classList.contains('tt-tr-void'));
 
   // A refill can bring content back into the same row object.
-  const back = separatorRow(); ccVoidRow(back); back.children[0].textContent = 'Slots:'; ccVoidRow(back);
-  ok('re-stamping clears when content arrives', !back.classList.contains('cc-tr-void'));
+  const back = separatorRow(); ttVoidRow(back); back.children[0].textContent = 'Slots:'; ttVoidRow(back);
+  ok('re-stamping clears when content arrives', !back.classList.contains('tt-tr-void'));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

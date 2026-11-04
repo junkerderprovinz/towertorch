@@ -95,7 +95,7 @@ global.document = {
   addEventListener: (t, fn) => { (docListeners[t] = docListeners[t] || []).push(fn); },
   removeEventListener: (t, fn) => { docListeners[t] = (docListeners[t] || []).filter((x) => x !== fn); },
 };
-global.getComputedStyle = (n) => ({ zIndex: n.classList.contains('cc-dlg') ? '1000001' : n.classList.contains('cc-win') ? '99999' : 'auto' });
+global.getComputedStyle = (n) => ({ zIndex: n.classList.contains('tt-dlg') ? '1000001' : n.classList.contains('tt-win') ? '99999' : 'auto' });
 function key(k, shift) {
   const ev = { key: k, shiftKey: !!shift, target: document.activeElement, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }, stopPropagation() {} };
   (docListeners.keydown || []).slice().forEach((fn) => fn(ev));
@@ -104,8 +104,8 @@ function key(k, shift) {
 }
 const store = {};
 
-const theme = read('scripts/cc-theme.js');
-const CCTheme = new Function('localStorage',
+const theme = read('scripts/tt-theme.js');
+const TTTheme = new Function('localStorage',
   'function g(k, d) { return k in localStorage ? localStorage[k] : d; } function s(k, v) { localStorage[k] = v; }' +
   grabVar(theme, 'RB') + grabVar(theme, 'LUM_FLOOR') + grabVar(theme, 'winStack') + grabVar(theme, 'FOCUSABLE') +
   'function glyph(name) { return "<svg>" + name + "</svg>"; }' +
@@ -114,14 +114,14 @@ const CCTheme = new Function('localStorage',
   '; return { RB: RB, isRed: isRed, modal: modal, ask: ask, paintWin: paintWin, pressable: pressable };')(store);
 
 function win(cls) {
-  const w = body.appendChild(new N('div')); w.className = cls || 'cc-win';
-  const t = w.appendChild(new N('div')); t.className = 'cc-win-title'; t.textContent = 'Titel';
-  const info = t.parentNode.appendChild(new N('span')); info.className = 'cc-info'; info.setAttribute('tabindex', '0');
-  const card = w.appendChild(new N('div')); card.className = 'cc-win-card';
+  const w = body.appendChild(new N('div')); w.className = cls || 'tt-win';
+  const t = w.appendChild(new N('div')); t.className = 'tt-win-title'; t.textContent = 'Titel';
+  const info = t.parentNode.appendChild(new N('span')); info.className = 'tt-info'; info.setAttribute('tabindex', '0');
+  const card = w.appendChild(new N('div')); card.className = 'tt-win-card';
   const a = card.appendChild(new N('input')); a.type = 'text';
   const b = card.appendChild(new N('input')); b.type = 'text';
-  const act = w.appendChild(new N('div')); act.className = 'cc-win-act';
-  const c = CCTheme.pressable(act.appendChild(new N('span'))); c.className = 'cc-win-btn';
+  const act = w.appendChild(new N('div')); act.className = 'tt-win-act';
+  const c = TTTheme.pressable(act.appendChild(new N('span'))); c.className = 'tt-win-btn';
   return { w, info, a, b, c };
 }
 
@@ -130,14 +130,14 @@ console.log('\nThe modal: scrim, focus, Tab and Escape');
   const opener = body.appendChild(new N('span')); opener.setAttribute('tabindex', '0'); opener.focus();
   const { w, info, a, b, c } = win();
   let dismissed = 0;
-  const h = CCTheme.modal(w, { onDismiss: () => { dismissed++; h.close(); } });
+  const h = TTTheme.modal(w, { onDismiss: () => { dismissed++; h.close(); } });
   const scrim = w.parentNode.childNodes[w.parentNode.childNodes.indexOf(w) - 1];
-  ok('a scrim goes in right before the window', scrim && scrim.classList.contains('cc-scrim'));
+  ok('a scrim goes in right before the window', scrim && scrim.classList.contains('tt-scrim'));
   ok('one step under the window\'s z-index', scrim.style.zIndex === '99998', scrim.style.zIndex);
   ok('the window says it is a modal dialog', w.getAttribute('role') === 'dialog' && w.getAttribute('aria-modal') === 'true');
-  ok('named by its title badge', w.getAttribute('aria-labelledby') === w.querySelector('.cc-win-title').id && !!w.getAttribute('aria-labelledby'));
+  ok('named by its title badge', w.getAttribute('aria-labelledby') === w.querySelector('.tt-win-title').id && !!w.getAttribute('aria-labelledby'));
   ok('focus moves to the first field in the card, past the (i)', document.activeElement === a);
-  const x = w.querySelector('.cc-win-x');
+  const x = w.querySelector('.tt-win-x');
   ok('the modal puts a close badge into the window', !!x && x.parentNode === w);
   ok('named "Close" for a screen reader and in its bubble', x.getAttribute('aria-label') === 'Close' && x.getAttribute('data-tip') === 'Close');
   ok('it answers the keyboard like a button', x.getAttribute('role') === 'button' && x.getAttribute('tabindex') === '0');
@@ -157,35 +157,35 @@ console.log('\nThe modal: scrim, focus, Tab and Escape');
 {
   const { w } = win();
   let n = 0;
-  const h = CCTheme.modal(w, { onDismiss: () => { n++; h.close(); } });
-  const scrim = body.querySelector('.cc-scrim');
+  const h = TTTheme.modal(w, { onDismiss: () => { n++; h.close(); } });
+  const scrim = body.querySelector('.tt-scrim');
   scrim.click();
   ok('a click on the scrim dismisses the window', n === 1 && !w.parentNode);
 }
 {
   const { w } = win();
   let n = 0;
-  const h = CCTheme.modal(w, { onDismiss: () => { n++; h.close(); } });
-  w.querySelector('.cc-win-x').click();
+  const h = TTTheme.modal(w, { onDismiss: () => { n++; h.close(); } });
+  w.querySelector('.tt-win-x').click();
   ok('the close badge dismisses through onDismiss, so unsaved work is still asked about', n === 1 && !w.parentNode);
   const plain = win();
-  CCTheme.modal(plain.w);
-  plain.w.querySelector('.cc-win-x').click();
+  TTTheme.modal(plain.w);
+  plain.w.querySelector('.tt-win-x').click();
   ok('without onDismiss it closes the window outright', !plain.w.parentNode);
 }
 {
-  const w = body.appendChild(new N('div')); w.className = 'cc-win';
-  const act = w.appendChild(new N('div')); act.className = 'cc-win-act';
-  const go = CCTheme.pressable(act.appendChild(new N('span'))); go.className = 'cc-win-btn';
-  const h = CCTheme.modal(w);
+  const w = body.appendChild(new N('div')); w.className = 'tt-win';
+  const act = w.appendChild(new N('div')); act.className = 'tt-win-act';
+  const go = TTTheme.pressable(act.appendChild(new N('span'))); go.className = 'tt-win-btn';
+  const h = TTTheme.modal(w);
   ok('a window with nothing else to focus starts on its action, not on the close badge', document.activeElement === go);
   h.close();
 }
 {
   const outer = win();
-  const h1 = CCTheme.modal(outer.w);
-  const inner = win('cc-win cc-dlg');
-  const h2 = CCTheme.modal(inner.w, { opener: outer.b });
+  const h1 = TTTheme.modal(outer.w);
+  const inner = win('tt-win tt-dlg');
+  const h2 = TTTheme.modal(inner.w, { opener: outer.b });
   key('Escape');
   ok('Escape closes the window on top first', !inner.w.parentNode && !!outer.w.parentNode);
   ok('and focus returns into the window below', document.activeElement === outer.b);
@@ -196,14 +196,14 @@ console.log('\nThe modal: scrim, focus, Tab and Escape');
 
 console.log('\nAn opener drawn again while its window is open');
 {
-  const old = body.appendChild(new N('button')); old.setAttribute('data-cc-focus-key', 'cc-hgear-grid'); old.focus();
-  CCTheme.ask({ title: 'Neuen Ordner anlegen', input: { label: 'Name des Ordners' }, ok: 'Anlegen', cancel: 'Abbrechen', onOk: () => {} });
+  const old = body.appendChild(new N('button')); old.setAttribute('data-tt-focus-key', 'tt-hgear-grid'); old.focus();
+  TTTheme.ask({ title: 'Neuen Ordner anlegen', input: { label: 'Name des Ordners' }, ok: 'Anlegen', cancel: 'Abbrechen', onOk: () => {} });
   old.remove();
-  const fresh = body.appendChild(new N('button')); fresh.setAttribute('data-cc-focus-key', 'cc-hgear-grid');
+  const fresh = body.appendChild(new N('button')); fresh.setAttribute('data-tt-focus-key', 'tt-hgear-grid');
   key('Escape');
   ok('the focus goes to the one drawn in its place, found by its key', document.activeElement === fresh);
   const gone = body.appendChild(new N('span')); gone.setAttribute('tabindex', '0'); gone.focus();
-  CCTheme.ask({ title: 'Frage', ok: 'Ja', cancel: 'Nein', onOk: () => {} });
+  TTTheme.ask({ title: 'Frage', ok: 'Ja', cancel: 'Nein', onOk: () => {} });
   gone.remove();
   key('Escape');
   ok('an opener without a key that is gone takes the focus nowhere', document.activeElement !== gone);
@@ -215,94 +215,94 @@ console.log('\nA question in a window');
 {
   let got = null;
   const opener = body.appendChild(new N('span')); opener.setAttribute('tabindex', '0'); opener.focus();
-  CCTheme.ask({ title: 'Neuen Ordner anlegen', input: { label: 'Name des Ordners' }, ok: 'Anlegen', cancel: 'Abbrechen', onOk: (v) => { got = v; } });
-  const w = body.querySelector('.cc-dlg');
-  ok('it opens as a .cc-dlg window', !!w);
-  ok('the title badge says what happens', w.querySelector('.cc-win-title').textContent === 'Neuen Ordner anlegen');
-  const btns = w.querySelectorAll('.cc-win-btn');
+  TTTheme.ask({ title: 'Neuen Ordner anlegen', input: { label: 'Name des Ordners' }, ok: 'Anlegen', cancel: 'Abbrechen', onOk: (v) => { got = v; } });
+  const w = body.querySelector('.tt-dlg');
+  ok('it opens as a .tt-dlg window', !!w);
+  ok('the title badge says what happens', w.querySelector('.tt-win-title').textContent === 'Neuen Ordner anlegen');
+  const btns = w.querySelectorAll('.tt-win-btn');
   ok('Cancel on the left, the answer on the right', btns[0].textContent === 'Abbrechen' && btns[1].textContent === 'Anlegen');
-  ok('a creating answer is the window\'s one filled button', btns[1].classList.contains('cc-win-go'));
-  const input = w.querySelector('.cc-win-in');
+  ok('a creating answer is the window\'s one filled button', btns[1].classList.contains('tt-win-go'));
+  const input = w.querySelector('.tt-win-in');
   ok('the name field has the focus', document.activeElement === input);
   input.value = '   '; input.fire('keydown', { key: 'Enter' });
   ok('an empty name does not close the window', !!w.parentNode && got === null);
   input.value = '  Medien  '; input.fire('keydown', { key: 'Enter' });
   ok('Enter takes the name, trimmed', got === 'Medien');
-  ok('and closes the window with its scrim', !w.parentNode && !body.querySelector('.cc-scrim'));
+  ok('and closes the window with its scrim', !w.parentNode && !body.querySelector('.tt-scrim'));
   ok('focus goes back to the opener', document.activeElement === opener);
 }
 {
   let ran = 0;
-  CCTheme.ask({ title: 'Ordner „Medien“ löschen?', text: 'Der Ordner ist leer.', ok: 'Löschen', cancel: 'Abbrechen', danger: true, onOk: () => { ran++; } });
-  const w = body.querySelector('.cc-dlg');
-  const btns = w.querySelectorAll('.cc-win-btn');
-  ok('a deleting answer is not the filled button', btns[1].classList.contains('cc-win-del') && !btns[1].classList.contains('cc-win-go'));
+  TTTheme.ask({ title: 'Ordner „Medien“ löschen?', text: 'Der Ordner ist leer.', ok: 'Löschen', cancel: 'Abbrechen', danger: true, onOk: () => { ran++; } });
+  const w = body.querySelector('.tt-dlg');
+  const btns = w.querySelectorAll('.tt-win-btn');
+  ok('a deleting answer is not the filled button', btns[1].classList.contains('tt-win-del') && !btns[1].classList.contains('tt-win-go'));
   ok('the focus starts on Cancel, the safe choice', document.activeElement === btns[0]);
   btns[0].fire('keydown', { key: 'Enter' });
   ok('Enter on Cancel cancels', ran === 0 && !w.parentNode);
 }
 {
   let ran = 0;
-  CCTheme.ask({ title: '3 Container entfernen?', text: 'a, b, c', ok: 'Entfernen', cancel: 'Abbrechen', danger: true, onOk: () => { ran++; } });
+  TTTheme.ask({ title: '3 Container entfernen?', text: 'a, b, c', ok: 'Entfernen', cancel: 'Abbrechen', danger: true, onOk: () => { ran++; } });
   key('Escape');
-  ok('Escape cancels without running the answer', ran === 0 && !body.querySelector('.cc-dlg'));
-  CCTheme.ask({ title: '3 Container entfernen?', text: 'a, b, c', ok: 'Entfernen', cancel: 'Abbrechen', danger: true, onOk: () => { ran++; } });
-  body.querySelector('.cc-dlg').querySelectorAll('.cc-win-btn')[1].click();
+  ok('Escape cancels without running the answer', ran === 0 && !body.querySelector('.tt-dlg'));
+  TTTheme.ask({ title: '3 Container entfernen?', text: 'a, b, c', ok: 'Entfernen', cancel: 'Abbrechen', danger: true, onOk: () => { ran++; } });
+  body.querySelector('.tt-dlg').querySelectorAll('.tt-win-btn')[1].click();
   ok('the answer button runs it', ran === 1);
 }
 
 console.log('\nThe colours of a window');
 {
-  const mk = (del) => { const w = new N('div'); w.className = 'cc-win'; const t = w.appendChild(new N('div')); t.className = 'cc-win-title'; ['a', 'b'].forEach((x, i) => { const b = w.appendChild(new N('span')); b.className = 'cc-win-btn' + (i === 1 && del ? ' cc-win-del' : ''); }); return w; };
-  Object.assign(store, { 'cc.rainbow': '1', 'cc.rainbowrot': '0', 'cc.rbpal': JSON.stringify(['#3DDBD9', '#1D99F3', '#FF8389', '#6FDC8C']) });
-  let w = mk(false); CCTheme.paintWin(w);
-  const c = w.querySelectorAll('.cc-win-title, .cc-win-btn').map((e) => e.styleProps['--cc-rb-c']);
+  const mk = (del) => { const w = new N('div'); w.className = 'tt-win'; const t = w.appendChild(new N('div')); t.className = 'tt-win-title'; ['a', 'b'].forEach((x, i) => { const b = w.appendChild(new N('span')); b.className = 'tt-win-btn' + (i === 1 && del ? ' tt-win-del' : ''); }); return w; };
+  Object.assign(store, { 'tt.rainbow': '1', 'tt.rainbowrot': '0', 'tt.rbpal': JSON.stringify(['#3DDBD9', '#1D99F3', '#FF8389', '#6FDC8C']) });
+  let w = mk(false); TTTheme.paintWin(w);
+  const c = w.querySelectorAll('.tt-win-title, .tt-win-btn').map((e) => e.styleProps['--tt-rb-c']);
   ok('title first, then each button, one slot after another', c.join() === '#3DDBD9,#1D99F3,#FF8389', c.join());
-  ok('each with its own ink', w.querySelector('.cc-win-title').styleProps['--cc-rb-ct'] === '#161616');
-  w = mk(true); CCTheme.paintWin(w);
-  const del = w.querySelectorAll('.cc-win-btn')[1].styleProps['--cc-rb-c'];
-  ok('in rainbow a deleting answer keeps off the red slot', !CCTheme.isRed(del), del);
-  store['cc.flagmode'] = '1'; store['cc.flagpal'] = JSON.stringify(['#ED2939', '#FFFFFF', '#ED2939']);
-  w = mk(true); CCTheme.paintWin(w);
-  ok('a flag\'s red passes to its next colour for a deleting answer too', w.querySelectorAll('.cc-win-btn')[1].styleProps['--cc-rb-c'] === '#FFFFFF', w.querySelectorAll('.cc-win-btn')[1].styleProps['--cc-rb-c']);
-  delete store['cc.flagmode'];
-  store['cc.rbmode'] = 'active'; w = mk(false); CCTheme.paintWin(w);
-  ok('the reactive mode marks the window, so its main button rests grey', w.classList.contains('cc-win-reactive'));
-  store['cc.rainbow'] = '0'; store['cc.rbmode'] = 'all'; w = mk(false); CCTheme.paintWin(w);
-  ok('outside the rainbow nothing is stamped and the accent chain applies', !w.querySelector('.cc-win-title').styleProps['--cc-rb-c'] && !w.classList.contains('cc-win-reactive'));
+  ok('each with its own ink', w.querySelector('.tt-win-title').styleProps['--tt-rb-ct'] === '#161616');
+  w = mk(true); TTTheme.paintWin(w);
+  const del = w.querySelectorAll('.tt-win-btn')[1].styleProps['--tt-rb-c'];
+  ok('in rainbow a deleting answer keeps off the red slot', !TTTheme.isRed(del), del);
+  store['tt.flagmode'] = '1'; store['tt.flagpal'] = JSON.stringify(['#ED2939', '#FFFFFF', '#ED2939']);
+  w = mk(true); TTTheme.paintWin(w);
+  ok('a flag\'s red passes to its next colour for a deleting answer too', w.querySelectorAll('.tt-win-btn')[1].styleProps['--tt-rb-c'] === '#FFFFFF', w.querySelectorAll('.tt-win-btn')[1].styleProps['--tt-rb-c']);
+  delete store['tt.flagmode'];
+  store['tt.rbmode'] = 'active'; w = mk(false); TTTheme.paintWin(w);
+  ok('the reactive mode marks the window, so its main button rests grey', w.classList.contains('tt-win-reactive'));
+  store['tt.rainbow'] = '0'; store['tt.rbmode'] = 'all'; w = mk(false); TTTheme.paintWin(w);
+  ok('outside the rainbow nothing is stamped and the accent chain applies', !w.querySelector('.tt-win-title').styleProps['--tt-rb-c'] && !w.classList.contains('tt-win-reactive'));
 }
 
 console.log('\nThe sheet');
 {
-  const el = (classes) => ({ tag: 'span', classes, attrs: { class: classes.join(' ') }, states: {}, outside: ['.sweet-alert'] });   // a CC window, which the confirmation styles in Header.css do not reach
+  const el = (classes) => ({ tag: 'span', classes, attrs: { class: classes.join(' ') }, states: {}, outside: ['.sweet-alert'] });   // a TowerTorch window, which the confirmation styles in Header.css do not reach
   const top = (classes, prop, states) => { const e = el(classes); if (states) e.states = states; const c = candidates('every', e, prop); return c[c.length - 1]; };
-  const scrimBg = top(['cc-scrim'], 'background'), scrimBlur = top(['cc-scrim'], 'backdrop-filter');
-  ok('the scrim darkens with the shared token', scrimBg && /var\(--cc-backdrop-dim\)/.test(scrimBg.value));
-  ok('and blurs with it', scrimBlur && /var\(--cc-backdrop-blur\)/.test(scrimBlur.value));
-  const cancel = top(['cc-win-btn'], 'background'), del = top(['cc-win-btn', 'cc-win-del'], 'background');
+  const scrimBg = top(['tt-scrim'], 'background'), scrimBlur = top(['tt-scrim'], 'backdrop-filter');
+  ok('the scrim darkens with the shared token', scrimBg && /var\(--tt-backdrop-dim\)/.test(scrimBg.value));
+  ok('and blurs with it', scrimBlur && /var\(--tt-backdrop-blur\)/.test(scrimBlur.value));
+  const cancel = top(['tt-win-btn'], 'background'), del = top(['tt-win-btn', 'tt-win-del'], 'background');
   ok('a deleting answer rests in the colour of Cancel', cancel && del && cancel.value === del.value, del && del.value);
-  const delHover = top(['cc-win-btn', 'cc-win-del'], 'background', { hover: true }), cancelHover = top(['cc-win-btn'], 'background', { hover: true });
+  const delHover = top(['tt-win-btn', 'tt-win-del'], 'background', { hover: true }), cancelHover = top(['tt-win-btn'], 'background', { hover: true });
   ok('and hovers like it', delHover && cancelHover && delHover.value === cancelHover.value);
-  ok('no rule paints it in the fault colour', !/--cc-err|#ff8389|#da1e28/i.test(del.value + delHover.value));
+  ok('no rule paints it in the fault colour', !/--tt-err|#ff8389|#da1e28/i.test(del.value + delHover.value));
   const tokens = read('sheets/TowerTorch.Tokens.css');
-  ok('the windows stay dark on a light theme, in the token island', /\n\.cc-pop, \.cc-menu, \.cc-win, \.cc-rowmenu[, ]/.test(tokens));
-  const title = top(['cc-win-title'], 'background');
-  ok('the title badge is filled with the colour chain', title && /var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent/.test(title.value));
-  const frame = top(['cc-win'], 'background'), card = top(['cc-win-card'], 'background');
+  ok('the windows stay dark on a light theme, in the token island', /\n\.tt-pop, \.tt-menu, \.tt-win, \.tt-rowmenu[, ]/.test(tokens));
+  const title = top(['tt-win-title'], 'background');
+  ok('the title badge is filled with the colour chain', title && /var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent/.test(title.value));
+  const frame = top(['tt-win'], 'background'), card = top(['tt-win-card'], 'background');
   ok('a dark frame', frame && frame.value === '#1a1a1a');
   ok('its content sits straight on it, with no lighter card', !card, card && card.value);
   const docker = read('styles/docker.css');
-  ok('the editor windows share the frame', /\.cc-pop \{[^}]*background: #1a1a1a/.test(docker));
-  ok('and its one surface, with no lighter card behind the content', /\.cc-pop-mid \{/.test(docker) && !/\.cc-pop-mid \{[^}]*(background|box-shadow)/.test(docker));
-  ok('no rule draws a typed close in the corner any more', !/\.cc-pop-x/.test(docker + tokens));
-  const xv = (prop, states) => { const r = top(['cc-win-x'], prop, states); return r && r.value; };
+  ok('the editor windows share the frame', /\.tt-pop \{[^}]*background: #1a1a1a/.test(docker));
+  ok('and its one surface, with no lighter card behind the content', /\.tt-pop-mid \{/.test(docker) && !/\.tt-pop-mid \{[^}]*(background|box-shadow)/.test(docker));
+  ok('no rule draws a typed close in the corner any more', !/\.tt-pop-x/.test(docker + tokens));
+  const xv = (prop, states) => { const r = top(['tt-win-x'], prop, states); return r && r.value; };
   ok('the close badge notches into the top right corner', xv('position') === 'absolute' && xv('top') === '0' && xv('right') === '16px' && xv('transform') === 'translateY(-50%)');
-  ok('it is a square icon badge of the one icon-badge size', /var\(--cc-icon-badge/.test(xv('width')) && /var\(--cc-icon-badge/.test(xv('height')));
-  const onDocker = candidates('docker', { tag: 'span', classes: ['cc-win-x'], attrs: { class: 'cc-win-x', 'data-tip': 'Schließen' }, states: {}, inside: ['.cc-pop'] }, 'position').pop();
+  ok('it is a square icon badge of the one icon-badge size', /var\(--tt-icon-badge/.test(xv('width')) && /var\(--tt-icon-badge/.test(xv('height')));
+  const onDocker = candidates('docker', { tag: 'span', classes: ['tt-win-x'], attrs: { class: 'tt-win-x', 'data-tip': 'Schließen' }, states: {}, inside: ['.tt-pop'] }, 'position').pop();
   ok('on the Docker page the bubble anchors\' position:relative leaves it in the corner', onDocker && onDocker.value === 'absolute', onDocker && onDocker.selector);
-  ok('it follows the shape engine', xv('border-radius') === 'var(--cc-radius-pill)');
-  ok('it rests on the field grey and hovers in the colour chain', /--cc-surface-3/.test(xv('background')) && /var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent/.test(xv('background', { hover: true })));
-  ok('the title badge leaves it room', top(['cc-win-title'], 'max-width').value === 'calc(100% - 74px)' && /\.cc-pop-head \{[^}]*max-width: calc\(100% - 74px\)/.test(docker));
+  ok('it follows the shape engine', xv('border-radius') === 'var(--tt-radius-pill)');
+  ok('it rests on the field grey and hovers in the colour chain', /--tt-surface-3/.test(xv('background')) && /var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent/.test(xv('background', { hover: true })));
+  ok('the title badge leaves it room', top(['tt-win-title'], 'max-width').value === 'calc(100% - 74px)' && /\.tt-pop-head \{[^}]*max-width: calc\(100% - 74px\)/.test(docker));
 }
 
 console.log('\nThe windows that use it');
@@ -316,38 +316,38 @@ console.log('\nThe windows that use it');
   }
   for (const fn of ['openEditor', 'openBandwidth', 'openLimits']) {
     const body = grabFn(docker, fn);
-    ok(fn + ': a title badge naming the container', /el\("span", "cc-win-title cc-pop-ttl", .*?\+ ": " \+ name\)/.test(body));
+    ok(fn + ': a title badge naming the container', /el\("span", "tt-win-title tt-pop-ttl", .*?\+ ": " \+ name\)/.test(body));
     ok(fn + ': no Close in the button row, the close badge stands in the corner', !/popCloseBtn|t\("close"\)/.test(body));
     ok(fn + ': no typed corner ✕', !/✕/.test(body));
   }
-  ok('the Startplan keeps its own Save', /bSave = ccLabelled\(el\("span", "cc-btn cc-btn-primary"\), "Save", t\("saveShort"\)\)/.test(grabFn(docker, 'openEditor')));
+  ok('the Startplan keeps its own Save', /bSave = ttLabelled\(el\("span", "tt-btn tt-btn-primary"\), "Save", t\("saveShort"\)\)/.test(grabFn(docker, 'openEditor')));
   const place = grabFn(docker, 'placePop'), close = grabFn(docker, 'closePop');
-  ok('placePop makes every editor modal, focus returning to its badge', /CCTheme\.modal\(pop, \{ opener: anchor, onDismiss: dismissPop \}\)/.test(place));
+  ok('placePop makes every editor modal, focus returning to its badge', /TTTheme\.modal\(pop, \{ opener: anchor, onDismiss: dismissPop \}\)/.test(place));
   ok('closePop, the funnel of every dismiss, closes the modal', /popModal = null; m\.close\(\)/.test(close));
-  ok('the painter covers the title badge and the close badge', /var POP_PAINT_SEL = "[^"]*\.cc-pop-ttl, \.cc-win-x"/.test(docker) && !/cc-pop-x/.test(docker));
-  ok('placePop paints again once the modal has added the close badge', /CCTheme\.modal\(pop, [^\n]*\n\s*paintPopChrome\(pop\);/.test(place));
-  ok('the window buttons answer the keyboard', /CCTheme\.pressable\(b\)/.test(grabFn(docker, 'hardenPop')));
-  ok('the gears that open the windows can be reached with Tab', /CCTheme\.pressable\(lb\)/.test(grabFn(docker, 'gearKeys')) && /return gearKeys\(lb\)/.test(grabFn(docker, 'limGear')) && /return gearKeys\(lb\)/.test(grabFn(docker, 'bwGear')));
+  ok('the painter covers the title badge and the close badge', /var POP_PAINT_SEL = "[^"]*\.tt-pop-ttl, \.tt-win-x"/.test(docker) && !/tt-pop-x/.test(docker));
+  ok('placePop paints again once the modal has added the close badge', /TTTheme\.modal\(pop, [^\n]*\n\s*paintPopChrome\(pop\);/.test(place));
+  ok('the window buttons answer the keyboard', /TTTheme\.pressable\(b\)/.test(grabFn(docker, 'hardenPop')));
+  ok('the gears that open the windows can be reached with Tab', /TTTheme\.pressable\(lb\)/.test(grabFn(docker, 'gearKeys')) && /return gearKeys\(lb\)/.test(grabFn(docker, 'limGear')) && /return gearKeys\(lb\)/.test(grabFn(docker, 'bwGear')));
 
   const vmEd = grabFn(vms, 'openVmEd');
-  ok('the VM window is a .cc-win with a title badge', /el\("div", "cc-win"\)/.test(vmEd) && /el\("div", "cc-win-title", titleMap\[which\] \+ ": " \+ name\)/.test(vmEd));
-  ok('its content has the scrolling content box',/el\("div", "cc-win-card"\)/.test(vmEd));
-  ok('its button row holds Apply alone, the close badge comes from the modal', vmEd.indexOf('VMDE ? "Schließen"') < 0 && vmEd.indexOf('"cc-win-btn cc-win-go", VMDE ? "Anwenden"') > 0);
+  ok('the VM window is a .tt-win with a title badge', /el\("div", "tt-win"\)/.test(vmEd) && /el\("div", "tt-win-title", titleMap\[which\] \+ ": " \+ name\)/.test(vmEd));
+  ok('its content has the scrolling content box',/el\("div", "tt-win-card"\)/.test(vmEd));
+  ok('its button row holds Apply alone, the close badge comes from the modal', vmEd.indexOf('VMDE ? "Schließen"') < 0 && vmEd.indexOf('"tt-win-btn tt-win-go", VMDE ? "Anwenden"') > 0);
   ok('it is modal through the shared helper', /CT\.modal\(win, \{ opener: anchor/.test(vmEd));
-  ok('no typed corner ✕ and no transparent click layer', !/✕/.test(vmEd) && !/cc-vmlim-ov/.test(vms + read('sheets/TowerTorch.VmTab.css')));
+  ok('no typed corner ✕ and no transparent click layer', !/✕/.test(vmEd) && !/tt-vmlim-ov/.test(vms + read('sheets/TowerTorch.VmTab.css')));
 
-  const create = grabFn(docker, 'ccOrgCreateFolder'), edit = grabFn(docker, 'openFolderEditor'), del = grabFn(docker, 'ccOrgDeleteFolder');
+  const create = grabFn(docker, 'ttOrgCreateFolder'), edit = grabFn(docker, 'openFolderEditor'), del = grabFn(docker, 'ttOrgDeleteFolder');
   ok('a new folder is named in a window with a text field', /input: \{/.test(create) && /t\("newFolderTitle"\)/.test(create));
-  ok('the folder editor is a CC window placed and made modal like the others, with its name prefilled', /el\("div", "cc-pop cc-pop-folder"\)/.test(edit) && /placePop\(pop, anchor, 360\)/.test(edit) && /nameIn\.value = self\.name/.test(edit));
+  ok('the folder editor is a TowerTorch window placed and made modal like the others, with its name prefilled', /el\("div", "tt-pop tt-pop-folder"\)/.test(edit) && /placePop\(pop, anchor, 360\)/.test(edit) && /nameIn\.value = self\.name/.test(edit));
   ok('it asks before unsaved changes are dropped', /pop\._unsaved = function/.test(edit));
   ok('a delete names the folder and counts what moves up', /t\("deleteFolderTitle"\)\.replace\("%s"/.test(del) && /n === 1/.test(del) && /danger: true/.test(del));
   const tde = /deleteFolderTitle: "([^"]+)"/.exec(docker);
   ok('the German delete title says what happens', tde && tde[1] === 'Ordner „%s“ löschen?', tde && tde[1]);
-  const bulk = grabFn(docker, 'ccBulkRemove');
+  const bulk = grabFn(docker, 'ttBulkRemove');
   ok('the bulk remove counts the containers in its title', /count \+ " Container entfernen\?"/.test(bulk) && /"Remove " \+ count \+ " container"/.test(bulk));
   ok('and its answer is a delete, never red', /danger: true/.test(bulk));
-  ok('Reset all asks in a window instead of arming itself', /CCTheme\.ask\(\{\s*title: T\("Alle Einstellungen zurücksetzen\?"/.test(settings) && !/data-armed/.test(settings) && !/Nochmal klicken|Click again/.test(settings));
-  ok('the plugin remove has no red confirm button', !/confirmButtonColor/.test(plugins) && /danger: true/.test(grabFn(plugins, 'ccPluginConfirm')));
+  ok('Reset all asks in a window instead of arming itself', /TTTheme\.ask\(\{\s*title: T\("Alle Einstellungen zurücksetzen\?"/.test(settings) && !/data-armed/.test(settings) && !/Nochmal klicken|Click again/.test(settings));
+  ok('the plugin remove has no red confirm button', !/confirmButtonColor/.test(plugins) && /danger: true/.test(grabFn(plugins, 'ttPluginConfirm')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

@@ -18,30 +18,30 @@ function grabFn(src, name) {
   throw new Error('unbalanced function: ' + name);
 }
 const read = (f) => fs.readFileSync(path.join(DIR, f), 'utf8');
-const theme = read('cc-theme.js');
+const theme = read('tt-theme.js');
 const store = {};
-const CCTheme = new Function('store', 'function g(k, d) { return k in store ? store[k] : d; }' + grabFn(theme, 'idealText') + grabFn(theme, 'isRed') + grabFn(theme, 'deleteSlot') +
+const TTTheme = new Function('store', 'function g(k, d) { return k in store ? store[k] : d; }' + grabFn(theme, 'idealText') + grabFn(theme, 'isRed') + grabFn(theme, 'deleteSlot') +
   'return { idealText: idealText, isRed: isRed, deleteSlot: deleteSlot };')(store);
 const RB = JSON.parse(/var RB = (\[[^\]]+\]);/.exec(theme)[1]);
 const AUSTRIA = ['#ED2939', '#FFFFFF', '#ED2939'];
 
 console.log('\nWhat counts as red');
-ok('the palette\'s red slot is red', CCTheme.isRed('#FF8389'));
-ok('a flag red is red', CCTheme.isRed('#D21034') && CCTheme.isRed('#ED2939'));
-ok('the orange beside it is not', !CCTheme.isRed('#FF832B'));
-ok('nor the magenta on its other side', !CCTheme.isRed('#FF7EB6'));
-ok('nor a grey with a warm cast', !CCTheme.isRed('#8a7a7a'));
-ok('the palette has exactly one red slot', RB.filter(CCTheme.isRed).length === 1);
+ok('the palette\'s red slot is red', TTTheme.isRed('#FF8389'));
+ok('a flag red is red', TTTheme.isRed('#D21034') && TTTheme.isRed('#ED2939'));
+ok('the orange beside it is not', !TTTheme.isRed('#FF832B'));
+ok('nor the magenta on its other side', !TTTheme.isRed('#FF7EB6'));
+ok('nor a grey with a warm cast', !TTTheme.isRed('#8a7a7a'));
+ok('the palette has exactly one red slot', RB.filter(TTTheme.isRed).length === 1);
 
 console.log('\nThe slot a delete takes');
-ok('a delete landing on red takes the next slot', CCTheme.deleteSlot(RB, 8) === RB[1], CCTheme.deleteSlot(RB, 8));
-ok('a delete elsewhere keeps its own slot', CCTheme.deleteSlot(RB, 11) === RB[3]);
-ok('in a red and white palette of the user\'s own it takes the white', CCTheme.deleteSlot(AUSTRIA, 0) === '#FFFFFF');
-store['cc.flagmode'] = '1';
-ok('in flag mode a delete on the flag\'s red takes the next colour', CCTheme.deleteSlot(AUSTRIA, 0) === '#FFFFFF', CCTheme.deleteSlot(AUSTRIA, 0));
-ok('and a delete on a white slot keeps it', CCTheme.deleteSlot(AUSTRIA, 4) === '#FFFFFF');
-ok('a flag that is all red keeps its colour, there being nothing else to take', CCTheme.deleteSlot(['#D21034', '#ED2939'], 0) === '#D21034');
-delete store['cc.flagmode'];
+ok('a delete landing on red takes the next slot', TTTheme.deleteSlot(RB, 8) === RB[1], TTTheme.deleteSlot(RB, 8));
+ok('a delete elsewhere keeps its own slot', TTTheme.deleteSlot(RB, 11) === RB[3]);
+ok('in a red and white palette of the user\'s own it takes the white', TTTheme.deleteSlot(AUSTRIA, 0) === '#FFFFFF');
+store['tt.flagmode'] = '1';
+ok('in flag mode a delete on the flag\'s red takes the next colour', TTTheme.deleteSlot(AUSTRIA, 0) === '#FFFFFF', TTTheme.deleteSlot(AUSTRIA, 0));
+ok('and a delete on a white slot keeps it', TTTheme.deleteSlot(AUSTRIA, 4) === '#FFFFFF');
+ok('a flag that is all red keeps its colour, there being nothing else to take', TTTheme.deleteSlot(['#D21034', '#ED2939'], 0) === '#D21034');
+delete store['tt.flagmode'];
 
 function button(classes) {
   const b = { cls: new Set(classes), css: {} };
@@ -51,7 +51,7 @@ function button(classes) {
   return b;
 }
 function settings(extra) {
-  const s = Object.assign({ 'cc.rainbow': '1', 'cc.rainbowrot': '0' }, extra);
+  const s = Object.assign({ 'tt.rainbow': '1', 'tt.rainbowrot': '0' }, extra);
   return { getItem: (k) => (k in s ? s[k] : null) };
 }
 
@@ -67,20 +67,20 @@ console.log('\nThe delete badge on the Plugins page');
   ok('paintRow gives the delete badge a slot of its own', i > 0 && j > i);
   // the slot logic as paintRow runs it, against a row whose colour is the red slot
   const run = (extra) => {
-    const ls = settings(Object.assign({ 'cc.rbpal': null }, extra));
-    const b = button(['cc-b-del']);
+    const ls = settings(Object.assign({ 'tt.rbpal': null }, extra));
+    const b = button(['tt-b-del']);
     const td = { querySelectorAll: () => [b] };
     new Function('ls', 'window', 'pal', 'colorFor', 'idealText', 'RB_OFFSET', 'idx', 'tds', paint.slice(i, j))(
-      (k) => ls.getItem(k), { CCTheme }, () => RB, (n) => RB[n % RB.length], CCTheme.idealText, 0, 8, [0, 0, 0, 0, 0, td]);
-    return b.css['--cc-rb-c'];
+      (k) => ls.getItem(k), { TTTheme }, () => RB, (n) => RB[n % RB.length], TTTheme.idealText, 0, 8, [0, 0, 0, 0, 0, td]);
+    return b.css['--tt-rb-c'];
   };
   const own = run();
-  ok('a badge in a row on the red slot gets a colour that is not red', !!own && !CCTheme.isRed(own), own);
-  ok('a badge in an accent-coloured row keeps the row\'s colour', run({ 'cc.rainbow': '0' }) === undefined);
-  store['cc.flagmode'] = '1';
+  ok('a badge in a row on the red slot gets a colour that is not red', !!own && !TTTheme.isRed(own), own);
+  ok('a badge in an accent-coloured row keeps the row\'s colour', run({ 'tt.rainbow': '0' }) === undefined);
+  store['tt.flagmode'] = '1';
   const flag = run();
-  ok('in flag mode it leaves the red slot too', !!flag && !CCTheme.isRed(flag), flag);
-  delete store['cc.flagmode'];
+  ok('in flag mode it leaves the red slot too', !!flag && !TTTheme.isRed(flag), flag);
+  delete store['tt.flagmode'];
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

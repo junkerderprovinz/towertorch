@@ -37,7 +37,7 @@ const CHOSEN = process.argv.slice(2);
 
 const VIEW = { width: 1440, height: 900 };
 // The pages read TowerTorch's settings, kept in /boot/config/plugins/towertorch, from the engine here.
-const SETTINGS = /\/plugins\/towertorch\/server\/ccapi\.php\?path=config(&|$)/;
+const SETTINGS = /\/plugins\/towertorch\/server\/ttapi\.php\?path=config(&|$)/;
 const DEMO_NAME = "Tower";
 const DEMO_DESCRIPTION = "Media server";
 
@@ -61,26 +61,26 @@ const LOGIN_ACCENT = "#FF832B";
 // Applied on every page on top of the server's own settings, so each picture shows the accent
 // itself rather than the palette, and every area follows the one accent.
 const LOOK = {
-  "cc.theming": "1",
-  "cc.rainbow": "0",
-  "cc.flagmode": "0",
-  "cc.rbmode": "all",
-  "cc.anim": "off",
-  "cc.iconbg": "1",
-  "cc.iconbgrainbow": "1",
-  "cc.icontint": "1",
-  "cc.enable.header": "1",
-  "cc.enable.docker": "1",
-  "cc.enable.main": "1",
-  "cc.enable.shares": "1",
-  "cc.enable.plugins": "1",
-  "cc.enable.vms": "1",
-  "cc.styleheader": "1",
-  "cc.styledocker": "1",
-  "cc.stylemain": "1",
-  "cc.styleshares": "1",
-  "cc.styleplugin": "1",
-  "cc.stylevms": "1",
+  "tt.theming": "1",
+  "tt.rainbow": "0",
+  "tt.flagmode": "0",
+  "tt.rbmode": "all",
+  "tt.anim": "off",
+  "tt.iconbg": "1",
+  "tt.iconbgrainbow": "1",
+  "tt.icontint": "1",
+  "tt.enable.header": "1",
+  "tt.enable.docker": "1",
+  "tt.enable.main": "1",
+  "tt.enable.shares": "1",
+  "tt.enable.plugins": "1",
+  "tt.enable.vms": "1",
+  "tt.styleheader": "1",
+  "tt.styledocker": "1",
+  "tt.stylemain": "1",
+  "tt.styleshares": "1",
+  "tt.styleplugin": "1",
+  "tt.stylevms": "1",
 };
 
 // What each picture keeps, in the order shown. Everything else on the page is taken out, so
@@ -91,7 +91,7 @@ const PAGES = [
     name: "docker",
     path: "/Docker",
     accent: "#FCC419",
-    key: "cc.view",
+    key: "tt.view",
     views: { list: "list", tiles: "grid" },
     keep: ["Plex", "Immich", "Nextcloud", "Nginx", "MariaDB", "PostgreSQL", "Redis", "Tautulli", "CrowdSec",
       "OpenWebUI", "Ollama", "Homarr", "StirlingPDF", "Minecraft"],
@@ -101,7 +101,7 @@ const PAGES = [
     name: "startplan",
     path: "/Docker",
     accent: "#3DDBD9",
-    key: "cc.view",
+    key: "tt.view",
     views: { list: "list", tiles: "list" },
     keep: ["Plex", "Immich", "Nextcloud", "Nginx", "MariaDB", "PostgreSQL", "Redis", "Tautulli", "CrowdSec",
       "OpenWebUI", "Ollama", "Homarr", "StirlingPDF", "Minecraft"],
@@ -113,7 +113,7 @@ const PAGES = [
     name: "main",
     path: "/Main",
     accent: "#1D99F3",
-    key: "cc.diskview",
+    key: "tt.diskview",
     views: { list: "list", tiles: "tiles" },
     wake: true,
   },
@@ -121,7 +121,7 @@ const PAGES = [
     name: "shares",
     path: "/Shares",
     accent: "#6FDC8C",
-    key: "cc.shareview",
+    key: "tt.shareview",
     views: { list: "list", tiles: "tiles" },
     keep: ["appdata", "backups", "domains", "downloads", "games", "immich", "isos", "media", "nextcloud", "photos", "software", "system"],
     rename: { download: "downloads", filerun: "games", medien: "media", opencloud: "photos", seaweedfs: "software" },
@@ -130,7 +130,7 @@ const PAGES = [
     name: "plugins",
     path: "/Plugins",
     accent: "#BE95FF",
-    key: "cc.pluginview",
+    key: "tt.pluginview",
     views: { list: "list", tiles: "tiles" },
     keep: ["TowerTorch", "Community Applications", "Unassigned Devices", "Fix Common Problems", "User Scripts", "Tailscale",
       "Nvidia Driver", "GPU Statistics", "Unassigned Devices Plus", "Unassigned Devices Preclear", "Dynamix Cache Directories",
@@ -142,7 +142,7 @@ const PAGES = [
     name: "vms",
     path: "/VMs",
     accent: "#FF7EB6",
-    key: "cc.vmview",
+    key: "tt.vmview",
     views: { list: "list", tiles: "grid" },
     keep: ["Home Assistant OS", "Windows 11", "Ubuntu Server", "Debian"],
     rename: { Linux: "Home Assistant OS", Ubuntu: "Ubuntu Server", "TrueNAS-Test": "Debian" },
@@ -276,8 +276,8 @@ async function login(page) {
 async function curate({ keep, rename, describe, english, nav }) {
   const nameOf = (el) => {
     const n = el.dataset.name || el.dataset.key ||
-      el.querySelector(".appname, .vm-name .inner > a, td:first-child a[href*='name='], .cc-plugtitle")?.textContent ||
-      el.querySelector("[data-cc-pname]")?.dataset.ccPname || "";
+      el.querySelector(".appname, .vm-name .inner > a, td:first-child a[href*='name='], .tt-plugtitle")?.textContent ||
+      el.querySelector("[data-tt-pname]")?.dataset.ttPname || "";
     return n.trim();
   };
   const renamed = (n) => (rename && rename[n]) || n;
@@ -297,7 +297,7 @@ async function curate({ keep, rename, describe, english, nav }) {
       groups.filter((g) => order(g.name) >= 0).sort((x, y) => order(x.name) - order(y.name))
         .forEach((g) => g.rows.forEach((r) => parent.appendChild(r)));
     }
-    const cards = [...document.querySelectorAll(".cc-card[data-name], .cc-sht-card[data-key], .cc-plt-card[data-key], .cc-vm-grid > [data-name]")];
+    const cards = [...document.querySelectorAll(".tt-card[data-name], .tt-sht-card[data-key], .tt-plt-card[data-key], .tt-vm-grid > [data-name]")];
     for (const c of cards) if (order(nameOf(c)) < 0) c.remove();
     const byParent = new Map();
     for (const c of cards.filter((c) => c.isConnected)) {
@@ -342,7 +342,7 @@ async function curate({ keep, rename, describe, english, nav }) {
       .replace(/\b(\d+) Sekunden?\b/g, unit("second"));
     return m[1] + (word(core) || core) + m[3];
   };
-  const ATTRS = ["title", "alt", "placeholder", "aria-label", "data-tip", "data-cc-tip", "data-original-title", "data-name", "data-key"];
+  const ATTRS = ["title", "alt", "placeholder", "aria-label", "data-tip", "data-tt-tip", "data-original-title", "data-name", "data-key"];
   const visit = (each) => {
     const roots = [document.documentElement];
     for (let i = 0; i < roots.length; i++) {
@@ -379,7 +379,7 @@ async function curate({ keep, rename, describe, english, nav }) {
   });
   // A VM description is free text, so each kept VM gets its demo one.
   for (const [vm, text] of Object.entries(describe || {})) {
-    for (const el of document.querySelectorAll("#kvm_list > tr.sortable, .cc-vm-grid > [data-name]")) {
+    for (const el of document.querySelectorAll("#kvm_list > tr.sortable, .tt-vm-grid > [data-name]")) {
       if (nameOf(el) !== vm) continue;
       const cell = el.matches("tr") ? el.children[2] : el.querySelector("[class*='desc']");
       const leaf = cell && [...cell.querySelectorAll("*")].reverse().find((x) => !x.children.length && x.textContent.trim());
@@ -449,7 +449,7 @@ try {
     if (/\/webGui\/javascript\/translate\.[A-Za-z_]+\.js/.test(url)) {
       return route.fulfill({ contentType: "application/javascript", body: "function _(t){return t;}" });
     }
-    if (method === "GET" && state.plan && /\/plugins\/towertorch\/server\/ccapi\.php\?path=state(&|$)/.test(url)) {
+    if (method === "GET" && state.plan && /\/plugins\/towertorch\/server\/ttapi\.php\?path=state(&|$)/.test(url)) {
       const res = await route.fetch();
       const json = await res.json();
       json.plan = state.plan;
@@ -475,10 +475,10 @@ try {
     if (!/json|html|text\/plain/.test(res.headers()["content-type"] || "")) return route.fulfill({ response: res });
     let body = await res.text();
     if (req.resourceType() === "document") body = body.replace(/<html([^>]*?)\blang="[^"]*"/, '<html$1lang="en"');
-    if (/organizer/.test(postData || "") && state.settings["cc.view"]) {
+    if (/organizer/.test(postData || "") && state.settings["tt.view"]) {
       try {
         const json = JSON.parse(body);
-        for (const v of json?.data?.docker?.organizer?.views || []) v.prefs = Object.assign(v.prefs || {}, { ccViewMode: state.settings["cc.view"] });
+        for (const v of json?.data?.docker?.organizer?.views || []) v.prefs = Object.assign(v.prefs || {}, { ttViewMode: state.settings["tt.view"] });
         body = JSON.stringify(json);
       } catch {}
     }
@@ -497,15 +497,15 @@ try {
   const shots = PAGES.filter((p) => !CHOSEN.length || CHOSEN.includes(p.name));
   for (const shot of shots) {
     for (const [view, value] of Object.entries(shot.views)) {
-      const settings = Object.assign({ "cc.accent": shot.accent }, { [shot.key]: value });
+      const settings = Object.assign({ "tt.accent": shot.accent }, { [shot.key]: value });
       state = { settings, frozen: false, shares: shot.name === "shares" ? shot.rename : {}, wake: !!shot.wake, plan: shot.plan || null };
       for (const route of held.splice(0)) route.abort().catch(() => {});
       await page.goto(`${BASE}/Dashboard`, { waitUntil: "load" });
-      await page.evaluate((s) => { for (const [k, v] of Object.entries(s)) window.__ccLS ? window.__ccLS(k, v) : localStorage.setItem(k, v); }, Object.assign({}, LOOK, settings));
+      await page.evaluate((s) => { for (const [k, v] of Object.entries(s)) window.__ttLS ? window.__ttLS(k, v) : localStorage.setItem(k, v); }, Object.assign({}, LOOK, settings));
       await page.goto(`${BASE}${shot.path}`, { waitUntil: "load", timeout: 60000 });
       await page.waitForTimeout(9000);
       if (shot.open && view === "tiles") {
-        await page.locator("#docker_list tr", { hasText: shot.open }).first().locator("a.cc-plan").first().click();
+        await page.locator("#docker_list tr", { hasText: shot.open }).first().locator("a.tt-plan").first().click();
         await page.waitForTimeout(2500);
       }
       await page.mouse.move(VIEW.width / 2, 2);
@@ -530,7 +530,7 @@ try {
   if (!CHOSEN.length || CHOSEN.includes("login")) {
     for (const [view, light] of [["tiles", false], ["list", true]]) {
       const guest = await browser.newContext({ ignoreHTTPSErrors: true, viewport: VIEW, deviceScaleFactor: 2, locale: "en-US", colorScheme: "dark" });
-      await guest.addInitScript((accent) => { localStorage.setItem("cc.accent", accent); }, LOGIN_ACCENT);
+      await guest.addInitScript((accent) => { localStorage.setItem("tt.accent", accent); }, LOGIN_ACCENT);
       const gp = await guest.newPage();
       await gp.route(/./, async (route) => {
         if (route.request().resourceType() !== "document") return route.continue();

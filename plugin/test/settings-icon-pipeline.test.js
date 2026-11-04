@@ -10,10 +10,10 @@
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
-const THEME = process.argv[2] || path.join(DIR, 'cc-theme.js');
+const THEME = process.argv[2] || path.join(DIR, 'tt-theme.js');
 const SETTINGS = process.argv[3] || path.join(DIR, 'settings.js');
 
-// The DOM and storage shim from icon-pipeline.test.js, cut down to what cc-theme.js
+// The DOM and storage shim from icon-pipeline.test.js, cut down to what tt-theme.js
 // touches at require time.
 const byId = {};
 const document = {
@@ -38,10 +38,10 @@ global.window = { localStorage: global.localStorage, document, setTimeout, clear
 global.location = { pathname: '/Docker' }; // skip the cross-origin sync block, as icon-pipeline.test.js does
 global.fetch = () => new Promise(() => {});
 
-// Load cc-theme.js the way the browser does.
+// Load tt-theme.js the way the browser does.
 require(THEME);
-const CCTheme = global.window.CCTheme;
-if (!CCTheme || !CCTheme.liftDark) throw new Error('cc-theme.js did not export window.CCTheme.liftDark');
+const TTTheme = global.window.TTTheme;
+if (!TTTheme || !TTTheme.liftDark) throw new Error('tt-theme.js did not export window.TTTheme.liftDark');
 
 // Pull the hex6(), badgeBg() and ink() bodies out of settings.js and drive them
 // through an injected `st` standing in for logoPreview()'s closed-over state.
@@ -61,7 +61,7 @@ const settingsApi = new Function('st', 'window',
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
-const resetSt = () => { st.bg = false; st.bgColor = ''; st.tint = false; st.color = ''; st.adopt = false; st.strength = 100; st.accent = '#2f6feb'; store['cc.rainbow'] = '0'; };
+const resetSt = () => { st.bg = false; st.bgColor = ''; st.tint = false; st.color = ''; st.adopt = false; st.strength = 100; st.accent = '#2f6feb'; store['tt.rainbow'] = '0'; };
 
 console.log('\nsettings.js logoPreview() ink(): the colour the live preview paints with');
 {
@@ -112,12 +112,12 @@ console.log('\nAdopting the badge colours, tile by tile as the tabs paint them')
   ok('the tile itself takes the badge colour, not the picked one', settingsApi.tileBg(0) === '#1030a0', settingsApi.tileBg(0));
   st.accent = '#FCC419';
   ok('a light badge tile gets the dark ink, unlifted', settingsApi.ink(true, 0) === '#161616', settingsApi.ink(true, 0));
-  store['cc.rainbow'] = '1'; store['cc.rainbowrot'] = '0';
+  store['tt.rainbow'] = '1'; store['tt.rainbowrot'] = '0';
   const tiles = [0, 1, 2, 3].map((i) => settingsApi.tileBg(i));
-  ok('with the rainbow on each tile takes its own place in the palette', new Set(tiles).size === 4 && tiles[0] === CCTheme.rbColor(0, '#FCC419'), tiles.join(' '));
-  ok('and each ink reads on its own tile', [0, 1, 2, 3].every((i) => settingsApi.ink(false, i) === settingsApi.hex6(CCTheme.idealText(tiles[i]))));
+  ok('with the rainbow on each tile takes its own place in the palette', new Set(tiles).size === 4 && tiles[0] === TTTheme.rbColor(0, '#FCC419'), tiles.join(' '));
+  ok('and each ink reads on its own tile', [0, 1, 2, 3].every((i) => settingsApi.ink(false, i) === settingsApi.hex6(TTTheme.idealText(tiles[i]))));
   st.bg = false;
-  ok('without a tile the ink is the badge colour the tabs give their icons', settingsApi.ink(false, 0) === CCTheme.liftSurface(CCTheme.rbColor(5, '#FCC419'), '#FCC419', CCTheme.LUM_FLOOR), settingsApi.ink(false, 0));
+  ok('without a tile the ink is the badge colour the tabs give their icons', settingsApi.ink(false, 0) === TTTheme.liftSurface(TTTheme.rbColor(5, '#FCC419'), '#FCC419', TTTheme.LUM_FLOOR), settingsApi.ink(false, 0));
   ok('and no tile is drawn', settingsApi.tileBg(0) === '');
   st.tint = false;
   ok('with the tint off nothing is inked, adopting or not', settingsApi.ink(false, 0) === '');
@@ -127,12 +127,12 @@ console.log('\nAdopting the badge colours, tile by tile as the tabs paint them')
 console.log('\nThe global Logos & icons card previews the global values');
 {
   const g = grabFn('gpaint');
-  ok('every section shows the global values, whatever an area has of its own', /bg: get\("cc\.iconbg", "0"\) === "1"/.test(g) && /tint: tintOnAt\("cc\."\)/.test(g) && /strength: parseInt\(get\("cc\.iconstrength", "100"\), 10\)/.test(g) && !/styleKey|prefix|pre \+/.test(g));
+  ok('every section shows the global values, whatever an area has of its own', /bg: get\("tt\.iconbg", "0"\) === "1"/.test(g) && /tint: tintOnAt\("tt\."\)/.test(g) && /strength: parseInt\(get\("tt\.iconstrength", "100"\), 10\)/.test(g) && !/styleKey|prefix|pre \+/.test(g));
   ok('so no caption names an area\'s own colour', !/eigene Farbe", "own colour"/.test(g) && !/label\.textContent/.test(g));
   ok('nor does an exception repaint them', !/areaSync\[sec9/.test(src));
-  ok('an area with its own values previews them on its own tab', /tint: ga9 \? tintOnAt\("cc\."\) : tintOnAt\(P\)/.test(src));
-  ok('the colouring mode is shut while the icons are not tinted', /setRowEnabled\(modeRow, tintOnAt\("cc\."\)\);/.test(g));
-  ok('a shut row fades and shows that it takes no press', /\.cc-set-disabled :is\([^)]*\.cc-seg[^)]*\)\{opacity:\.45\}/.test(src) && /\.cc-set-disabled :is\(\.cc-seg, \.cc-seg-btn, \.cc-set-toggle, \.cc-set-numwrap\)\{cursor:not-allowed\}/.test(src));
+  ok('an area with its own values previews them on its own tab', /tint: ga9 \? tintOnAt\("tt\."\) : tintOnAt\(P\)/.test(src));
+  ok('the colouring mode is shut while the icons are not tinted', /setRowEnabled\(modeRow, tintOnAt\("tt\."\)\);/.test(g));
+  ok('a shut row fades and shows that it takes no press', /\.tt-set-disabled :is\([^)]*\.tt-seg[^)]*\)\{opacity:\.45\}/.test(src) && /\.tt-set-disabled :is\(\.tt-seg, \.tt-seg-btn, \.tt-set-toggle, \.tt-set-numwrap\)\{cursor:not-allowed\}/.test(src));
 }
 
 console.log('\nA shut row leaves the tab order and opens again with its switch');
@@ -142,20 +142,20 @@ console.log('\nA shut row leaves the tab order and opens again with its switch')
     const attrs = {}, classes = new Set(cls.split(' '));
     return { attrs, disabled: false, classList: { toggle(c, on) { on ? classes.add(c) : classes.delete(c); }, contains: (c) => classes.has(c) }, has: (c) => classes.has(c), setAttribute(k, v) { attrs[k] = String(v); }, removeAttribute(k) { delete attrs[k]; }, getAttribute: (k) => attrs[k] };
   };
-  const seg = node('cc-seg'), on = node('cc-seg-btn cc-seg-on'), off = node('cc-seg-btn'), input = node('cc-set-num');
+  const seg = node('tt-seg'), on = node('tt-seg-btn tt-seg-on'), off = node('tt-seg-btn'), input = node('tt-set-num');
   on.setAttribute('tabindex', '0'); off.setAttribute('tabindex', '-1');
-  const row = node('cc-set-row');
-  row.querySelectorAll = (sel) => ({ '.cc-seg, .cc-set-toggle': [seg], '.cc-set-toggle': [], '.cc-seg-btn': [on, off], 'input': [input] })[sel];
+  const row = node('tt-set-row');
+  row.querySelectorAll = (sel) => ({ '.tt-seg, .tt-set-toggle': [seg], '.tt-set-toggle': [], '.tt-seg-btn': [on, off], 'input': [input] })[sel];
   setRowEnabled(row, false);
-  ok('shut: the row is marked', row.has('cc-set-disabled'));
+  ok('shut: the row is marked', row.has('tt-set-disabled'));
   ok('shut: the selector says it is disabled', seg.getAttribute('aria-disabled') === 'true');
   ok('shut: no segment is a tab stop', on.getAttribute('tabindex') === '-1' && off.getAttribute('tabindex') === '-1');
   ok('shut: a field in the row is disabled', input.disabled === true);
   setRowEnabled(row, true);
-  ok('open: the mark and the aria-disabled go', !row.has('cc-set-disabled') && seg.getAttribute('aria-disabled') === undefined);
+  ok('open: the mark and the aria-disabled go', !row.has('tt-set-disabled') && seg.getAttribute('aria-disabled') === undefined);
   ok('open: the chosen segment is the tab stop again', on.getAttribute('tabindex') === '0' && off.getAttribute('tabindex') === '-1');
   ok('open: the field takes input again', input.disabled === false);
-  ok('the status island shuts what it shows while it is off', /var gate = function \(\) \{ var on = get\("cc\.island", "1"\) !== "0"; shown\.forEach\(function \(r\) \{ setRowEnabled\(r, on\); \}\); \};/.test(src) && /set\("cc\.island", v \? "1" : "0"\); gate\(\);/.test(src));
+  ok('the status island shuts what it shows while it is off', /var gate = function \(\) \{ var on = get\("tt\.island", "1"\) !== "0"; shown\.forEach\(function \(r\) \{ setRowEnabled\(r, on\); \}\); \};/.test(src) && /set\("tt\.island", v \? "1" : "0"\); gate\(\);/.test(src));
 }
 
 {

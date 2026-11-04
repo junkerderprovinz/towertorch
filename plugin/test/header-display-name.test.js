@@ -1,5 +1,5 @@
-// The header can show a display name of its own. It is a CC setting, cc.brand.name, typed on the
-// Kopfbereich tab beside its name, and only CC's header reads it: Unraid's server name stays as
+// The header can show a display name of its own. It is a TowerTorch setting, tt.brand.name, typed on the
+// Kopfbereich tab beside its name, and only TowerTorch's header reads it: Unraid's server name stays as
 // it is, and an empty field shows that name again.
 const fs = require('fs');
 const path = require('path');
@@ -19,44 +19,44 @@ function grabFn(src, name) {
 
 console.log('\nThe header shows the display name, else the server name');
 {
-  // ccBrand() against a header element and a store, reading back the text it renders.
+  // ttBrand() against a header element and a store, reading back the text it renders.
   function brand(store, title) {
     const kids = [];
     const mk = (tag) => ({ tag, style: { setProperty() {} }, children: [], firstChild: null, className: '', appendChild(c) { this.children.push(c); this.firstChild = this.children[0]; return c; }, removeChild(c) { this.children.splice(this.children.indexOf(c), 1); this.firstChild = this.children[0] || null; } });
-    const hdr = mk('div'); hdr.insertBefore = (c) => { kids.push(c); c.id = 'cc-brand'; };
-    const document = { title, getElementById: (id) => id === 'header' ? hdr : (id === 'cc-brand' ? kids[0] || null : null), createElement: mk, createTextNode: (t) => ({ text: t }), querySelector: () => null };
+    const hdr = mk('div'); hdr.insertBefore = (c) => { kids.push(c); c.id = 'tt-brand'; };
+    const document = { title, getElementById: (id) => id === 'header' ? hdr : (id === 'tt-brand' ? kids[0] || null : null), createElement: mk, createTextNode: (t) => ({ text: t }), querySelector: () => null };
     const g = (k, d) => (k in store ? store[k] : d);
-    new Function('document', 'g', 'window', 'var ccBrandSig = "";\n' + grabFn(header, 'ccBrandOn') + '\n' + grabFn(header, 'ccBrand') + '\nccBrand();')(document, g, {});
+    new Function('document', 'g', 'window', 'var ttBrandSig = "";\n' + grabFn(header, 'ttBrandOn') + '\n' + grabFn(header, 'ttBrand') + '\nttBrand();')(document, g, {});
     return kids[0] || null;
   }
   function render(store, title) {
     const br = brand(store, title);
-    const nm = br && br.children.find((c) => c.className === 'cc-brand-name');
+    const nm = br && br.children.find((c) => c.className === 'tt-brand-name');
     return nm ? nm.children[0].text : null;
   }
-  const on = { 'cc.enable.header': '1' };
+  const on = { 'tt.enable.header': '1' };
   ok('no display name: the server name from the title', render(Object.assign({}, on), 'Bottich/Settings') === 'Bottich');
-  ok('a display name: that name instead', render(Object.assign({ 'cc.brand.name': 'Kommandostand' }, on), 'Bottich/Settings') === 'Kommandostand');
-  ok('blanks around it are dropped', render(Object.assign({ 'cc.brand.name': '  Feste  ' }, on), 'Bottich/Settings') === 'Feste');
-  ok('a name of blanks counts as empty', render(Object.assign({ 'cc.brand.name': '   ' }, on), 'Bottich/Settings') === 'Bottich');
+  ok('a display name: that name instead', render(Object.assign({ 'tt.brand.name': 'Kommandostand' }, on), 'Bottich/Settings') === 'Kommandostand');
+  ok('blanks around it are dropped', render(Object.assign({ 'tt.brand.name': '  Feste  ' }, on), 'Bottich/Settings') === 'Feste');
+  ok('a name of blanks counts as empty', render(Object.assign({ 'tt.brand.name': '   ' }, on), 'Bottich/Settings') === 'Bottich');
 
   const plain = brand(Object.assign({}, on), 'Bottich/Settings');
-  ok('without the logo switch the name stands alone', plain.children.length === 1 && plain.children[0].className === 'cc-brand-name');
-  const logo = brand(Object.assign({ 'cc.brand.logo': '1', 'cc.brand.logov': '42' }, on), 'Bottich/Settings');
-  ok('with it the logo comes first, left of the name', logo.children[0].tag === 'img' && logo.children[1].className === 'cc-brand-name');
+  ok('without the logo switch the name stands alone', plain.children.length === 1 && plain.children[0].className === 'tt-brand-name');
+  const logo = brand(Object.assign({ 'tt.brand.logo': '1', 'tt.brand.logov': '42' }, on), 'Bottich/Settings');
+  ok('with it the logo comes first, left of the name', logo.children[0].tag === 'img' && logo.children[1].className === 'tt-brand-name');
   ok('the logo URL carries the upload version, so a new logo is not served from the cache', /loginlogo\.php\?img=1&v=42$/.test(logo.children[0].src));
   const sheet = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Header.css'), 'utf8');
-  ok('the logo is a little smaller than the name\'s font size', /\.cc-brand-logo \{[^}]*height: calc\(var\(--cc-brand-size, 30px\) \* \.9\);/.test(sheet));
-  ok('its buttons on the settings page are card buttons like the others', /labelled\(el\("button", "cc-btn cc-set-xbtn"\), "Upload", T\("Logo wählen", "Choose logo"\)\)/.test(settings) && /labelled\(el\("button", "cc-btn cc-set-xbtn"\), "Trash", T\("Entfernen", "Remove"\)\)/.test(settings));
+  ok('the logo is a little smaller than the name\'s font size', /\.tt-brand-logo \{[^}]*height: calc\(var\(--tt-brand-size, 30px\) \* \.9\);/.test(sheet));
+  ok('its buttons on the settings page are card buttons like the others', /labelled\(el\("button", "tt-btn tt-set-xbtn"\), "Upload", T\("Logo wählen", "Choose logo"\)\)/.test(settings) && /labelled\(el\("button", "tt-btn tt-set-xbtn"\), "Trash", T\("Entfernen", "Remove"\)\)/.test(settings));
 }
 
 console.log('\nThe field on the Kopfbereich tab');
 {
-  const at = settings.indexOf('var nmRow = el("div", "cc-set-row")');
+  const at = settings.indexOf('var nmRow = el("div", "tt-set-row")');
   const block = settings.slice(at, settings.indexOf('cB.appendChild(nmRow);', at));
-  ok('it is a one-line field beside its name, which the sheet puts at the row\'s end', /el\("input", "cc-set-txt"\)/.test(block) && /nmRow\.appendChild\(nmL\); nmRow\.appendChild\(nmIn\)/.test(settings));
+  ok('it is a one-line field beside its name, which the sheet puts at the row\'s end', /el\("input", "tt-set-txt"\)/.test(block) && /nmRow\.appendChild\(nmL\); nmRow\.appendChild\(nmIn\)/.test(settings));
   ok('its name carries a bubble that says Unraid\'s own name stays', /nmL\.appendChild\(infoIcon\(T\([^)]*Unraids eigener Servername bleibt/.test(block));
-  ok('a typed name is saved and the header follows at once', /if \(v\) set\("cc\.brand\.name", v\); else del\("cc\.brand\.name"\); syncHeaderBar\(\);/.test(block));
+  ok('a typed name is saved and the header follows at once', /if \(v\) set\("tt\.brand\.name", v\); else del\("tt\.brand\.name"\); syncHeaderBar\(\);/.test(block));
   ok('the server name it falls back to is the placeholder', /nmIn\.placeholder = \(document\.title\.split\("\/"\)\[0\] \|\| ""\)\.trim\(\) \|\| "Unraid";/.test(block));
   ok('it sits in the Servername card, first', settings.indexOf('var nmRow') > settings.indexOf('card(T("Servername", "Server name")') && settings.indexOf('var nmRow') < settings.indexOf('label: T("Größe", "Size")'));
   ok('nothing writes Unraid\'s hostname', !/NAME=|ident\.cfg|#file", "ident/.test(settings));

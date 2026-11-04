@@ -621,9 +621,9 @@ func (s *Server) handleStats(w http.ResponseWriter, r *http.Request) {
 		go func(name string) {
 			defer wg.Done()
 			defer func() { <-sem }()
-			cctx, cancel := context.WithTimeout(r.Context(), perCallTimeout)
+			callCtx, cancel := context.WithTimeout(r.Context(), perCallTimeout)
 			defer cancel()
-			st, serr := s.Docker.Stats(cctx, name)
+			st, serr := s.Docker.Stats(callCtx, name)
 			if serr != nil {
 				return
 			}
@@ -657,9 +657,9 @@ func (s *Server) handleGetLimits(w http.ResponseWriter, r *http.Request) {
 			go func(nm string) {
 				defer wg.Done()
 				defer func() { <-sem }()
-				cctx, cancel := context.WithTimeout(r.Context(), perCallTimeout)
+				callCtx, cancel := context.WithTimeout(r.Context(), perCallTimeout)
 				defer cancel()
-				lim, lerr := s.Docker.Limits(cctx, nm)
+				lim, lerr := s.Docker.Limits(callCtx, nm)
 				if lerr != nil {
 					return
 				}
@@ -746,7 +746,7 @@ func (s *Server) handleSetLimits(w http.ResponseWriter, r *http.Request) {
 	tmplResult := "template: no change"
 	if s.TemplatesDir != "" {
 		// Every flag of the touched family is stripped (an empty value removes it)
-		// and only CC's value added back, so a stale template cap cannot return on a
+		// and only TowerTorch's value added back, so a stale template cap cannot return on a
 		// recreate. --memory-swap is never written: it needs the memsw cgroup, which
 		// hosts without swap accounting lack.
 		flags := map[string]string{}
@@ -897,7 +897,7 @@ type Kicker interface {
 	Kick()
 }
 
-// handleBwStatus reads the live qdisc and CC_DL netfilter chain inside the
+// handleBwStatus reads the live qdisc and TT_DL netfilter chain inside the
 // container's network namespace, so the UI can show whether the bandwidth limit
 // is in place or why not.
 func (s *Server) handleBwStatus(w http.ResponseWriter, r *http.Request) {
@@ -940,9 +940,9 @@ func (s *Server) handleGetConfig(w http.ResponseWriter, _ *http.Request) {
 	writeJSON(w, http.StatusOK, cfg)
 }
 
-// uiKey matches the browser-side settings the UI mirrors: cc., ccp., ccv. and the
+// uiKey matches the browser-side settings the UI mirrors: tt., ttp., ttv. and the
 // other per-area prefixes.
-var uiKey = regexp.MustCompile(`^cc[a-z]*\.`)
+var uiKey = regexp.MustCompile(`^tt[a-z]*\.`)
 
 // handlePutUISettings merges a few UI settings into the config, a null deleting
 // one. A page that is closing sends its unsynced keys here in a single request,
@@ -978,7 +978,7 @@ func (s *Server) handlePutConfig(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err)
 		return
 	}
-	// The per-area key prefixes (cc., ccp., ccv. and so on) push the UI settings
+	// The per-area key prefixes (tt., ttp., ttv. and so on) push the UI settings
 	// well past 64 keys, and the browser ignores a failed sync (#74). At 64+4096
 	// bytes per entry, 512 entries stay around 2MB.
 	if len(cfg.UISettings) > store.MaxUISettings {

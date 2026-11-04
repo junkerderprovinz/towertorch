@@ -1,7 +1,7 @@
 /* TowerTorch: the Dashboard tiles as GlimStone cards.
  *
  * Loaded on every page through TowerTorch.Dashboard.page and gated to /Dashboard. It toggles
- * html.cc-dash-on while the header area and master theming are on, puts a filled glyph into each
+ * html.tt-dash-on while the header area and master theming are on, puts a filled glyph into each
  * tile title so TowerTorch.Dashboard.css can draw the title as a section badge, paints those
  * badges in the colour mode and redraws the two live charts in the accent, filled on load from the
  * points this browser kept. Unraid renders the tiles once and only refreshes their values, so one
@@ -14,7 +14,7 @@
   "use strict";
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function onDash() { try { return location.pathname.replace(/\/+$/, "") === "/Dashboard"; } catch (e) { return false; } }
-  function isLive() { return g("cc.theming", "1") !== "0" && g("cc.enable.header", "0") !== "0" && onDash(); }
+  function isLive() { return g("tt.theming", "1") !== "0" && g("tt.enable.header", "0") !== "0" && onDash(); }
 
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
   var TXT = {
@@ -29,7 +29,7 @@
 
   // Filled drawings for Unraid's tile icons, which are outline glyphs of its own icon font. Tabler
   // icons, filled set (MIT), on a 24 grid; Docker's brand mark from Simple Icons, the one the
-  // Docker tab in the menu bar wears. The log tile takes CCTheme's Log glyph.
+  // Docker tab in the menu bar wears. The log tile takes TTTheme's Log glyph.
   var P = {
     bolt: '<path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z"/>',
     board: '<path d="M5 3h5a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-2a2 2 0 0 1 2 -2"/><path d="M14 3h5a2 2 0 0 1 2 2v8a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-9a1 1 0 0 1 1 -1"/><path d="M14 16h6a1 1 0 0 1 1 1v2a2 2 0 0 1 -2 2h-5a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1"/><path d="M4 10h6a1 1 0 0 1 1 1v9a1 1 0 0 1 -1 1h-5a2 2 0 0 1 -2 -2v-8a1 1 0 0 1 1 -1"/>',
@@ -56,8 +56,8 @@
   function glyphFor(icon) {
     var name = "tile";
     if (icon && icon.classList) for (var i = 0; i < icon.classList.length; i++) if (BY_ICON[icon.classList[i]]) { name = BY_ICON[icon.classList[i]]; break; }
-    if (name === "log" && window.CCTheme && CCTheme.glyph) return CCTheme.glyph("Log").replace('class="cc-glyph"', 'class="cc-glyph cc-dash-g"');
-    return '<svg class="cc-glyph cc-dash-g" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' + P[name === "log" ? "tile" : name] + "</svg>";
+    if (name === "log" && window.TTTheme && TTTheme.glyph) return TTTheme.glyph("Log").replace('class="tt-glyph"', 'class="tt-glyph tt-dash-g"');
+    return '<svg class="tt-glyph tt-dash-g" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' + P[name === "log" ? "tile" : name] + "</svg>";
   }
 
   // The title of a tile: its h3, or for a plugin tile that prints a bare word (the GPU tile) that
@@ -70,7 +70,7 @@
     for (var n = sec.firstChild; n; n = n.nextSibling) {
       if (n.nodeType === 3 && n.nodeValue.trim()) {
         var w = document.createElement("span");
-        w.className = "cc-dash-wrap";
+        w.className = "tt-dash-wrap";
         sec.insertBefore(w, n); w.appendChild(n);
         return w;
       }
@@ -85,63 +85,63 @@
     var ls = heads();
     for (var i = 0; i < ls.length; i++) {
       var left = ls[i];
-      if (left.querySelector(".cc-dash-h")) continue;
+      if (left.querySelector(".tt-dash-h")) continue;
       var t = titleOf(left);
       if (!t) continue;
       var icon = left.querySelector(":scope > i.f32, :scope > i[class*='icon-']");
       var img = left.querySelector(":scope > img");
-      t.classList.add("cc-dash-h");
+      t.classList.add("tt-dash-h");
       if (img && !icon) {
         var mini = document.createElement("img");
-        mini.className = "cc-dash-g cc-dash-img"; mini.src = img.src; mini.alt = "";
+        mini.className = "tt-dash-g tt-dash-img"; mini.src = img.src; mini.alt = "";
         t.insertBefore(mini, t.firstChild);
       } else {
         t.insertAdjacentHTML("afterbegin", glyphFor(icon));
       }
-      left.classList.add("cc-dash-glyphed");
+      left.classList.add("tt-dash-glyphed");
     }
   }
 
   function strip() {
-    var gs = document.querySelectorAll("table.dashboard .cc-dash-g");
+    var gs = document.querySelectorAll("table.dashboard .tt-dash-g");
     for (var i = 0; i < gs.length; i++) gs[i].parentNode.removeChild(gs[i]);
-    var ws = document.querySelectorAll("table.dashboard .cc-dash-wrap");
+    var ws = document.querySelectorAll("table.dashboard .tt-dash-wrap");
     for (var j = 0; j < ws.length; j++) { var w = ws[j]; while (w.firstChild) w.parentNode.insertBefore(w.firstChild, w); w.parentNode.removeChild(w); }
-    var hs = document.querySelectorAll("table.dashboard .cc-dash-h");
-    for (var k = 0; k < hs.length; k++) { hs[k].classList.remove("cc-dash-h"); hs[k].style.removeProperty("--cc-rb-c"); hs[k].style.removeProperty("--cc-rb-ct"); }
-    var ls = document.querySelectorAll("table.dashboard .cc-dash-glyphed");
-    for (var m = 0; m < ls.length; m++) ls[m].classList.remove("cc-dash-glyphed");
+    var hs = document.querySelectorAll("table.dashboard .tt-dash-h");
+    for (var k = 0; k < hs.length; k++) { hs[k].classList.remove("tt-dash-h"); hs[k].style.removeProperty("--tt-rb-c"); hs[k].style.removeProperty("--tt-rb-ct"); }
+    var ls = document.querySelectorAll("table.dashboard .tt-dash-glyphed");
+    for (var m = 0; m < ls.length; m++) ls[m].classList.remove("tt-dash-glyphed");
   }
 
   // A heading is not a control, so the reactive sub-mode leaves it coloured; in rainbow and flag
   // mode each visible tile takes the next palette position in reading order.
   function paint() {
-    var rb = g("cc.rainbow", "0") === "1" && window.CCTheme && CCTheme.rbColor;
-    var hs = document.querySelectorAll("table.dashboard > tbody:not([style*='none']) .cc-dash-h");
+    var rb = g("tt.rainbow", "0") === "1" && window.TTTheme && TTTheme.rbColor;
+    var hs = document.querySelectorAll("table.dashboard > tbody:not([style*='none']) .tt-dash-h");
     for (var i = 0; i < hs.length; i++) {
       var h = hs[i];
       if (rb) {
-        var c = CCTheme.rbColor(i, "#FCC419");
-        h.style.setProperty("--cc-rb-c", c); h.style.setProperty("--cc-rb-ct", CCTheme.idealText(c));
-      } else { h.style.removeProperty("--cc-rb-c"); h.style.removeProperty("--cc-rb-ct"); }
+        var c = TTTheme.rbColor(i, "#FCC419");
+        h.style.setProperty("--tt-rb-c", c); h.style.setProperty("--tt-rb-ct", TTTheme.idealText(c));
+      } else { h.style.removeProperty("--tt-rb-c"); h.style.removeProperty("--tt-rb-ct"); }
     }
     // the icon badges of each tile run through the palette on their own, as a Docker row's do
     var ts = document.querySelectorAll("table.dashboard > tbody");
     for (var j = 0; j < ts.length; j++) {
-      var bs = ts[j].querySelectorAll(".cc-dash-btn:not(.cc-actoff)");
+      var bs = ts[j].querySelectorAll(".tt-dash-btn:not(.tt-actoff)");
       for (var k = 0; k < bs.length; k++) {
         if (rb) {
-          var bc = CCTheme.rbColor(k, "#FCC419");
-          bs[k].style.setProperty("--cc-rb-c", bc); bs[k].style.setProperty("--cc-rb-ct", CCTheme.idealText(bc));
-        } else { bs[k].style.removeProperty("--cc-rb-c"); bs[k].style.removeProperty("--cc-rb-ct"); }
+          var bc = TTTheme.rbColor(k, "#FCC419");
+          bs[k].style.setProperty("--tt-rb-c", bc); bs[k].style.setProperty("--tt-rb-ct", TTTheme.idealText(bc));
+        } else { bs[k].style.removeProperty("--tt-rb-c"); bs[k].style.removeProperty("--tt-rb-ct"); }
       }
     }
   }
 
-  // The system tile's power controls and every tile's header controls become CC icon badges. They
+  // The system tile's power controls and every tile's header controls become TowerTorch icon badges. They
   // stay Unraid's own elements with Unraid's handlers and confirmations; each takes a glyph from the
   // set where the set has the meaning, a name for the bubble and for a screen reader, and Tab and
-  // Enter. A control with no name of CC's own keeps Unraid's text.
+  // Enter. A control with no name of TowerTorch's own keeps Unraid's text.
   var BTN_GLYPH = { "fa-stop-circle": "Stop", "fa-play-circle": "Play", "fa-moon-o": "Sleep", "fa-refresh": "Power", "fa-power-off": "Power", "fa-cog": "Gear", "fa-info-circle": "Info" };
   function btnName(b) {
     var c = b.classList;
@@ -169,41 +169,41 @@
     var bs = controls();
     for (var i = 0; i < bs.length; i++) {
       var b = bs[i];
-      if (b.classList.contains("cc-dash-btn")) continue;
+      if (b.classList.contains("tt-dash-btn")) continue;
       // Unraid puts the gear's text on the icon inside the link, where a bubble would find it before
       // the link's own name.
-      var holder = b.hasAttribute("title") || b.hasAttribute("data-cc-tip") ? b : b.querySelector("[title], [data-cc-tip]");
-      var rec = { b: b, holder: holder, title: holder ? holder.getAttribute("title") || holder.getAttribute("data-cc-tip") : null };
+      var holder = b.hasAttribute("title") || b.hasAttribute("data-tt-tip") ? b : b.querySelector("[title], [data-tt-tip]");
+      var rec = { b: b, holder: holder, title: holder ? holder.getAttribute("title") || holder.getAttribute("data-tt-tip") : null };
       BTNS.push(rec);
-      if (holder) { holder.removeAttribute("title"); holder.removeAttribute("data-cc-tip"); }
+      if (holder) { holder.removeAttribute("title"); holder.removeAttribute("data-tt-tip"); }
       var name = btnName(b) || rec.title;
-      if (name) { b.setAttribute("data-cc-tip", name); b.setAttribute("aria-label", name); }
-      b.classList.add("cc-actbtn", "cc-dash-btn");
-      if (b.classList.contains("busy")) { b.classList.add("cc-actoff"); b.setAttribute("aria-disabled", "true"); }
+      if (name) { b.setAttribute("data-tt-tip", name); b.setAttribute("aria-label", name); }
+      b.classList.add("tt-actbtn", "tt-dash-btn");
+      if (b.classList.contains("busy")) { b.classList.add("tt-actoff"); b.setAttribute("aria-disabled", "true"); }
       else if (b.tagName !== "A") {
         b.setAttribute("role", "button"); b.setAttribute("tabindex", "0");
-        if (!b.ccKeys) { b.ccKeys = true; b.addEventListener("keydown", pressKey); }
+        if (!b.ttKeys) { b.ttKeys = true; b.addEventListener("keydown", pressKey); }
       }
       var gl = btnGlyph(b);
-      if (gl && window.CCTheme && CCTheme.glyph) { b.insertAdjacentHTML("beforeend", CCTheme.glyph(gl)); b.classList.add("cc-dash-gl"); }
+      if (gl && window.TTTheme && TTTheme.glyph) { b.insertAdjacentHTML("beforeend", TTTheme.glyph(gl)); b.classList.add("tt-dash-gl"); }
     }
   }
   function pressKey(e) {
-    if (!this.classList.contains("cc-dash-btn") || (e.key !== "Enter" && e.key !== " ")) return;
+    if (!this.classList.contains("tt-dash-btn") || (e.key !== "Enter" && e.key !== " ")) return;
     e.preventDefault(); e.stopPropagation(); this.click();
   }
   // Unraid turns the fold arrow over on a click, so its name follows after Unraid's handler ran.
   function renameFolds() {
-    var fs = document.querySelectorAll("table.dashboard .cc-dash-btn.openclose");
-    for (var i = 0; i < fs.length; i++) { var n = btnName(fs[i]); fs[i].setAttribute("data-cc-tip", n); fs[i].setAttribute("aria-label", n); }
+    var fs = document.querySelectorAll("table.dashboard .tt-dash-btn.openclose");
+    for (var i = 0; i < fs.length; i++) { var n = btnName(fs[i]); fs[i].setAttribute("data-tt-tip", n); fs[i].setAttribute("aria-label", n); }
   }
   function unbadgeControls() {
     BTNS.forEach(function (r) {
-      var b = r.b, gs = b.querySelectorAll(":scope > .cc-glyph");
+      var b = r.b, gs = b.querySelectorAll(":scope > .tt-glyph");
       for (var i = 0; i < gs.length; i++) b.removeChild(gs[i]);
-      b.classList.remove("cc-actbtn", "cc-dash-btn", "cc-dash-gl", "cc-actoff");
-      ["data-cc-tip", "aria-label", "aria-disabled", "role", "tabindex"].forEach(function (a) { b.removeAttribute(a); });
-      b.style.removeProperty("--cc-rb-c"); b.style.removeProperty("--cc-rb-ct");
+      b.classList.remove("tt-actbtn", "tt-dash-btn", "tt-dash-gl", "tt-actoff");
+      ["data-tt-tip", "aria-label", "aria-disabled", "role", "tabindex"].forEach(function (a) { b.removeAttribute(a); });
+      b.style.removeProperty("--tt-rb-c"); b.style.removeProperty("--tt-rb-ct");
       if (r.holder && r.title) r.holder.setAttribute("title", r.title);
     });
     BTNS = [];
@@ -214,11 +214,11 @@
   function hideDupName() {
     var h = document.querySelector("table.dashboard tbody.system h3.tile-header-main"), d = h && h.nextElementSibling;
     if (!d || d.tagName !== "SPAN" || d.id) return;
-    d.classList.toggle("cc-dash-dup", !!d.textContent.trim() && d.textContent.trim().toLowerCase() === h.textContent.trim().toLowerCase());
+    d.classList.toggle("tt-dash-dup", !!d.textContent.trim() && d.textContent.trim().toLowerCase() === h.textContent.trim().toLowerCase());
   }
   function showDupName() {
-    var d = document.querySelector("table.dashboard .cc-dash-dup");
-    if (d) d.classList.remove("cc-dash-dup");
+    var d = document.querySelector("table.dashboard .tt-dash-dup");
+    if (d) d.classList.remove("tt-dash-dup");
   }
 
   // GlimStone draws a chart in the one accent with no grid. The CPU line and the inbound traffic
@@ -229,19 +229,19 @@
   function alpha(hex, a) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "transparent"; var n = parseInt(m[1], 16); return "rgba(" + (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255) + "," + a + ")"; }
   function paintCharts(on) {
     var acc = "";
-    try { acc = getComputedStyle(document.documentElement).getPropertyValue("--cc-accent").trim(); } catch (e) {}
+    try { acc = getComputedStyle(document.documentElement).getPropertyValue("--tt-accent").trim(); } catch (e) {}
     if (!/^#[0-9a-f]{6}$/i.test(acc)) acc = "#FCC419";
     var text = "", ink = "";
-    try { text = getComputedStyle(document.documentElement).getPropertyValue("--cc-text-dim").trim(); } catch (e) {}
-    try { ink = getComputedStyle(document.documentElement).getPropertyValue("--cc-text").trim(); } catch (e) {}
+    try { text = getComputedStyle(document.documentElement).getPropertyValue("--tt-text-dim").trim(); } catch (e) {}
+    try { ink = getComputedStyle(document.documentElement).getPropertyValue("--tt-text").trim(); } catch (e) {}
     if (!/^#[0-9a-f]{6}$/i.test(ink)) ink = "#e6e6e6";
     CHARTS.forEach(function (name) {
       var c = window[name];
       if (!c || !c.options || !c.seriesSet) return;
       // a restored run shares its twin's options, so it follows them
-      var set = c.seriesSet.filter(function (s) { return !s.ccPast; });
-      if (!c.__ccOrig) c.__ccOrig = { grid: JSON.parse(JSON.stringify(c.options.grid)), label: c.options.labels.fillStyle, series: set.map(function (s) { return { stroke: s.options.strokeStyle, fill: s.options.fillStyle, width: s.options.lineWidth }; }) };
-      var o = c.__ccOrig;
+      var set = c.seriesSet.filter(function (s) { return !s.ttPast; });
+      if (!c.__ttOrig) c.__ttOrig = { grid: JSON.parse(JSON.stringify(c.options.grid)), label: c.options.labels.fillStyle, series: set.map(function (s) { return { stroke: s.options.strokeStyle, fill: s.options.fillStyle, width: s.options.lineWidth }; }) };
+      var o = c.__ttOrig;
       if (on) {
         c.options.grid.strokeStyle = "transparent"; c.options.grid.verticalSections = 0; c.options.grid.borderVisible = false;
         if (text) c.options.labels.fillStyle = text;
@@ -259,7 +259,7 @@
 
   // Smoothie starts both charts empty on every load and fills them from the right, which without
   // a grid looks like no chart at all, for minutes with a long time frame. The recent points of the
-  // three series stay in this browser under tt.charts, which the engine does not mirror, and go
+  // three series stay in this browser under towertorch.charts, which the engine does not mirror, and go
   // back into the series when the Dashboard loads.
   var KEEP = { cpu: ["cpuchart", "cpuTimeSeries", "cpuline"], rx: ["netchart", "rxTimeSeries", "netline"], tx: ["netchart", "txTimeSeries", "netline"] };
   var KEEP_MS = 300000, KEEP_MAX = 400, GAP_MS = 5000; // Unraid's longest frame is five minutes, at one point a second
@@ -270,7 +270,7 @@
   // the step from the one before.
   function readKept() {
     var all = {};
-    try { all = JSON.parse(g("tt.charts", "{}")) || {}; } catch (e) {}
+    try { all = JSON.parse(g("towertorch.charts", "{}")) || {}; } catch (e) {}
     Object.keys(KEEP).forEach(function (k) {
       var flat = Array.isArray(all[k]) ? all[k] : [], pts = [], at = 0;
       for (var i = 0; i + 1 < flat.length; i += 2) { at += +flat[i]; pts.push([at, +flat[i + 1]]); }
@@ -286,7 +286,7 @@
       kept[k].forEach(function (p) { if (p[0] > from) { flat.push(p[0] - at, p[1]); at = p[0]; } });
       all[k] = flat;
     });
-    try { localStorage.setItem("tt.charts", JSON.stringify(all)); } catch (e) {}
+    try { localStorage.setItem("towertorch.charts", JSON.stringify(all)); } catch (e) {}
   }
   function note(k, at, v) {
     var pts = kept[k], last = pts[pts.length - 1];
@@ -304,7 +304,7 @@
     var p = new window.TimeSeries();
     chart.addTimeSeries(p);
     var s = chart.seriesSet[chart.seriesSet.length - 1];
-    s.options = twin.options; s.ccPast = true;
+    s.options = twin.options; s.ttPast = true;
     PAST.push({ chart: chart, ts: p, line: line });
     return p;
   }
@@ -339,9 +339,9 @@
     ks.forEach(function (k) {
       var ts = window[KEEP[k][1]];
       restore(k, window[KEEP[k][0]], ts);
-      if (ts.ccKept) return;
+      if (ts.ttKept) return;
       var append = ts.append;
-      ts.ccKept = true;
+      ts.ttKept = true;
       ts.append = function (at, v, sum) {
         append.call(this, at, v, sum);
         if (keeping) { note(k, at, v); prunePast(false); }
@@ -352,7 +352,7 @@
     keeping = false; kept = {};
     clearTimeout(saveT); saveT = 0;
     prunePast(true);
-    try { localStorage.removeItem("tt.charts"); } catch (e) {}
+    try { localStorage.removeItem("towertorch.charts"); } catch (e) {}
   }
 
   function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
@@ -377,7 +377,7 @@
   }
 
   function coreHead(gr) {
-    var h = el("div", "cc-cores-head"), name = el("span"), n = el("span", "cc-cores-n");
+    var h = el("div", "tt-cores-head"), name = el("span"), n = el("span", "tt-cores-n");
     var threads = gr.cores.reduce(function (a, c) { return a + c.threads.length; }, 0);
     name.textContent = t(gr.type) || gr.type;
     n.textContent = (threads > gr.cores.length ? t("coresHt") : t("cores")).replace("%c", gr.cores.length).replace("%t", threads);
@@ -393,15 +393,15 @@
       if (!byType[type]) groups.push(byType[type] = { type: type, cores: [] });
       byType[type].cores.push({ td: td, threads: threadsOf(tr) });
     });
-    var box = el("div", "cc-cores");
+    var box = el("div", "tt-cores");
     groups.forEach(function (gr) {
-      var wrap = el("div", "cc-cores-group"), grid = el("div", "cc-cores-grid");
+      var wrap = el("div", "tt-cores-group"), grid = el("div", "tt-cores-grid");
       // A CPU without core types is one plain group and needs no heading.
       if (gr.type) wrap.appendChild(coreHead(gr));
       gr.cores.forEach(function (c) {
-        var core = el("div", c.threads.length > 1 ? "cc-core cc-core-ht" : "cc-core");
+        var core = el("div", c.threads.length > 1 ? "tt-core tt-core-ht" : "tt-core");
         c.threads.forEach(function (th, k) {
-          var cell = el("div", "cc-thr"), n = el("span", "cc-thr-n");
+          var cell = el("div", "tt-thr"), n = el("span", "tt-thr-n");
           n.textContent = (k ? "HT " : "CPU ") + th.n;
           moved.push([th.cell, c.td]);
           cell.appendChild(n); cell.appendChild(th.cell);
@@ -414,11 +414,11 @@
     });
     // The grid lives in the run's first row. Unraid watches every core row to decide whether the
     // per core values are on screen, and this one stays visible while the grid is.
-    var td = el("td", "cc-cores-td");
+    var td = el("td", "tt-cores-td");
     td.appendChild(box);
     rows[0].appendChild(td);
-    rows[0].classList.add("cc-cores-host");
-    for (var i = 1; i < rows.length; i++) rows[i].classList.add("cc-cores-spent");
+    rows[0].classList.add("tt-cores-host");
+    for (var i = 1; i < rows.length; i++) rows[i].classList.add("tt-cores-spent");
     CORES.push({ rows: rows, td: td, moved: moved });
   }
 
@@ -439,12 +439,12 @@
     CORES.forEach(function (c) {
       c.moved.forEach(function (m) { m[1].appendChild(m[0]); });
       c.td.parentNode.removeChild(c.td);
-      c.rows.forEach(function (tr) { tr.classList.remove("cc-cores-host"); tr.classList.remove("cc-cores-spent"); });
+      c.rows.forEach(function (tr) { tr.classList.remove("tt-cores-host"); tr.classList.remove("tt-cores-spent"); });
     });
     CORES = [];
   }
 
-  // Text nodes CC rewrote, with Unraid's wording, so switching the area off puts it back.
+  // Text nodes TowerTorch rewrote, with Unraid's wording, so switching the area off puts it back.
   var SWAPS = [];
   function swap(node, text) {
     if (!node || node.nodeType !== 3 || node.nodeValue === text) return;
@@ -479,16 +479,16 @@
   // goes until one is set under Identification. The fallback case picture is handled in the sheet.
   function hideModel() {
     var hd = document.querySelector("table.dashboard tbody.system .leftside > span.header");
-    if (!hd || hd.parentNode.querySelector(".cc-dash-model")) return;
+    if (!hd || hd.parentNode.querySelector(".tt-dash-model")) return;
     var nodes = [hd], val = "";
     for (var n = hd.nextSibling; n && !(n.nodeType === 1 && n.matches("span.header")); n = n.nextSibling) { nodes.push(n); val += n.textContent; }
     if (val.trim() !== "---") return;
-    var w = el("span", "cc-dash-model");
+    var w = el("span", "tt-dash-model");
     hd.parentNode.insertBefore(w, hd);
     nodes.forEach(function (x) { w.appendChild(x); });
   }
   function showModel() {
-    var w = document.querySelector("table.dashboard .cc-dash-model");
+    var w = document.querySelector("table.dashboard .tt-dash-model");
     if (!w) return;
     while (w.firstChild) w.parentNode.insertBefore(w.firstChild, w);
     w.parentNode.removeChild(w);
@@ -498,7 +498,7 @@
   // a cut-out. Unraid swaps the picture after a new case is chosen, so this runs with the feed too.
   function tintCase() {
     var img = document.querySelector("table.dashboard #casing > img#mycase");
-    if (!img || img.getAttribute("data-cc-case")) return;
+    if (!img || img.getAttribute("data-tt-case")) return;
     function look() {
       var cut = false;
       try {
@@ -507,8 +507,8 @@
         var d = x.getImageData(0, 0, 48, 48).data;
         for (var i = 3; i < d.length && !cut; i += 4) cut = d[i] < 250;
       } catch (e) {}
-      img.setAttribute("data-cc-case", cut ? "cut" : "photo");
-      if (cut) img.style.setProperty("--cc-case-src", 'url("' + img.src.replace(/"/g, "%22") + '")');
+      img.setAttribute("data-tt-case", cut ? "cut" : "photo");
+      if (cut) img.style.setProperty("--tt-case-src", 'url("' + img.src.replace(/"/g, "%22") + '")');
     }
     if (img.complete && img.naturalWidth) look(); else img.addEventListener("load", look, { once: true });
   }
@@ -521,8 +521,8 @@
     for (var i = 0; i < cs.length; i++) {
       var n = cs[i].firstChild;
       if (!n || n.nodeType !== 3 || n.nodeValue.trim() !== "*") continue;
-      var r = el("span", "cc-dash-rest");
-      r.innerHTML = (window.CCTheme && CCTheme.glyph ? CCTheme.glyph("Sleep") : "") + t("resting");
+      var r = el("span", "tt-dash-rest");
+      r.innerHTML = (window.TTTheme && TTTheme.glyph ? TTTheme.glyph("Sleep") : "") + t("resting");
       cs[i].replaceChild(r, n);
     }
     if (LANG !== "de") return;
@@ -535,7 +535,7 @@
     for (var k = 0; k < as.length; k++) as[k].title = "Einstellungen für " + as[k].title.replace(/ settings$/, "");
   }
   function unfixRows() {
-    var rs = document.querySelectorAll("table.dashboard .cc-dash-rest");
+    var rs = document.querySelectorAll("table.dashboard .tt-dash-rest");
     for (var i = 0; i < rs.length; i++) rs[i].parentNode.replaceChild(document.createTextNode("*"), rs[i]);
   }
 
@@ -550,13 +550,13 @@
     img.onerror = null;
     img.removeAttribute("onerror");
     var hand = img.parentNode;
-    if (!hasCls(hand, "hand") || hasCls(hand, "cc-dash-noicon")) return;
-    hand.classList.add("cc-dash-noicon");
-    hand.insertAdjacentHTML("beforeend", '<svg class="cc-glyph cc-dash-noicon-g" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' + P.docker + "</svg>");
+    if (!hasCls(hand, "hand") || hasCls(hand, "tt-dash-noicon")) return;
+    hand.classList.add("tt-dash-noicon");
+    hand.insertAdjacentHTML("beforeend", '<svg class="tt-glyph tt-dash-noicon-g" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' + P.docker + "</svg>");
   }
   function unmarkIcons() {
-    var gs = document.querySelectorAll("table.dashboard .cc-dash-noicon-g");
-    for (var i = 0; i < gs.length; i++) { gs[i].parentNode.classList.remove("cc-dash-noicon"); gs[i].parentNode.removeChild(gs[i]); }
+    var gs = document.querySelectorAll("table.dashboard .tt-dash-noicon-g");
+    for (var i = 0; i < gs.length; i++) { gs[i].parentNode.classList.remove("tt-dash-noicon"); gs[i].parentNode.removeChild(gs[i]); }
   }
 
   var hooked = false;
@@ -570,7 +570,7 @@
   var wasLive = false;
   function apply() {
     var live = isLive();
-    document.documentElement.classList.toggle("cc-dash-on", live);
+    document.documentElement.classList.toggle("tt-dash-on", live);
     if (live) { decorate(); badgeControls(); paint(); keepCharts(); paintCharts(true); buildCores(); fixCards(); hideModel(); hideDupName(); tintCase(); fixRows(); hookFeed(); }
     else {
       if (wasLive) { strip(); unbadgeControls(); paintCharts(false); unbuildCores(); unswap(); showModel(); showDupName(); unfixRows(); unmarkIcons(); }
@@ -590,9 +590,9 @@
     setTimeout(apply, 1500);
     setTimeout(apply, 5000);
     try { if (window.jQuery) window.jQuery(document).on("sortupdate", "table.dashboard, .grid", function () { if (isLive()) paint(); }); } catch (e) {}
-    document.addEventListener("click", function (e) { if (wasLive && e.target.closest && e.target.closest("table.dashboard .cc-dash-btn")) renameFolds(); });
-    // cc.stateCache is skipped because docker.js rewrites it every 9s.
-    window.addEventListener("storage", function (e) { try { if (e && e.key && e.key !== "cc.stateCache" && /^cc\./.test(e.key)) apply(); } catch (e2) {} });
+    document.addEventListener("click", function (e) { if (wasLive && e.target.closest && e.target.closest("table.dashboard .tt-dash-btn")) renameFolds(); });
+    // tt.stateCache is skipped because docker.js rewrites it every 9s.
+    window.addEventListener("storage", function (e) { try { if (e && e.key && e.key !== "tt.stateCache" && /^tt\./.test(e.key)) apply(); } catch (e2) {} });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

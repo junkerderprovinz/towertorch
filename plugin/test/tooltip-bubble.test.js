@@ -1,4 +1,4 @@
-// The hover bubble (#cc-tipfloat, header.js ccWireTips) follows GlimStone's "The tooltip and
+// The hover bubble (#tt-tipfloat, header.js ttWireTips) follows GlimStone's "The tooltip and
 // info bubble":
 //   · hover opens it, and focus opens it only when the keyboard was used last, tracked for
 //     the whole page; a click focuses its control as a side effect, and a bubble opened by
@@ -34,21 +34,21 @@ class El {
 const listeners = {};
 let bubble = null;
 const document = {
-  documentElement: { classList: { contains: (c) => c === 'cc-popups-on' }, clientWidth: 1200, clientHeight: 800 },
+  documentElement: { classList: { contains: (c) => c === 'tt-popups-on' }, clientWidth: 1200, clientHeight: 800 },
   body: { appendChild: (n) => { bubble = n; } },
-  getElementById: (id) => (bubble && id === 'cc-tipfloat' ? bubble : null),
+  getElementById: (id) => (bubble && id === 'tt-tipfloat' ? bubble : null),
   createElement: () => new El(),
   addEventListener: (t, fn) => { (listeners[t] = listeners[t] || []).push(fn); },
 };
 let frames = [];
 const window = { addEventListener() {}, innerWidth: 1200, innerHeight: 800, requestAnimationFrame: (fn) => frames.push(fn), cancelAnimationFrame: () => { frames = []; } };
 const tick = () => { const f = frames; frames = []; f.forEach((fn) => fn()); };
-window.CCTheme = require('./theme-place')(window, document);
+window.TTTheme = require('./theme-place')(window, document);
 const header = read('scripts/header.js');
-const decl = (/var ccTipBound = false, ccTipCur = null, ccTipKeys = false;\n  var ccTipFrame = 0, ccTipAt = "";/.exec(header) || [''])[0];
+const decl = (/var ttTipBound = false, ttTipCur = null, ttTipKeys = false;\n  var ttTipFrame = 0, ttTipAt = "";/.exec(header) || [''])[0];
 ok('the last-input flag is declared with the bubble state', !!decl);
 const wire = new Function('document', 'window',
-  decl + '\n' + grabFn(header, 'ccTipEl') + '\n' + grabFn(header, 'ccTipHide') + '\n' + grabFn(header, 'ccTipFollow') + '\n' + grabFn(header, 'ccTipShow') + '\n' + grabFn(header, 'ccWireTips') + '\nccWireTips(); return { hide: ccTipHide };')(document, window);
+  decl + '\n' + grabFn(header, 'ttTipEl') + '\n' + grabFn(header, 'ttTipHide') + '\n' + grabFn(header, 'ttTipFollow') + '\n' + grabFn(header, 'ttTipShow') + '\n' + grabFn(header, 'ttWireTips') + '\nttWireTips(); return { hide: ttTipHide };')(document, window);
 const fire = (type, e) => (listeners[type] || []).forEach((fn) => fn(Object.assign({ type }, e)));
 const open = () => !!bubble && bubble.style.display === 'block';
 
@@ -104,20 +104,20 @@ console.log('\nThe bubble stays with its anchor');
 console.log('\nA Dashboard tile keeps its title');
 {
   const js = read('scripts/header.js');
-  ok('the hover bubble leaves a tbody title alone, Unraid keys the tile by it', /e\.target\.closest\("\[data-cc-tip\], \[data-tip\], \[title\]"\) : null;[\s\S]{0,300}if \(!t \|\| t\.tagName === "TBODY"\) return;/.test(js));
+  ok('the hover bubble leaves a tbody title alone, Unraid keys the tile by it', /e\.target\.closest\("\[data-tt-tip\], \[data-tip\], \[title\]"\) : null;[\s\S]{0,300}if \(!t \|\| t\.tagName === "TBODY"\) return;/.test(js));
 }
 
 console.log('\nThe sheet');
 {
   const css = read('sheets/TowerTorch.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  const box = (/html\.cc-popups-on #cc-tipfloat \{([^}]*)\}/.exec(css) || [])[1] || '';
-  ok('the bubble text is on the type scale', /font-size: var\(--cc-text-meta\);/.test(box));
+  const box = (/html\.tt-popups-on #tt-tipfloat \{([^}]*)\}/.exec(css) || [])[1] || '';
+  ok('the bubble text is on the type scale', /font-size: var\(--tt-text-meta\);/.test(box));
   ok('the bubble sets no font stack of its own', !/font-family|font:/.test(box));
-  const pinned = (/html\.cc-popups-on #cc-acctinfo-pop \{([^}]*)\}/.exec(css) || [])[1] || '';
-  ok('the pinned bubble the account (i) opens matches it', /font-size: var\(--cc-text-meta\);/.test(pinned) && !/font-family/.test(pinned));
-  const fade = /@media \(prefers-reduced-motion: no-preference\) \{\s*html\.cc-popups-on #cc-tipfloat \{ animation: cc-fade-in var\(--cc-motion-fade-dur, 110ms\) ease both; \}\s*\}/.test(css);
+  const pinned = (/html\.tt-popups-on #tt-acctinfo-pop \{([^}]*)\}/.exec(css) || [])[1] || '';
+  ok('the pinned bubble the account (i) opens matches it', /font-size: var\(--tt-text-meta\);/.test(pinned) && !/font-family/.test(pinned));
+  const fade = /@media \(prefers-reduced-motion: no-preference\) \{\s*html\.tt-popups-on #tt-tipfloat \{ animation: tt-fade-in var\(--tt-motion-fade-dur, 110ms\) ease both; \}\s*\}/.test(css);
   ok('it fades in from the level token, inside the gate', fade);
-  ok('closing has no transition', !/#cc-tipfloat[^{]*\{[^}]*transition/.test(css));
+  ok('closing has no transition', !/#tt-tipfloat[^{]*\{[^}]*transition/.test(css));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

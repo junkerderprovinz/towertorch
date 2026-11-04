@@ -1,44 +1,44 @@
 Menu="Buttons:95"
 Title="TowerTorch"
 Icon="towertorch.png"
-Link="cc-hdr-hook"
+Link="tt-hdr-hook"
 ---
 <?php
 /* Registered under Menu="Buttons" so Unraid loads this page's assets into the <head> of every
    page: sheets/TowerTorch.Header.css (auto-injected because the basename matches this
    .page) restyles the main menu bar, and the script below loads the header enhancer.
-   Link="cc-hdr-hook" makes Navigation render a bare <div> instead of a visible icon. All styling
-   is gated behind html.cc-header-on, which the enhancer sets only when the main menu bar area
-   is enabled in CC settings. */
+   Link="tt-hdr-hook" makes Navigation render a bare <div> instead of a visible icon. All styling
+   is gated behind html.tt-header-on, which the enhancer sets only when the main menu bar area
+   is enabled in TowerTorch settings. */
 ?>
 <!-- header.js loads deferred, so on its own the page would paint natively first and then snap to
-     the CC look. This inline script stamps the same gating classes header.js apply() sets, read
-     straight from localStorage, so the CC CSS applies from the first paint. It only adds classes,
+     the TowerTorch look. This inline script stamps the same gating classes header.js apply() sets, read
+     straight from localStorage, so the TowerTorch CSS applies from the first paint. It only adds classes,
      so a failure falls back to the flash rather than a blank page; apply() re-stamps them later. -->
 <script>
 (function () {
   try {
     var r = document.documentElement;
     function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
-    var theming = g("cc.theming", "1") !== "0";
-    var on = g("cc.enable.header", "0") !== "0" && theming;
-    r.classList.toggle("cc-header-on", on);
-    var shape = g("cc.badgeshape", "round");   // CCTheme.shapeName, the names from before GlimStone's shapes included
-    r.setAttribute("data-cc-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
-    var anim = g("cc.anim", "subtle");   // CCTheme.motionLevel, digits from before the names included
-    r.setAttribute("data-cc-motion", anim === "off" || anim === "0" ? "off" : anim === "wild" || anim === "2" ? "wild" : "subtle");
-    r.classList.toggle("cc-badge-glass", g("cc.badgeglass", "0") === "1" && theming);
-    r.classList.toggle("cc-popups-on", theming);
-    r.classList.toggle("cc-footer-off", g("cc.footer", "1") === "1" && theming);
-    r.classList.toggle("cc-hide-favtab", g("cc.hidefavtab", "0") === "1" && theming);
-    r.classList.toggle("cc-usage-isl", on && g("cc.island", "1") !== "0");
+    var theming = g("tt.theming", "1") !== "0";
+    var on = g("tt.enable.header", "0") !== "0" && theming;
+    r.classList.toggle("tt-header-on", on);
+    var shape = g("tt.badgeshape", "round");   // TTTheme.shapeName, the names from before GlimStone's shapes included
+    r.setAttribute("data-tt-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
+    var anim = g("tt.anim", "subtle");   // TTTheme.motionLevel, digits from before the names included
+    r.setAttribute("data-tt-motion", anim === "off" || anim === "0" ? "off" : anim === "wild" || anim === "2" ? "wild" : "subtle");
+    r.classList.toggle("tt-badge-glass", g("tt.badgeglass", "0") === "1" && theming);
+    r.classList.toggle("tt-popups-on", theming);
+    r.classList.toggle("tt-footer-off", g("tt.footer", "1") === "1" && theming);
+    r.classList.toggle("tt-hide-favtab", g("tt.hidefavtab", "0") === "1" && theming);
+    r.classList.toggle("tt-usage-isl", on && g("tt.island", "1") !== "0");
     // The reactive rainbow classes use the same condition as apply(); without them every
     // reactive-mode badge shows its accent colour until the deferred header.js lands.
-    var react = theming && g("cc.rbmode", "all") === "active";
-    r.classList.toggle("cc-header-rbneutral", react && on);
-    r.classList.toggle("cc-apps-rbneutral", react && /^\/Apps(\/|$)/.test(location.pathname));
-    r.classList.toggle("cc-shares-rbneutral", react);
-    r.classList.toggle("cc-settingsgrid-rbneutral", react);
+    var react = theming && g("tt.rbmode", "all") === "active";
+    r.classList.toggle("tt-header-rbneutral", react && on);
+    r.classList.toggle("tt-apps-rbneutral", react && /^\/Apps(\/|$)/.test(location.pathname));
+    r.classList.toggle("tt-shares-rbneutral", react);
+    r.classList.toggle("tt-settingsgrid-rbneutral", react);
   } catch (e) {}
 })();
 </script>

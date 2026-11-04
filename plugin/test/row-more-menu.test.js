@@ -1,5 +1,5 @@
 // A row's More opens a menu instead of unfolding more buttons in place (GlimStone, "Page actions"
-// and rule 26). The menu is CCTheme.menu, shared by the Docker and VM rows: each item a glyph and
+// and rule 26). The menu is TTTheme.menu, shared by the Docker and VM rows: each item a glyph and
 // its words, operable from the keyboard, closed by Escape, Tab, a press outside or a scroll of
 // the page, with the focus back on More. What can quietly break it:
 //   · focus left in the removed menu, so a keyboard user is dropped at the top of the page
@@ -83,14 +83,14 @@ const scroll = (target) => (winL.scroll || []).slice().forEach((fn) => fn({ targ
 const key = (k) => active.fire('keydown', { key: k });
 
 const store = {};
-const theme = read('scripts/cc-theme.js');
-const CCTheme = new Function('localStorage',
+const theme = read('scripts/tt-theme.js');
+const TTTheme = new Function('localStorage',
   'function g(k, d) { return k in localStorage ? localStorage[k] : d; } function s(k, v) { localStorage[k] = v; }' +
   grabVar(theme, 'RB') + grabVar(theme, 'LUM_FLOOR') + grabVar(theme, 'rowMenu') + '\n' + grabBlock(theme, 'var GLYPHS = {', '\n  };') + '\n' +
   ['idealText', 'rbSeed', 'palette', 'lumOf', 'liftLight', 'lightTheme', 'surfacePalette', 'isRed', 'deleteSlot', 'glyph', 'edge', 'placeAt', 'menu'].map((n) => grabFn(theme, n)).join('\n') +
   '; return { RB: RB, isRed: isRed, glyph: glyph, menu: menu };')(store);
 
-function anchor() { const a = body.appendChild(new N('span')); a.className = 'cc-actbtn'; return a; }
+function anchor() { const a = body.appendChild(new N('span')); a.className = 'tt-actbtn'; return a; }
 function items(log) {
   return [
     { glyph: 'Code', label: 'Console', run: () => log.push('console') },
@@ -98,27 +98,27 @@ function items(log) {
     { glyph: 'ExternalLink', label: 'Project page', run: () => log.push('project') },
   ];
 }
-const menuEl = () => body.childNodes.find((n) => n.classList.contains('cc-rowmenu'));
+const menuEl = () => body.childNodes.find((n) => n.classList.contains('tt-rowmenu'));
 const its = () => menuEl().childNodes;
 
 console.log('\nThe menu and its items');
 {
   const a = anchor(), log = [];
   a.focus();
-  CCTheme.menu(a, items(log));
+  TTTheme.menu(a, items(log));
   const m = menuEl();
   ok('a menu opens on the page', !!m && m.getAttribute('role') === 'menu');
   ok('one item per action, each a menuitem', its().length === 3 && its().every((n) => n.getAttribute('role') === 'menuitem'));
-  ok('an item carries its glyph from the set and its words', its()[1].innerHTML === CCTheme.glyph('Trash') && its()[1].textContent === 'Remove', its()[1].innerHTML.slice(0, 40));
-  ok('the glyph is GlimStone\'s filled drawing, sized by the item\'s text', /^<svg class="cc-glyph" viewBox="0 0 14 14" fill="currentColor"/.test(its()[1].innerHTML));
+  ok('an item carries its glyph from the set and its words', its()[1].innerHTML === TTTheme.glyph('Trash') && its()[1].textContent === 'Remove', its()[1].innerHTML.slice(0, 40));
+  ok('the glyph is GlimStone\'s filled drawing, sized by the item\'s text', /^<svg class="tt-glyph" viewBox="0 0 14 14" fill="currentColor"/.test(its()[1].innerHTML));
   ok('More says it has a menu and that it is open', a.getAttribute('aria-haspopup') === 'menu' && a.getAttribute('aria-expanded') === 'true');
   ok('the focus moves to the first item', active === its()[0]);
   ok('it stands under More, flush with its right edge', m.style.left === '426px' && m.style.top === '332px', m.style.left + ' ' + m.style.top);
   {
     const edgeAt = (w, rect) => {
       const b = anchor(); b.rect = rect; html.clientWidth = w; window.innerWidth = w;
-      CCTheme.menu(b, items([])); const mm = menuEl(); const st = { left: mm.style.left, top: mm.style.top };
-      CCTheme.menu(b, items([]));   // a second press closes it
+      TTTheme.menu(b, items([])); const mm = menuEl(); const st = { left: mm.style.left, top: mm.style.top };
+      TTTheme.menu(b, items([]));   // a second press closes it
       body.removeChild(b); return st;
     };
     const right = edgeAt(1000, { left: 974, right: 1000, top: 300, bottom: 326 });
@@ -128,7 +128,7 @@ console.log('\nThe menu and its items');
     const low = edgeAt(1000, { left: 600, right: 626, top: 660, bottom: 686 });
     ok('near the bottom it opens upward and stays off the bottom edge', low.top === (660 - 6 - 120) + 'px', low.top);
     html.clientWidth = 1000; window.innerWidth = 1000;
-    a.focus(); CCTheme.menu(a, items(log));
+    a.focus(); TTTheme.menu(a, items(log));
   }
 
   key('ArrowDown'); ok('ArrowDown moves to the next item', active === its()[1]);
@@ -147,14 +147,14 @@ console.log('\nThe menu and its items');
 console.log('\nThe ways out');
 {
   const a = anchor(), log = [];
-  CCTheme.menu(a, items(log)); key('Escape');
+  TTTheme.menu(a, items(log)); key('Escape');
   ok('Escape closes it and puts the focus back on More', !menuEl() && active === a);
-  CCTheme.menu(a, items(log)); key('Tab');
+  TTTheme.menu(a, items(log)); key('Tab');
   ok('Tab closes it from More, so the Tab moves on from there', !menuEl() && active === a);
-  CCTheme.menu(a, items(log));
-  ok('a second press on More closes it rather than opening another', CCTheme.menu(a, items(log)) === null && !menuEl());
-  CCTheme.menu(a, items(log)); const b = anchor(); CCTheme.menu(b, items(log));
-  ok('opening another row\'s menu closes the first, so one stands at a time', body.childNodes.filter((n) => n.classList.contains('cc-rowmenu')).length === 1 && a.getAttribute('aria-expanded') === 'false');
+  TTTheme.menu(a, items(log));
+  ok('a second press on More closes it rather than opening another', TTTheme.menu(a, items(log)) === null && !menuEl());
+  TTTheme.menu(a, items(log)); const b = anchor(); TTTheme.menu(b, items(log));
+  ok('opening another row\'s menu closes the first, so one stands at a time', body.childNodes.filter((n) => n.classList.contains('tt-rowmenu')).length === 1 && a.getAttribute('aria-expanded') === 'false');
   pointerdown(its()[0]);
   ok('a press inside the menu leaves it open', !!menuEl());
   pointerdown(b);
@@ -162,11 +162,11 @@ console.log('\nThe ways out');
   const elsewhere = body.appendChild(new N('div')); active = elsewhere;
   pointerdown(elsewhere);
   ok('a press anywhere else closes it without taking the focus', !menuEl() && active === elsewhere);
-  CCTheme.menu(b, items(log)); scroll(its()[0]);
+  TTTheme.menu(b, items(log)); scroll(its()[0]);
   ok('a scroll inside the menu leaves it open', !!menuEl());
   scroll(body);
   ok('a scroll of the page closes it, since it would drift from its row', !menuEl());
-  CCTheme.menu(b, items(log)); (winL.resize || []).slice().forEach((fn) => fn({}));
+  TTTheme.menu(b, items(log)); (winL.resize || []).slice().forEach((fn) => fn({}));
   ok('so does a resize', !menuEl());
   ok('none of them ran an action', log.length === 0);
 }
@@ -174,37 +174,37 @@ console.log('\nThe ways out');
 console.log('\nColour modes');
 {
   const a = anchor();
-  CCTheme.menu(a, items([]));
-  ok('with the accent no item is stamped, the sheet\'s accent chain applies', its().every((n) => !('--cc-rb-c' in n.styleProps)));
-  CCTheme.menu(a, items([]));
-  Object.assign(store, { 'cc.rainbow': '1', 'cc.rainbowrot': '0' });
+  TTTheme.menu(a, items([]));
+  ok('with the accent no item is stamped, the sheet\'s accent chain applies', its().every((n) => !('--tt-rb-c' in n.styleProps)));
+  TTTheme.menu(a, items([]));
+  Object.assign(store, { 'tt.rainbow': '1', 'tt.rainbowrot': '0' });
   // Seven ordinary items push the delete onto slot 8, which wraps round to the red slot 0.
   const many = Array.from({ length: 8 }, (_, i) => ({ glyph: 'Info', label: 'Item ' + i, run() {} }));
   many.push({ glyph: 'Trash', label: 'Remove', del: true, run() {} });
-  CCTheme.menu(a, many);
-  ok('under the rainbow each item takes its own slot', its()[1].styleProps['--cc-rb-c'] === CCTheme.RB[1] && its()[7].styleProps['--cc-rb-c'] === CCTheme.RB[7]);
-  ok('with its ink beside it', its()[1].styleProps['--cc-rb-ct'] === '#161616');
-  const del = its()[8].styleProps['--cc-rb-c'];
-  ok('a delete that comes round to red takes the next slot instead', !!del && !CCTheme.isRed(del) && del === CCTheme.RB[1], del);
-  CCTheme.menu(a, many);
-  store['cc.flagmode'] = '1'; store['cc.flagpal'] = JSON.stringify(['#ED2939', '#FFFFFF', '#ED2939']);
-  CCTheme.menu(a, many);
-  ok('in flag mode a delete leaves the flag\'s red for its next colour', its()[8].styleProps['--cc-rb-c'] === '#FFFFFF', its()[8].styleProps['--cc-rb-c']);
-  CCTheme.menu(a, many);
+  TTTheme.menu(a, many);
+  ok('under the rainbow each item takes its own slot', its()[1].styleProps['--tt-rb-c'] === TTTheme.RB[1] && its()[7].styleProps['--tt-rb-c'] === TTTheme.RB[7]);
+  ok('with its ink beside it', its()[1].styleProps['--tt-rb-ct'] === '#161616');
+  const del = its()[8].styleProps['--tt-rb-c'];
+  ok('a delete that comes round to red takes the next slot instead', !!del && !TTTheme.isRed(del) && del === TTTheme.RB[1], del);
+  TTTheme.menu(a, many);
+  store['tt.flagmode'] = '1'; store['tt.flagpal'] = JSON.stringify(['#ED2939', '#FFFFFF', '#ED2939']);
+  TTTheme.menu(a, many);
+  ok('in flag mode a delete leaves the flag\'s red for its next colour', its()[8].styleProps['--tt-rb-c'] === '#FFFFFF', its()[8].styleProps['--tt-rb-c']);
+  TTTheme.menu(a, many);
 }
 
 console.log('\nThe sheet and the rows');
 {
   const tokens = read('sheets/TowerTorch.Tokens.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  ok('the menu stays dark on a light theme, in the window token island', /\n\.cc-pop, \.cc-menu, \.cc-win, \.cc-rowmenu[, ]/.test(tokens));
+  ok('the menu stays dark on a light theme, in the window token island', /\n\.tt-pop, \.tt-menu, \.tt-win, \.tt-rowmenu[, ]/.test(tokens));
   ok('an item takes the mode colour under the pointer and the keyboard focus',
-    /\.cc-rowmenu-it:is\(:hover, :focus-visible\) \{\s*background: var\(--cc-rb-c, var\(--cc-rbaccent, var\(--cc-accent, #FCC419\)\)\);\s*color: var\(--cc-rb-ct, var\(--cc-rbaccent-text, var\(--cc-accent-text, #161616\)\)\);/.test(tokens));
+    /\.tt-rowmenu-it:is\(:hover, :focus-visible\) \{\s*background: var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent, #FCC419\)\)\);\s*color: var\(--tt-rb-ct, var\(--tt-rbaccent-text, var\(--tt-accent-text, #161616\)\)\);/.test(tokens));
   const docker = read('scripts/docker.js'), vms = read('scripts/vms.js');
   for (const [name, src] of [['docker.js', docker], ['vms.js', vms]]) {
-    ok(name + ': More opens the shared menu', /actBtn\("More", [^\n]*(\n[^\n]*){0,6}window\.CCTheme\.menu\(moreBtn, extras\)/.test(src));
-    ok(name + ': no extra block of buttons unfolds in the row', src.indexOf('cc-actmore') < 0 && src.indexOf('cc-acttoggle') < 0);
+    ok(name + ': More opens the shared menu', /actBtn\("More", [^\n]*(\n[^\n]*){0,6}window\.TTTheme\.menu\(moreBtn, extras\)/.test(src));
+    ok(name + ': no extra block of buttons unfolds in the row', src.indexOf('tt-actmore') < 0 && src.indexOf('tt-acttoggle') < 0);
   }
-  ok('docker.js: Remove is a button of the row, which takes the delete slot', /actBtn\("Trash", rmLabel, function \(\) \{ window\.rmContainer\(/.test(docker) && /rm\.classList\.add\("cc-act-del"\)/.test(docker));
+  ok('docker.js: Remove is a button of the row, which takes the delete slot', /actBtn\("Trash", rmLabel, function \(\) \{ window\.rmContainer\(/.test(docker) && /rm\.classList\.add\("tt-act-del"\)/.test(docker));
   ok('vms.js: both removes are delete items of the menu', (vms.match(/del: true, run: function \(\) \{ vmRemove\(uuid, name, (true|false)\); \}/g) || []).length === 2);
 }
 

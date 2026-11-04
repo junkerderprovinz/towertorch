@@ -20,10 +20,10 @@ func TestParsers(t *testing.T) {
 	if got := firstMAC(" Interface   Type     Source   Model        MAC\n---------\n -           bridge   br0      virtio-net   52:54:00:e4:52:5a"); got != "52:54:00:e4:52:5a" {
 		t.Errorf("firstMAC = %q", got)
 	}
-	if got := hName("d", "vnet3"); got != "ccvmd3" {
-		t.Errorf("hName(d,vnet3) = %q, want ccvmd3", got)
+	if got := hName("d", "vnet3"); got != "ttvmd3" {
+		t.Errorf("hName(d,vnet3) = %q, want ttvmd3", got)
 	}
-	if got := firstTap(" Interface Type Source Model MAC\n - bridge br0 virtio-net 52:54:00:aa:bb:cc\n vnet6 bridge br0.20 virtio-net 52:54:00:6f:63:25"); got != "vnet6" {
+	if got := firstTap(" Interface Type Source Model MAC\n - bridge br0 virtio-net 52:54:00:aa:bb:dd\n vnet6 bridge br0.20 virtio-net 52:54:00:6f:63:25"); got != "vnet6" {
 		t.Errorf("firstTap = %q, want vnet6", got)
 	}
 }
@@ -40,7 +40,7 @@ func fakeVirsh(calls *[][]string, state string) runner {
 		case "schedinfo":
 			return "vcpu_period    : 0\nvcpu_quota     : 0", nil
 		case "domiflist":
-			return " Interface Type Source Model MAC\n - bridge br0 virtio-net 52:54:00:aa:bb:cc", nil
+			return " Interface Type Source Model MAC\n - bridge br0 virtio-net 52:54:00:aa:bb:dd", nil
 		case "domiftune":
 			return "inbound.average: 0\noutbound.average: 0", nil
 		}
@@ -115,7 +115,7 @@ func fakeDisk(calls *[][]string, state string) runner {
 		case "schedinfo":
 			return "vcpu_quota     : 0\nvcpu_period    : 0", nil
 		case "domiflist":
-			return " - bridge br0 virtio-net 52:54:00:aa:bb:cc", nil
+			return " - bridge br0 virtio-net 52:54:00:aa:bb:dd", nil
 		case "domblklist":
 			return " Type   Device   Target   Source\n----------------------------\n" +
 				" file   disk     hdc      /mnt/user/domains/VM/vdisk1.img\n" +

@@ -96,9 +96,9 @@ func (a inspectorAdapter) Snapshot(ctx context.Context, ref string) (readiness.S
 }
 
 func serve() {
-	dataDir := env("CC_DATA_DIR", defaultDataDir)
-	dockerSock := env("CC_DOCKER_SOCK", defaultDockerSock)
-	apiSock := env("CC_SOCK", defaultAPISock)
+	dataDir := env("TT_DATA_DIR", defaultDataDir)
+	dockerSock := env("TT_DOCKER_SOCK", defaultDockerSock)
+	apiSock := env("TT_SOCK", defaultAPISock)
 
 	docker := dockercli.NewUnix(dockerSock)
 	st := store.New(filepath.Join(dataDir, "plan.json"))
@@ -107,7 +107,7 @@ func serve() {
 	vmc := vmctl.New()
 	icons := iconsrc.New(dataDir)
 	defer icons.Close()
-	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("CC_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
+	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
 
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		log.Fatalf("towertorch: mkdir %s: %v", dataDir, err)
@@ -151,7 +151,7 @@ func serve() {
 // apply pokes the running supervisor to (re)apply its plan. The array-start
 // event hook calls this once the Docker daemon is up.
 func apply() {
-	apiSock := env("CC_SOCK", defaultAPISock)
+	apiSock := env("TT_SOCK", defaultAPISock)
 	hc := &http.Client{
 		Timeout: 15 * time.Minute, // health-gated starts can take a while
 		Transport: &http.Transport{

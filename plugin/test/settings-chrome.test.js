@@ -5,12 +5,12 @@
 //     transform, or any other geometry, would leave one odd cell in a row of one
 //     repeated shape.
 //
-//  2. The footer toggle lives in the Theming card. cc.footer is a global setting
+//  2. The footer toggle lives in the Theming card. tt.footer is a global setting
 //     like Dichte and Kachelgröße, not a property of the Kopfbereich area.
 //
 //  3. There is one logo preview, logoPreview, running the tabs' own icon pipeline.
 //     Private copies painted things the real tabs never paint: a tint that ignored
-//     cc.iconmode, and an feFlood badge that ignored the badge shape.
+//     tt.iconmode, and an feFlood badge that ignored the badge shape.
 //
 //  4. The previews show this box's real logos. /VMs and /Plugins ship an empty
 //     table body and fill it from their own jQuery, and fetch() does not run a
@@ -24,7 +24,7 @@ const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const SETTINGS = process.argv[2] || path.join(DIR, 'scripts', 'settings.js');
 const CSS = process.argv[3] || path.join(DIR, 'sheets', 'TowerTorch.Tokens.css');
-const THEME = fs.readFileSync(path.join(DIR, 'scripts', 'cc-theme.js'), 'utf8');
+const THEME = fs.readFileSync(path.join(DIR, 'scripts', 'tt-theme.js'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -52,10 +52,10 @@ function declares(body, prop) {
 
 console.log('\nPart 1: the selected swatch is a mark, never a different size');
 {
-  const off = ruleBody(css, '.cc-set-sw');
-  const on = ruleBody(css, '.cc-set-sw-on');
-  ok('the base .cc-set-sw rule exists', off != null);
-  ok('the .cc-set-sw-on rule exists', on != null);
+  const off = ruleBody(css, '.tt-set-sw');
+  const on = ruleBody(css, '.tt-set-sw-on');
+  ok('the base .tt-set-sw rule exists', off != null);
+  ok('the .tt-set-sw-on rule exists', on != null);
   ok('the on-state declares no transform, which would scale the box', !declares(on, 'transform'), on || '');
   ['width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'padding', 'margin', 'flex', 'font-size', 'zoom', 'scale', 'border-width', 'border'].forEach(p => {
     ok('the on-state declares no ' + p, !declares(on, p), on || '');
@@ -65,46 +65,46 @@ console.log('\nPart 1: the selected swatch is a mark, never a different size');
 
   // The cue is a filled tick inside the swatch plus a brightness step, Rule 5
   // asking for a filled selection rather than an outlined one.
-  const mark = ruleBody(css, '.cc-set-sw-on::after');
+  const mark = ruleBody(css, '.tt-set-sw-on::after');
   ok('the on-state carries a ::after mark instead', mark != null);
   ok('the mark is a background image (the tick), not a drawn box', declares(mark, 'background-image'));
   ok('the mark never eats a click', declares(mark, 'pointer-events'));
-  ok('the mark reads its ink from --cc-sw-tick, so it contrasts with the swatch colour', /--cc-sw-tick/.test(mark || ''));
+  ok('the mark reads its ink from --tt-sw-tick, so it contrasts with the swatch colour', /--tt-sw-tick/.test(mark || ''));
   ok('the on-state still has its brightness step', declares(on, 'filter'));
   ['outline', 'box-shadow'].forEach(p => ok('neither state draws a ' + p, !declares(on, p) && !declares(mark, p)));
 
   // The page-local sheet settings.js injects must not undo any of this.
-  const inline = src.slice(src.indexOf('cc-set-xtra'), src.indexOf('document.head.appendChild(st)'));
-  ok('the page-local sheet does not re-declare a geometry on .cc-set-sw-on',
-    !/\.cc-set-sw-on\{[^}]*(transform|width|height|padding|flex)\s*:/.test(inline.replace(/\s/g, '')), '');
+  const inline = src.slice(src.indexOf('tt-set-xtra'), src.indexOf('document.head.appendChild(st)'));
+  ok('the page-local sheet does not re-declare a geometry on .tt-set-sw-on',
+    !/\.tt-set-sw-on\{[^}]*(transform|width|height|padding|flex)\s*:/.test(inline.replace(/\s/g, '')), '');
 }
 
 console.log('\nPart 2: one helper marks the selected swatch everywhere');
 {
-  ok('swMark exists, holding the class and the contrast ink in one place', /function swMark\s*\(/.test(THEME) && /swMark = window\.CCTheme\.swMark\b/.test(src));
-  ok('swMarkRow exists, marking one swatch in a row', /function swMarkRow\s*\(/.test(THEME) && /swMarkRow = window\.CCTheme\.swMarkRow\b/.test(src));
+  ok('swMark exists, holding the class and the contrast ink in one place', /function swMark\s*\(/.test(THEME) && /swMark = window\.TTTheme\.swMark\b/.test(src));
+  ok('swMarkRow exists, marking one swatch in a row', /function swMarkRow\s*\(/.test(THEME) && /swMarkRow = window\.TTTheme\.swMarkRow\b/.test(src));
   // A write that goes round the helper loses the ink, and lets a card mark a
   // swatch its preview is not showing.
   const strays = code.split('\n').map((l, i) => ({ l, n: i + 1 }))
-    .filter(o => /cc-set-sw-on/.test(o.l))
-    .filter(o => !/function swMark|classList\.toggle\("cc-set-sw-on", !!on\)/.test(o.l));
-  ok('every "cc-set-sw-on" write goes through swMark', strays.length === 0,
+    .filter(o => /tt-set-sw-on/.test(o.l))
+    .filter(o => !/function swMark|classList\.toggle\("tt-set-sw-on", !!on\)/.test(o.l));
+  ok('every "tt-set-sw-on" write goes through swMark', strays.length === 0,
     strays.map(o => 'L' + o.n + ': ' + o.l.trim().slice(0, 90)).join(' | '));
   // Sweeping every swatch on the page against the global accent would un-mark each
   // area card's own pick, so syncSwOn is scoped to the global row.
-  ok('syncSwOn touches the global accent row alone', /function syncSwOn\(\)[^\n]*cc-set-swrow-global/.test(src));
-  ok('the global accent row is the one carrying that class', /colourField\(accent, [^\n]*\{ rowClass: "cc-set-swrow-global" \}\)/.test(src));
+  ok('syncSwOn touches the global accent row alone', /function syncSwOn\(\)[^\n]*tt-set-swrow-global/.test(src));
+  ok('the global accent row is the one carrying that class', /colourField\(accent, [^\n]*\{ rowClass: "tt-set-swrow-global" \}\)/.test(src));
 }
 
 console.log('\nPart 3: the footer toggle is global and lives in the Theming card');
 {
-  const i = code.indexOf('cc.footer');
+  const i = code.indexOf('tt.footer');
   ok('the footer toggle still exists', i > 0);
   const around = code.slice(Math.max(0, i - 1200), i + 1200);
   ok('it is appended to themingCard', /themingCard\.appendChild\(cHf\)/.test(around), around.slice(-200));
   ok('it is not appended to the Kopfbereich Stil card', !/cH\.appendChild\(cHf\)/.test(src));
   ok('it keeps its key, its default and its live sync',
-    /get\("cc\.footer", "1"\) !== "0"/.test(src) && /set\("cc\.footer", v \? "1" : "0"\); syncHeaderBar\(\)/.test(src));
+    /get\("tt\.footer", "1"\) !== "0"/.test(src) && /set\("tt\.footer", v \? "1" : "0"\); syncHeaderBar\(\)/.test(src));
   // Dichte and Kachelgröße are global too, and share the card, so there is one
   // place for all three.
   ok('Dichte and Kachelgröße are in the same card', /themingCard\.appendChild\(segRow\(T\("Dichte"/.test(src) && /themingCard\.appendChild\(tileSizeRow\(\)\)/.test(src));
@@ -120,11 +120,11 @@ console.log('\nPart 4: one logo preview, running the tabs\' own icon pipeline');
   // The badge is a real box. An feFlood fills the whole filter region, ignoring
   // border-radius, and renders a square where the tab shows a rounded tile.
   ok('no feFlood badge is composited inside a filter', code.indexOf('feFlood') < 0);
-  ok('the badge is a CSS tile with a real radius', /cc-set-tile/.test(src) && /it\.tile\.style\.borderRadius = rad/.test(src));
-  ok('the tile takes the control radius, like the live logo tile', /function radius\(\) \{ return "var\(--cc-radius-control\)"; \}/.test(src));
+  ok('the badge is a CSS tile with a real radius', /tt-set-tile/.test(src) && /it\.tile\.style\.borderRadius = rad/.test(src));
+  ok('the tile takes the control radius, like the live logo tile', /function radius\(\) \{ return "var\(--tt-radius-control\)"; \}/.test(src));
   // Every card that shows logos uses it, so there is no third copy.
   ['docker', 'vm', 'plugin'].forEach(s => ok('the global card previews the ' + s + ' area', new RegExp('\\["' + s + '", T\\(').test(src)));
-  ok('the Docker card uses the shared preview', /logoPreview\("docker", "cc-set-dockprev"\)/.test(src));
+  ok('the Docker card uses the shared preview', /logoPreview\("docker", "tt-set-dockprev"\)/.test(src));
   ok('the per-area cards use the shared preview', /logoPreview\(PSCOPE,/.test(src));
   ok('the Docker area previews container names and their values, as the global card does',
     /mkName\("nextcloud"\), mkVal\("CPU", "2\/8"\), mkVal\("RAM", "1\.2G"\), mkName\("plex"\)/.test(src));

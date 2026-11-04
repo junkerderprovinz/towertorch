@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { DIR, candidates, withUnraid } = require('./cascade');
 const settings = fs.readFileSync(path.join(DIR, 'scripts/settings.js'), 'utf8');
-const theme = fs.readFileSync(path.join(DIR, 'scripts/cc-theme.js'), 'utf8');
+const theme = fs.readFileSync(path.join(DIR, 'scripts/tt-theme.js'), 'utf8');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -25,11 +25,11 @@ const code = strip(settings), themeCode = strip(theme);
 console.log('\nNo colour on the page is set without the presets');
 {
   const pickers = [...themeCode.matchAll(/inlinePicker\(/g)].length;
-  ok('the bare picker is built in one place, inside CCTheme.colorPicker', pickers === 2 && /function colorPicker[\s\S]*?inlinePicker\(/.test(themeCode) && !/inlinePicker\(/.test(code), pickers);
-  ok('which the page takes as its colour field', /colourField = window\.CCTheme\.colorPicker\b/.test(code));
+  ok('the bare picker is built in one place, inside TTTheme.colorPicker', pickers === 2 && /function colorPicker[\s\S]*?inlinePicker\(/.test(themeCode) && !/inlinePicker\(/.test(code), pickers);
+  ok('which the page takes as its colour field', /colourField = window\.TTTheme\.colorPicker\b/.test(code));
   const uses = [...code.matchAll(/colourField\(/g)].length;
   ok('the accent, an area\'s accent, the tile, the icon, the server name and the palette all use it', uses >= 6, uses);
-  ok('no hex field is built outside it', !/cc-set-hexin"\)/.test(code) && [...themeCode.matchAll(/className = "cc-set-hexin"/g)].length === 1);
+  ok('no hex field is built outside it', !/tt-set-hexin"\)/.test(code) && [...themeCode.matchAll(/className = "tt-set-hexin"/g)].length === 1);
 }
 
 console.log('\nThe field: picker on top, presets and hex field in one row under it');
@@ -49,21 +49,21 @@ console.log('\nThe field: picker on top, presets and hex field in one row under 
   }
   const document = { createElement: (t) => new N(t), documentElement: { lang: 'en' } };
   const picks = [];
-  const fake = function inlinePicker(hex, onChange) { const b = new N('div'); b.cls.add('cc-ip'); b.set = []; b._set = (h) => b.set.push(h); b._get = () => '#123456'; b.drag = onChange; return b; };
+  const fake = function inlinePicker(hex, onChange) { const b = new N('div'); b.cls.add('tt-ip'); b.set = []; b._set = (h) => b.set.push(h); b._get = () => '#123456'; b.drag = onChange; return b; };
   const build = new Function('document', 'inlinePicker', 'PRESETS',
     ['div', 'german', 'normHex', 'pressable', 'swMark', 'swMarkRow', 'swTick', 'idealText', 'colorPicker'].map((n) => grabFn(theme, n)).join('\n') +
     '\nreturn colorPicker;')(document, fake, ['#FCC419', '#1D99F3', '#6FDC8C']);
   const f = build('#1d99f3', (v) => picks.push(v), { clearable: true });
   const [picker, row] = f.children;
-  ok('the picker comes first, the row under it', picker.cls.has('cc-ip') && row.cls.has('cc-set-swatches') && row.cls.has('cc-fill'));
-  const sws = row.children.filter((c) => c.cls.has('cc-set-sw')), hex = row.children[row.children.length - 1];
-  ok('the row holds every preset and then the hex field', sws.length === 3 && hex.tagName === 'INPUT' && hex.cls.has('cc-set-hexin'));
-  ok('the preset in use carries the tick', sws[1].cls.has('cc-set-sw-on') && !sws[0].cls.has('cc-set-sw-on'));
+  ok('the picker comes first, the row under it', picker.cls.has('tt-ip') && row.cls.has('tt-set-swatches') && row.cls.has('tt-fill'));
+  const sws = row.children.filter((c) => c.cls.has('tt-set-sw')), hex = row.children[row.children.length - 1];
+  ok('the row holds every preset and then the hex field', sws.length === 3 && hex.tagName === 'INPUT' && hex.cls.has('tt-set-hexin'));
+  ok('the preset in use carries the tick', sws[1].cls.has('tt-set-sw-on') && !sws[0].cls.has('tt-set-sw-on'));
   ok('a preset is a button the keyboard reaches', sws.every((s) => s.attrs.role === 'button' && s.attrs.tabindex === '0'));
   sws[2].listeners.click[0]();
-  ok('a preset click sets the picker, the hex field and the value', picks[0] === '#6FDC8C' && hex.value === '#6FDC8C' && picker.set.includes('#6FDC8C') && sws[2].cls.has('cc-set-sw-on'));
+  ok('a preset click sets the picker, the hex field and the value', picks[0] === '#6FDC8C' && hex.value === '#6FDC8C' && picker.set.includes('#6FDC8C') && sws[2].cls.has('tt-set-sw-on'));
   hex.value = 'ff8389'; hex.listeners.input[0]();
-  ok('a typed hex value is normalised and taken', picks[1] === '#ff8389' && !sws.some((s) => s.cls.has('cc-set-sw-on')));
+  ok('a typed hex value is normalised and taken', picks[1] === '#ff8389' && !sws.some((s) => s.cls.has('tt-set-sw-on')));
   hex.value = ''; hex.listeners.input[0]();
   ok('a clearable field reports an emptied hex field', picks[2] === '');
   const g = build('', (v) => picks.push(v));
@@ -79,18 +79,18 @@ console.log('\nThe field: picker on top, presets and hex field in one row under 
 console.log('\nThe field stands at the end of its row, as wide as its picker');
 {
   const page = withUnraid('settings');
-  const pick = { tag: 'div', classes: ['cc-set-pickrow'], inside: ['#cc-settings', '.cc-set-row'], outside: ['.cc-set-pickrow'] };
+  const pick = { tag: 'div', classes: ['tt-set-pickrow'], inside: ['#tt-settings', '.tt-set-row'], outside: ['.tt-set-pickrow'] };
   ok('it is pushed to the row\'s end', /auto$/.test(val(win(page, pick, 'margin'))), val(win(page, pick, 'margin')));
   ok('it keeps a width of its own', val(win(page, pick, 'flex')) === '0 1 420px' && val(win(page, pick, 'max-width')) === '420px');
   ok('picker and row stretch to that one width', val(win(page, pick, 'flex-direction')) === 'column' && val(win(page, pick, 'align-items')) === 'stretch');
-  const row = { tag: 'div', classes: ['cc-set-swatches', 'cc-fill'], inside: ['#cc-settings', '.cc-set-pickrow'] };
+  const row = { tag: 'div', classes: ['tt-set-swatches', 'tt-fill'], inside: ['#tt-settings', '.tt-set-pickrow'] };
   ok('the preset row adds no margin of its own inside it', val(win(page, row, 'margin')) === '0');
-  const hex = { tag: 'input', classes: ['cc-set-hexin'], attrs: { type: 'text' }, inside: ['#cc-settings', '.cc-set-swatches', '.cc-fill'] };
+  const hex = { tag: 'input', classes: ['tt-set-hexin'], attrs: { type: 'text' }, inside: ['#tt-settings', '.tt-set-swatches', '.tt-fill'] };
   ok('the hex field takes what the row has left', val(win(page, hex, 'flex')) === '1 1 0');
   const sq = (n) => val(win(page, n, 'flex')) === 'none' && val(win(page, n, 'width')) === '30px' && val(win(page, n, 'height')) === '30px';
-  ok('every swatch is a 30px square', sq({ tag: 'span', classes: ['cc-set-sw'], inside: ['#cc-settings', '.cc-set-swatches', '.cc-fill'] }));
-  ok('and so is the reset after a palette', sq({ tag: 'span', classes: ['cc-set-ibtn'], inside: ['#cc-settings', '.cc-set-swatches', '.cc-fill'] }));
-  const fr = { tag: 'div', classes: ['cc-set-row', 'cc-set-fieldrow'], inside: ['#cc-settings', '.cc-set-card'] };
+  ok('every swatch is a 30px square', sq({ tag: 'span', classes: ['tt-set-sw'], inside: ['#tt-settings', '.tt-set-swatches', '.tt-fill'] }));
+  ok('and so is the reset after a palette', sq({ tag: 'span', classes: ['tt-set-ibtn'], inside: ['#tt-settings', '.tt-set-swatches', '.tt-fill'] }));
+  const fr = { tag: 'div', classes: ['tt-set-row', 'tt-set-fieldrow'], inside: ['#tt-settings', '.tt-set-card'] };
   ok('its name sits at the start of the first line', val(win(page, fr, 'align-items')) === 'flex-start' && val(win(page, fr, 'flex-wrap')) === 'nowrap');
 }
 

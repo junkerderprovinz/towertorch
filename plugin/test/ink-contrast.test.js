@@ -1,5 +1,5 @@
 // Ink on a coloured fill is dark (#161616) or white, whichever has the higher contrast ratio.
-// Every area keeps its own fallback copy of idealText() for when cc-theme.js has not loaded, so
+// Every area keeps its own fallback copy of idealText() for when tt-theme.js has not loaded, so
 // every copy is held to the ratio computed here, and no script may pick ink by the old Rec-601
 // brightness threshold of 150 inline.
 const fs = require('fs');
@@ -38,8 +38,8 @@ const SAMPLES = ['#FF8389', '#FF832B', '#FCC419', '#6FDC8C', '#3DDBD9', '#1D99F3
   '#0000ff', '#ffff00', '#00ffff', '#ff00ff', 'nonsense', '', '#abc'];
 
 console.log('\nEvery copy answers like contrastOn()');
-const COPIES = [['cc-theme.js', 'idealText'], ['header.js', 'idealText'], ['docker.js', 'idealText'], ['favorites.js', 'idealText'],
-  ['plugins.js', 'idealText'], ['settings.js', 'idealText'], ['settingsgrid.js', 'idealText'], ['shares.js', 'idealText'], ['vms.js', 'ccIdeal']];
+const COPIES = [['tt-theme.js', 'idealText'], ['header.js', 'idealText'], ['docker.js', 'idealText'], ['favorites.js', 'idealText'],
+  ['plugins.js', 'idealText'], ['settings.js', 'idealText'], ['settingsgrid.js', 'idealText'], ['shares.js', 'idealText'], ['vms.js', 'ttIdeal']];
 for (const [file, name] of COPIES) {
   const src = grabFn(fs.readFileSync(path.join(DIR, file), 'utf8'), name);
   if (!src) { ok(file + ' has ' + name + '()', false); continue; }

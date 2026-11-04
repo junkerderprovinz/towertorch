@@ -1,216 +1,216 @@
 /* The TowerTorch settings page. Client-side only: it renders a card-based form into
- * #cc-settings and persists to localStorage under the cc.* keys, which the Docker-tab enhancer reads
+ * #tt-settings and persists to localStorage under the tt.* keys, which the Docker-tab enhancer reads
  * and reacts to live through the storage event. */
 (function () {
   "use strict";
-  var root = document.getElementById("cc-settings");
+  var root = document.getElementById("tt-settings");
   if (!root) return;
   // Page-local style additions, since docker.css is owned elsewhere. They live in <head> and so
   // survive render().
   (function () {
-    if (document.getElementById("cc-set-xtra")) return;
-    var st = document.createElement("style"); st.id = "cc-set-xtra";
+    if (document.getElementById("tt-set-xtra")) return;
+    var st = document.createElement("style"); st.id = "tt-set-xtra";
     st.textContent =
-      "#cc-settings .cc-set-xbtn{display:inline-flex;align-items:center;justify-content:center;height:var(--cc-md-h,30px);padding:var(--cc-md-btnpad,0 14px);font-size:var(--cc-md-fs);font-weight:600;border-radius:var(--cc-radius-pill);box-sizing:border-box;margin:12px 10px 0 0}" +
+      "#tt-settings .tt-set-xbtn{display:inline-flex;align-items:center;justify-content:center;height:var(--tt-md-h,30px);padding:var(--tt-md-btnpad,0 14px);font-size:var(--tt-md-fs);font-weight:600;border-radius:var(--tt-radius-pill);box-sizing:border-box;margin:12px 10px 0 0}" +
       // the flag picker's stripe swatches and its searchable dropdown
-      "#cc-settings .cc-flag-sw{display:inline-block;width:22px;height:15px;border-radius:calc(var(--cc-radius-control) / 4);flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}" +
-      "#cc-settings .cc-flag-sw-lg{width:34px;height:22px}" +
+      "#tt-settings .tt-flag-sw{display:inline-block;width:22px;height:15px;border-radius:calc(var(--tt-radius-control) / 4);flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}" +
+      "#tt-settings .tt-flag-sw-lg{width:34px;height:22px}" +
       // the real flag image, at the same footprint as the stripe swatch
-      "#cc-settings .cc-flag-img{display:inline-block;width:22px;height:15px;flex:0 0 auto;object-fit:cover;border-radius:calc(var(--cc-radius-control) / 4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}" +
-      "#cc-settings .cc-flag-img-lg{width:34px;height:22px}" +
-      "#cc-settings .cc-set-swatches.cc-fill{display:flex;gap:6px;align-items:center;justify-content:flex-end}" +
+      "#tt-settings .tt-flag-img{display:inline-block;width:22px;height:15px;flex:0 0 auto;object-fit:cover;border-radius:calc(var(--tt-radius-control) / 4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}" +
+      "#tt-settings .tt-flag-img-lg{width:34px;height:22px}" +
+      "#tt-settings .tt-set-swatches.tt-fill{display:flex;gap:6px;align-items:center;justify-content:flex-end}" +
       // Every swatch is the same 30px square in every card, and the reset after a palette is one
       // more square of that size. The hex field takes what the row has left, since the code needs
       // the room.
-      "#cc-settings .cc-set-swatches.cc-fill .cc-set-sw{flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:var(--cc-radius-pill)}" +
-      "#cc-settings .cc-set-swatches.cc-fill .cc-set-ibtn{flex:none;width:30px;height:30px;box-sizing:border-box;margin:0;display:inline-flex;align-items:center;justify-content:center;background:#2e2e2e;border-radius:var(--cc-radius-pill);cursor:pointer;color:#cfcfcf;font-size:var(--cc-text-body);transition:filter .12s,background .12s,color .12s}" +
-      "#cc-settings .cc-set-swatches.cc-fill .cc-set-ibtn:hover{background:var(--cc-accent,#FCC419);color:var(--cc-accent-text, #161616)}" +
-      "#cc-settings .cc-set-swatches.cc-fill .cc-set-hexin{flex:1 1 0;height:30px;min-width:0;box-sizing:border-box;padding:0 8px;align-self:center;font-size:var(--cc-text-meta);letter-spacing:0;margin:0}" +
+      "#tt-settings .tt-set-swatches.tt-fill .tt-set-sw{flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:var(--tt-radius-pill)}" +
+      "#tt-settings .tt-set-swatches.tt-fill .tt-set-ibtn{flex:none;width:30px;height:30px;box-sizing:border-box;margin:0;display:inline-flex;align-items:center;justify-content:center;background:#2e2e2e;border-radius:var(--tt-radius-pill);cursor:pointer;color:#cfcfcf;font-size:var(--tt-text-body);transition:filter .12s,background .12s,color .12s}" +
+      "#tt-settings .tt-set-swatches.tt-fill .tt-set-ibtn:hover{background:var(--tt-accent,#FCC419);color:var(--tt-accent-text, #161616)}" +
+      "#tt-settings .tt-set-swatches.tt-fill .tt-set-hexin{flex:1 1 0;height:30px;min-width:0;box-sizing:border-box;padding:0 8px;align-self:center;font-size:var(--tt-text-meta);letter-spacing:0;margin:0}" +
       // the settings search and the reset-everything button
-      "#cc-settings .cc-set-search{box-sizing:border-box;width:100%;max-width:420px;background:#232323;color:#eaeaea;border:none;outline:none;border-radius:var(--cc-radius-control);padding:9px 13px;font-size:var(--cc-text-subline);transition:background-color .12s}" +
+      "#tt-settings .tt-set-search{box-sizing:border-box;width:100%;max-width:420px;background:#232323;color:#eaeaea;border:none;outline:none;border-radius:var(--tt-radius-control);padding:9px 13px;font-size:var(--tt-text-subline);transition:background-color .12s}" +
       // Unraid's default-base.css paints every placeholder in the theme's link colour, so a hint
       // reads as a link or as an already filled value. One rule per sheet covers every field; the
       // Docker half of the same guard lives in docker.css.
-      "#cc-settings input::placeholder{color:#8d8d8d;opacity:1}" +
-      "#cc-settings .cc-set-search:focus{background:#2e2e2e}" +
+      "#tt-settings input::placeholder{color:#8d8d8d;opacity:1}" +
+      "#tt-settings .tt-set-search:focus{background:#2e2e2e}" +
       // The search is a grey pill above the cards, like every button in a card, and takes no room
       // while it is closed. Its magnifier closes it again.
-      "#cc-settings .cc-set-searchbadge{display:flex;width:fit-content;align-items:center;margin:0 0 24px;background:#2e2e2e;border-radius:var(--cc-radius-pill);height:34px;overflow:hidden}" +
-      "#cc-settings .cc-set-searchbadge:not(.cc-open){display:none}" +
-      "#cc-settings .cc-set-searchbadge .cc-set-searchicon{flex:0 0 auto;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:#e6e6e6;cursor:pointer}" +
-      "#cc-settings .cc-set-searchbadge .cc-set-search{width:260px;max-width:260px;padding:0 12px 0 2px;background:transparent}" +
+      "#tt-settings .tt-set-searchbadge{display:flex;width:fit-content;align-items:center;margin:0 0 24px;background:#2e2e2e;border-radius:var(--tt-radius-pill);height:34px;overflow:hidden}" +
+      "#tt-settings .tt-set-searchbadge:not(.tt-open){display:none}" +
+      "#tt-settings .tt-set-searchbadge .tt-set-searchicon{flex:0 0 auto;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:#e6e6e6;cursor:pointer}" +
+      "#tt-settings .tt-set-searchbadge .tt-set-search{width:260px;max-width:260px;padding:0 12px 0 2px;background:transparent}" +
       // What a search shows when no setting matches, in the place the cards would take and dark
       // like them on every theme: Tokens.css counts it among the dark token islands.
-      "#cc-settings .cc-set-empty{display:flex;align-items:center;gap:14px;max-width:420px;box-sizing:border-box;padding:18px;background:var(--cc-surface-2);border-radius:var(--cc-radius-card);box-shadow:var(--cc-elev-1)}" +
-      "#cc-settings .cc-set-empty svg{flex:none;width:28px;height:28px;opacity:.4}" +
-      "#cc-settings .cc-set-empty-t{font-weight:600;color:var(--cc-text)}" +
-      "#cc-settings .cc-set-empty-h{margin-top:2px;font-size:var(--cc-text-meta);color:var(--cc-text-dim)}" +
+      "#tt-settings .tt-set-empty{display:flex;align-items:center;gap:14px;max-width:420px;box-sizing:border-box;padding:18px;background:var(--tt-surface-2);border-radius:var(--tt-radius-card);box-shadow:var(--tt-elev-1)}" +
+      "#tt-settings .tt-set-empty svg{flex:none;width:28px;height:28px;opacity:.4}" +
+      "#tt-settings .tt-set-empty-t{font-weight:600;color:var(--tt-text)}" +
+      "#tt-settings .tt-set-empty-h{margin-top:2px;font-size:var(--tt-text-meta);color:var(--tt-text-dim)}" +
       // The country picker stands at the end of its row, wide enough for "Bosnien und Herzegowina".
-      "#cc-settings .cc-flag-row .cc-flag-picker{position:relative;margin-left:auto;flex:0 1 300px;min-width:0}" +
-      "#cc-settings .cc-flag-trigger{display:flex;align-items:center;gap:9px;background:var(--cc-surface-chip,#383838);border-radius:var(--cc-radius-control);padding:7px 12px;cursor:pointer;user-select:none}" +
-      "#cc-settings .cc-flag-trigger:hover{background:color-mix(in srgb,var(--cc-surface-chip,#383838) 85%,var(--cc-text,#e6e6e6))}" +
-      "#cc-settings .cc-flag-name{font-size:var(--cc-text-subline);color:#eaeaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
+      "#tt-settings .tt-flag-row .tt-flag-picker{position:relative;margin-left:auto;flex:0 1 300px;min-width:0}" +
+      "#tt-settings .tt-flag-trigger{display:flex;align-items:center;gap:9px;background:var(--tt-surface-chip,#383838);border-radius:var(--tt-radius-control);padding:7px 12px;cursor:pointer;user-select:none}" +
+      "#tt-settings .tt-flag-trigger:hover{background:color-mix(in srgb,var(--tt-surface-chip,#383838) 85%,var(--tt-text,#e6e6e6))}" +
+      "#tt-settings .tt-flag-name{font-size:var(--tt-text-subline);color:#eaeaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
       // The trigger reads as a button, with no caret, and openPanel pins the panel fixed.
-      "#cc-settings .cc-flag-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:9999;background:#1c1c1c;border-radius:var(--cc-radius-card);box-shadow:0 12px 34px rgba(0,0,0,.6);overflow:hidden}" +
-      "#cc-settings .cc-flag-search{box-sizing:border-box;background:#232323;color:#eaeaea;border:none;outline:none;border-radius:var(--cc-radius-control);padding:8px 10px;margin:8px;width:calc(100% - 16px);font-size:var(--cc-text-subline)}" +
-      "#cc-settings .cc-flag-list{max-height:260px;overflow-y:auto;padding:0 6px 6px}" +
-      "#cc-settings .cc-flag-item{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:var(--cc-radius-control);cursor:pointer}" +
-      "#cc-settings .cc-flag-item:hover,#cc-settings .cc-flag-item.cc-sel{background:rgba(255,255,255,.09)}" +   // the keyboard highlight too
+      "#tt-settings .tt-flag-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:9999;background:#1c1c1c;border-radius:var(--tt-radius-card);box-shadow:0 12px 34px rgba(0,0,0,.6);overflow:hidden}" +
+      "#tt-settings .tt-flag-search{box-sizing:border-box;background:#232323;color:#eaeaea;border:none;outline:none;border-radius:var(--tt-radius-control);padding:8px 10px;margin:8px;width:calc(100% - 16px);font-size:var(--tt-text-subline)}" +
+      "#tt-settings .tt-flag-list{max-height:260px;overflow-y:auto;padding:0 6px 6px}" +
+      "#tt-settings .tt-flag-item{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:var(--tt-radius-control);cursor:pointer}" +
+      "#tt-settings .tt-flag-item:hover,#tt-settings .tt-flag-item.tt-sel{background:rgba(255,255,255,.09)}" +   // the keyboard highlight too
       // The logo preview tile. Its coloured badge is this box, a real element with a radius and
       // overflow hidden, never an feFlood inside the filter: an feFlood fills the whole filter
       // region and ignores the radius, rendering a hard square where the live tab shows a rounded
       // tile. The real tabs split it the same way: the tile carries the badge, the child the pixels.
-      "#cc-settings .cc-set-tile{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;flex:0 0 auto;transition:background-color .12s}" +
-      "#cc-settings .cc-set-tile>img{width:100%;height:100%;object-fit:contain;display:block;box-sizing:border-box}" +
-      "#cc-settings .cc-set-tile>i{display:inline-flex;align-items:center;justify-content:center;width:100%;height:100%;box-sizing:border-box}" +
-      "#cc-settings .cc-set-tile-bg>img,#cc-settings .cc-set-tile-bg>i{padding:14%}" +
+      "#tt-settings .tt-set-tile{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;flex:0 0 auto;transition:background-color .12s}" +
+      "#tt-settings .tt-set-tile>img{width:100%;height:100%;object-fit:contain;display:block;box-sizing:border-box}" +
+      "#tt-settings .tt-set-tile>i{display:inline-flex;align-items:center;justify-content:center;width:100%;height:100%;box-sizing:border-box}" +
+      "#tt-settings .tt-set-tile-bg>img,#tt-settings .tt-set-tile-bg>i{padding:14%}" +
       // A per-area sub-heading inside one card is a muted caption, never a card inside a card.
-      "#cc-settings .cc-set-sublbl{margin:12px 0 0;font-size:var(--cc-text-meta);font-weight:700;letter-spacing:.6px;text-transform:uppercase;opacity:.55}" +
-      "#cc-settings .cc-set-prev-empty{margin:6px 0 0;font-size:var(--cc-text-meta);opacity:.5}" +
+      "#tt-settings .tt-set-sublbl{margin:12px 0 0;font-size:var(--tt-text-meta);font-weight:700;letter-spacing:.6px;text-transform:uppercase;opacity:.55}" +
+      "#tt-settings .tt-set-prev-empty{margin:6px 0 0;font-size:var(--tt-text-meta);opacity:.5}" +
       // The release notes window is wide and sets its body as reading text. It hangs on <body>,
-      // outside #cc-settings, so its rules carry the html prefix against Unraid's link colours.
-      ".cc-dlg.cc-win-notes{width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px)}" +
-      "html .cc-win-notes .cc-notes{color:var(--cc-text);font-size:var(--cc-text-subline);line-height:1.55;overflow-wrap:anywhere}" +
-      "html .cc-win-notes .cc-notes-h{margin:18px 0 6px;font-size:var(--cc-text-title);font-weight:700}" +
-      "html .cc-win-notes .cc-notes>:first-child{margin-top:0}" +
-      "html .cc-win-notes .cc-notes p{margin:0 0 10px}" +
-      "html .cc-win-notes .cc-notes :is(ul,ol){margin:0 0 10px;padding-inline-start:20px}" +
-      "html .cc-win-notes .cc-notes li{margin:5px 0}" +
-      "html .cc-win-notes .cc-notes code{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:var(--cc-text-meta);background:var(--cc-surface-3);border-radius:calc(var(--cc-radius-control) / 2);padding:1px 5px}" +
-      "html .cc-win-notes .cc-notes pre{margin:0 0 10px;padding:10px 12px;background:var(--cc-surface-deep);border-radius:var(--cc-radius-control);overflow-x:auto}" +
-      "html .cc-win-notes .cc-notes pre code{background:none;padding:0;white-space:pre}" +
-      "html .cc-win-notes .cc-notes a,html .cc-win-notes .cc-notes a:visited{color:var(--cc-accent-ink);text-decoration:none;border-radius:calc(var(--cc-radius-control) / 2)}" +
-      "html .cc-win-notes .cc-notes a:hover{background:var(--cc-rbaccent,var(--cc-accent));color:var(--cc-rbaccent-text,var(--cc-accent-text))}" +
-      "html .cc-win-notes :is(.cc-notes, .cc-notes a):focus-visible{outline:none!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--cc-accent,#FCC419) 45%,transparent)!important}" +
-      "html .cc-win a.cc-win-btn,html .cc-win a.cc-win-btn:visited{color:var(--cc-text);text-decoration:none}" +
-      "html .cc-win a.cc-win-btn:hover{color:var(--cc-rb-ct,var(--cc-rbaccent-text,var(--cc-accent-text,#161616)))}" +
+      // outside #tt-settings, so its rules carry the html prefix against Unraid's link colours.
+      ".tt-dlg.tt-win-notes{width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px)}" +
+      "html .tt-win-notes .tt-notes{color:var(--tt-text);font-size:var(--tt-text-subline);line-height:1.55;overflow-wrap:anywhere}" +
+      "html .tt-win-notes .tt-notes-h{margin:18px 0 6px;font-size:var(--tt-text-title);font-weight:700}" +
+      "html .tt-win-notes .tt-notes>:first-child{margin-top:0}" +
+      "html .tt-win-notes .tt-notes p{margin:0 0 10px}" +
+      "html .tt-win-notes .tt-notes :is(ul,ol){margin:0 0 10px;padding-inline-start:20px}" +
+      "html .tt-win-notes .tt-notes li{margin:5px 0}" +
+      "html .tt-win-notes .tt-notes code{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:var(--tt-text-meta);background:var(--tt-surface-3);border-radius:calc(var(--tt-radius-control) / 2);padding:1px 5px}" +
+      "html .tt-win-notes .tt-notes pre{margin:0 0 10px;padding:10px 12px;background:var(--tt-surface-deep);border-radius:var(--tt-radius-control);overflow-x:auto}" +
+      "html .tt-win-notes .tt-notes pre code{background:none;padding:0;white-space:pre}" +
+      "html .tt-win-notes .tt-notes a,html .tt-win-notes .tt-notes a:visited{color:var(--tt-accent-ink);text-decoration:none;border-radius:calc(var(--tt-radius-control) / 2)}" +
+      "html .tt-win-notes .tt-notes a:hover{background:var(--tt-rbaccent,var(--tt-accent));color:var(--tt-rbaccent-text,var(--tt-accent-text))}" +
+      "html .tt-win-notes :is(.tt-notes, .tt-notes a):focus-visible{outline:none!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--tt-accent,#FCC419) 45%,transparent)!important}" +
+      "html .tt-win a.tt-win-btn,html .tt-win a.tt-win-btn:visited{color:var(--tt-text);text-decoration:none}" +
+      "html .tt-win a.tt-win-btn:hover{color:var(--tt-rb-ct,var(--tt-rbaccent-text,var(--tt-accent-text,#161616)))}" +
       // A row or card that has nothing to act on stays out of the page and out of the search.
-      "#cc-settings [hidden],#cc-settings .cc-set-off{display:none!important}" +
-      "#cc-settings .cc-set-prose{text-align:start}" +
+      "#tt-settings [hidden],#tt-settings .tt-set-off{display:none!important}" +
+      "#tt-settings .tt-set-prose{text-align:start}" +
       // One font with the rest of Unraid: the page takes the theme's face, as every other page does.
-      "#cc-settings{font-family:inherit}" +
+      "#tt-settings{font-family:inherit}" +
       // The banner over the page, drawn alike on ShipLog's and FireSquire's settings pages: the logo,
       // the name and the claim on a card surface, and the logo again at the end as a faint silhouette
       // cut by the edge. It spans the tab column and the cards, its start inset on the tiles' edge.
       // The silhouette rests grey and takes the accent, or the first rainbow position from
       // paintSetTabs, while the pointer or the focus is on the banner.
-      "#cc-settings .cc-hero{--cc-hero-sil:16%;position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;gap:24px;max-width:1144px;height:136px;margin:4px 0 32px 4px;padding:0 32px;border-radius:var(--cc-radius-card);color:var(--cc-text);background:var(--cc-fm-card,var(--cc-surface-2))}" +
+      "#tt-settings .tt-hero{--tt-hero-sil:16%;position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;gap:24px;max-width:1144px;height:136px;margin:4px 0 32px 4px;padding:0 32px;border-radius:var(--tt-radius-card);color:var(--tt-text);background:var(--tt-fm-card,var(--tt-surface-2))}" +
       // A faint colour over a white ground needs more of itself to show.
-      "html:is(.Theme--white,.Theme--azure) #cc-settings .cc-hero{--cc-hero-sil:30%}" +
-      "#cc-settings .cc-hero-mark{position:absolute;z-index:-1;inset-inline-end:-44px;top:50%;translate:0 -50%;width:264px;height:264px;pointer-events:none;background-color:color-mix(in srgb,var(--cc-text-dim) var(--cc-hero-sil),transparent);-webkit-mask:url(/plugins/towertorch/images/towertorch.png) center/contain no-repeat;mask:url(/plugins/towertorch/images/towertorch.png) center/contain no-repeat;transition:background-color var(--cc-motion-control-dur,0s)}" +
-      "#cc-settings .cc-hero:is(:hover,:focus-within) .cc-hero-mark{background-color:color-mix(in srgb,var(--cc-hero-tint,var(--cc-accent)) var(--cc-hero-sil),transparent)}" +
-      "#cc-settings .cc-hero-logo{flex:none;display:block;width:88px;height:88px;object-fit:contain}" +
+      "html:is(.Theme--white,.Theme--azure) #tt-settings .tt-hero{--tt-hero-sil:30%}" +
+      "#tt-settings .tt-hero-mark{position:absolute;z-index:-1;inset-inline-end:-44px;top:50%;translate:0 -50%;width:264px;height:264px;pointer-events:none;background-color:color-mix(in srgb,var(--tt-text-dim) var(--tt-hero-sil),transparent);-webkit-mask:url(/plugins/towertorch/images/towertorch.png) center/contain no-repeat;mask:url(/plugins/towertorch/images/towertorch.png) center/contain no-repeat;transition:background-color var(--tt-motion-control-dur,0s)}" +
+      "#tt-settings .tt-hero:is(:hover,:focus-within) .tt-hero-mark{background-color:color-mix(in srgb,var(--tt-hero-tint,var(--tt-accent)) var(--tt-hero-sil),transparent)}" +
+      "#tt-settings .tt-hero-logo{flex:none;display:block;width:88px;height:88px;object-fit:contain}" +
       // The text stops short of the silhouette.
-      "#cc-settings .cc-hero-text{min-width:0;max-width:calc(100% - 332px)}" +
-      "#cc-settings .cc-hero-name{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:inherit;font-size:32px;font-weight:700;line-height:1.15;letter-spacing:normal;text-transform:none;color:inherit}" +
-      "#cc-settings .cc-hero-claim{margin:4px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--cc-text-title);line-height:1.45;text-align:start;color:var(--cc-text-dim)}" +
-      "#cc-settings .cc-set-cname .cc-info{margin-left:6px;vertical-align:-2px}" +
+      "#tt-settings .tt-hero-text{min-width:0;max-width:calc(100% - 332px)}" +
+      "#tt-settings .tt-hero-name{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:inherit;font-size:32px;font-weight:700;line-height:1.15;letter-spacing:normal;text-transform:none;color:inherit}" +
+      "#tt-settings .tt-hero-claim{margin:4px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--tt-text-title);line-height:1.45;text-align:start;color:var(--tt-text-dim)}" +
+      "#tt-settings .tt-set-cname .tt-info{margin-left:6px;vertical-align:-2px}" +
       // A selector sits at the end of its row in a groove, its segments one width, and only the chosen one is a badge.
-      "#cc-settings .cc-seg.cc-set-mode{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;box-sizing:border-box;background:var(--cc-surface-base,#161616)}" +
-      "#cc-settings .cc-set-mode .cc-seg-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;padding:7px 12px;font-size:var(--cc-text-subline)}" +
-      "#cc-settings .cc-seg-ico{flex:none;width:14px;height:14px}" +
+      "#tt-settings .tt-seg.tt-set-mode{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;box-sizing:border-box;background:var(--tt-surface-base,#161616)}" +
+      "#tt-settings .tt-set-mode .tt-seg-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;padding:7px 12px;font-size:var(--tt-text-subline)}" +
+      "#tt-settings .tt-seg-ico{flex:none;width:14px;height:14px}" +
       // a value of its own beside a selector, a short field with its unit after it
-      "#cc-settings .cc-set-numwrap{display:inline-flex;align-items:center;gap:6px;color:var(--cc-text-dim,#8a8a8a);font-size:var(--cc-text-subline)}" +
-      "#cc-settings .cc-set-numwrap .cc-set-num{flex:none;width:56px;min-width:0;margin:0;text-align:center}" +
-      "#cc-settings .cc-set-row.cc-set-ownrow{flex-wrap:wrap;row-gap:8px}" +
-      "#cc-settings .cc-set-ownline{flex:0 0 100%;justify-content:flex-end}" +
+      "#tt-settings .tt-set-numwrap{display:inline-flex;align-items:center;gap:6px;color:var(--tt-text-dim,#8a8a8a);font-size:var(--tt-text-subline)}" +
+      "#tt-settings .tt-set-numwrap .tt-set-num{flex:none;width:56px;min-width:0;margin:0;text-align:center}" +
+      "#tt-settings .tt-set-row.tt-set-ownrow{flex-wrap:wrap;row-gap:8px}" +
+      "#tt-settings .tt-set-ownline{flex:0 0 100%;justify-content:flex-end}" +
       // a view sketch right under the selector it belongs to, in a well of its own
-      "#cc-settings .cc-set-viewprev{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin-top:12px}" +
-      "#cc-settings .cc-set-viewprev > .cc-set-lbl{margin:0}" +
-      "#cc-settings .cc-set-vp{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 12px 8px;border-radius:var(--cc-radius-control);background:var(--cc-surface-base,#161616);color:var(--cc-text-dim,#8a8a8a);transition:color .12s,background-color .12s}" +
-      "#cc-settings .cc-set-vp svg{display:block;width:108px;height:65px}" +
-      "#cc-settings .cc-set-vp-lbl{font-size:var(--cc-text-meta);line-height:1.2}" +
-      "#cc-settings .cc-set-vp-on{background:var(--cc-surface-3,#2e2e2e);color:var(--cc-rb-c,var(--cc-accent,#FCC419))}" +
-      "#cc-settings .cc-set-vp-on .cc-set-vp-lbl{color:var(--cc-text,#e6e6e6)}" +
+      "#tt-settings .tt-set-viewprev{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin-top:12px}" +
+      "#tt-settings .tt-set-viewprev > .tt-set-lbl{margin:0}" +
+      "#tt-settings .tt-set-vp{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 12px 8px;border-radius:var(--tt-radius-control);background:var(--tt-surface-base,#161616);color:var(--tt-text-dim,#8a8a8a);transition:color .12s,background-color .12s}" +
+      "#tt-settings .tt-set-vp svg{display:block;width:108px;height:65px}" +
+      "#tt-settings .tt-set-vp-lbl{font-size:var(--tt-text-meta);line-height:1.2}" +
+      "#tt-settings .tt-set-vp-on{background:var(--tt-surface-3,#2e2e2e);color:var(--tt-rb-c,var(--tt-accent,#FCC419))}" +
+      "#tt-settings .tt-set-vp-on .tt-set-vp-lbl{color:var(--tt-text,#e6e6e6)}" +
       // A row whose switch above it is off rests dimmed and out of the tab order;
       // a press on it is refused (refuse() below), and its (i) still explains it. A disabled
       // field takes no click at all, so its wrapper receives the press.
-      "#cc-settings .cc-set-lbl.cc-set-disabled,#cc-settings .cc-set-disabled > span:first-child:not(.cc-set-lblwrap),#cc-settings .cc-set-disabled :is(.cc-set-lblwrap > span:first-child, .cc-seg, .cc-set-toggle, .cc-set-numwrap){opacity:.45}" +
-      "#cc-settings .cc-set-disabled :is(.cc-seg, .cc-seg-btn, .cc-set-toggle, .cc-set-numwrap){cursor:not-allowed}" +
-      "#cc-settings .cc-set-disabled input{pointer-events:none}" +
-      "#cc-settings .cc-set-mode .cc-seg-btn:not(.cc-seg-on){background:transparent;color:var(--cc-text-chip,#cfcfcf)}" +
-      "#cc-settings .cc-set-mode .cc-seg-btn:not(.cc-seg-on):not([aria-disabled=true]):hover{background:var(--cc-surface-3,#2e2e2e);color:var(--cc-text,#e6e6e6)}" +
-      "#cc-settings .cc-set-disabled .cc-set-mode .cc-seg-btn:not(.cc-seg-on):hover{background:transparent;color:var(--cc-text-chip,#cfcfcf)}" +
-      "#cc-settings .cc-set-mode .cc-seg-btn[aria-disabled=true]{opacity:.45;cursor:not-allowed}" +
-      "#cc-settings .cc-set-locked .cc-set-lockby{cursor:not-allowed}" +
+      "#tt-settings .tt-set-lbl.tt-set-disabled,#tt-settings .tt-set-disabled > span:first-child:not(.tt-set-lblwrap),#tt-settings .tt-set-disabled :is(.tt-set-lblwrap > span:first-child, .tt-seg, .tt-set-toggle, .tt-set-numwrap){opacity:.45}" +
+      "#tt-settings .tt-set-disabled :is(.tt-seg, .tt-seg-btn, .tt-set-toggle, .tt-set-numwrap){cursor:not-allowed}" +
+      "#tt-settings .tt-set-disabled input{pointer-events:none}" +
+      "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on){background:transparent;color:var(--tt-text-chip,#cfcfcf)}" +
+      "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on):not([aria-disabled=true]):hover{background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6)}" +
+      "#tt-settings .tt-set-disabled .tt-set-mode .tt-seg-btn:not(.tt-seg-on):hover{background:transparent;color:var(--tt-text-chip,#cfcfcf)}" +
+      "#tt-settings .tt-set-mode .tt-seg-btn[aria-disabled=true]{opacity:.45;cursor:not-allowed}" +
+      "#tt-settings .tt-set-locked .tt-set-lockby{cursor:not-allowed}" +
       // An area's colour line and a row that names who decides its value.
-      "#cc-settings .cc-set-colend{display:inline-flex;align-items:center;gap:12px;flex:none}" +
-      "#cc-settings .cc-set-colend .cc-set-xbtn{margin:0}" +
-      "#cc-settings :is(.cc-set-colstate,.cc-set-lockby){display:inline-flex;align-items:center;gap:7px;color:var(--cc-text-dim,#8a8a8a);font-size:var(--cc-text-subline)}" +
-      "#cc-settings .cc-set-colstate .cc-set-excdot{width:10px;height:10px}" +
+      "#tt-settings .tt-set-colend{display:inline-flex;align-items:center;gap:12px;flex:none}" +
+      "#tt-settings .tt-set-colend .tt-set-xbtn{margin:0}" +
+      "#tt-settings :is(.tt-set-colstate,.tt-set-lockby){display:inline-flex;align-items:center;gap:7px;color:var(--tt-text-dim,#8a8a8a);font-size:var(--tt-text-subline)}" +
+      "#tt-settings .tt-set-colstate .tt-set-excdot{width:10px;height:10px}" +
       // The README buttons on the Info tab (GlimStone, "The App tab"). The cards stay dark on every
       // theme, so the marks rest in their dark-theme colours.
-      "#cc-settings .cc-rbtn-rows{display:flex;flex-wrap:wrap;gap:13px;margin-top:12px}" +
-      "#cc-settings .cc-rbtn-rows.cc-set-give{margin-top:calc(var(--cc-text-body) * 1.5)}" +
-      "#cc-settings .cc-rbtn-unit{position:relative;display:inline-flex;border-radius:var(--cc-radius-pill);overflow:hidden;isolation:isolate;--cc-brand-coffee:#ffdd00;--cc-brand-paypal:#4fb5f0;--cc-brand-bitcoin:#f7931a;--cc-brand-github:#ffffff}" +
-      "#cc-settings .cc-rbtn{position:relative;display:block;flex:none;box-sizing:border-box;width:160px;height:46.6px;padding:0;background:var(--cc-surface-3,#2e2e2e);color:var(--cc-text,#e6e6e6);text-decoration:none;cursor:pointer}" +
-      "#cc-settings .cc-rbtn:hover{text-decoration:none}" +
+      "#tt-settings .tt-rbtn-rows{display:flex;flex-wrap:wrap;gap:13px;margin-top:12px}" +
+      "#tt-settings .tt-rbtn-rows.tt-set-give{margin-top:calc(var(--tt-text-body) * 1.5)}" +
+      "#tt-settings .tt-rbtn-unit{position:relative;display:inline-flex;border-radius:var(--tt-radius-pill);overflow:hidden;isolation:isolate;--tt-brand-coffee:#ffdd00;--tt-brand-paypal:#4fb5f0;--tt-brand-bitcoin:#f7931a;--tt-brand-github:#ffffff}" +
+      "#tt-settings .tt-rbtn{position:relative;display:block;flex:none;box-sizing:border-box;width:160px;height:46.6px;padding:0;background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6);text-decoration:none;cursor:pointer}" +
+      "#tt-settings .tt-rbtn:hover{text-decoration:none}" +
       // The unit clips at its edge, so the focus halo goes inside the button.
-      "#cc-settings .cc-rbtn:focus-visible{outline:none!important;filter:none!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--cc-accent,#FCC419) 45%,transparent)!important}" +
-      "#cc-settings .cc-rbtn-mark{position:absolute;top:50%;left:14px;width:32px;height:25px;translate:0 -50%;display:flex}" +
-      "#cc-settings :is(.cc-rbtn-mark,.cc-rbtn-art) svg{display:block;width:100%;height:100%}" +
-      "#cc-settings .cc-rbtn-mark svg.cc-mark-hover{display:none}" +
-      "#cc-settings .cc-rbtn-art{position:absolute;inset:0}" +
-      "#cc-settings .cc-rbtn-text{position:absolute;top:0;bottom:0;left:53px;right:10px;display:flex;flex-direction:column;justify-content:center;line-height:1.15}" +
-      "#cc-settings :is(.cc-rbtn-name,.cc-rbtn-sub){max-width:100%;overflow:hidden;white-space:nowrap}" +
-      "#cc-settings .cc-rbtn-name{font-size:var(--cc-text-body);font-weight:700;transition:translate var(--cc-motion-control-dur,0s)}" +
-      "#cc-settings .cc-rbtn-name:not(:only-child){translate:0 7px}" +
-      "#cc-settings .cc-rbtn-sub{font-size:var(--cc-text-meta);opacity:0;translate:0 4px;transition:opacity var(--cc-motion-control-dur,0s),translate var(--cc-motion-control-dur,0s)}" +
-      "#cc-settings .cc-rbtn-unit:is(:hover,:focus-within) .cc-rbtn-name{translate:0 0}" +
-      "#cc-settings .cc-rbtn-unit:is(:hover,:focus-within) .cc-rbtn-sub{opacity:.9;translate:0 0}" +
-      "#cc-settings .cc-paypal-mark{color:var(--cc-brand-paypal)}" +
-      "#cc-settings .cc-bitcoin-mark{color:var(--cc-brand-bitcoin)}" +
-      "#cc-settings .cc-github-mark{color:var(--cc-brand-github)}" +
-      "#cc-settings .cc-house-mark{color:var(--cc-rb-c,var(--cc-rbaccent,var(--cc-accent,#FCC419)))}" +
-      "#cc-settings .cc-tile-github{--cc-tile:#181717;--cc-tile-ink:#fff}" +
-      "#cc-settings .cc-tile-paypal{--cc-tile:#003087;--cc-tile-ink:#fff}" +
-      "#cc-settings .cc-tile-bitcoin{--cc-tile:#f7931a;--cc-tile-ink:#161616}" +
-      "#cc-settings .cc-tile-coffee{--cc-tile:#ffdd00;--cc-tile-ink:#0d0c22}" +
+      "#tt-settings .tt-rbtn:focus-visible{outline:none!important;filter:none!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--tt-accent,#FCC419) 45%,transparent)!important}" +
+      "#tt-settings .tt-rbtn-mark{position:absolute;top:50%;left:14px;width:32px;height:25px;translate:0 -50%;display:flex}" +
+      "#tt-settings :is(.tt-rbtn-mark,.tt-rbtn-art) svg{display:block;width:100%;height:100%}" +
+      "#tt-settings .tt-rbtn-mark svg.tt-mark-hover{display:none}" +
+      "#tt-settings .tt-rbtn-art{position:absolute;inset:0}" +
+      "#tt-settings .tt-rbtn-text{position:absolute;top:0;bottom:0;left:53px;right:10px;display:flex;flex-direction:column;justify-content:center;line-height:1.15}" +
+      "#tt-settings :is(.tt-rbtn-name,.tt-rbtn-sub){max-width:100%;overflow:hidden;white-space:nowrap}" +
+      "#tt-settings .tt-rbtn-name{font-size:var(--tt-text-body);font-weight:700;transition:translate var(--tt-motion-control-dur,0s)}" +
+      "#tt-settings .tt-rbtn-name:not(:only-child){translate:0 7px}" +
+      "#tt-settings .tt-rbtn-sub{font-size:var(--tt-text-meta);opacity:0;translate:0 4px;transition:opacity var(--tt-motion-control-dur,0s),translate var(--tt-motion-control-dur,0s)}" +
+      "#tt-settings .tt-rbtn-unit:is(:hover,:focus-within) .tt-rbtn-name{translate:0 0}" +
+      "#tt-settings .tt-rbtn-unit:is(:hover,:focus-within) .tt-rbtn-sub{opacity:.9;translate:0 0}" +
+      "#tt-settings .tt-paypal-mark{color:var(--tt-brand-paypal)}" +
+      "#tt-settings .tt-bitcoin-mark{color:var(--tt-brand-bitcoin)}" +
+      "#tt-settings .tt-github-mark{color:var(--tt-brand-github)}" +
+      "#tt-settings .tt-house-mark{color:var(--tt-rb-c,var(--tt-rbaccent,var(--tt-accent,#FCC419)))}" +
+      "#tt-settings .tt-tile-github{--tt-tile:#181717;--tt-tile-ink:#fff}" +
+      "#tt-settings .tt-tile-paypal{--tt-tile:#003087;--tt-tile-ink:#fff}" +
+      "#tt-settings .tt-tile-bitcoin{--tt-tile:#f7931a;--tt-tile-ink:#161616}" +
+      "#tt-settings .tt-tile-coffee{--tt-tile:#ffdd00;--tt-tile-ink:#0d0c22}" +
       // The button that reaches TowerTorch's author follows the colour engine.
-      "#cc-settings .cc-tile-house{--cc-tile:var(--cc-rb-c,var(--cc-rbaccent,var(--cc-accent,#FCC419)));--cc-tile-ink:var(--cc-rb-ct,var(--cc-rbaccent-text,var(--cc-accent-text,#161616)))}" +
-      "#cc-settings .cc-rbtn-unit .cc-rbtn:focus-visible .cc-house-mark .cc-mark-rest{display:none}" +
-      "#cc-settings .cc-rbtn-unit .cc-rbtn:focus-visible .cc-house-mark .cc-mark-hover{display:block}" +
+      "#tt-settings .tt-tile-house{--tt-tile:var(--tt-rb-c,var(--tt-rbaccent,var(--tt-accent,#FCC419)));--tt-tile-ink:var(--tt-rb-ct,var(--tt-rbaccent-text,var(--tt-accent-text,#161616)))}" +
+      "#tt-settings .tt-rbtn-unit .tt-rbtn:focus-visible .tt-house-mark .tt-mark-rest{display:none}" +
+      "#tt-settings .tt-rbtn-unit .tt-rbtn:focus-visible .tt-house-mark .tt-mark-hover{display:block}" +
       "@media (hover:hover){" +
-        "#cc-settings .cc-rbtn-unit:hover .cc-rbtn{background:var(--cc-tile);color:var(--cc-tile-ink);--cc-mark-ink:var(--cc-tile-ink)}" +
-        "#cc-settings .cc-rbtn-unit:hover .cc-rbtn-mark{color:var(--cc-tile-ink)}" +
-        "#cc-settings .cc-rbtn-unit:hover .cc-mark-rest{display:none}" +
-        "#cc-settings .cc-rbtn-unit:hover .cc-rbtn-mark svg.cc-mark-hover{display:block}" +
+        "#tt-settings .tt-rbtn-unit:hover .tt-rbtn{background:var(--tt-tile);color:var(--tt-tile-ink);--tt-mark-ink:var(--tt-tile-ink)}" +
+        "#tt-settings .tt-rbtn-unit:hover .tt-rbtn-mark{color:var(--tt-tile-ink)}" +
+        "#tt-settings .tt-rbtn-unit:hover .tt-mark-rest{display:none}" +
+        "#tt-settings .tt-rbtn-unit:hover .tt-rbtn-mark svg.tt-mark-hover{display:block}" +
       "}" +
-      "#cc-settings .cc-rbtn-sheen{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}" +
-      "#cc-settings .cc-rbtn-sheen::after{content:'';position:absolute;top:-12px;bottom:-12px;left:-64px;width:33px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28) 45%,rgba(255,255,255,.28) 55%,transparent);transform:skewX(-16deg)}" +
-      "@keyframes cc-rbtn-sheen{to{left:calc(100% + 32px)}}" +
-      "@media (hover:hover) and (prefers-reduced-motion:no-preference){html:not([data-cc-motion=\"off\"]) #cc-settings .cc-rbtn-unit:hover .cc-rbtn-sheen::after{animation:cc-rbtn-sheen .7s linear}}" +
+      "#tt-settings .tt-rbtn-sheen{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}" +
+      "#tt-settings .tt-rbtn-sheen::after{content:'';position:absolute;top:-12px;bottom:-12px;left:-64px;width:33px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28) 45%,rgba(255,255,255,.28) 55%,transparent);transform:skewX(-16deg)}" +
+      "@keyframes tt-rbtn-sheen{to{left:calc(100% + 32px)}}" +
+      "@media (hover:hover) and (prefers-reduced-motion:no-preference){html:not([data-tt-motion=\"off\"]) #tt-settings .tt-rbtn-unit:hover .tt-rbtn-sheen::after{animation:tt-rbtn-sheen .7s linear}}" +
       // Where a row is too narrow for its name and its control, the control moves under the name
       // and keeps the row's end (GlimStone, "Narrow windows"). A selector or a group of buttons
       // still wider than the card breaks into even rows rather than pushing the page sideways.
       "@media (max-width:1023px){" +
-        "#cc-settings .cc-hero{gap:16px;height:104px;padding:0 20px}" +
-        "#cc-settings .cc-hero-mark{inset-inline-end:-36px;width:208px;height:208px}" +
-        "#cc-settings .cc-hero-logo{width:64px;height:64px}" +
-        "#cc-settings .cc-hero-text{max-width:calc(100% - 260px)}" +
-        "#cc-settings .cc-hero-name{font-size:26px}" +
-        "#cc-settings .cc-set-row.cc-set-inline{flex-wrap:wrap;row-gap:8px}" +
-        "#cc-settings .cc-set-row.cc-set-inline > :last-child{margin-left:auto;max-width:100%}" +
-        "#cc-settings .cc-set-colend{flex-wrap:wrap;justify-content:flex-end;row-gap:8px;min-width:0}" +
-        "#cc-settings .cc-seg.cc-set-mode{display:flex;flex-wrap:wrap;justify-content:flex-end;max-width:100%;border-radius:var(--cc-radius-control)}" +
-        "#cc-settings .cc-set-mode .cc-seg-btn{flex:1 0 auto}" +
-        "#cc-settings .cc-set-fieldrow{flex-wrap:wrap;row-gap:8px}" +
-        "#cc-settings .cc-set-fieldrow > .cc-set-pickrow{flex:1 1 100%}" +
-        "#cc-settings .cc-set-swatches.cc-fill{flex-wrap:wrap}" +
-        "#cc-settings .cc-set-swatches.cc-fill .cc-set-hexin{min-width:90px}" +
+        "#tt-settings .tt-hero{gap:16px;height:104px;padding:0 20px}" +
+        "#tt-settings .tt-hero-mark{inset-inline-end:-36px;width:208px;height:208px}" +
+        "#tt-settings .tt-hero-logo{width:64px;height:64px}" +
+        "#tt-settings .tt-hero-text{max-width:calc(100% - 260px)}" +
+        "#tt-settings .tt-hero-name{font-size:26px}" +
+        "#tt-settings .tt-set-row.tt-set-inline{flex-wrap:wrap;row-gap:8px}" +
+        "#tt-settings .tt-set-row.tt-set-inline > :last-child{margin-left:auto;max-width:100%}" +
+        "#tt-settings .tt-set-colend{flex-wrap:wrap;justify-content:flex-end;row-gap:8px;min-width:0}" +
+        "#tt-settings .tt-seg.tt-set-mode{display:flex;flex-wrap:wrap;justify-content:flex-end;max-width:100%;border-radius:var(--tt-radius-control)}" +
+        "#tt-settings .tt-set-mode .tt-seg-btn{flex:1 0 auto}" +
+        "#tt-settings .tt-set-fieldrow{flex-wrap:wrap;row-gap:8px}" +
+        "#tt-settings .tt-set-fieldrow > .tt-set-pickrow{flex:1 1 100%}" +
+        "#tt-settings .tt-set-swatches.tt-fill{flex-wrap:wrap}" +
+        "#tt-settings .tt-set-swatches.tt-fill .tt-set-hexin{min-width:90px}" +
       "}" +
       // A selector with long labels sets its segments two to a row, each half the strip less half
       // the gap, and a label that does not fit its half wraps instead of being cut off.
       "@media (max-width:599px){" +
-        "#cc-settings .cc-seg.cc-set-mode.cc-set-pairs{flex:1 1 100%;align-items:stretch;--seg-basis:calc(50% - 1.5px)}" +
-        "#cc-settings .cc-set-pairs .cc-seg-btn{flex:1 0 var(--seg-basis, auto);box-sizing:border-box;min-width:0;white-space:normal;text-align:center}" +
+        "#tt-settings .tt-seg.tt-set-mode.tt-set-pairs{flex:1 1 100%;align-items:stretch;--seg-basis:calc(50% - 1.5px)}" +
+        "#tt-settings .tt-set-pairs .tt-seg-btn{flex:1 0 var(--seg-basis, auto);box-sizing:border-box;min-width:0;white-space:normal;text-align:center}" +
       "}";
     document.head.appendChild(st);
   })();
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
   var de = LANG === "de";
   function T(d, e) { return de ? d : e; }
-  var CC_VER = "@@CCVER@@"; if (CC_VER.indexOf("@@") === 0) CC_VER = "dev";
+  var TT_VER = "@@TTVER@@"; if (TT_VER.indexOf("@@") === 0) TT_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
   var GLS_VER = "3.8.0";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
@@ -246,11 +246,11 @@
     settings: ["-0.001 0 14 14", '<g><path fill="currentColor" fill-rule="evenodd" d="m5.557 0.69 -0.463 1.195 -1.594 0.904 -1.27 -0.194a1.077 1.077 0 0 0 -1.078 0.528l-0.43 0.754a1.077 1.077 0 0 0 0.086 1.217l0.807 1.001v1.81L0.83 8.906a1.077 1.077 0 0 0 -0.086 1.217l0.43 0.754a1.077 1.077 0 0 0 1.078 0.528l1.27 -0.194 1.573 0.904 0.463 1.196a1.076 1.076 0 0 0 1 0.689h0.905a1.076 1.076 0 0 0 1.002 -0.69l0.463 -1.195 1.572 -0.904 1.27 0.194a1.077 1.077 0 0 0 1.078 -0.528l0.43 -0.754a1.077 1.077 0 0 0 -0.086 -1.217l-0.807 -1.001v-1.81l0.786 -1.001a1.077 1.077 0 0 0 0.086 -1.217l-0.43 -0.754a1.076 1.076 0 0 0 -1.078 -0.528l-1.27 0.194 -1.573 -0.904L8.443 0.689A1.077 1.077 0 0 0 7.442 0h-0.884a1.077 1.077 0 0 0 -1.001 0.69ZM7 9.25a2.25 2.25 0 1 0 0 -4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" stroke-width="1"></path></g>'],   // IconGear
     info: ["0 0 14 14", '<path fill="currentColor" fill-rule="evenodd" d="M7 14c3.866 0 7 -3.134 7 -7 0 -3.86599 -3.134 -7 -7 -7 -3.86599 0 -7 3.13401 -7 7 0 3.866 3.13401 7 7 7ZM5.5 9.375c-0.34518 0 -0.625 0.27982 -0.625 0.625 0 0.3452 0.27982 0.625 0.625 0.625h3c0.34518 0 0.625 -0.2798 0.625 -0.625 0 -0.34518 -0.27982 -0.625 -0.625 -0.625h-0.875V6.5c0 -0.34518 -0.27982 -0.625 -0.625 -0.625H6c-0.34518 0 -0.625 0.27982 -0.625 0.625s0.27982 0.625 0.625 0.625h0.375v2.25H5.5ZM8 4c0 0.55228 -0.44772 1 -1 1s-1 -0.44772 -1 -1 0.44772 -1 1 -1 1 0.44772 1 1Z" clip-rule="evenodd" stroke-width="1"></path>'],   // IconInfo
     favorites: ["0 0 24 24", '<path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />'],   // Tabler star (MIT), the main bar's; glyphs.json has none
-    tools: ["0 0 512 512", '<path d="M352 320c88.4 0 160-71.6 160-160c0-15.3-2.2-30.1-6.2-44.2c-3.1-10.8-16.4-13.2-24.3-5.3l-76.8 76.8c-3 3-7.1 4.7-11.3 4.7L336 192c-8.8 0-16-7.2-16-16l0-57.4c0-4.2 1.7-8.3 4.7-11.3l76.8-76.8c7.9-7.9 5.4-21.2-5.3-24.3C382.1 2.2 367.3 0 352 0C263.6 0 192 71.6 192 160c0 19.1 3.4 37.5 9.5 54.5L19.9 396.1C7.2 408.8 0 426.1 0 444.1C0 481.6 30.4 512 67.9 512c18 0 35.3-7.2 48-19.9L297.5 310.5c17 6.2 35.4 9.5 54.5 9.5zM80 408a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />']   // FontAwesome Solid wrench (CC BY 4.0), the main bar's; glyphs.json has none
+    tools: ["0 0 512 512", '<path d="M352 320c88.4 0 160-71.6 160-160c0-15.3-2.2-30.1-6.2-44.2c-3.1-10.8-16.4-13.2-24.3-5.3l-76.8 76.8c-3 3-7.1 4.7-11.3 4.7L336 192c-8.8 0-16-7.2-16-16l0-57.4c0-4.2 1.7-8.3 4.7-11.3l76.8-76.8c7.9-7.9 5.4-21.2-5.3-24.3C382.1 2.2 367.3 0 352 0C263.6 0 192 71.6 192 160c0 19.1 3.4 37.5 9.5 54.5L19.9 396.1C7.2 408.8 0 426.1 0 444.1C0 481.6 30.4 512 67.9 512c18 0 35.3-7.2 48-19.9L297.5 310.5c17 6.2 35.4 9.5 54.5 9.5zM80 408a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />']   // FontAwesome Solid wrench (TowerTorch BY 4.0), the main bar's; glyphs.json has none
   };
   function tabGlyph(id) {
     var g = TAB_GLYPHS[id], svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("class", "cc-set-tabico"); svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("class", "tt-set-tabico"); svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("viewBox", g[0]); svg.setAttribute("fill", "currentColor");
     svg.innerHTML = g[1];
     return svg;
@@ -301,19 +301,19 @@
   };
   function segGlyph(name) {
     var g = SEG_GLYPHS[name], svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("class", "cc-seg-ico"); svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("class", "tt-seg-ico"); svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("viewBox", g[0]); svg.setAttribute("fill", "currentColor");
     svg.innerHTML = g[1];
     return svg;
   }
   // The start tab, the header and the shares stay off until switched on, as their scripts read
   // them, so an unset key hides their tab here too.
-  var OFF_BY_DEFAULT = { "cc.enable.main": true, "cc.enable.header": true, "cc.enable.shares": true };
+  var OFF_BY_DEFAULT = { "tt.enable.main": true, "tt.enable.header": true, "tt.enable.shares": true };
   // render() points this at its own tabs; a row that names who decides its value jumps there.
   var jumpTo = function () {};
-  // The colour field is TowerTorch's one colour picker, shared through cc-theme.js with the
+  // The colour field is TowerTorch's one colour picker, shared through tt-theme.js with the
   // colour fields of Unraid's own forms.
-  var PRESETS = window.CCTheme.PRESETS, colourField = window.CCTheme.colorPicker, swMark = window.CCTheme.swMark, swMarkRow = window.CCTheme.swMarkRow;
+  var PRESETS = window.TTTheme.PRESETS, colourField = window.TTTheme.colorPicker, swMark = window.TTTheme.swMark, swMarkRow = window.TTTheme.swMarkRow;
 
   // Each column gets an object of its own from a factory call: chkCell mutates these in place, so a
   // shared reference would let one checkbox flip every column that aliased it. Stays in step with
@@ -326,50 +326,50 @@
   // colour is set", which keeps the tint of installs that predate the switch.
   function tintOnAt(prefix) { var v = get(prefix + "icontint", null); return v == null ? !!get(prefix + "iconcolor", "") : v === "1"; }
   // A failed save shakes the control that was used and says why in a toast.
-  function failed(ctl, msg) { if (window.CCTheme) window.CCTheme.fail(ctl, msg); }
-  // Older builds stored the flag palette in the shared cc.rbpal key. With a flag selected and
-  // cc.flagpal still absent, cc.rbpal holds exactly those flag colours, so they move across and the
+  function failed(ctl, msg) { if (window.TTTheme) window.TTTheme.fail(ctl, msg); }
+  // Older builds stored the flag palette in the shared tt.rbpal key. With a flag selected and
+  // tt.flagpal still absent, tt.rbpal holds exactly those flag colours, so they move across and the
   // rainbow palette returns to its default. No flag lookup is needed, since the value already is
   // the palette, so this cannot race the flag data loading. It runs at module load, before any
-  // render, and once cc.flagpal exists the guard is false and it never runs again.
+  // render, and once tt.flagpal exists the guard is false and it never runs again.
   (function migrateFlagPalette() {
     try {
-      var rb = get("cc.rbpal", "");
-      if (get("cc.flag", "") && rb) {
-        var fp = get("cc.flagpal", "");
-        if (!fp) { set("cc.flagpal", rb); del("cc.rbpal"); }
-        else if (fp === rb) { del("cc.rbpal"); }                       // both hold the flag palette, so the rainbow one is redundant
+      var rb = get("tt.rbpal", "");
+      if (get("tt.flag", "") && rb) {
+        var fp = get("tt.flagpal", "");
+        if (!fp) { set("tt.flagpal", rb); del("tt.rbpal"); }
+        else if (fp === rb) { del("tt.rbpal"); }                       // both hold the flag palette, so the rainbow one is redundant
         // a differing rbpal is a genuine custom rainbow palette and stays
       }
     } catch (e) {}
   })();
-  function loadColview() { try { var j = JSON.parse(localStorage.getItem("cc.colview2") || "null"); if (j && typeof j === "object") { var d = defColview(); Object.keys(d).forEach(function (k) { if (j[k]) d[k] = { s: !!j[k].s, a: !!j[k].a }; }); return d; } } catch (e) {} return defColview(); }
+  function loadColview() { try { var j = JSON.parse(localStorage.getItem("tt.colview2") || "null"); if (j && typeof j === "object") { var d = defColview(); Object.keys(d).forEach(function (k) { if (j[k]) d[k] = { s: !!j[k].s, a: !!j[k].a }; }); return d; } } catch (e) {} return defColview(); }
 
-  var accent = get("cc.accent", "#FCC419");
-  var rainbow = get("cc.rainbow", "0") === "1";
-  var iconcolor = get("cc.iconcolor", "");
-  var iconstrength = parseInt(get("cc.iconstrength", "100"), 10);
-  var vmicons = get("cc.vmicons", "1") === "1"; // ON by default; the switch is an opt-OUT
-  var density = get("cc.density", "normal");
+  var accent = get("tt.accent", "#FCC419");
+  var rainbow = get("tt.rainbow", "0") === "1";
+  var iconcolor = get("tt.iconcolor", "");
+  var iconstrength = parseInt(get("tt.iconstrength", "100"), 10);
+  var vmicons = get("tt.vmicons", "1") === "1"; // ON by default; the switch is an opt-OUT
+  var density = get("tt.density", "normal");
   var colview = loadColview();
 
   // Notifications are engine config rather than localStorage, loaded and saved through the
   // same-origin proxy. The whole config is kept, so a save here never drops the per-container
   // schedules and watchdogs set in the Docker tab.
-  var PROXY = "/plugins/towertorch/server/ccapi.php";
+  var PROXY = "/plugins/towertorch/server/ttapi.php";
   var fullConfig = { schedules: [], watchdogs: [], notify: { unraid: false, webhook: "" } };
   var notify = { unraid: false, webhook: "" };
   var shapeIface = "";       // the interface the egress shaping runs on; blank means eth0
   var notifyDirty = false;
   var shapeDirty = false;
-  // Every cc.* write is mirrored into the engine config: localStorage is per origin, so without
+  // Every tt.* write is mirrored into the engine config: localStorage is per origin, so without
   // this the toggles apply only to the origin they were set on.
   var uiSyncT = null, uiPending = {};
   (function () {
     try {
-      var protoSet = window.__ccNativeSet || (window.__ccNativeSet = Storage.prototype.setItem);
+      var protoSet = window.__ttNativeSet || (window.__ttNativeSet = Storage.prototype.setItem);
       var orig = function (k, v) { protoSet.call(localStorage, k, v); };
-      window.__ccLS = orig;
+      window.__ttLS = orig;
       // Firefox keeps an assignment to localStorage.setItem as an item named "setItem" and never
       // calls it, so the hook sits on the prototype and lets sessionStorage through.
       Storage.prototype.setItem = function (k, v) {
@@ -378,30 +378,30 @@
         // some keys unchanged on every render, the settings tab among them.
         var same = false; try { same = localStorage.getItem(k) === String(v); } catch (e) {}
         orig(k, v);
-        try { if (!same && /^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
+        try { if (!same && /^tt[a-z]*\./.test(String(k)) && k !== "tt.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
       };
     } catch (e) {}
     // removeItem is intercepted too, or a cleared key never reaches the engine's mirror and the
     // next adopt resurrects the old value. pushUISettings() already reads a missing local value as
-    // "delete the server key"; this is what queues the key at all. docker.js and cc-theme.js carry
+    // "delete the server key"; this is what queues the key at all. docker.js and tt-theme.js carry
     // the same interception, and a page runs exactly one of the three.
     try {
-      var protoRm = window.__ccNativeRemove || (window.__ccNativeRemove = Storage.prototype.removeItem);
+      var protoRm = window.__ttNativeRemove || (window.__ttNativeRemove = Storage.prototype.removeItem);
       var origRm = function (k) { protoRm.call(localStorage, k); };
-      window.__ccLSRemove = origRm;
+      window.__ttLSRemove = origRm;
       Storage.prototype.removeItem = function (k) {
         if (this !== localStorage) return protoRm.call(this, k);
         origRm(k);
-        try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
+        try { if (/^tt[a-z]*\./.test(String(k)) && k !== "tt.stateCache") { uiPending[k] = 1; clearTimeout(uiSyncT); uiSyncT = setTimeout(pushUISettings, 800); } } catch (e) {}
       };
     } catch (e) {}
     // the writes header.js made before this wrapper existed, see syncedSet() there
-    var early = Object.keys(window.__ccLSEarly || {});
+    var early = Object.keys(window.__ttLSEarly || {});
     early.forEach(function (k) { uiPending[k] = 1; });
     if (early.length) uiSyncT = setTimeout(pushUISettings, 800);
-    delete window.__ccLSEarly;
+    delete window.__ttLSEarly;
   })();
-  function collectUISettings() { var o = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^cc[a-z]*\./.test(k) && k !== "cc.stateCache") o[k] = localStorage.getItem(k); } return o; }
+  function collectUISettings() { var o = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^tt[a-z]*\./.test(k) && k !== "tt.stateCache") o[k] = localStorage.getItem(k); } return o; }
   // Sends only the changed keys, which the engine merges into its copy, one push at a time and
   // inside the config lock, so it cannot race a card's own save. The keys a push carries stay
   // unsynced until its PUT has landed, so the adopt below cannot bring the old value back.
@@ -444,14 +444,14 @@
     // loader to persist the cleaned config back to the engine.
     adoptUISettings._migrated = false;
     try {
-      if (u && u["cc.flag"] && u["cc.rbpal"]) {
-        if (!u["cc.flagpal"]) { u["cc.flagpal"] = u["cc.rbpal"]; delete u["cc.rbpal"]; adoptUISettings._migrated = true; }
-        else if (u["cc.flagpal"] === u["cc.rbpal"]) { delete u["cc.rbpal"]; adoptUISettings._migrated = true; }
+      if (u && u["tt.flag"] && u["tt.rbpal"]) {
+        if (!u["tt.flagpal"]) { u["tt.flagpal"] = u["tt.rbpal"]; delete u["tt.rbpal"]; adoptUISettings._migrated = true; }
+        else if (u["tt.flagpal"] === u["tt.rbpal"]) { delete u["tt.rbpal"]; adoptUISettings._migrated = true; }
         // a differing rbpal is a genuine custom rainbow palette and stays
       }
     } catch (e0) {}
-    if (adoptUISettings._migrated) { try { localStorage.removeItem("cc.rbpal"); } catch (e1) {} }
-    try { Object.keys(u || {}).forEach(function (k) { if (/^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ccLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
+    if (adoptUISettings._migrated) { try { localStorage.removeItem("tt.rbpal"); } catch (e1) {} }
+    try { Object.keys(u || {}).forEach(function (k) { if (/^tt[a-z]*\./.test(k) && k !== "tt.stateCache" && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ttLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
     return changed;
   }
   function csrfToken() {
@@ -498,43 +498,43 @@
   function withConfigLock(fn) { var p = cfgChain.then(fn, fn); cfgChain = p.catch(function () {}); return p; }
 
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
-  function glyph(name) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(name) : ""; }
-  function labelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
+  function glyph(name) { return window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph(name) : ""; }
+  function labelled(b, name, text) { if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(b, name, text); else b.textContent = text; return b; }
   var cardN = 0;
   function card(title, sub) {
-    var c = el("div", "cc-set-card");
-    var h = el("div", "cc-set-h", title);
+    var c = el("div", "tt-set-card");
+    var h = el("div", "tt-set-h", title);
     if (sub) h.appendChild(infoIcon(sub)); // the explanation lives behind the bubble, never on the card
     c.appendChild(h); return c;
   }
   // A control that cannot act right now still answers a press, so it reads as unavailable rather
   // than broken: a shut row's control, a disabled choice and the line of a locked row shake, or
-  // glow where nothing may move (CCTheme.deny). Bound on the root once, in the capture phase, so
+  // glow where nothing may move (TTTheme.deny). Bound on the root once, in the capture phase, so
   // the control's own handler never runs.
   function refuse(e) {
     if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
-    var t = e.target, hit = t && t.closest && (t.closest(".cc-set-disabled :is(.cc-seg, .cc-set-toggle, .cc-set-numwrap)") || t.closest("[aria-disabled=true]") || t.closest(".cc-set-locked .cc-set-lockby"));
+    var t = e.target, hit = t && t.closest && (t.closest(".tt-set-disabled :is(.tt-seg, .tt-set-toggle, .tt-set-numwrap)") || t.closest("[aria-disabled=true]") || t.closest(".tt-set-locked .tt-set-lockby"));
     if (!hit || !root.contains(hit)) return;
     e.preventDefault(); e.stopPropagation();
-    if (window.CCTheme && window.CCTheme.deny) window.CCTheme.deny(hit);
+    if (window.TTTheme && window.TTTheme.deny) window.TTTheme.deny(hit);
   }
   root.addEventListener("click", refuse, true);
   root.addEventListener("keydown", refuse, true);
-  function elk(t) { var s = el("span", "cc-b-k"); s.textContent = t; return s; }
-  function elv(t) { var s = el("span", "cc-b-v"); s.textContent = t; return s; }
-  // The plugin's one info glyph, shared through cc-theme.js; this is the fallback for a page that
+  function elk(t) { var s = el("span", "tt-b-k"); s.textContent = t; return s; }
+  function elv(t) { var s = el("span", "tt-b-v"); s.textContent = t; return s; }
+  // The plugin's one info glyph, shared through tt-theme.js; this is the fallback for a page that
   // loads without it. Hover or keyboard focus shows the explanation in a bubble.
-  function infoIcon(tip) { if (window.CCTheme && window.CCTheme.infoIcon) return window.CCTheme.infoIcon(tip); var s = el("span", "cc-info"); s.innerHTML = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3" /><circle cx="8" cy="4.6" r="0.9" fill="currentColor" /><path d="M8 7v4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" /></svg>'; if (tip) { s.setAttribute("data-tip", tip); s.setAttribute("aria-label", tip); } s.setAttribute("tabindex", "0"); return s; }
+  function infoIcon(tip) { if (window.TTTheme && window.TTTheme.infoIcon) return window.TTTheme.infoIcon(tip); var s = el("span", "tt-info"); s.innerHTML = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3" /><circle cx="8" cy="4.6" r="0.9" fill="currentColor" /><path d="M8 7v4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" /></svg>'; if (tip) { s.setAttribute("data-tip", tip); s.setAttribute("aria-label", tip); } s.setAttribute("tabindex", "0"); return s; }
   // normalise a typed hex ("fcc419" / "#FCC419") to "#rrggbb", or "" if invalid.
   function normHex(s) { var v = String(s || "").trim(); if (/^[0-9a-f]{6}$/i.test(v)) v = "#" + v; return /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : ""; }
 
   // A badge-styled on/off toggle, built from a span rather than a button: Unraid's global button
   // CSS paints a border on it and limits the knob's travel.
   function toggle(on, onChange) {
-    var t = el("span", "cc-set-toggle" + (on ? " cc-set-toggle-on" : ""));
+    var t = el("span", "tt-set-toggle" + (on ? " tt-set-toggle-on" : ""));
     t.setAttribute("role", "switch"); t.setAttribute("tabindex", "0"); t.setAttribute("aria-checked", on ? "true" : "false");
-    t.appendChild(el("span", "cc-set-knob"));
-    function paint() { t.classList.toggle("cc-set-toggle-on", on); t.setAttribute("aria-checked", on ? "true" : "false"); }
+    t.appendChild(el("span", "tt-set-knob"));
+    function paint() { t.classList.toggle("tt-set-toggle-on", on); t.setAttribute("aria-checked", on ? "true" : "false"); }
     function flip() { on = !on; paint(); onChange(on); }
     t._setOn = function (v) { if (v === on) return; on = v; paint(); }; // a programmatic sync, which fires no onChange
     t.addEventListener("click", flip);
@@ -545,33 +545,33 @@
   // controls leave the tab order and say so to a screen reader, and the sheet fades them and lets
   // no click through. A selector's chosen segment takes the tab stop back when the row opens.
   function setRowEnabled(row, on) {
-    row.classList.toggle("cc-set-disabled", !on);
-    Array.prototype.forEach.call(row.querySelectorAll(".cc-seg, .cc-set-toggle"), function (c) {
+    row.classList.toggle("tt-set-disabled", !on);
+    Array.prototype.forEach.call(row.querySelectorAll(".tt-seg, .tt-set-toggle"), function (c) {
       if (on) c.removeAttribute("aria-disabled"); else c.setAttribute("aria-disabled", "true");
     });
-    Array.prototype.forEach.call(row.querySelectorAll(".cc-set-toggle"), function (t) { t.setAttribute("tabindex", on ? "0" : "-1"); });
-    Array.prototype.forEach.call(row.querySelectorAll(".cc-seg-btn"), function (b) { b.setAttribute("tabindex", on && b.classList.contains("cc-seg-on") ? "0" : "-1"); });
+    Array.prototype.forEach.call(row.querySelectorAll(".tt-set-toggle"), function (t) { t.setAttribute("tabindex", on ? "0" : "-1"); });
+    Array.prototype.forEach.call(row.querySelectorAll(".tt-seg-btn"), function (b) { b.setAttribute("tabindex", on && b.classList.contains("tt-seg-on") ? "0" : "-1"); });
     Array.prototype.forEach.call(row.querySelectorAll("input"), function (i) { i.disabled = !on; });
   }
   // The flag palette has its own key, never the rainbow one, so the rainbow editor keeps its
   // colours and the engine paints flag colours only while flag mode is on.
   function applyFlag(f) {
-    var n = ((window.CCTheme && window.CCTheme.RB) || PRESETS).length, pal = [];
+    var n = ((window.TTTheme && window.TTTheme.RB) || PRESETS).length, pal = [];
     for (var k = 0; k < n; k++) pal.push(f.colors[k % f.colors.length]);
-    set("cc.flag", f.code); set("cc.flagpal", JSON.stringify(pal));
+    set("tt.flag", f.code); set("tt.flagpal", JSON.stringify(pal));
   }
-  // The colour mode lives in the two keys every area script reads, cc.rainbow for a palette and
-  // cc.flagmode for a flag as that palette, so the mode needs no key of its own.
+  // The colour mode lives in the two keys every area script reads, tt.rainbow for a palette and
+  // tt.flagmode for a flag as that palette, so the mode needs no key of its own.
   function colorMode() {
-    if (get("cc.rainbow", "0") !== "1") return "accent";
-    return get("cc.flagmode", "0") === "1" ? "flag" : "rainbow";
+    if (get("tt.rainbow", "0") !== "1") return "accent";
+    return get("tt.flagmode", "0") === "1" ? "flag" : "rainbow";
   }
   function setColorMode(m) {
-    set("cc.rainbow", m === "accent" ? "0" : "1");
-    set("cc.flagmode", m === "flag" ? "1" : "0");
-    var flags = window.CC_FLAGS || [];
+    set("tt.rainbow", m === "accent" ? "0" : "1");
+    set("tt.flagmode", m === "flag" ? "1" : "0");
+    var flags = window.TT_FLAGS || [];
     if (m !== "flag" || !flags.length) return;
-    var code = get("cc.flag", "de"), pick = flags.filter(function (f) { return f.code === code; })[0] || flags.filter(function (f) { return f.code === "de"; })[0] || flags[0];
+    var code = get("tt.flag", "de"), pick = flags.filter(function (f) { return f.code === code; })[0] || flags.filter(function (f) { return f.code === "de"; })[0] || flags[0];
     applyFlag(pick);
   }
   // GlimStone's horizontal selector in its well styling, compact at the end of its row. An option
@@ -579,14 +579,14 @@
   // a radio group; an unavailable choice stays in view and refuses the move. A selector whose labels
   // run long takes pairs, and sets its segments two to a row on a phone.
   function modeSelector(opts, cur, onPick, pairs) {
-    var box = el("div", "cc-seg cc-set-mode" + (pairs ? " cc-set-pairs" : "")); box.setAttribute("role", "radiogroup");
+    var box = el("div", "tt-seg tt-set-mode" + (pairs ? " tt-set-pairs" : "")); box.setAttribute("role", "radiogroup");
     var btns = opts.map(function (o) {
-      var on = o[0] === cur, b = el("span", "cc-seg-btn" + (on ? " cc-seg-on" : ""));
+      var on = o[0] === cur, b = el("span", "tt-seg-btn" + (on ? " tt-seg-on" : ""));
       if (o[2]) b.appendChild(segGlyph(o[2]));
       b.appendChild(el("span", null, o[1]));
       b.setAttribute("role", "radio"); b.setAttribute("aria-checked", on ? "true" : "false"); b.setAttribute("tabindex", on ? "0" : "-1");
       if (o[3]) b.setAttribute("aria-disabled", "true");
-      b.addEventListener("click", function () { if (!o[3] && !b.classList.contains("cc-seg-on")) onPick(o[0]); });
+      b.addEventListener("click", function () { if (!o[3] && !b.classList.contains("tt-seg-on")) onPick(o[0]); });
       box.appendChild(b);
       return b;
     });
@@ -600,7 +600,7 @@
       if (to === null) return;
       e.preventDefault();
       to = Math.max(0, Math.min(btns.length - 1, to));
-      if (opts[to][3]) { if (window.CCTheme && window.CCTheme.deny) window.CCTheme.deny(btns[to]); return; }
+      if (opts[to][3]) { if (window.TTTheme && window.TTTheme.deny) window.TTTheme.deny(btns[to]); return; }
       if (to !== at) onPick(opts[to][0]);
     });
     return box;
@@ -610,7 +610,7 @@
     var box = modeSelector(opts, cur, function (v) {
       Array.prototype.forEach.call(box.children, function (b, i) {
         var on = opts[i][0] === v;
-        b.classList.toggle("cc-seg-on", on); b.setAttribute("aria-checked", on ? "true" : "false"); b.setAttribute("tabindex", on ? "0" : "-1");
+        b.classList.toggle("tt-seg-on", on); b.setAttribute("aria-checked", on ? "true" : "false"); b.setAttribute("tabindex", on ? "0" : "-1");
         if (on) b.focus();
       });
       paintToggles();
@@ -620,7 +620,7 @@
   }
   // The one shape of a setting row: its name and (i) at the start, its control at the end.
   function inlineRow(labelText, help, control) {
-    var row = el("div", "cc-set-row cc-set-inline"), lw = el("span", "cc-set-lblwrap");
+    var row = el("div", "tt-set-row tt-set-inline"), lw = el("span", "tt-set-lblwrap");
     lw.appendChild(el("span", null, labelText)); lw.appendChild(infoIcon(help));
     row.appendChild(lw); row.appendChild(control);
     return row;
@@ -629,7 +629,7 @@
   // A tall control such as a colour field beside its name: the name and its bubble at the start of
   // the first line, the control at the row's end.
   function fieldRow(labelText, help, control) {
-    var row = el("div", "cc-set-row cc-set-fieldrow"), rl = el("span", "cc-set-rl", labelText);
+    var row = el("div", "tt-set-row tt-set-fieldrow"), rl = el("span", "tt-set-rl", labelText);
     if (help) rl.appendChild(infoIcon(help));
     row.appendChild(rl); row.appendChild(control);
     return row;
@@ -638,11 +638,11 @@
   // A switch whose value has no effect is left out, and this line stands in its place: it names
   // what decides instead and jumps there.
   function lockRow(label, by, jumpLabel, onJump, help) {
-    var end = el("span", "cc-set-colend");
-    end.appendChild(el("span", "cc-set-lockby", by));
-    end.appendChild(labelled(actionBtn("", "cc-btn cc-set-xbtn", onJump), "Gear", jumpLabel));
+    var end = el("span", "tt-set-colend");
+    end.appendChild(el("span", "tt-set-lockby", by));
+    end.appendChild(labelled(actionBtn("", "tt-btn tt-set-xbtn", onJump), "Gear", jumpLabel));
     var row = inlineRow(label, help, end);
-    row.classList.add("cc-set-locked");
+    row.classList.add("tt-set-locked");
     return row;
   }
 
@@ -652,7 +652,7 @@
   // image, not an feFlood inside the filter, which fills the whole filter region and would ignore
   // the radius. `scope` is the pipeline's per-item scope, so a per-item pin shows up here too.
   function logoPreview(scope, fid) {
-    var wrap = el("div", "cc-set-prev");
+    var wrap = el("div", "tt-set-prev");
     var items = [];
     // The background and the tint are two independent pairs: the background draws the badge box
     // in its own colour, falling back to the tint colour and then the accent, while the tint
@@ -660,7 +660,7 @@
     // `adopt` is the master switch that hands both colours to the badges.
     var st = { bg: false, bgColor: "", tint: false, color: "", adopt: false, strength: 100, accent: "#FCC419", size: null };
     var bound = false;
-    function C() { return window.CCTheme && window.CCTheme.icons; }
+    function C() { return window.TTTheme && window.TTTheme.icons; }
     function hex6(c) { c = String(c == null ? "" : c).trim(); return /^#[0-9a-f]{3}$/i.test(c) ? "#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3] : c; }
     function badgeBg() {
       if (/^#[0-9a-f]{6}$/i.test(st.bgColor)) return st.bgColor;
@@ -669,7 +669,7 @@
     }
     // A badge colour by position, as the tabs stamp one on each row: the rotating palette while
     // the rainbow is on, the accent otherwise.
-    function badgeAt(i) { return window.CCTheme && window.CCTheme.rbColor ? window.CCTheme.rbColor(i, st.accent) : st.accent; }
+    function badgeAt(i) { return window.TTTheme && window.TTTheme.rbColor ? window.TTTheme.rbColor(i, st.accent) : st.accent; }
     // The tile behind the i-th logo. Adopting, it takes the badge colour of its row.
     function tileBg(i) {
       if (!st.bg) return "";
@@ -685,7 +685,7 @@
       if (st.adopt && st.bg) return hex6(idealText(tileBg(i)));
       var pick = hex6(st.adopt ? badgeAt(5) : st.color);
       if (!/^#[0-9a-f]{6}$/i.test(pick)) return "";
-      var T = window.CCTheme;
+      var T = window.TTTheme;
       return (T && T.liftSurface) ? hex6(T.liftSurface(pick, st.accent, T.LUM_FLOOR * (forTint ? 2 : 1))) : pick;
     }
     function host(id) {
@@ -707,12 +707,12 @@
       }
       return '<filter id="' + id + '" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feColorMatrix type="matrix" values="' + vals + '"/></filter>';
     }
-    function radius() { return "var(--cc-radius-control)"; }   // the live logo tile is a tile
-    function size() { return st.size || ({ s: "48px", m: "62px", l: "76px" })[get("cc.sgsize", "m")] || "62px"; }
+    function radius() { return "var(--tt-radius-control)"; }   // the live logo tile is a tile
+    function size() { return st.size || ({ s: "48px", m: "62px", l: "76px" })[get("tt.sgsize", "m")] || "62px"; }
     // A sample whose name starts with a font-icon prefix is a glyph, monochrome by construction:
     // it inks through the CSS colour and has no raster for a filter to work on.
     function add(src, name) {
-      var tile = el("span", "cc-set-tile"), node;
+      var tile = el("span", "tt-set-tile"), node;
       if (/^(fa-|icon-)/.test(src)) { node = el("i", (/^fa-/.test(src) ? "fa " : "") + src); }
       else { node = el("img"); node.alt = ""; node.src = src; node.onerror = function () { tile.style.display = "none"; }; }
       tile.appendChild(node); wrap.appendChild(tile);
@@ -731,7 +731,7 @@
         it.tile.style.width = it.tile.style.height = sz;
         it.tile.style.borderRadius = rad;
         it.tile.style.background = tileBg(i);
-        it.tile.classList.toggle("cc-set-tile-bg", !!st.bg);
+        it.tile.classList.toggle("tt-set-tile-bg", !!st.bg);
         // The plan comes from the pipeline, never from a local guess, so an unknown icon falls
         // through to the safe treatment exactly as it does on the real tab.
         var plan = { treat: "tint", url: "" };
@@ -804,8 +804,8 @@
     if (!hideAdopt) {
       // the master toggle, first in the card and above every other row
       adoptTg = toggle(io.getAdopt(), function (v) { io.setAdopt(v); sync(); io.onChange(); });
-      adoptRow = el("div", "cc-set-row cc-set-inline");
-      var adoptLbl = el("span", "cc-set-lblwrap"); adoptLbl.appendChild(el("span", null, T("Badge-Farben übernehmen", "Use the badge colours")));
+      adoptRow = el("div", "tt-set-row tt-set-inline");
+      var adoptLbl = el("span", "tt-set-lblwrap"); adoptLbl.appendChild(el("span", null, T("Badge-Farben übernehmen", "Use the badge colours")));
       adoptLbl.appendChild(infoIcon(T("An: Logo-Kacheln und eingefärbte Icons nehmen die Farben der Badges, also den Regenbogen pro Logo oder die Akzentfarbe. Auf einer Kachel wird das Icon schwarz oder weiß, je nachdem, was darauf lesbar ist. Die Schalter darunter bleiben: Sie entscheiden weiter, ob es Kacheln gibt und ob Icons eingefärbt werden. Nur die beiden Farbwähler entfallen.", "On: logo tiles and tinted icons take the badge colours, the rainbow per logo or the accent. On a tile the icon turns black or white, whichever reads on it. The switches below stay and still decide whether there are tiles and whether icons are tinted. Only the two colour pickers are hidden.")));
       adoptRow.appendChild(adoptLbl); adoptRow.appendChild(adoptTg);
     }
@@ -815,7 +815,7 @@
       if (v && !/^#[0-9a-f]{6}$/i.test(io.getBgColor())) { var seed = bgColorEff(); io.setBgColor(seed); bgPickRow._set(seed); }
       sync(); io.onChange();
     });
-    var bgRow = el("div", "cc-set-row cc-set-inline"), bgLbl = el("span", "cc-set-lblwrap");
+    var bgRow = el("div", "tt-set-row tt-set-inline"), bgLbl = el("span", "tt-set-lblwrap");
     bgLbl.appendChild(el("span", null, T("Logo-Kacheln", "Logo tiles")));
     bgLbl.appendChild(infoIcon(T("Stellt jedes Logo auf eine farbige Kachel. Aus: die Logos stehen frei.", "Puts every logo on a coloured tile. Off: the logos stand on their own.")));
     bgRow.appendChild(bgLbl); bgRow.appendChild(bgTg);
@@ -828,14 +828,14 @@
       sync(); io.onChange();
     });
     // The storage key and every name in the code stay as the tint.
-    var tintRow = el("div", "cc-set-row cc-set-inline"), tintLbl = el("span", "cc-set-lblwrap");
+    var tintRow = el("div", "tt-set-row tt-set-inline"), tintLbl = el("span", "tt-set-lblwrap");
     tintLbl.appendChild(el("span", null, T("Icons einfärben", "Tint icons")));
     tintLbl.appendChild(infoIcon(T("Färbt die Logos in einer Farbe ein. Wie das je Logo geschieht, entscheidet die Icon-Färbung. Aus: die Logos behalten ihre eigenen Farben.", "Tints the logos in one colour. Icon colouring decides how for each logo. Off: the logos keep their own colours.")));
     tintRow.appendChild(tintLbl); tintRow.appendChild(tintTg);
     var tintPickRow = colourField(io.getColor(), function (v) { io.setColor(v); sync(); io.onChange(); }, { fallback: /^#[0-9a-f]{6}$/i.test(io.getAccent()) ? io.getAccent() : "#FCC419" });
     var tintColRow = fieldRow(T("Icon-Farbe", "Icon colour"), T("Die Farbe, in der die Logos eingefärbt werden.", "The colour the logos are tinted in."), tintPickRow);
 
-    var strRow = el("div", "cc-set-row"), strLbl = el("span", "cc-set-rl", T("Intensität", "Strength"));
+    var strRow = el("div", "tt-set-row"), strLbl = el("span", "tt-set-rl", T("Intensität", "Strength"));
     strLbl.appendChild(infoIcon(T("Wie stark die Einfärbung über dem Original liegt.", "How strongly the tint covers the original.")));
     strRow.appendChild(strLbl);
     var strInput = el("input"); strInput.type = "range"; strInput.min = "10"; strInput.max = "100"; strRow.appendChild(strInput);
@@ -958,66 +958,66 @@
     // The theming snapshot is re-read on every render: these are module-level variables read once
     // at load, and a setting change calls render(), so without this the page repaints from the
     // value it started with and a freshly flipped switch snaps back.
-    accent = get("cc.accent", "#FCC419");
-    rainbow = get("cc.rainbow", "0") === "1";
-    iconcolor = get("cc.iconcolor", "");
-    iconstrength = parseInt(get("cc.iconstrength", "100"), 10);
-    root.classList.toggle("cc-rainbow", rainbow);
-    root.style.setProperty("--cc-accent", accent);
-    root.style.setProperty("--cc-accent-text", idealText(accent));
+    accent = get("tt.accent", "#FCC419");
+    rainbow = get("tt.rainbow", "0") === "1";
+    iconcolor = get("tt.iconcolor", "");
+    iconstrength = parseInt(get("tt.iconstrength", "100"), 10);
+    root.classList.toggle("tt-rainbow", rainbow);
+    root.style.setProperty("--tt-accent", accent);
+    root.style.setProperty("--tt-accent-text", idealText(accent));
 
     // The settings search, which filters cards and rows across every tab, opens with "/" or from the
     // command palette and shows above the cards only while it is open.
-    var setSearch = el("input", "cc-set-search"); setSearch.type = "search"; setSearch.placeholder = T("Einstellungen durchsuchen …", "Search settings …"); setSearch.spellcheck = false;
-    var searchBadge = el("div", "cc-set-searchbadge");
-    var searchIcon = el("span", "cc-set-searchicon"); searchIcon.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14 3.072a8 8 0 0 1 2.32 11.834l5.387 5.387a1 1 0 0 1 -1.414 1.414l-5.388 -5.387a8 8 0 1 1 -.905 -13.249" /></svg>';   // tabler filled/search
+    var setSearch = el("input", "tt-set-search"); setSearch.type = "search"; setSearch.placeholder = T("Einstellungen durchsuchen …", "Search settings …"); setSearch.spellcheck = false;
+    var searchBadge = el("div", "tt-set-searchbadge");
+    var searchIcon = el("span", "tt-set-searchicon"); searchIcon.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M14 3.072a8 8 0 0 1 2.32 11.834l5.387 5.387a1 1 0 0 1 -1.414 1.414l-5.388 -5.387a8 8 0 1 1 -.905 -13.249" /></svg>';   // tabler filled/search
     searchBadge.appendChild(searchIcon); searchBadge.appendChild(setSearch);
-    searchIcon.addEventListener("click", function (e) { e.stopPropagation(); var open = searchBadge.classList.toggle("cc-open"); if (open) { setSearch.focus(); } else { setSearch.value = ""; runFilter(""); } });
+    searchIcon.addEventListener("click", function (e) { e.stopPropagation(); var open = searchBadge.classList.toggle("tt-open"); if (open) { setSearch.focus(); } else { setSearch.value = ""; runFilter(""); } });
     // Escape clears the query first and puts the search away on a second press.
     setSearch.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       e.preventDefault();
-      if (setSearch.value) { setSearch.value = ""; runFilter(""); } else { searchBadge.classList.remove("cc-open"); setSearch.blur(); }
+      if (setSearch.value) { setSearch.value = ""; runFilter(""); } else { searchBadge.classList.remove("tt-open"); setSearch.blur(); }
     });
     // The search collapses again on a click beside it, clearing the query and resetting the filter
     // through an input event so the existing listener runs. Bound once, since render() re-enters.
-    if (!window.__ccSetSearchDoc) {
-      window.__ccSetSearchDoc = true;
+    if (!window.__ttSetSearchDoc) {
+      window.__ttSetSearchDoc = true;
       document.addEventListener("click", function (e) {
-        var sb = document.querySelector(".cc-set-searchbadge.cc-open");
-        if (sb && !sb.contains(e.target)) { sb.classList.remove("cc-open"); var si = sb.querySelector(".cc-set-search"); if (si && si.value) { si.value = ""; try { si.dispatchEvent(new Event("input", { bubbles: true })); } catch (e2) {} } }
+        var sb = document.querySelector(".tt-set-searchbadge.tt-open");
+        if (sb && !sb.contains(e.target)) { sb.classList.remove("tt-open"); var si = sb.querySelector(".tt-set-search"); if (si && si.value) { si.value = ""; try { si.dispatchEvent(new Event("input", { bubbles: true })); } catch (e2) {} } }
       });
     }
     // "/" opens the search from anywhere on the page outside a field. Ctrl+K stays with header.js's
     // command palette, which takes it on every page and here offers this search first. Bound once,
     // since render() re-enters; it looks the badge up when the key is pressed.
-    if (!window.__ccSetSearchKey) {
-      window.__ccSetSearchKey = true;
+    if (!window.__ttSetSearchKey) {
+      window.__ttSetSearchKey = true;
       document.addEventListener("keydown", function (e) {
         if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
         var t = e.target, tag = t && t.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (t && t.isContentEditable)) return;
-        var sb = document.querySelector("#cc-settings .cc-set-searchbadge"), si = sb && sb.querySelector(".cc-set-search");
+        var sb = document.querySelector("#tt-settings .tt-set-searchbadge"), si = sb && sb.querySelector(".tt-set-search");
         if (!si) return;
-        e.preventDefault(); sb.classList.add("cc-open"); si.focus();
+        e.preventDefault(); sb.classList.add("tt-open"); si.focus();
       });
     }
 
     // the header names the page, so Unraid's title strip would say it twice
     try { Array.prototype.slice.call(document.querySelectorAll("div.title")).forEach(function (tt) { tt.style.setProperty("display", "none", "important"); }); } catch (e9) {}
     // three sections: Docker Tab | Plugin Tab | VM Tab (minimal tab row)
-    var tabRow = el("div", "cc-set-tabs");
-    var wrap = el("div", "cc-set-wrap");
-    var wrapPlugin = el("div", "cc-set-wrap"), wrapVms = el("div", "cc-set-wrap"), wrapHeader = el("div", "cc-set-wrap"), wrapShares = el("div", "cc-set-wrap");
-    var wrapSettings = el("div", "cc-set-wrap");
-    var wrapTools = el("div", "cc-set-wrap");   // Werkzeuge shares the /Settings grid config, since Unraid renders both landing pages alike
-    var wrapFavorites = el("div", "cc-set-wrap");
-    var wrapInfo = el("div", "cc-set-wrap");
-    var wrapStart = el("div", "cc-set-wrap");
-    var wrapMain = el("div", "cc-set-wrap");    // Allgemein, which also hosts the export and import card
+    var tabRow = el("div", "tt-set-tabs");
+    var wrap = el("div", "tt-set-wrap");
+    var wrapPlugin = el("div", "tt-set-wrap"), wrapVms = el("div", "tt-set-wrap"), wrapHeader = el("div", "tt-set-wrap"), wrapShares = el("div", "tt-set-wrap");
+    var wrapSettings = el("div", "tt-set-wrap");
+    var wrapTools = el("div", "tt-set-wrap");   // Werkzeuge shares the /Settings grid config, since Unraid renders both landing pages alike
+    var wrapFavorites = el("div", "tt-set-wrap");
+    var wrapInfo = el("div", "tt-set-wrap");
+    var wrapStart = el("div", "tt-set-wrap");
+    var wrapMain = el("div", "tt-set-wrap");    // Allgemein, which also hosts the export and import card
     // Each area's adopt key, "1" or unset while it follows the global badge colour and "0" once it
     // has a colour of its own, with that area's key prefix and the switches showing it.
-    var ADOPT_PREF = { "cc.styleheader": "cch.", "cc.styleshares": "ccsh.", "cc.styledocker": "ccd.", "cc.styleplugin": "ccp.", "cc.stylevms": "ccv.", "cc.stylesettings": "ccs.", "cc.styletools": "cct.", "cc.stylefavorites": "ccf.", "cc.stylemain": "ccm." };
+    var ADOPT_PREF = { "tt.styleheader": "tth.", "tt.styleshares": "ttsh.", "tt.styledocker": "ttd.", "tt.styleplugin": "ttp.", "tt.stylevms": "ttv.", "tt.stylesettings": "tts.", "tt.styletools": "ttt.", "tt.stylefavorites": "ttf.", "tt.stylemain": "ttm." };
     var areaSync = {};      // each adopt key's colour lines and area cards, told when the key flips
     var styleCardSync = {}; // each adopt key's refresher, repainting an area card with the effective colour
     function syncAllStyleCards() { for (var k9 in styleCardSync) { try { styleCardSync[k9](); } catch (e9) {} } }
@@ -1029,7 +1029,7 @@
     var themingCard; // the first Allgemein card, which the backup section moves into
     (function () {
       var tc = card(T("Theming", "Theming"), T("Aus: nur die Docker-Funktionen von TowerTorch bleiben (Startplan, Abhängigkeiten, Health-Gate, Watchdog, Zeitpläne, Limits, Bandbreite, Auto-Stop bei Leerlauf). Das gesamte visuelle Theming, also Badges, Farben, Rainbow, Karten und die Umgestaltung aller Tabs, wird abgeschaltet.", "Off: only TowerTorch's Docker functions remain (start plan, dependencies, health gate, watchdog, schedules, limits, bandwidth, idle auto-stop). All visual theming, meaning badges, colours, rainbow, cards and every tab's restyling, is turned off."));
-      tc.appendChild(toggleRow(T("Theming aktiv", "Theming on"), T("Schaltet das Aussehen von TowerTorch an oder aus, die Docker-Funktionen arbeiten weiter.", "Turns TowerTorch's look on or off, while the Docker functions keep working."), localStorage.getItem("cc.theming") !== "0", function (v) { set("cc.theming", v ? "1" : "0"); render(); syncHeaderBar(); syncSharesBar(); }));
+      tc.appendChild(toggleRow(T("Theming aktiv", "Theming on"), T("Schaltet das Aussehen von TowerTorch an oder aus, die Docker-Funktionen arbeiten weiter.", "Turns TowerTorch's look on or off, while the Docker functions keep working."), localStorage.getItem("tt.theming") !== "0", function (v) { set("tt.theming", v ? "1" : "0"); render(); syncHeaderBar(); syncSharesBar(); }));
       themingCard = tc;
       wrapMain.appendChild(tc);
     })();
@@ -1038,11 +1038,11 @@
     // the TowerTorch mark.
     (function () {
       var LOGO_URL = "/plugins/towertorch/server/loginlogo.php";
-      var end = el("span", "cc-set-colend"), prev = el("img", "cc-set-loginlogo"), pick = el("input");
+      var end = el("span", "tt-set-colend"), prev = el("img", "tt-set-loginlogo"), pick = el("input");
       prev.alt = ""; prev.hidden = true; prev.style.maxHeight = "36px"; prev.style.maxWidth = "72px";
       pick.type = "file"; pick.accept = "image/png,image/jpeg,image/webp,image/svg+xml"; pick.hidden = true;
-      var choose = labelled(el("button", "cc-btn cc-set-xbtn"), "Upload", T("Logo wählen", "Choose logo")); choose.type = "button";
-      var clear = labelled(el("button", "cc-btn cc-set-xbtn"), "Trash", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
+      var choose = labelled(el("button", "tt-btn tt-set-xbtn"), "Upload", T("Logo wählen", "Choose logo")); choose.type = "button";
+      var clear = labelled(el("button", "tt-btn tt-set-xbtn"), "Trash", T("Entfernen", "Remove")); clear.type = "button"; clear.hidden = true;
       function show(info) {
         prev.hidden = !info || !info.has; clear.hidden = prev.hidden;
         if (info && info.has) prev.src = info.src;
@@ -1053,7 +1053,7 @@
           .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
           .then(function (info) {
             show(info);
-            set("cc.brand.logov", String(Date.now()));   // a new version in the header's image URL skips the cached logo
+            set("tt.brand.logov", String(Date.now()));   // a new version in the header's image URL skips the cached logo
             syncHeaderBar();
           })
           .catch(function () { failed(null, T("Das Logo wurde nicht gespeichert. Erlaubt sind PNG, JPEG, WebP und SVG bis 1 MB.", "The logo was not saved. PNG, JPEG, WebP and SVG up to 1 MB are allowed.")); });
@@ -1070,7 +1070,7 @@
       themingCard.appendChild(inlineRow(T("Logo", "Logo"), T("Das Bild über dem Servernamen auf Unraids Anmeldeseite. Im Kopfbereich steht es links vom Servernamen, wenn du es unter Servername einschaltest. Ohne eigenes Bild ist es das TowerTorch-Zeichen. Akzentfarbe und Form der Anmeldeseite folgen den Einstellungen hier, hell oder dunkel folgt Unraids Farbschema.", "The picture above the server name on Unraid's login page. In the header it sits left of the server name once you switch it on under Server name. Without your own, it is the TowerTorch mark. The login page's accent and shape follow the settings here, light or dark follows Unraid's colour theme."), end));
       fetch(LOGO_URL, { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(show).catch(function () {});
     })();
-    // Unraid's display settings stay on Unraid's own page, which CC styles anyway, rather than
+    // Unraid's display settings stay on Unraid's own page, which TowerTorch styles anyway, rather than
     // being mirrored field by field. The few controls kept here write the native setting itself
     // through postDisplay(), and the theme coupling reloads, since the native header only reads its
     // colours on load.
@@ -1098,12 +1098,12 @@
       var cCard = themingCard;
       (function () {
         // the label and its bubble on the left, a short button beside it on the right
-        var r = el("div", "cc-set-row cc-set-inline");
-        var rl = el("span", "cc-set-lblwrap");
+        var r = el("div", "tt-set-row tt-set-inline");
+        var rl = el("span", "tt-set-lblwrap");
         rl.appendChild(el("span", null, T("Native Anzeige-Seite", "Native display page")));
         rl.appendChild(infoIcon(T("Öffnet Unraids Anzeige-Einstellungen im TowerTorch-Stil. Dort liegen unter anderem die Kopfzeilen-Farben, das Banner und die Favoriten-Option.", "Opens Unraid's Display Settings in TowerTorch style, where the header colours, the banner and the favourites option live.")));
         r.appendChild(rl);
-        var b = labelled(el("button", "cc-btn"), "Gear", T("Öffnen", "Open")); b.type = "button";
+        var b = labelled(el("button", "tt-btn"), "Gear", T("Öffnen", "Open")); b.type = "button";
         b.style.marginLeft = "auto";   // flush right, like the switches in the rows around it
         b.addEventListener("click", function () { location.href = "/Settings/DisplaySettings"; });
         r.appendChild(b); cCard.appendChild(r);
@@ -1119,15 +1119,15 @@
           if (!sheet) return false;
           var fresh = sheet.cloneNode();
           fresh.href = sheet.href.replace("/themes/" + from + ".css", "/themes/" + to + ".css");
-          fresh.addEventListener("load", function () { sheet.remove(); if (get("cc.hdrauto", "1") === "1" && !areaOn("cc.enable.header")) applyHdrAuto(true); });
+          fresh.addEventListener("load", function () { sheet.remove(); if (get("tt.hdrauto", "1") === "1" && !areaOn("tt.enable.header")) applyHdrAuto(true); });
           sheet.after(fresh);
           document.documentElement.classList.replace("Theme--" + from, "Theme--" + to);
           return true;
         };
         var darkRow = toggleRow(T("Dunkelmodus", "Dark mode"), T("Schaltet Unraids Farbschema zwischen dunkel und hell um und speichert es in den Anzeige-Einstellungen. Die Seite lädt nicht neu.", "Switches Unraid's colour theme between dark and light and saves it in the display settings. The page does not reload."), /^(black|gray)$/.test(unraidTheme()), function (v) {
-          var back = function () { darkRow.querySelector(".cc-set-toggle")._setOn(!v); };
-          var from = unraidTheme(), to = get("cc.theme." + (v ? "dark" : "light"), v ? "black" : "white");
-          set("cc.theme." + (v ? "light" : "dark"), from);
+          var back = function () { darkRow.querySelector(".tt-set-toggle")._setOn(!v); };
+          var from = unraidTheme(), to = get("tt.theme." + (v ? "dark" : "light"), v ? "black" : "white");
+          set("tt.theme." + (v ? "light" : "dark"), from);
           if (!swapTheme(from, to)) { back(); return failed(null, T("Das Farbschema wurde nicht gefunden.", "The colour theme sheet was not found.")); }
           postDisplay({ theme: to }).catch(function () {
             swapTheme(to, from); back();
@@ -1139,12 +1139,12 @@
         var arHelp = T("An: die Kopfzeilen-Hintergrund- und Textfarbe folgen automatisch Unraids Farbschema, also dunkler Hintergrund mit heller Schrift beim dunklen Thema und umgekehrt. Wirkt, wenn TowerTorchs Kopfbereich aus ist.", "On: the header background and text colour follow Unraid's colour scheme automatically, dark background with light text on a dark theme and the reverse on a light one. Applies while TowerTorch's header area is off.");
         // TowerTorch's own header area paints over the native colours, so while it is on the
         // switch has nothing to show and the line says so.
-        if (areaOn("cc.enable.header")) cCard.appendChild(lockRow(arLabel, T("Übermalt vom Kopfbereich", "Painted over by the header area"), T("Zu den Bereichen", "Go to Areas"), function () { jumpTo("general", T("Bereiche", "Areas")); }, arHelp));
-        else cCard.appendChild(toggleRow(arLabel, arHelp, get("cc.hdrauto", "1") === "1", function (v) { set("cc.hdrauto", v ? "1" : "0"); if (v) applyHdrAuto(); }));
-        // Apply the coupling once for a fresh default-on state. It only bites while the CC header
+        if (areaOn("tt.enable.header")) cCard.appendChild(lockRow(arLabel, T("Übermalt vom Kopfbereich", "Painted over by the header area"), T("Zu den Bereichen", "Go to Areas"), function () { jumpTo("general", T("Bereiche", "Areas")); }, arHelp));
+        else cCard.appendChild(toggleRow(arLabel, arHelp, get("tt.hdrauto", "1") === "1", function (v) { set("tt.hdrauto", v ? "1" : "0"); if (v) applyHdrAuto(); }));
+        // Apply the coupling once for a fresh default-on state. It only bites while the TowerTorch header
         // area is off, and the flag is set before the call, so the reload postDisplay triggers
         // cannot loop.
-        try { if (get("cc.hdrauto", "1") === "1" && get("cc.hdrauto.done", "0") !== "1") { set("cc.hdrauto.done", "1"); applyHdrAuto(); } } catch (e9) {}
+        try { if (get("tt.hdrauto", "1") === "1" && get("tt.hdrauto.done", "0") !== "1") { set("tt.hdrauto.done", "1"); applyHdrAuto(); } } catch (e9) {}
       })();
       // cCard is themingCard, already in the DOM, so re-appending it would reorder the cards. This
       // only keeps the favourites value in sync.
@@ -1154,8 +1154,8 @@
           var form = null;
           Array.prototype.forEach.call(doc.querySelectorAll("form"), function (f) { var s = f.querySelector('input[name="#section"]'); if (s && s.value === "display") form = f; });
           if (!form) return;
-          var fav = form.querySelector('select[name="favorites"]'); if (fav) set("cc.hidefavtab", fav.value === "no" ? "1" : "0");
-          try { if (window.ccFavGateSync) window.ccFavGateSync(); } catch (eG) {}   // the real native state is known now, so re-gate the Favoriten toggle
+          var fav = form.querySelector('select[name="favorites"]'); if (fav) set("tt.hidefavtab", fav.value === "no" ? "1" : "0");
+          try { if (window.ttFavGateSync) window.ttFavGateSync(); } catch (eG) {}   // the real native state is known now, so re-gate the Favoriten toggle
           syncHeaderBar();
         } catch (e9) {}
       }).catch(function () {});
@@ -1164,69 +1164,69 @@
     (function () {
       var c = card(T("Bereiche", "Areas"), T("Aktiviere, welche Bereiche TowerTorch verschönert. Ein deaktivierter Bereich blendet seinen Tab hier sofort aus.", "Choose which areas TowerTorch enhances. Disabling an area hides its tab here immediately."));
       [
-        ["cc.enable.main", T("Start", "Main"), "0", T("Gestaltet den Tab Start mit dem Array und seinen Laufwerken.", "Styles the Main tab with the array and its disks.")],
-        ["cc.enable.header", T("Kopfbereich", "Header area"), "0", T("Gestaltet die Menüleiste, den Streifen darüber mit der Status-Insel und die Übersicht.", "Styles the menu bar, the strip above it with the status island, and the Dashboard.")],
-        ["cc.enable.shares", T("Freigaben", "Shares"), "0", T("Gestaltet den Tab Freigaben mit den Benutzer- und Laufwerksfreigaben.", "Styles the Shares tab with the user and disk shares.")],
-        ["cc.enable.docker", T("Docker", "Docker"), "1", T("Gestaltet den Docker-Tab und das Formular, in dem du einen Container anlegst oder änderst.", "Styles the Docker tab and the form where you add or edit a container.")],
-        ["cc.enable.plugins", T("Plugins", "Plugins"), "1", T("Gestaltet den Plugins-Tab.", "Styles the Plugins tab.")],
-        ["cc.enable.vms", T("VMs", "VMs"), "1", T("Gestaltet den VMs-Tab.", "Styles the VMs tab.")],
-        ["cc.enable.settings", T("Einstellungen und Werkzeuge", "Settings and Tools"), "1", T("Gestaltet die Kacheln und Seiten unter Einstellungen und Werkzeuge.", "Styles the tiles and pages under Settings and Tools.")],
-        ["cc.enable.favorites", T("Favoriten", "Favorites"), "1"]
+        ["tt.enable.main", T("Start", "Main"), "0", T("Gestaltet den Tab Start mit dem Array und seinen Laufwerken.", "Styles the Main tab with the array and its disks.")],
+        ["tt.enable.header", T("Kopfbereich", "Header area"), "0", T("Gestaltet die Menüleiste, den Streifen darüber mit der Status-Insel und die Übersicht.", "Styles the menu bar, the strip above it with the status island, and the Dashboard.")],
+        ["tt.enable.shares", T("Freigaben", "Shares"), "0", T("Gestaltet den Tab Freigaben mit den Benutzer- und Laufwerksfreigaben.", "Styles the Shares tab with the user and disk shares.")],
+        ["tt.enable.docker", T("Docker", "Docker"), "1", T("Gestaltet den Docker-Tab und das Formular, in dem du einen Container anlegst oder änderst.", "Styles the Docker tab and the form where you add or edit a container.")],
+        ["tt.enable.plugins", T("Plugins", "Plugins"), "1", T("Gestaltet den Plugins-Tab.", "Styles the Plugins tab.")],
+        ["tt.enable.vms", T("VMs", "VMs"), "1", T("Gestaltet den VMs-Tab.", "Styles the VMs tab.")],
+        ["tt.enable.settings", T("Einstellungen und Werkzeuge", "Settings and Tools"), "1", T("Gestaltet die Kacheln und Seiten unter Einstellungen und Werkzeuge.", "Styles the tiles and pages under Settings and Tools.")],
+        ["tt.enable.favorites", T("Favoriten", "Favorites"), "1"]
       ].forEach(function (a) {
         var cur = localStorage.getItem(a[0]);
-        if (a[0] === "cc.enable.favorites") {
-          var row = el("div", "cc-set-row cc-set-inline");
+        if (a[0] === "tt.enable.favorites") {
+          var row = el("div", "tt-set-row tt-set-inline");
           // The favourites area needs Unraid's own favourites, or there is no tab to enhance.
-          // cc.hidefavtab mirrors the native "favorites=no", and the first switch here writes that
+          // tt.hidefavtab mirrors the native "favorites=no", and the first switch here writes that
           // native setting itself: the Favorites tab comes and goes at once through header.js,
-          // which hides it on cc.hidefavtab, so nothing needs a reload. While the native setting
-          // is off the area switch has nothing to act on and stays out. ccFavGateSync checks
+          // which hides it on tt.hidefavtab, so nothing needs a reload. While the native setting
+          // is off the area switch has nothing to act on and stays out. ttFavGateSync checks
           // again once the fetch above knows the native state.
-          var natRow = el("div", "cc-set-row cc-set-inline"), nlw = el("span", "cc-set-lblwrap");
+          var natRow = el("div", "tt-set-row tt-set-inline"), nlw = el("span", "tt-set-lblwrap");
           nlw.appendChild(el("span", null, T("Favoriten in Unraid", "Favourites in Unraid")));
           nlw.appendChild(infoIcon(T("Schaltet Unraids eigene Einstellung „Favoriten aktiviert“ (Einstellungen › Anzeige) sofort um. Aus blendet den Favoriten-Tab aus und nimmt die Herzen von den Kacheln unter Einstellungen und Werkzeuge.", "Switches Unraid's own setting “Favorites enabled” (Settings › Display Settings) right away. Off hides the Favorites tab and takes the hearts off the Settings and Tools tiles.")));
           natRow.appendChild(nlw);
-          var natTgl = toggle(localStorage.getItem("cc.hidefavtab") !== "1", function (v) {
-            set("cc.hidefavtab", v ? "0" : "1");
-            if (v) localStorage.setItem("cc.enable.favorites", "1");
+          var natTgl = toggle(localStorage.getItem("tt.hidefavtab") !== "1", function (v) {
+            set("tt.hidefavtab", v ? "0" : "1");
+            if (v) localStorage.setItem("tt.enable.favorites", "1");
             favGate(true); syncHeaderBar();
             postDisplay({ favorites: v ? "yes" : "no" }).catch(function () {
-              set("cc.hidefavtab", v ? "1" : "0"); natTgl._setOn(!v); favGate(true); syncHeaderBar();
+              set("tt.hidefavtab", v ? "1" : "0"); natTgl._setOn(!v); favGate(true); syncHeaderBar();
               failed(natTgl, T("Unraids Favoriten-Einstellung wurde nicht gespeichert.", "Unraid's favourites setting was not saved."));
             });
           });
           natRow.appendChild(natTgl);
-          var lw = el("span", "cc-set-lblwrap"); lw.appendChild(el("span", null, a[1])); row.appendChild(lw);
+          var lw = el("span", "tt-set-lblwrap"); lw.appendChild(el("span", null, a[1])); row.appendChild(lw);
           lw.appendChild(infoIcon(T("Gestaltet den Favoriten-Tab im TowerTorch-Stil. Dafür müssen die Favoriten in Unraid an sein.", "Styles the Favorites tab in TowerTorch's look. Needs favourites turned on in Unraid.")));
-          var favTgl = toggle(cur == null ? true : cur !== "0", function (v) { localStorage.setItem("cc.enable.favorites", v ? "1" : "0"); refreshTabs(); });
+          var favTgl = toggle(cur == null ? true : cur !== "0", function (v) { localStorage.setItem("tt.enable.favorites", v ? "1" : "0"); refreshTabs(); });
           row.appendChild(favTgl);
           var favGate = function (live) {
-            var off = localStorage.getItem("cc.hidefavtab") === "1";
+            var off = localStorage.getItem("tt.hidefavtab") === "1";
             natTgl._setOn(!off); row.hidden = off;
-            favTgl._setOn(localStorage.getItem("cc.enable.favorites") !== "0");
-            if (off && localStorage.getItem("cc.enable.favorites") !== "0") { localStorage.setItem("cc.enable.favorites", "0"); favTgl._setOn(false); }
+            favTgl._setOn(localStorage.getItem("tt.enable.favorites") !== "0");
+            if (off && localStorage.getItem("tt.enable.favorites") !== "0") { localStorage.setItem("tt.enable.favorites", "0"); favTgl._setOn(false); }
             if (live) refreshTabs();
           };
           favGate(false);
-          window.ccFavGateSync = function () { favGate(true); };
+          window.ttFavGateSync = function () { favGate(true); };
           c.appendChild(natRow); c.appendChild(row); return;
         }
         // The header area decides whether the Theming card's header colour switch shows.
-        c.appendChild(toggleRow(a[1], a[3], cur == null ? a[2] !== "0" : cur !== "0", function (v) { localStorage.setItem(a[0], v ? "1" : "0"); if (a[0] === "cc.enable.header") render(); else refreshTabs(); }));
+        c.appendChild(toggleRow(a[1], a[3], cur == null ? a[2] !== "0" : cur !== "0", function (v) { localStorage.setItem(a[0], v ? "1" : "0"); if (a[0] === "tt.enable.header") render(); else refreshTabs(); }));
       });
       wrapMain.appendChild(c);
     })();
     // The motion level, GlimStone's off, subtle and wild. header.js stamps it on every page; this
     // page stamps it again on change so the choice shows at once. The OS reduce-motion setting
     // wins over every level, in the sheets.
-    function motionLevel(v) { return window.CCTheme ? window.CCTheme.motionLevel(v) : (v === "off" || v === "0" ? "off" : v === "wild" || v === "2" ? "wild" : "subtle"); }
-    function applyAnim() { document.documentElement.setAttribute("data-cc-motion", motionLevel(get("cc.anim", "subtle"))); }
+    function motionLevel(v) { return window.TTTheme ? window.TTTheme.motionLevel(v) : (v === "off" || v === "0" ? "off" : v === "wild" || v === "2" ? "wild" : "subtle"); }
+    function applyAnim() { document.documentElement.setAttribute("data-tt-motion", motionLevel(get("tt.anim", "subtle"))); }
     applyAnim();
     if (themingCard) {
       themingCard.appendChild(segRow(T("Bewegung", "Motion"),
         [["off", T("Aus", "Off"), "IconMotionOff"], ["subtle", T("Dezent", "Subtle"), "IconMotionSubtle"], ["wild", T("Wild", "Wild"), "IconMotionWild"]],
-        motionLevel(get("cc.anim", "subtle")),
-        function (v) { set("cc.anim", v); applyAnim(); },
+        motionLevel(get("tt.anim", "subtle")),
+        function (v) { set("tt.anim", v); applyAnim(); },
         T("Aus: nichts bewegt sich. Dezent: kurze Übergänge und Einblendungen. Wild: kräftigere Effekte, etwa Hauptleisten-Tabs, die beim Überfahren hüpfen. Wenn im System „Bewegung reduzieren“ an ist, gilt das bei jeder Stufe.", "Off: nothing moves. Subtle: short transitions and fades. Wild: stronger effects, such as main-bar tabs that hop on hover. If the system is set to reduce motion, that wins at every level."),
         true));
     }
@@ -1234,7 +1234,7 @@
     // reads it loosely: either shape is accepted, and anything else falls back to the order below.
     var NAVDEF = ["Start", "Favorites", "Freigaben", "Einstellungen", "Docker", "Plugins", "VMs", "Werkzeuge", "Stats", "Apps"];
     var navOrder = NAVDEF;
-    try { var no9 = JSON.parse(get("cc.navorder.all", "null")); var arr9 = no9 && no9.left ? no9.left : no9; if (arr9 && arr9.length && typeof arr9.forEach === "function") navOrder = arr9; } catch (e9b) {}
+    try { var no9 = JSON.parse(get("tt.navorder.all", "null")); var arr9 = no9 && no9.left ? no9.left : no9; if (arr9 && arr9.length && typeof arr9.forEach === "function") navOrder = arr9; } catch (e9b) {}
     // The on-screen menu order comes first, so these sub-tabs mirror the main tabs exactly; the
     // persisted snapshot and the default above are only fallbacks.
     try {
@@ -1251,20 +1251,20 @@
     function navRank(aliases) { var best = -1; aliases.forEach(function (a9) { var i9 = navToks.indexOf(a9); if (i9 >= 0 && (best < 0 || i9 < best)) best = i9; }); return best; }
     // Allgemein comes first and Kopfbereich second, both chrome rather than menu tabs. The rest
     // follow the menu order, with anything missing from it keeping its relative order at the end.
-    // Each section carries a stable id, which is what cc.settab persists.
+    // Each section carries a stable id, which is what tt.settab persists.
     var SECS = [
       { id: "general", t: T("Allgemein", "General"), w: wrapMain, key: null },
-      { id: "header", t: T("Kopfbereich", "Header area"), w: wrapHeader, key: "cc.enable.header" }
+      { id: "header", t: T("Kopfbereich", "Header area"), w: wrapHeader, key: "tt.enable.header" }
     ];
     [
-      { id: "main", t: T("Start", "Main"), w: wrapStart, key: "cc.enable.main", tabs: ["start", "main"] },
-      { id: "shares", t: T("Freigaben", "Shares"), w: wrapShares, key: "cc.enable.shares", tabs: ["freigaben", "shares"] },
-      { id: "docker", t: T("Docker", "Docker"), w: wrap, key: "cc.enable.docker", tabs: ["docker"] },
-      { id: "plugins", t: T("Plugins", "Plugins"), w: wrapPlugin, key: "cc.enable.plugins", tabs: ["plugins"] },
-      { id: "vms", t: T("VMs", "VMs"), w: wrapVms, key: "cc.enable.vms", tabs: ["vms"] },
-      { id: "settings", t: T("Einstellungen", "Settings"), w: wrapSettings, key: "cc.enable.settings", tabs: ["einstellungen", "settings"] },
-      { id: "tools", t: T("Werkzeuge", "Tools"), w: wrapTools, key: "cc.enable.settings", tabs: ["werkzeuge", "tools"] },
-      { id: "favorites", t: T("Favoriten", "Favorites"), w: wrapFavorites, key: "cc.enable.favorites", tabs: ["favorites", "favoriten"] }
+      { id: "main", t: T("Start", "Main"), w: wrapStart, key: "tt.enable.main", tabs: ["start", "main"] },
+      { id: "shares", t: T("Freigaben", "Shares"), w: wrapShares, key: "tt.enable.shares", tabs: ["freigaben", "shares"] },
+      { id: "docker", t: T("Docker", "Docker"), w: wrap, key: "tt.enable.docker", tabs: ["docker"] },
+      { id: "plugins", t: T("Plugins", "Plugins"), w: wrapPlugin, key: "tt.enable.plugins", tabs: ["plugins"] },
+      { id: "vms", t: T("VMs", "VMs"), w: wrapVms, key: "tt.enable.vms", tabs: ["vms"] },
+      { id: "settings", t: T("Einstellungen", "Settings"), w: wrapSettings, key: "tt.enable.settings", tabs: ["einstellungen", "settings"] },
+      { id: "tools", t: T("Werkzeuge", "Tools"), w: wrapTools, key: "tt.enable.settings", tabs: ["werkzeuge", "tools"] },
+      { id: "favorites", t: T("Favoriten", "Favorites"), w: wrapFavorites, key: "tt.enable.favorites", tabs: ["favorites", "favoriten"] }
     ].map(function (s9, i9) { return { s: s9, i: i9, r: navRank(s9.tabs) }; })
       .sort(function (a9, b9) { return (a9.r < 0 ? 1e9 + a9.i : a9.r) - (b9.r < 0 ? 1e9 + b9.i : b9.r) || a9.i - b9.i; })
       .forEach(function (d9) { SECS.push(d9.s); });
@@ -1273,11 +1273,11 @@
     function areaOn(key) { if (!key) return true; var v = localStorage.getItem(key); return v == null ? !OFF_BY_DEFAULT[key] : v !== "0"; }
     function showSec(i) {
       if (!SECS[i] || !areaOn(SECS[i].key)) i = 0; // never land on a hidden section
-      localStorage.setItem("cc.settab", SECS[i].id); // the id, not the index, or a menu reorder restores the wrong tab
+      localStorage.setItem("tt.settab", SECS[i].id); // the id, not the index, or a menu reorder restores the wrong tab
       SECS.forEach(function (sc, j) {
         var on = j === i;
         sc.w.style.display = on ? "" : "none";
-        tabBtns[j].classList.toggle("cc-set-tab-on", on);
+        tabBtns[j].classList.toggle("tt-set-tab-on", on);
         tabBtns[j].setAttribute("aria-selected", on ? "true" : "false");
         tabBtns[j].setAttribute("tabindex", on ? "0" : "-1");
       });
@@ -1287,26 +1287,26 @@
     jumpTo = function (secId, cardTitle) {
       var ix = -1; SECS.forEach(function (sc, j) { if (sc.id === secId) ix = j; });
       if (ix < 0) return;
-      if (setSearch.value) { setSearch.value = ""; searchBadge.classList.remove("cc-open"); restore(); }
+      if (setSearch.value) { setSearch.value = ""; searchBadge.classList.remove("tt-open"); restore(); }
       showSec(ix);
       var target = null;
-      Array.prototype.forEach.call(SECS[ix].w.querySelectorAll(".cc-set-card > .cc-set-h"), function (h) { if (!target && (h.textContent || "").trim() === cardTitle) target = h.parentNode; });
+      Array.prototype.forEach.call(SECS[ix].w.querySelectorAll(".tt-set-card > .tt-set-h"), function (h) { if (!target && (h.textContent || "").trim() === cardTitle) target = h.parentNode; });
       if (!target) return;
       try { target.scrollIntoView({ block: "start", behavior: "smooth" }); } catch (e) { target.scrollIntoView(); }
-      var first = target.querySelector("[tabindex='0'], a[href], input, .cc-dsel-trigger");
+      var first = target.querySelector("[tabindex='0'], a[href], input, .tt-dsel-trigger");
       if (first) try { first.focus({ preventScroll: true }); } catch (e) {}
     };
     // GlimStone's tab-strip colour rule: every tab owns a rainbow position, which its glyph shows
     // at rest and its fill once chosen, and the banner takes the first. The sheet does the
     // painting from these vars; reactive mode rests the idle glyphs grey through the class on the root.
     function paintSetTabs() {
-      var rb = get("cc.rainbow", "0") === "1", rbC = (window.CCTheme && window.CCTheme.rbColor) || function (i, a) { return a; };
-      root.classList.toggle("cc-set-reactive", get("cc.rbmode", "all") === "active");
+      var rb = get("tt.rainbow", "0") === "1", rbC = (window.TTTheme && window.TTTheme.rbColor) || function (i, a) { return a; };
+      root.classList.toggle("tt-set-reactive", get("tt.rbmode", "all") === "active");
       tabBtns.forEach(function (b, i) {
-        if (rb) { var c = rbC(i, accent); b.style.setProperty("--cc-rb-c", c); b.style.setProperty("--cc-rb-ct", idealText(c)); }
-        else { b.style.removeProperty("--cc-rb-c"); b.style.removeProperty("--cc-rb-ct"); }
+        if (rb) { var c = rbC(i, accent); b.style.setProperty("--tt-rb-c", c); b.style.setProperty("--tt-rb-ct", idealText(c)); }
+        else { b.style.removeProperty("--tt-rb-c"); b.style.removeProperty("--tt-rb-ct"); }
       });
-      if (rb) hero.style.setProperty("--cc-hero-tint", rbC(0, accent)); else hero.style.removeProperty("--cc-hero-tint");
+      if (rb) hero.style.setProperty("--tt-hero-tint", rbC(0, accent)); else hero.style.removeProperty("--tt-hero-tint");
     }
     // A switched-off area loses its tile at once, and if its tab was open, Allgemein opens.
     function refreshTabs() {
@@ -1314,7 +1314,7 @@
       SECS.forEach(function (sc, j) {
         var on = areaOn(sc.key);
         tabBtns[j].hidden = !on;
-        if (!on && tabBtns[j].classList.contains("cc-set-tab-on")) { activeHidden = true; sc.w.style.display = "none"; }
+        if (!on && tabBtns[j].classList.contains("tt-set-tab-on")) { activeHidden = true; sc.w.style.display = "none"; }
       });
       if (activeHidden) showSec(0);
     }
@@ -1322,9 +1322,9 @@
     // End move the focus and Enter, Space or a click opens the tab.
     tabRow.setAttribute("role", "tablist"); tabRow.setAttribute("aria-orientation", "vertical");
     SECS.forEach(function (sc, i) {
-      var b = el("button", "cc-set-tab"); b.type = "button";
+      var b = el("button", "tt-set-tab"); b.type = "button";
       b.setAttribute("role", "tab"); b.setAttribute("aria-label", sc.t);
-      b.appendChild(tabGlyph(sc.id)); b.appendChild(el("span", "cc-set-tablbl", sc.t));
+      b.appendChild(tabGlyph(sc.id)); b.appendChild(el("span", "tt-set-tablbl", sc.t));
       b.addEventListener("click", function () { showSec(i); });
       tabBtns.push(b); tabRow.appendChild(b);
     });
@@ -1341,26 +1341,26 @@
       shown[to].focus();
     });
     // Below 1024px the column shows the glyphs alone, and each name moves into its bubble.
-    window.__ccSetTabTips = function () {
+    window.__ttSetTabTips = function () {
       var narrow = window.matchMedia && window.matchMedia("(max-width: 1023px)").matches;
       tabBtns.forEach(function (b, i) { if (narrow) b.setAttribute("data-tip", SECS[i].t); else b.removeAttribute("data-tip"); });
     };
-    window.__ccSetTabTips();
-    if (!window.__ccSetTabTipsBound && window.matchMedia) {
-      window.__ccSetTabTipsBound = true;
+    window.__ttSetTabTips();
+    if (!window.__ttSetTabTipsBound && window.matchMedia) {
+      window.__ttSetTabTipsBound = true;
       var narrowMq = window.matchMedia("(max-width: 1023px)");
-      var onNarrow = function () { window.__ccSetTabTips(); };
+      var onNarrow = function () { window.__ttSetTabTips(); };
       if (narrowMq.addEventListener) narrowMq.addEventListener("change", onNarrow); else narrowMq.addListener(onNarrow);
     }
-    var hero = el("div", "cc-hero"), heroLogo = el("img", "cc-hero-logo"), heroText = el("div", "cc-hero-text");
-    hero.innerHTML = '<span class="cc-hero-mark" aria-hidden="true"></span>';
+    var hero = el("div", "tt-hero"), heroLogo = el("img", "tt-hero-logo"), heroText = el("div", "tt-hero-text");
+    hero.innerHTML = '<span class="tt-hero-mark" aria-hidden="true"></span>';
     heroLogo.src = "/plugins/towertorch/images/towertorch.png"; heroLogo.alt = "";
     hero.appendChild(heroLogo);
-    heroText.appendChild(el("h1", "cc-hero-name", "TowerTorch"));
-    heroText.appendChild(el("p", "cc-hero-claim", "Your server's UI on fire. Your disks stay cool."));
+    heroText.appendChild(el("h1", "tt-hero-name", "TowerTorch"));
+    heroText.appendChild(el("p", "tt-hero-claim", "Your server's UI on fire. Your disks stay cool."));
     hero.appendChild(heroText);
     root.appendChild(hero);
-    var body = el("div", "cc-set-body"), main = el("div", "cc-set-main");
+    var body = el("div", "tt-set-body"), main = el("div", "tt-set-main");
     body.appendChild(tabRow); body.appendChild(main);
     root.appendChild(body);
     alignSetTabs(); // indent the page to the first main-menu tab
@@ -1374,102 +1374,102 @@
     // One colour mode at a time, and below the selector only the controls of the chosen one.
     var mode = colorMode();
     var modes = [["accent", T("Akzent", "Accent"), "IconAccent"], ["rainbow", T("Regenbogen", "Rainbow"), "IconRainbow"]];
-    if (window.CC_FLAGS && window.CC_FLAGS.length) modes.push(["flag", T("Flagge", "Flag"), "IconFlag"]);
-    var modeRow = el("div", "cc-set-row cc-set-inline cc-set-colourmode");
-    var modeLbl = el("span", "cc-set-lblwrap");
+    if (window.TT_FLAGS && window.TT_FLAGS.length) modes.push(["flag", T("Flagge", "Flag"), "IconFlag"]);
+    var modeRow = el("div", "tt-set-row tt-set-inline tt-set-colourmode");
+    var modeLbl = el("span", "tt-set-lblwrap");
     modeLbl.appendChild(el("span", null, T("Farbmodus", "Colour mode")));
     modeLbl.appendChild(infoIcon(T("Akzent: alles in einer Farbe. Regenbogen: jedes Badge nimmt eine Farbe aus der Palette. Flagge: die Palette sind die Farben eines Landes.", "Accent: everything in one colour. Rainbow: every badge takes a colour from the palette. Flag: the palette is a country's colours.")));
     modeRow.appendChild(modeLbl);
     modeRow.appendChild(modeSelector(modes, mode, function (m) {
       setColorMode(m); render(); syncHeaderBar(); syncSharesBar();
-      var on = root.querySelector(".cc-set-colourmode .cc-seg-on"); if (on) on.focus({ preventScroll: true });
+      var on = root.querySelector(".tt-set-colourmode .tt-seg-on"); if (on) on.focus({ preventScroll: true });
     }));
     c1.appendChild(modeRow);
     // The handler pushes the new colour onto the live bars as well: the header and the shares area
-    // own isolated vars, so writing --cc-accent here alone would leave them until the next reload.
-    // cc-set-swrow-global scopes syncSwOn() to this row: sweeping every swatch on the page and
+    // own isolated vars, so writing --tt-accent here alone would leave them until the next reload.
+    // tt-set-swrow-global scopes syncSwOn() to this row: sweeping every swatch on the page and
     // marking it against the global accent would un-mark an area card's own pick whenever the
     // global colour changed. The logo previews fall back to the accent for their tiles and ink,
     // so they repaint with it.
-    var prow = colourField(accent, function (v) { accent = v; set("cc.accent", v); root.style.setProperty("--cc-accent", v); root.style.setProperty("--cc-accent-text", idealText(v)); paintPrev(); syncSwOn(); syncAllStyleCards(); repaintLogoPrevs(); tintPrev(); syncHeaderBar(); syncSharesBar(); }, { rowClass: "cc-set-swrow-global" });
+    var prow = colourField(accent, function (v) { accent = v; set("tt.accent", v); root.style.setProperty("--tt-accent", v); root.style.setProperty("--tt-accent-text", idealText(v)); paintPrev(); syncSwOn(); syncAllStyleCards(); repaintLogoPrevs(); tintPrev(); syncHeaderBar(); syncSharesBar(); }, { rowClass: "tt-set-swrow-global" });
     if (mode === "accent") c1.appendChild(fieldRow(T("Akzentfarbe", "Accent colour"), T("Die Farbe aller Badges, Schalter und Knöpfe im Farbmodus Akzent.", "The colour of every badge, switch and button in the Accent colour mode."), prow));
     // on: every reload deals a fresh colour mapping; off: the colours stay put
-    var rrot = el("div", "cc-set-row cc-set-inline");
-    var rrotL = el("span", "cc-set-lblwrap");
+    var rrot = el("div", "tt-set-row tt-set-inline");
+    var rrotL = el("span", "tt-set-lblwrap");
     rrotL.appendChild(el("span", null, T("Automatische Farbenrotation", "Automatic colour rotation")));
     rrotL.appendChild(infoIcon(T("Mischt die Rainbow-Farben bei jedem Neuladen der Seite neu durch, statt die Reihenfolge fest zu lassen.", "Reshuffles the rainbow colours on every page reload instead of keeping the order fixed.")));
     rrot.appendChild(rrotL);
-    rrot.appendChild(toggle(get("cc.rainbowrot", "1") !== "0", function (v) { set("cc.rainbowrot", v ? "1" : "0"); syncHeaderBar(); syncSharesBar(); }));
+    rrot.appendChild(toggle(get("tt.rainbowrot", "1") !== "0", function (v) { set("tt.rainbowrot", v ? "1" : "0"); syncHeaderBar(); syncSharesBar(); }));
     // Every palette colour is editable: clicking a swatch marks it and opens the colour field below
-    // it for that place. The palette is stored as JSON in cc.rbpal, which the Docker tab reads live.
-    var RBDEF = (window.CCTheme && window.CCTheme.RB) || ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"]; // the shared palette, or the swatches and the live UI disagree
-    var rbpal = null; try { rbpal = JSON.parse(get("cc.rbpal", "null")); } catch (e) { rbpal = null; }
+    // it for that place. The palette is stored as JSON in tt.rbpal, which the Docker tab reads live.
+    var RBDEF = (window.TTTheme && window.TTTheme.RB) || ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"]; // the shared palette, or the swatches and the live UI disagree
+    var rbpal = null; try { rbpal = JSON.parse(get("tt.rbpal", "null")); } catch (e) { rbpal = null; }
     if (!rbpal || rbpal.length !== RBDEF.length) rbpal = RBDEF.slice();
-    var rbrow = el("div", "cc-set-swatches cc-fill"), rbIdx = -1;
+    var rbrow = el("div", "tt-set-swatches tt-fill"), rbIdx = -1;
     var rbPick = colourField(rbpal[0], function (v) {   // its own key, so editing it never touches the flag palette
       if (rbIdx < 0) return;
       var sw = rbrow.children[rbIdx];
       rbpal[rbIdx] = v; sw.style.background = v; sw.setAttribute("data-tip", v); swMark(sw, true, v);
-      set("cc.rbpal", JSON.stringify(rbpal)); syncHeaderBar(); syncSharesBar();
+      set("tt.rbpal", JSON.stringify(rbpal)); syncHeaderBar(); syncSharesBar();
       // everything on this page that wears a palette colour, previews, switches and badges alike
       paintPrev(); paintToggles(); paintCardHeads(); paintSetTabs(); repaintLogoPrevs(); tintPrev();
     });
     rbPick.hidden = true;
     rbpal.forEach(function (cx, ix) {
-      var sw = actionBtn("", "cc-set-sw", function () {
+      var sw = actionBtn("", "tt-set-sw", function () {
         rbIdx = ix; rbPick.hidden = false; rbPick._set(rbpal[ix]);
-        Array.prototype.forEach.call(rbrow.querySelectorAll(".cc-set-sw"), function (o, j) { swMark(o, j === ix, rbpal[j]); });
+        Array.prototype.forEach.call(rbrow.querySelectorAll(".tt-set-sw"), function (o, j) { swMark(o, j === ix, rbpal[j]); });
       });
       sw.style.background = cx; sw.setAttribute("data-tip", cx); sw.setAttribute("aria-label", cx);
       rbrow.appendChild(sw);
     });
     // a reset glyph right of the swatches, the same size as one of them
-    var rbReset = el("span", "cc-set-ibtn");
+    var rbReset = el("span", "tt-set-ibtn");
     rbReset.setAttribute("data-tip", T("Farben zurücksetzen", "Reset colours"));
     rbReset.innerHTML = glyph("Refresh");
-    rbReset.addEventListener("click", function () { del("cc.rbpal"); render(); syncHeaderBar(); syncSharesBar(); });
+    rbReset.addEventListener("click", function () { del("tt.rbpal"); render(); syncHeaderBar(); syncSharesBar(); });
     rbrow.appendChild(rbReset);
-    var rbCol = el("div", "cc-set-pickrow"); rbCol.appendChild(rbrow); rbCol.appendChild(rbPick);
+    var rbCol = el("div", "tt-set-pickrow"); rbCol.appendChild(rbrow); rbCol.appendChild(rbPick);
     if (mode === "rainbow") { c1.appendChild(rrot); c1.appendChild(fieldRow(T("Palette", "Palette"), T("Ein Klick auf eine Farbe öffnet darunter den Farbwähler für diesen Platz der Palette.", "Clicking a colour opens the colour picker for that place in the palette below it."), rbCol)); }
     // In flag mode a country's colours become the active palette, cycled to fill every slot, and
     // drive the same engine. The picker searches
     // by name and shows real flag images; an emoji flag renders as two letter boxes on Windows.
-    if (window.CC_FLAGS && window.CC_FLAGS.length) {
+    if (window.TT_FLAGS && window.TT_FLAGS.length) {
       var FLAG_BASE = "/plugins/towertorch/images/flags/";
       // The bundled SVG shows the country's actual pattern, and a code with no SVG falls back to
       // the colour-stripe swatch.
       var flagImg = function (f9, big) {
         var im = document.createElement("img");
-        im.className = "cc-flag-img" + (big ? " cc-flag-img-lg" : "");
+        im.className = "tt-flag-img" + (big ? " tt-flag-img-lg" : "");
         im.src = FLAG_BASE + f9.code + ".svg"; im.alt = f9.name_de; im.loading = "lazy"; im.draggable = false;
         im.onerror = function () { try { if (im.parentNode) im.parentNode.replaceChild(flagSwatch(f9.colors, big), im); } catch (e9) {} };
         return im;
       };
       var flagSwatch = function (colors, big) {
-        var s = el("span", "cc-flag-sw" + (big ? " cc-flag-sw-lg" : "")); var n = colors.length, stops = [];
+        var s = el("span", "tt-flag-sw" + (big ? " tt-flag-sw-lg" : "")); var n = colors.length, stops = [];
         for (var i9 = 0; i9 < n; i9++) { stops.push(colors[i9] + " " + Math.round(i9 / n * 100) + "% " + Math.round((i9 + 1) / n * 100) + "%"); }
         s.style.background = "linear-gradient(to bottom, " + stops.join(", ") + ")"; return s;
       };
-      var curFlag = function () { var c9 = get("cc.flag", ""); for (var j9 = 0; j9 < window.CC_FLAGS.length; j9++) if (window.CC_FLAGS[j9].code === c9) return window.CC_FLAGS[j9]; return null; };
-      var fr = el("div", "cc-set-row cc-flag-row"), frl = el("span", "cc-set-rl", T("Land", "Country"));
+      var curFlag = function () { var c9 = get("tt.flag", ""); for (var j9 = 0; j9 < window.TT_FLAGS.length; j9++) if (window.TT_FLAGS[j9].code === c9) return window.TT_FLAGS[j9]; return null; };
+      var fr = el("div", "tt-set-row tt-flag-row"), frl = el("span", "tt-set-rl", T("Land", "Country"));
       frl.appendChild(infoIcon(T("Die Farben der Flagge werden zur Palette, der Reihe nach wiederholt, bis alle acht Plätze belegt sind.", "The flag's colours become the palette, repeated in order until all eight places are filled.")));
       fr.appendChild(frl);
       if (mode === "flag") c1.appendChild(fr);
       // A picker of its own, since a native select cannot show flag images: a real flag, the name,
       // and a search over both.
-      var picker = el("div", "cc-flag-picker");
-      var trigger = el("div", "cc-flag-trigger"); trigger.setAttribute("tabindex", "0");
+      var picker = el("div", "tt-flag-picker");
+      var trigger = el("div", "tt-flag-trigger"); trigger.setAttribute("tabindex", "0");
       // the trigger reads as a button, with no caret
-      var renderTrigger = function () { trigger.innerHTML = ""; var f0 = curFlag(); if (f0) { trigger.appendChild(flagImg(f0)); trigger.appendChild(el("span", "cc-flag-name", f0.name_de)); } else trigger.appendChild(el("span", "cc-flag-name", T("Land wählen", "Choose a country"))); };
+      var renderTrigger = function () { trigger.innerHTML = ""; var f0 = curFlag(); if (f0) { trigger.appendChild(flagImg(f0)); trigger.appendChild(el("span", "tt-flag-name", f0.name_de)); } else trigger.appendChild(el("span", "tt-flag-name", T("Land wählen", "Choose a country"))); };
       renderTrigger();
-      var panel = el("div", "cc-flag-panel"); panel.style.display = "none";
-      var search = el("input", "cc-flag-search"); search.type = "text"; search.placeholder = T("Suchen…", "Search…"); search.spellcheck = false; panel.appendChild(search);
-      var list = el("div", "cc-flag-list");
+      var panel = el("div", "tt-flag-panel"); panel.style.display = "none";
+      var search = el("input", "tt-flag-search"); search.type = "text"; search.placeholder = T("Suchen…", "Search…"); search.spellcheck = false; panel.appendChild(search);
+      var list = el("div", "tt-flag-list");
       var buildList = function (q) {
         list.innerHTML = ""; q = (q || "").toLowerCase();
-        window.CC_FLAGS.forEach(function (f0) {
+        window.TT_FLAGS.forEach(function (f0) {
           if (q && f0.name_de.toLowerCase().indexOf(q) < 0 && f0.name.toLowerCase().indexOf(q) < 0 && f0.code.indexOf(q) < 0) return;
-          var row = el("div", "cc-flag-item"); row.appendChild(flagImg(f0)); row.appendChild(el("span", "cc-flag-name", f0.name_de));
+          var row = el("div", "tt-flag-item"); row.appendChild(flagImg(f0)); row.appendChild(el("span", "tt-flag-name", f0.name_de));
           row.addEventListener("click", function () { applyFlag(f0); render(); syncHeaderBar(); syncSharesBar(); });
           list.appendChild(row);
         });
@@ -1492,7 +1492,7 @@
       var closePanel = function () { panel.style.display = "none"; try { trigger.focus(); } catch (e9) {} };
       trigger.addEventListener("click", function () { if (panel.style.display !== "none") panel.style.display = "none"; else openPanel(); });
       // The country picker is a closed field standing for one value, so it wheel-steps like the
-      // other selection fields. It has no <select> behind it, so cc-theme.js's shared handler
+      // other selection fields. It has no <select> behind it, so tt-theme.js's shared handler
       // cannot serve it and the step is spelled out here against the same list the panel uses,
       // clamped at both ends. The commit is the click path's, but the full render is debounced: it
       // rebuilds the page, which would tear the element out from under the cursor on every notch.
@@ -1501,7 +1501,7 @@
         if (e9.ctrlKey || e9.metaKey || e9.altKey) return;
         if (panel.style.display !== "none") return;                 // an open panel scrolls its own list
         var d9 = e9.deltaY || e9.deltaX; if (!d9) return;
-        var list9 = window.CC_FLAGS, cur9 = get("cc.flag", ""), ix9 = -1;
+        var list9 = window.TT_FLAGS, cur9 = get("tt.flag", ""), ix9 = -1;
         for (var j9 = 0; j9 < list9.length; j9++) if (list9[j9].code === cur9) { ix9 = j9; break; }
         var nx9 = ix9 < 0 ? (d9 > 0 ? 0 : list9.length - 1) : ix9 + (d9 > 0 ? 1 : -1);
         if (nx9 < 0 || nx9 >= list9.length) return;                 // clamped, so the page scrolls instead
@@ -1514,101 +1514,101 @@
       // Enter, space or the down arrow opens the panel; then the arrows move the highlight, Enter
       // picks and Escape closes. The search matches either name and the country code.
       trigger.addEventListener("keydown", function (e9) { if (e9.key === "Enter" || e9.key === " " || e9.key === "ArrowDown") { e9.preventDefault(); openPanel(); } });
-      var moveSel = function (dir) { var items = list.querySelectorAll(".cc-flag-item"); if (!items.length) return; var cur = list.querySelector(".cc-flag-item.cc-sel"); var idx = cur ? Array.prototype.indexOf.call(items, cur) : -1; idx += dir; if (idx < 0) idx = 0; if (idx >= items.length) idx = items.length - 1; if (cur) cur.classList.remove("cc-sel"); items[idx].classList.add("cc-sel"); items[idx].scrollIntoView({ block: "nearest" }); };
-      search.addEventListener("keydown", function (e9) { if (e9.key === "ArrowDown") { e9.preventDefault(); moveSel(1); } else if (e9.key === "ArrowUp") { e9.preventDefault(); moveSel(-1); } else if (e9.key === "Enter") { e9.preventDefault(); var sel = list.querySelector(".cc-flag-item.cc-sel") || list.querySelector(".cc-flag-item"); if (sel) sel.click(); } else if (e9.key === "Escape") { e9.preventDefault(); closePanel(); } });
+      var moveSel = function (dir) { var items = list.querySelectorAll(".tt-flag-item"); if (!items.length) return; var cur = list.querySelector(".tt-flag-item.tt-sel"); var idx = cur ? Array.prototype.indexOf.call(items, cur) : -1; idx += dir; if (idx < 0) idx = 0; if (idx >= items.length) idx = items.length - 1; if (cur) cur.classList.remove("tt-sel"); items[idx].classList.add("tt-sel"); items[idx].scrollIntoView({ block: "nearest" }); };
+      search.addEventListener("keydown", function (e9) { if (e9.key === "ArrowDown") { e9.preventDefault(); moveSel(1); } else if (e9.key === "ArrowUp") { e9.preventDefault(); moveSel(-1); } else if (e9.key === "Enter") { e9.preventDefault(); var sel = list.querySelector(".tt-flag-item.tt-sel") || list.querySelector(".tt-flag-item"); if (sel) sel.click(); } else if (e9.key === "Escape") { e9.preventDefault(); closePanel(); } });
       picker.appendChild(trigger); picker.appendChild(panel);
       fr.appendChild(picker);
       // the selected flag's colours, shown apart from the rainbow editor
       var f1 = curFlag();
       if (f1 && mode === "flag") {
-        var frow = el("div", "cc-set-swatches cc-fill"), fcol = el("div", "cc-set-pickrow");
+        var frow = el("div", "tt-set-swatches tt-fill"), fcol = el("div", "tt-set-pickrow");
         // The same count as the rainbow row, cycled from the flag's own colours, which matches the
         // palette the engine paints and keeps both rows the same shape.
         var fpal = []; for (var kf = 0; kf < RBDEF.length; kf++) fpal.push(f1.colors[kf % f1.colors.length]);
-        fpal.forEach(function (c9) { var sw9 = el("span", "cc-set-sw"); sw9.style.background = c9; sw9.setAttribute("data-tip", c9); frow.appendChild(sw9); });
-        var fReset = el("span", "cc-set-ibtn"); fReset.setAttribute("data-tip", T("Flagge zurücksetzen", "Reset flag"));
+        fpal.forEach(function (c9) { var sw9 = el("span", "tt-set-sw"); sw9.style.background = c9; sw9.setAttribute("data-tip", c9); frow.appendChild(sw9); });
+        var fReset = el("span", "tt-set-ibtn"); fReset.setAttribute("data-tip", T("Flagge zurücksetzen", "Reset flag"));
         fReset.innerHTML = glyph("Refresh");
-        fReset.addEventListener("click", function () { del("cc.flag"); del("cc.flagpal"); setColorMode("accent"); render(); syncHeaderBar(); syncSharesBar(); });
+        fReset.addEventListener("click", function () { del("tt.flag"); del("tt.flagpal"); setColorMode("accent"); render(); syncHeaderBar(); syncSharesBar(); });
         frow.appendChild(fReset);
         fcol.appendChild(frow);
         c1.appendChild(fieldRow(T("Flaggenfarben", "Flag colours"), T("Die Farben der gewählten Flagge, so wie sie die Palette füllen. Der Pfeil setzt die Flagge zurück.", "The chosen flag's colours as they fill the palette. The arrow resets the flag."), fcol));
       }
     }
     // GlimStone's three shapes, in its order. A name stored before them shows as the shape it reads as.
-    themingCard.appendChild(segRow(T("Form", "Shape"), [["round", T("Rund", "Round"), "IconCornerRound"], ["soft", T("Weich", "Soft"), "IconCornerSoft"], ["square", T("Eckig", "Square"), "IconCornerSquare"]], shapeName(get("cc.badgeshape", "round")), function (v) { set("cc.badgeshape", v); applyShape(); syncHeaderBar(); syncSharesBar(); },
+    themingCard.appendChild(segRow(T("Form", "Shape"), [["round", T("Rund", "Round"), "IconCornerRound"], ["soft", T("Weich", "Soft"), "IconCornerSoft"], ["square", T("Eckig", "Square"), "IconCornerSquare"]], shapeName(get("tt.badgeshape", "round")), function (v) { set("tt.badgeshape", v); applyShape(); syncHeaderBar(); syncSharesBar(); },
       T("Karten, Felder und Knöpfe ändern ihre Ecken gemeinsam.", "Cards, fields and buttons change their corners together.")));
     // One global badge style: glass adds a sheen to every badge at once, flat is the solid look.
-    themingCard.appendChild(segRow(T("Badge-Stil", "Badge style"), [["flat", T("Flach", "Flat"), "IconBadgeFlat"], ["glass", T("Glas", "Glass"), "IconBadgeGlass"]], get("cc.badgeglass", "0") === "1" ? "glass" : "flat", function (v) { set("cc.badgeglass", v === "glass" ? "1" : "0"); document.documentElement.classList.toggle("cc-badge-glass", v === "glass" && get("cc.theming", "1") !== "0"); syncHeaderBar(); syncSharesBar(); },
+    themingCard.appendChild(segRow(T("Badge-Stil", "Badge style"), [["flat", T("Flach", "Flat"), "IconBadgeFlat"], ["glass", T("Glas", "Glass"), "IconBadgeGlass"]], get("tt.badgeglass", "0") === "1" ? "glass" : "flat", function (v) { set("tt.badgeglass", v === "glass" ? "1" : "0"); document.documentElement.classList.toggle("tt-badge-glass", v === "glass" && get("tt.theming", "1") !== "0"); syncHeaderBar(); syncSharesBar(); },
       T("Flach: einfarbige Badges. Glas: ein Glanz auf jedem Badge.", "Flat: solid badges. Glass: a sheen on every badge.")));
     // The reactive toggle covers every colour mode: everything rests grey, colours on hover, and
     // the active item stays lit.
-    var rmode = el("div", "cc-set-row cc-set-inline");
-    var rmodeL = el("span", "cc-set-lblwrap");
+    var rmode = el("div", "tt-set-row tt-set-inline");
+    var rmodeL = el("span", "tt-set-lblwrap");
     rmodeL.appendChild(el("span", null, T("Reaktiver Modus", "Reactive mode")));
     rmodeL.appendChild(infoIcon(T("An: alles ruht grau und färbt sich beim Überfahren, Aktives bleibt farbig. Gilt global für alle Farbmodi (Regenbogen, Flagge und Normal) und alle Bereiche, Logo-Kacheln eingeschlossen.", "On: everything rests grey and colours on hover, and the active item stays coloured. Global across every colour mode (rainbow, flag and accent) and every area, logo tiles included.")));
     rmode.appendChild(rmodeL);
-    rmode.appendChild(toggle(get("cc.rbmode", "all") === "active", function (v) { set("cc.rbmode", v ? "active" : "all"); paintSetTabs(); syncHeaderBar(); syncSharesBar(); }));
+    rmode.appendChild(toggle(get("tt.rbmode", "all") === "active", function (v) { set("tt.rbmode", v ? "active" : "all"); paintSetTabs(); syncHeaderBar(); syncSharesBar(); }));
     c1.appendChild(rmode);
-    var snR = el("div", "cc-set-row cc-set-inline");
-    var snL = el("span", "cc-set-lblwrap");
+    var snR = el("div", "tt-set-row tt-set-inline");
+    var snL = el("span", "tt-set-lblwrap");
     snL.appendChild(el("span", null, T("Zustandsanzeigen nativ färben", "Native state colours")));
     snL.appendChild(infoIcon(T("An: Auslastungsbalken und Status-Badges behalten ihre native Zustandsfarbe (grün, orange, rot). Aus: sie werden in den aktuellen Farbmodus integriert. Zustands-Punkte bei Containern und Laufwerken sind immer nativ, denn bei ihnen ist die Farbe die einzige Information.", "On: usage bars and status badges keep their native state colour (green, orange, red). Off: they fold into the current colour mode. The state dots on containers and drives are always native, because for them the colour is the only information there is.")));
     snR.appendChild(snL);
-    snR.appendChild(toggle(get("cc.statenative", "0") === "1", function (v) { set("cc.statenative", v ? "1" : "0"); syncHeaderBar(); syncSharesBar(); }));
+    snR.appendChild(toggle(get("tt.statenative", "0") === "1", function (v) { set("tt.statenative", v ? "1" : "0"); syncHeaderBar(); syncSharesBar(); }));
     c1.appendChild(snR);
-    c1.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview")));
-    var prev = el("div", "cc-set-prev");
+    c1.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview")));
+    var prev = el("div", "tt-set-prev");
     // Eight mixed badges, so the whole palette sweep is visible; paintPrev colours each by index.
-    var pvName = el("span", "cc-b cc-b-lg", "nextcloud");
-    var pvVal = el("span", "cc-b"); pvVal.appendChild(elk("CPU")); pvVal.appendChild(elv("2/8"));
-    var pvVal2 = el("span", "cc-b"); pvVal2.appendChild(elk("RAM")); pvVal2.appendChild(elv("1.2G"));
-    var pvName2 = el("span", "cc-b cc-b-lg", "plex");
-    var pvVal3 = el("span", "cc-b"); pvVal3.appendChild(elk("IP")); pvVal3.appendChild(elv(".20.9"));
-    var pvVal4 = el("span", "cc-b"); pvVal4.appendChild(elk("Port")); pvVal4.appendChild(elv("443"));
-    var pvName3 = el("span", "cc-b cc-b-lg", "grafana");
-    var pvTab = el("span", "cc-navtab cc-navtab-on", "Docker");
+    var pvName = el("span", "tt-b tt-b-lg", "nextcloud");
+    var pvVal = el("span", "tt-b"); pvVal.appendChild(elk("CPU")); pvVal.appendChild(elv("2/8"));
+    var pvVal2 = el("span", "tt-b"); pvVal2.appendChild(elk("RAM")); pvVal2.appendChild(elv("1.2G"));
+    var pvName2 = el("span", "tt-b tt-b-lg", "plex");
+    var pvVal3 = el("span", "tt-b"); pvVal3.appendChild(elk("IP")); pvVal3.appendChild(elv(".20.9"));
+    var pvVal4 = el("span", "tt-b"); pvVal4.appendChild(elk("Port")); pvVal4.appendChild(elv("443"));
+    var pvName3 = el("span", "tt-b tt-b-lg", "grafana");
+    var pvTab = el("span", "tt-navtab tt-navtab-on", "Docker");
     [pvName, pvVal, pvVal2, pvName2, pvVal3, pvVal4, pvName3, pvTab].forEach(function (x9) { prev.appendChild(x9); });
-    prev.id = "cc-set-prev"; c1.appendChild(prev);
+    prev.id = "tt-set-prev"; c1.appendChild(prev);
     wrapMain.appendChild(c1);
     // The global badge colour is set once, in the card above. This card says that every area
     // follows it and lists only the areas set apart, each with its way back.
     var EXC_AREAS = [
-      ["cc.styleheader", "header", T("Kopfbereich", "Header area")],
-      ["cc.stylemain", "main", T("Start", "Main")],
-      ["cc.styleshares", "shares", T("Freigaben", "Shares")],
-      ["cc.styledocker", "docker", T("Docker", "Docker")],
-      ["cc.styleplugin", "plugins", T("Plugins", "Plugins")],
-      ["cc.stylevms", "vms", T("VMs", "VMs")],
-      ["cc.stylesettings", "settings", T("Einstellungen", "Settings")],
-      ["cc.styletools", "tools", T("Werkzeuge", "Tools")],
-      ["cc.stylefavorites", "favorites", T("Favoriten", "Favorites")]
+      ["tt.styleheader", "header", T("Kopfbereich", "Header area")],
+      ["tt.stylemain", "main", T("Start", "Main")],
+      ["tt.styleshares", "shares", T("Freigaben", "Shares")],
+      ["tt.styledocker", "docker", T("Docker", "Docker")],
+      ["tt.styleplugin", "plugins", T("Plugins", "Plugins")],
+      ["tt.stylevms", "vms", T("VMs", "VMs")],
+      ["tt.stylesettings", "settings", T("Einstellungen", "Settings")],
+      ["tt.styletools", "tools", T("Werkzeuge", "Tools")],
+      ["tt.stylefavorites", "favorites", T("Favoriten", "Favorites")]
     ];
     var cExc = card(T("Bereichsfarben", "Area colours"));
     wrapMain.appendChild(cExc);
     function paintExceptions() {
-      Array.prototype.slice.call(cExc.querySelectorAll(".cc-set-row")).forEach(function (r) { r.parentNode.removeChild(r); });
+      Array.prototype.slice.call(cExc.querySelectorAll(".tt-set-row")).forEach(function (r) { r.parentNode.removeChild(r); });
       var own = [], follow = [];
       EXC_AREAS.forEach(function (a) {
         var sec = SECS.filter(function (s9) { return s9.id === a[1]; })[0];
         if (sec && areaOn(sec.key)) (localStorage.getItem(a[0]) === "0" ? own : follow).push(a);
       });
-      var lead = el("div", "cc-set-row"), lw = el("span", "cc-set-lblwrap");
+      var lead = el("div", "tt-set-row"), lw = el("span", "tt-set-lblwrap");
       lw.appendChild(el("span", null, own.length ? T("Alle Bereiche folgen der globalen Badge-Farbe, bis auf diese:", "Every area follows the global badge colour, except these:") : T("Alle Bereiche folgen der globalen Badge-Farbe", "Every area follows the global badge colour")));
       lw.appendChild(infoIcon(T("Eine eigene Farbe bekommt ein Bereich über „Ausnahme hinzufügen“ oder in seinem eigenen Tab. Alle übrigen Bereiche ändern sich mit der globalen Farbe.", "Add an exception here or on the area's own tab to give it a colour of its own. Every other area changes with the global colour.")));
       lead.appendChild(lw); cExc.appendChild(lead);
       own.forEach(function (a) {
-        var row = el("div", "cc-set-row cc-set-inline"), nm = el("span", "cc-set-lblwrap"), dot = el("span", "cc-set-excdot");
+        var row = el("div", "tt-set-row tt-set-inline"), nm = el("span", "tt-set-lblwrap"), dot = el("span", "tt-set-excdot");
         dot.style.background = get(ADOPT_PREF[a[0]] + "accent", "#FCC419");
         nm.appendChild(dot); nm.appendChild(el("span", null, a[2]));
         nm.appendChild(infoIcon(T("Dieser Bereich hat eine eigene Farbe, bis du „Globale Farbe nutzen“ wählst.", "This area has a colour of its own until you pick “Use the global colour”.")));
         row.appendChild(nm);
-        row.appendChild(labelled(actionBtn("", "cc-btn", function () { setOwnColour(a[0], false); }), "Refresh", T("Globale Farbe nutzen", "Use the global colour")));
+        row.appendChild(labelled(actionBtn("", "tt-btn", function () { setOwnColour(a[0], false); }), "Refresh", T("Globale Farbe nutzen", "Use the global colour")));
         cExc.appendChild(row);
       });
       if (follow.length) {
-        var add = el("div", "cc-set-row"), addL = add.appendChild(el("span", "cc-set-rl", T("Ausnahme hinzufügen", "Add an exception")));
+        var add = el("div", "tt-set-row"), addL = add.appendChild(el("span", "tt-set-rl", T("Ausnahme hinzufügen", "Add an exception")));
         addL.appendChild(infoIcon(T("Gibt einem Bereich eine eigene Farbe, die du danach in seinem Tab wählst.", "Gives an area a colour of its own, which you then pick on its tab.")));
-        add.appendChild(areaPicker(T("Bereich wählen", "Choose an area"), follow, function (a) { setOwnColour(a[0], true); localStorage.setItem("cc.settab", a[1]); render(); }));
+        add.appendChild(areaPicker(T("Bereich wählen", "Choose an area"), follow, function (a) { setOwnColour(a[0], true); localStorage.setItem("tt.settab", a[1]); render(); }));
         cExc.appendChild(add);
       }
       paintSelects();
@@ -1616,7 +1616,7 @@
     paintExceptions();
     // Density and tile size are each one key every list reads, so they sit here with the other
     // global controls rather than being repeated per tab.
-    if (themingCard) themingCard.appendChild(segRow(T("Dichte", "Density"), [["compact", T("Kompakt", "Compact"), "IconRowCompact"], ["normal", "Normal", "IconRowMedium"], ["airy", T("Luftig", "Airy"), "IconRowComfortable"]], density, function (v) { density = v; set("cc.density", v); }, T("Gilt global für alle Listen: Docker, Start, Freigaben und VMs.", "Applies globally to every list: Docker, Start, Shares and VMs."), true));
+    if (themingCard) themingCard.appendChild(segRow(T("Dichte", "Density"), [["compact", T("Kompakt", "Compact"), "IconRowCompact"], ["normal", "Normal", "IconRowMedium"], ["airy", T("Luftig", "Airy"), "IconRowComfortable"]], density, function (v) { density = v; set("tt.density", v); }, T("Gilt global für alle Listen: Docker, Start, Freigaben und VMs.", "Applies globally to every list: Docker, Start, Shares and VMs."), true));
     if (themingCard) themingCard.appendChild(tileSizeRow());
     // The global logos card edits the shared icon keys every adopting tab resolves through eff().
     // It carries the same controls as a per-area card and the same preview: this is where the icon
@@ -1629,40 +1629,40 @@
       // Each preview shows what the global values make of that area's icons. An area with a colour
       // of its own previews its own values on its own tab, so nothing here depends on it.
       function gpaint() {
-        var look = { bg: get("cc.iconbg", "0") === "1", bgColor: get("cc.iconbgcolor", ""), tint: tintOnAt("cc."), color: get("cc.iconcolor", ""), adopt: get("cc.iconbgrainbow", "0") === "1", strength: parseInt(get("cc.iconstrength", "100"), 10) || 100, accent: get("cc.accent", "#FCC419"), size: "48px" };
+        var look = { bg: get("tt.iconbg", "0") === "1", bgColor: get("tt.iconbgcolor", ""), tint: tintOnAt("tt."), color: get("tt.iconcolor", ""), adopt: get("tt.iconbgrainbow", "0") === "1", strength: parseInt(get("tt.iconstrength", "100"), 10) || 100, accent: get("tt.accent", "#FCC419"), size: "48px" };
         gPrevs.forEach(function (p9) { try { p9.set(look); } catch (e9) {} });
         // The colouring mode only acts on tinted icons, so without the tint its row is shut.
-        setRowEnabled(modeRow, tintOnAt("cc."));
+        setRowEnabled(modeRow, tintOnAt("tt."));
       }
       function gsync() { gpaint(); syncAllStyleCards(); syncHeaderBar(); syncSharesBar(); } // an adopting area card repaints with the new globals
       var gLT = logoToggles(cLI, {
-        getBg: function () { return get("cc.iconbg", "0") === "1"; },
-        setBg: function (v) { set("cc.iconbg", v ? "1" : "0"); },
-        getBgColor: function () { return get("cc.iconbgcolor", ""); },
-        setBgColor: function (v) { set("cc.iconbgcolor", v); },
-        getTint: function () { return tintOnAt("cc."); },
-        setTint: function (v) { set("cc.icontint", v ? "1" : "0"); },
-        getColor: function () { return get("cc.iconcolor", ""); },
-        setColor: function (v) { set("cc.iconcolor", v); },
-        getAdopt: function () { return get("cc.iconbgrainbow", "0") === "1"; },
-        setAdopt: function (v) { set("cc.iconbgrainbow", v ? "1" : "0"); set("cc.iconadoptsplit", "1"); },
-        getAccent: function () { return get("cc.accent", "#FCC419"); },
+        getBg: function () { return get("tt.iconbg", "0") === "1"; },
+        setBg: function (v) { set("tt.iconbg", v ? "1" : "0"); },
+        getBgColor: function () { return get("tt.iconbgcolor", ""); },
+        setBgColor: function (v) { set("tt.iconbgcolor", v); },
+        getTint: function () { return tintOnAt("tt."); },
+        setTint: function (v) { set("tt.icontint", v ? "1" : "0"); },
+        getColor: function () { return get("tt.iconcolor", ""); },
+        setColor: function (v) { set("tt.iconcolor", v); },
+        getAdopt: function () { return get("tt.iconbgrainbow", "0") === "1"; },
+        setAdopt: function (v) { set("tt.iconbgrainbow", v ? "1" : "0"); set("tt.iconadoptsplit", "1"); },
+        getAccent: function () { return get("tt.accent", "#FCC419"); },
         onChange: gsync
       });
-      gLT.strInput.value = String(parseInt(get("cc.iconstrength", "100"), 10) || 100);
-      gLT.strInput.addEventListener("input", function () { set("cc.iconstrength", gLT.strInput.value); gsync(); });
+      gLT.strInput.value = String(parseInt(get("tt.iconstrength", "100"), 10) || 100);
+      gLT.strInput.addEventListener("input", function () { set("tt.iconstrength", gLT.strInput.value); gsync(); });
       // Icon-Färbung, global: how the two icon treatments are chosen, as opposed to the
-      // colour they use (that is the picker above). See cc-theme.js for the chain itself.
+      // colour they use (that is the picker above). See tt-theme.js for the chain itself.
       // The default is "auto"; the other three are manual overrides and are respected even
       // where the automatic choice would have picked differently.
       var modeRow = segRow(T("Icon-Färbung", "Icon colouring"),
         [["auto", T("Automatisch", "Automatic"), "IconTintAuto"], ["native", T("Natives Icon", "Native icon"), "IconTintNative"], ["flat", T("Nachzeichnen", "Redraw"), "IconTintFlatten"], ["tint", T("Tönen", "Tone"), "IconTintLuminance"]],
-        get("cc.iconmode", "auto"),
-        function (v) { set("cc.iconmode", v); gsync(); },
+        get("tt.iconmode", "auto"),
+        function (v) { set("tt.iconmode", v); gsync(); },
         T("Ein Logo ist entweder eine einzelne durchgehende Form oder ein kleines mehrfarbiges Bild. Eine Form kann man komplett in deiner Farbe nachzeichnen und sie bleibt erkennbar; ein Bild würde dabei zum Farbklecks, weil Hintergrund und Motiv dieselbe Farbe bekämen. Darum zwei Behandlungen:\n\nAutomatisch (empfohlen): TowerTorch sieht sich jedes Logo an. Formen werden nachgezeichnet, für bekannte Programme wird dafür sogar ein echtes Marken-Logo geholt; Bilder werden nur eingefärbt.\nNatives Icon: nichts einfärben. Für bekannte Programme nimmt TowerTorch dabei ein sauberes Marken-Logo in seinen eigenen Farben, sonst bleibt das Logo, wie es ist.\nNachzeichnen: alles nachzeichnen, auch Bilder.\nTönen: alles nur einfärben, auch Formen.\n\nDie Wahl wirkt, sobald „Icons einfärben“ an ist. Einzelne Container, VMs und Plugins kannst du in ihrem eigenen Fenster abweichend einstellen; diese Einzelwahl gewinnt immer gegen die Einstellung hier. Ganz unverändert bleibt ein Logo mit „Original-Logo“ im Startplan-Fenster des Containers.",
           "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): TowerTorch looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app TowerTorch still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window leaves its logo completely untouched."), true);
       cLI.appendChild(modeRow);
-      cLI.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview")));
+      cLI.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview")));
       // Three preview sections, each with that area's real icons, each running the same pipeline
       // the real tab runs, so the choice above is visible without leaving this tab.
       [
@@ -1670,10 +1670,10 @@
         ["vm", T("VMs", "VMs")],
         ["plugin", T("Plugins", "Plugins")]
       ].forEach(function (sec9) {
-        var lbl9 = el("div", "cc-set-sublbl", sec9[1]);
+        var lbl9 = el("div", "tt-set-sublbl", sec9[1]);
         cLI.appendChild(lbl9);
-        var p9 = logoPreview(sec9[0], "cc-set-gprev-" + sec9[0]);
-        var empty9 = el("div", "cc-set-prev-empty", T("Keine Symbole gefunden.", "No icons found."));
+        var p9 = logoPreview(sec9[0], "tt-set-gprev-" + sec9[0]);
+        var empty9 = el("div", "tt-set-prev-empty", T("Keine Symbole gefunden.", "No icons found."));
         empty9.style.display = "none";
         cLI.appendChild(p9.el); cLI.appendChild(empty9);
         gPrevs.push(p9);
@@ -1698,47 +1698,47 @@
     viewRow(cV);
     wrap.appendChild(cV);
     var cD = card(T("Stil", "Style"));
-    cD.appendChild(colourRow("cc.styledocker"));
+    cD.appendChild(colourRow("tt.styledocker"));
     wrap.appendChild(cD);
-    buildStyleCards("ccd.", wrap, [], true);
+    buildStyleCards("ttd.", wrap, [], true);
 
     var c2 = card(T("Logos", "Logos"), T("Logo-Kacheln und Icons einfärben werden getrennt geschaltet, jedes mit seiner eigenen Farbe.", "Logo tiles and Tint icons are switched separately, each with its own colour."));
     // This Docker card edits the same global keys, not a scoped copy of them.
     function c2OnChange() {
-      var on = get("cc.iconbg", "0") === "1";
-      c2.classList.toggle("cc-bg-mode", on);
-      tprevWrap.classList.toggle("cc-prev-bg", on);
+      var on = get("tt.iconbg", "0") === "1";
+      c2.classList.toggle("tt-bg-mode", on);
+      tprevWrap.classList.toggle("tt-prev-bg", on);
       try { tintPrev(); } catch (e9) {}
       syncAllStyleCards(); // the global icon keys changed, so an adopting area card follows
       repaintLogoPrevs();
     }
     var c2LT = logoToggles(c2, {
-      getBg: function () { return get("cc.iconbg", "0") === "1"; },
-      setBg: function (v) { set("cc.iconbg", v ? "1" : "0"); },
-      getBgColor: function () { return get("cc.iconbgcolor", ""); },
-      setBgColor: function (v) { set("cc.iconbgcolor", v); },
-      getTint: function () { return tintOnAt("cc."); },
-      setTint: function (v) { set("cc.icontint", v ? "1" : "0"); },
-      getColor: function () { return get("cc.iconcolor", ""); },
-      setColor: function (v) { set("cc.iconcolor", v); },
+      getBg: function () { return get("tt.iconbg", "0") === "1"; },
+      setBg: function (v) { set("tt.iconbg", v ? "1" : "0"); },
+      getBgColor: function () { return get("tt.iconbgcolor", ""); },
+      setBgColor: function (v) { set("tt.iconbgcolor", v); },
+      getTint: function () { return tintOnAt("tt."); },
+      setTint: function (v) { set("tt.icontint", v ? "1" : "0"); },
+      getColor: function () { return get("tt.iconcolor", ""); },
+      setColor: function (v) { set("tt.iconcolor", v); },
       // These already read and write the global key, so hideAdoptRow is all it takes to keep this
       // card from showing a second copy of that switch.
-      getAdopt: function () { return get("cc.iconbgrainbow", "0") === "1"; },
-      setAdopt: function (v) { set("cc.iconbgrainbow", v ? "1" : "0"); set("cc.iconadoptsplit", "1"); },
-      getAccent: function () { return get("cc.accent", "#FCC419"); },
+      getAdopt: function () { return get("tt.iconbgrainbow", "0") === "1"; },
+      setAdopt: function (v) { set("tt.iconbgrainbow", v ? "1" : "0"); set("tt.iconadoptsplit", "1"); },
+      getAccent: function () { return get("tt.accent", "#FCC419"); },
       onChange: c2OnChange,
       hideAdoptRow: true
     });
     c2LT.strInput.value = String(iconstrength);
-    c2LT.strInput.addEventListener("input", function () { iconstrength = parseInt(c2LT.strInput.value, 10); set("cc.iconstrength", c2LT.strInput.value); try { tintPrev(); } catch (e9) {} syncAllStyleCards(); repaintLogoPrevs(); });
+    c2LT.strInput.addEventListener("input", function () { iconstrength = parseInt(c2LT.strInput.value, 10); set("tt.iconstrength", c2LT.strInput.value); try { tintPrev(); } catch (e9) {} syncAllStyleCards(); repaintLogoPrevs(); });
     // The tile size is one global key, and its control lives once in the Theming card. This Docker
     // card keeps the preview, which sizePrev() resizes whenever that control changes.
     function tileSizeRow() {
       // the tip goes through `help`, so the icon lands inside the label as it does on every row
-      return segRow(T("Kachelgröße", "Tile size"), [["s", T("Klein", "Small"), "IconSizeSmall"], ["m", T("Mittel", "Medium"), "IconSizeMedium"], ["l", T("Groß", "Large"), "IconSizeLarge"]], get("cc.sgsize", "m"), function (v) { set("cc.sgsize", v); try { sizePrev(); } catch (e) {} }, T("Gilt global: dieselbe Größe steuert das Einstellungen- und Werkzeuge-Raster und die Docker- und Plugin-Logos.", "Global: the same size drives the Settings and Tools grid and the Docker and Plugin logos."));
+      return segRow(T("Kachelgröße", "Tile size"), [["s", T("Klein", "Small"), "IconSizeSmall"], ["m", T("Mittel", "Medium"), "IconSizeMedium"], ["l", T("Groß", "Large"), "IconSizeLarge"]], get("tt.sgsize", "m"), function (v) { set("tt.sgsize", v); try { sizePrev(); } catch (e) {} }, T("Gilt global: dieselbe Größe steuert das Einstellungen- und Werkzeuge-Raster und die Docker- und Plugin-Logos.", "Global: the same size drives the Settings and Tools grid and the Docker and Plugin logos."));
     }
-    c2.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview")));
-    var dockPrev = logoPreview("docker", "cc-set-dockprev");
+    c2.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview")));
+    var dockPrev = logoPreview("docker", "tt-set-dockprev");
     var tprevWrap = dockPrev.el;
     // the preview logos take the size the tile-size control selects, so a change shows at once
     function sizePrev() { tintPrev(); }
@@ -1751,14 +1751,14 @@
       tintPrev();
     }).catch(function () { dockPrev.add("/plugins/towertorch/images/towertorch.png", ""); tintPrev(); });
     function tintPrev() {
-      dockPrev.set({ bg: get("cc.iconbg", "0") === "1", bgColor: get("cc.iconbgcolor", ""), tint: tintOnAt("cc."), color: get("cc.iconcolor", ""), adopt: get("cc.iconbgrainbow", "0") === "1", strength: parseInt(get("cc.iconstrength", "100"), 10) || 100, accent: get("cc.accent", "#FCC419") });
+      dockPrev.set({ bg: get("tt.iconbg", "0") === "1", bgColor: get("tt.iconbgcolor", ""), tint: tintOnAt("tt."), color: get("tt.iconcolor", ""), adopt: get("tt.iconbgrainbow", "0") === "1", strength: parseInt(get("tt.iconstrength", "100"), 10) || 100, accent: get("tt.accent", "#FCC419") });
     }
     c2.appendChild(tprevWrap); tintPrev(); c2OnChange(); sizePrev();   // the preview is the card's last block, sized to the tile-size control
     wrap.appendChild(c2);
     // Docker's logo card stands in for an area logo card, so it shows only with an exception too.
-    var showC2 = function (own) { c2.classList.toggle("cc-set-off", !own); };
-    showC2(localStorage.getItem("cc.styledocker") === "0");
-    (areaSync["cc.styledocker"] = areaSync["cc.styledocker"] || []).push(showC2);
+    var showC2 = function (own) { c2.classList.toggle("tt-set-off", !own); };
+    showC2(localStorage.getItem("tt.styledocker") === "0");
+    (areaSync["tt.styledocker"] = areaSync["tt.styledocker"] || []).push(showC2);
 
     // The containers pinned to their original logo, the same pin their Startplan window sets. It
     // stands outside the Logos card, which hides while Docker follows the global colour.
@@ -1776,33 +1776,33 @@
       });
     }
     function paintOriginals() {
-      var Ci = window.CCTheme && window.CCTheme.icons;
+      var Ci = window.TTTheme && window.TTTheme.icons;
       if (!Ci) return;
-      Array.prototype.slice.call(cOrig.querySelectorAll(".cc-set-row")).forEach(function (r) { r.parentNode.removeChild(r); });
+      Array.prototype.slice.call(cOrig.querySelectorAll(".tt-set-row")).forEach(function (r) { r.parentNode.removeChild(r); });
       var all = Ci.overrides(), pinned = [];
       Object.keys(all).forEach(function (k) { if (all[k] === "original" && k.indexOf("docker:") === 0) pinned.push(k.slice(7)); });
       var shown = function (low) { return origNames.filter(function (n) { return n.toLowerCase() === low; })[0] || low; };
-      var lead = el("div", "cc-set-row"), lw = el("span", "cc-set-lblwrap");
+      var lead = el("div", "tt-set-row"), lw = el("span", "tt-set-lblwrap");
       lw.appendChild(el("span", null, pinned.length ? T("Diese Container zeigen ihr eigenes Logo:", "These containers show their own logo:") : T("Kein Container zeigt sein Original-Logo", "No container shows its original logo")));
       lw.appendChild(infoIcon(T("Ein Container mit Original-Logo zeigt sein Logo genau wie geliefert: nie durch ein anderes ersetzt und nie eingefärbt. Dieselbe Wahl gibt es im Startplan-Fenster des Containers unter „Icon-Färbung“.", "A container with its original logo shows that logo exactly as it ships: never swapped for another and never tinted. The same choice sits in the container's Start plan window under “Icon colouring”.")));
       lead.appendChild(lw); cOrig.appendChild(lead);
       pinned.sort().forEach(function (low) {
-        var row = el("div", "cc-set-row cc-set-inline cc-set-origrow"), nm = el("span", "cc-set-lblwrap");
+        var row = el("div", "tt-set-row tt-set-inline tt-set-origrow"), nm = el("span", "tt-set-lblwrap");
         var real = shown(low);
         nm.appendChild(el("span", null, real));
         checkOriginals();
         if (origMissing[real]) {
-          var miss = el("span", "cc-set-colstate", T("Kein eigenes Logo vorhanden", "No logo of its own"));
+          var miss = el("span", "tt-set-colstate", T("Kein eigenes Logo vorhanden", "No logo of its own"));
           miss.appendChild(infoIcon(T("Die Logo-Adresse im Template dieses Containers antwortet nicht, deshalb hat Unraid nie ein Logo gespeichert. Trag im Container unter „Symbol-URL“ eine Adresse ein, die ein Bild liefert; danach erscheint es hier als Original-Logo.", "The icon address in this container's template does not answer, so Unraid never stored a logo. Enter an address that serves a picture under “Icon URL” in the container; it then shows here as the original logo.")));
           nm.appendChild(miss);
         }
         row.appendChild(nm);
-        row.appendChild(labelled(actionBtn("", "cc-btn", function () { Ci.setOverride("docker", low, ""); paintOriginals(); tintPrev(); }), "Trash", T("Entfernen", "Remove")));
+        row.appendChild(labelled(actionBtn("", "tt-btn", function () { Ci.setOverride("docker", low, ""); paintOriginals(); tintPrev(); }), "Trash", T("Entfernen", "Remove")));
         cOrig.appendChild(row);
       });
       var free = origNames.filter(function (n) { return pinned.indexOf(n.toLowerCase()) < 0; });
       if (free.length) {
-        var add = el("div", "cc-set-row cc-set-origadd"), addL = add.appendChild(el("span", "cc-set-rl", T("Ausnahme hinzufügen", "Add an exception")));
+        var add = el("div", "tt-set-row tt-set-origadd"), addL = add.appendChild(el("span", "tt-set-rl", T("Ausnahme hinzufügen", "Add an exception")));
         addL.appendChild(infoIcon(T("Gibt einem Container sein Original-Logo.", "Gives a container its original logo.")));
         add.appendChild(areaPicker(T("Container wählen", "Choose a container"), free.map(function (n) { return [n, n, n]; }), function (it) { Ci.setOverride("docker", it[0], "original"); paintOriginals(); tintPrev(); }));
         cOrig.appendChild(add);
@@ -1815,18 +1815,18 @@
     }).catch(function () {});
 
     var c3 = card(T("Spalten / Badges je Ansicht", "Columns / badges per view"), T("Welche Badges in der einfachen und in der erweiterten Ansicht erscheinen.", "Which badges appear in the basic and the advanced view."));
-    var tbl = el("table", "cc-set-tbl");
+    var tbl = el("table", "tt-set-tbl");
     var thr = el("tr"); thr.appendChild(el("th")); thr.appendChild(thc(T("Einfach", "Basic"))); thr.appendChild(thc(T("Erweitert", "Advanced"))); tbl.appendChild(thr);
     COLS.forEach(function (c, i) {
-      var tr = el("tr"), hue = window.CCTheme ? window.CCTheme.rbColor(i, accent) : accent;   // one palette position per column
-      tr.appendChild(el("td", "cc-set-cname", c.label)).appendChild(infoIcon(c.help));
+      var tr = el("tr"), hue = window.TTTheme ? window.TTTheme.rbColor(i, accent) : accent;   // one palette position per column
+      tr.appendChild(el("td", "tt-set-cname", c.label)).appendChild(infoIcon(c.help));
       tr.appendChild(chkCell(c.key, "s", hue)); tr.appendChild(chkCell(c.key, "a", hue)); tbl.appendChild(tr);
     });
     c3.appendChild(tbl);
     wrap.appendChild(c3);
 
-    function shapeName(v) { return window.CCTheme ? window.CCTheme.shapeName(v) : (v === "soft" || v === "rounded" ? "soft" : v === "square" ? "square" : "round"); }
-    function applyShape() { document.documentElement.setAttribute("data-cc-shape", shapeName(get("cc.badgeshape", "round"))); }
+    function shapeName(v) { return window.TTTheme ? window.TTTheme.shapeName(v) : (v === "soft" || v === "rounded" ? "soft" : v === "square" ? "square" : "round"); }
+    function applyShape() { document.documentElement.setAttribute("data-tt-shape", shapeName(get("tt.badgeshape", "round"))); }
     applyShape();
 
     // Notifications are engine-side and saved to the flash.
@@ -1836,33 +1836,33 @@
       saveNotify(ntg, function () { notify.unraid = !v; ntg._setOn(!v); });
     });
     c5.appendChild(inlineRow(T("Unraid-Benachrichtigungen", "Unraid notifications"), T("Schickt die Warnungen auch als Unraid-Benachrichtigung.", "Also sends the alerts as Unraid notifications."), ntg));
-    var wrow = el("div", "cc-set-row"), wl = wrow.appendChild(el("span", "cc-set-rl", T("Webhook-URL", "Webhook URL")));
+    var wrow = el("div", "tt-set-row"), wl = wrow.appendChild(el("span", "tt-set-rl", T("Webhook-URL", "Webhook URL")));
     wl.appendChild(infoIcon(T("Eine Adresse, an die jede Warnung zusätzlich geht. Leer heißt aus.", "An address every alert is also sent to. Empty means off.")));
-    var win = el("input", "cc-set-txt"); win.id = "cc-set-webhook"; win.type = "url"; win.placeholder = "https://…"; win.value = notify.webhook || "";
+    var win = el("input", "tt-set-txt"); win.id = "tt-set-webhook"; win.type = "url"; win.placeholder = "https://…"; win.value = notify.webhook || "";
     // a render in the meantime replaces the field, so the save looks it up again when it fires
-    win.addEventListener("input", function () { notify.webhook = win.value.trim(); notifyDirty = true; afterQuiet("notify", function () { saveNotify(document.getElementById("cc-set-webhook")); }); });
+    win.addEventListener("input", function () { notify.webhook = win.value.trim(); notifyDirty = true; afterQuiet("notify", function () { saveNotify(document.getElementById("tt-set-webhook")); }); });
     wrow.appendChild(win); c5.appendChild(wrow);
     wrap.appendChild(c5);
 
     var c6 = card(T("Bandbreite", "Bandwidth"), T("Schnittstelle im Container, auf der die Limits gesetzt werden. Leer heißt automatisch, also die Default-Route des Containers, und ist die Empfehlung. Pro-Container-Limits stellst du im Docker-Tab ein.", "The interface inside the container the limits are applied to. Blank means automatic, the container's default route, which is the recommendation. Per-container limits are set in the Docker tab."));
-    var ifrow = el("div", "cc-set-row"), ifl = ifrow.appendChild(el("span", "cc-set-rl", T("Schnittstelle", "Interface")));
+    var ifrow = el("div", "tt-set-row"), ifl = ifrow.appendChild(el("span", "tt-set-rl", T("Schnittstelle", "Interface")));
     ifl.appendChild(infoIcon(T("Die Netzwerkschnittstelle im Container, auf der die Limits greifen. Leer heißt automatisch.", "The network interface inside the container the limits act on. Empty means automatic.")));
-    var ifin = el("input", "cc-set-txt"); ifin.id = "cc-set-iface"; ifin.type = "text"; ifin.placeholder = T("automatisch", "automatic"); ifin.value = shapeIface; ifin.maxLength = 15; ifin.spellcheck = false; ifin.setAttribute("list", "cc-iface-list");
-    var dl = el("datalist"); dl.id = "cc-iface-list"; ["eth0", "eth1", "eth2"].forEach(function (n) { var o = el("option"); o.value = n; dl.appendChild(o); });
-    ifin.addEventListener("input", function () { shapeIface = ifin.value.trim(); shapeDirty = true; afterQuiet("shape", function () { saveShape(document.getElementById("cc-set-iface")); }); });
+    var ifin = el("input", "tt-set-txt"); ifin.id = "tt-set-iface"; ifin.type = "text"; ifin.placeholder = T("automatisch", "automatic"); ifin.value = shapeIface; ifin.maxLength = 15; ifin.spellcheck = false; ifin.setAttribute("list", "tt-iface-list");
+    var dl = el("datalist"); dl.id = "tt-iface-list"; ["eth0", "eth1", "eth2"].forEach(function (n) { var o = el("option"); o.value = n; dl.appendChild(o); });
+    ifin.addEventListener("input", function () { shapeIface = ifin.value.trim(); shapeDirty = true; afterQuiet("shape", function () { saveShape(document.getElementById("tt-set-iface")); }); });
     ifrow.appendChild(ifin); ifrow.appendChild(dl); c6.appendChild(ifrow);
     wrap.appendChild(c6);
 
     // A browser fires no storage event in the document that wrote the key, so the header and the
     // shares bar are pushed their new state directly on this page.
-    function syncHeaderBar() { try { if (typeof window.ccHeaderApply === "function") window.ccHeaderApply(); } catch (e) {} }
-    function syncSharesBar() { try { if (typeof window.ccSharesApply === "function") window.ccSharesApply(); } catch (e) {} }
+    function syncHeaderBar() { try { if (typeof window.ttHeaderApply === "function") window.ttHeaderApply(); } catch (e) {} }
+    function syncSharesBar() { try { if (typeof window.ttSharesApply === "function") window.ttSharesApply(); } catch (e) {} }
     function setOwnColour(key, own) {
       localStorage.setItem(key, own ? "0" : "1");
       // An area set apart for the first time starts from the global accent, so its colour does not
       // jump to the built-in default and its picker shows what is in effect.
       var p = ADOPT_PREF[key];
-      if (own && p && localStorage.getItem(p + "accent") == null) set(p + "accent", get("cc.accent", "#FCC419"));
+      if (own && p && localStorage.getItem(p + "accent") == null) set(p + "accent", get("tt.accent", "#FCC419"));
       (areaSync[key] || []).forEach(function (f) { f(own); });
       if (styleCardSync[key]) styleCardSync[key]();
       paintExceptions(); syncHeaderBar(); syncSharesBar();
@@ -1870,16 +1870,16 @@
     // An area's colour line, in the words of the Bereichsfarben card on General: the area follows
     // the global colour until it gets an exception, and only then shows badge and logo cards of its own.
     function colourRow(key) {
-      var row = el("div", "cc-set-row cc-set-inline cc-set-colour"), lw = el("span", "cc-set-lblwrap");
+      var row = el("div", "tt-set-row tt-set-inline tt-set-colour"), lw = el("span", "tt-set-lblwrap");
       lw.appendChild(el("span", null, T("Farbe", "Colour")));
       lw.appendChild(infoIcon(T("Ohne Ausnahme folgt der Bereich der Badge-Farbe aus Allgemein. Mit einer Ausnahme bekommt er auf diesem Tab eigene Badge- und Logo-Karten.", "Without an exception the area follows the badge colour from General. With one it gets badge and logo cards of its own on this tab.")));
       row.appendChild(lw);
-      var end = el("span", "cc-set-colend"), state = el("span", "cc-set-colstate"), dot = el("span", "cc-set-excdot"), word = el("span");
+      var end = el("span", "tt-set-colend"), state = el("span", "tt-set-colstate"), dot = el("span", "tt-set-excdot"), word = el("span");
       state.appendChild(dot); state.appendChild(word); end.appendChild(state);
-      var btn = actionBtn("", "cc-btn cc-set-xbtn", function () { setOwnColour(key, localStorage.getItem(key) !== "0"); });
+      var btn = actionBtn("", "tt-btn tt-set-xbtn", function () { setOwnColour(key, localStorage.getItem(key) !== "0"); });
       end.appendChild(btn); row.appendChild(end);
       function paint(own) {
-        dot.style.background = own ? get(ADOPT_PREF[key] + "accent", "#FCC419") : get("cc.accent", "#FCC419");
+        dot.style.background = own ? get(ADOPT_PREF[key] + "accent", "#FCC419") : get("tt.accent", "#FCC419");
         word.textContent = own ? T("Eigene Farbe", "Own colour") : T("Folgt Allgemein", "Follows General");
         if (own) labelled(btn, "Refresh", T("Globale Farbe nutzen", "Use the global colour")); else labelled(btn, "Add", T("Ausnahme hinzufügen", "Add an exception"));
       }
@@ -1888,19 +1888,19 @@
       return row;
     }
     // The tabbed-view row reads inverted to its storage: on means the native Unraid sub-tabs,
-    // which is the default, and off means the sub-tabs stacked as CC sections. Only an area that
+    // which is the default, and off means the sub-tabs stacked as TowerTorch sections. Only an area that
     // has sub-tabs gets one.
     function tabviewRow(area, applyFn) {
-      var row = el("div", "cc-set-row cc-set-inline");
-      var lw = el("span", "cc-set-lblwrap");
+      var row = el("div", "tt-set-row tt-set-inline");
+      var lw = el("span", "tt-set-lblwrap");
       lw.appendChild(el("span", null, T("Tabansicht", "Tabbed view")));
       lw.appendChild(infoIcon(T("Aus: die Unterreiter dieses Tabs werden als TowerTorch-Abschnitte untereinander gestapelt. Unraids globale Tabansicht ist der Master: steht sie auf „Ohne Tabs“, rendert Unraid überall Abschnitte und dieser Schalter wirkt nicht.", "Off: this tab's sub-tabs stack as TowerTorch sections. Unraid's own tabbed view is the master: set to non-tabbed, Unraid renders sections everywhere and this switch has no effect.")));
       row.appendChild(lw);
-      row.appendChild(toggle(get("cc.sections." + area, "0") === "0", function (v) { set("cc.sections." + area, v ? "0" : "1"); if (applyFn) applyFn(); }));
+      row.appendChild(toggle(get("tt.sections." + area, "0") === "0", function (v) { set("tt.sections." + area, v ? "0" : "1"); if (applyFn) applyFn(); }));
       return row;
     }
     var cP = card(T("Stil", "Style"));
-    cP.appendChild(colourRow("cc.styleplugin"));
+    cP.appendChild(colourRow("tt.styleplugin"));
     cP.appendChild(tabviewRow("plugins", syncPluginsBar));
     var cPV = card(T("Ansicht", "View"));
     pluginViewRow(cPV);
@@ -1911,11 +1911,11 @@
       // Picking a colour in an area's card means that area uses its own style, so its adopt
       // toggle goes off; otherwise the read side keeps resolving the global accent and the pick
       // has no visible effect. Turning adopt back on follows the global colour again.
-      var ADOPT = { "ccd.": "cc.styledocker", "ccp.": "cc.styleplugin", "ccv.": "cc.stylevms", "cch.": "cc.styleheader", "ccs.": "cc.stylesettings", "cct.": "cc.styletools", "ccsh.": "cc.styleshares", "ccf.": "cc.stylefavorites", "ccm.": "cc.stylemain" };
+      var ADOPT = { "ttd.": "tt.styledocker", "ttp.": "tt.styleplugin", "ttv.": "tt.stylevms", "tth.": "tt.styleheader", "tts.": "tt.stylesettings", "ttt.": "tt.styletools", "ttsh.": "tt.styleshares", "ttf.": "tt.stylefavorites", "ttm.": "tt.stylemain" };
       var adoptKey = ADOPT[P];
       // The card always shows the effective colour: the global accent while adopt is on, the
       // area's own while it is off, so the fields jump the moment it is flipped.
-      function effAcc() { return (adoptKey && localStorage.getItem(adoptKey) !== "0") ? get("cc.accent", "#FCC419") : get(P + "accent", "#FCC419"); }
+      function effAcc() { return (adoptKey && localStorage.getItem(adoptKey) !== "0") ? get("tt.accent", "#FCC419") : get(P + "accent", "#FCC419"); }
       var acc = effAcc(), istr = parseInt(get(P + "iconstrength", "100"), 10) || 100;
       function useOwn() {
         if (adoptKey && localStorage.getItem(adoptKey) !== "0") setOwnColour(adoptKey, true);
@@ -1928,38 +1928,38 @@
       // an area then takes its colour from that palette. The accent has nothing to colour, so a
       // line naming the colour mode stands in its place, and with no setting left the card shows
       // no preview either.
-      var palMode = get("cc.rainbow", "0") === "1";
+      var palMode = get("tt.rainbow", "0") === "1";
       if (palMode) cA.appendChild(lockRow(accLabel, T("Folgt dem Farbmodus", "Follows the colour mode"), T("Zu den Badges", "Go to Badges"), function () { jumpTo("general", T("Badges", "Badges")); }, accHelp));
       else cA.appendChild(fieldRow(accLabel, accHelp, pr));
       // The header and shares areas restyle Unraid tab bars, so their previews are tab pills, one
       // of them active. Every other area previews what its own tab paints in this colour: names as
       // large badges, values with their key, the Settings and Tools headings, the Favorites tiles.
-      var isTabs = P === "cch." || P === "ccsh.";
-      var pv = el("div", "cc-set-prev" + (isTabs ? " cc-set-navprev" : ""));
-      var activeIx = P === "ccsh." ? 0 : 2; // one active tab, like the real bar
+      var isTabs = P === "tth." || P === "ttsh.";
+      var pv = el("div", "tt-set-prev" + (isTabs ? " tt-set-navprev" : ""));
+      var activeIx = P === "ttsh." ? 0 : 2; // one active tab, like the real bar
       var pvBadges;
       if (isTabs) {
-        var TABS = P === "ccsh."
+        var TABS = P === "ttsh."
           ? [T("Benutzer-Freigaben", "User Shares"), T("Laufwerks-Freigaben", "Disk Shares")]
           : [T("Übersicht", "Main"), "Shares", "Docker", "VMs", T("Einstellungen", "Settings"), "Tools"];
-        pvBadges = TABS.map(function (nm9) { return el("span", "cc-navtab", nm9); });
-        pvBadges[activeIx].classList.add("cc-navtab-on");
+        pvBadges = TABS.map(function (nm9) { return el("span", "tt-navtab", nm9); });
+        pvBadges[activeIx].classList.add("tt-navtab-on");
       } else {
-        var mkName = function (t9) { return el("span", "cc-b cc-b-lg", t9); };
-        var mkVal = function (k9, v9) { var b8 = el("span", "cc-b"); if (k9) b8.appendChild(elk(k9)); b8.appendChild(elv(v9)); return b8; };
+        var mkName = function (t9) { return el("span", "tt-b tt-b-lg", t9); };
+        var mkVal = function (k9, v9) { var b8 = el("span", "tt-b"); if (k9) b8.appendChild(elk(k9)); b8.appendChild(elv(v9)); return b8; };
         var mkTile = function (g9) {
-          var t8 = el("span", "cc-set-tile");
-          t8.style.width = t8.style.height = "48px"; t8.style.borderRadius = "var(--cc-radius-control)"; t8.style.fontSize = "22px";
+          var t8 = el("span", "tt-set-tile");
+          t8.style.width = t8.style.height = "48px"; t8.style.borderRadius = "var(--tt-radius-control)"; t8.style.fontSize = "22px";
           t8.innerHTML = glyph(g9); return t8;
         };
         pvBadges = ({
-          "ccd.": function () { return [mkName("nextcloud"), mkVal("CPU", "2/8"), mkVal("RAM", "1.2G"), mkName("plex"), mkVal("IP", ".20.9"), mkVal("Port", "443"), mkName("grafana")]; },
-          "ccv.": function () { return [mkName("Windows 11"), mkVal("CPU", "4"), mkVal("RAM", "8G"), mkName("Home Assistant"), mkVal("IP", ".20.30"), mkVal("BW", "100M")]; },
-          "ccp.": function () { return [mkVal("Von", "dlandon"), mkVal("Version", "2026.10.01"), mkVal("", "Changelog"), mkVal("Von", "Squid"), mkVal("Version", "2026.09.14"), mkVal("", "Changelog")]; },
-          "ccm.": function () { return [mkName(T("Parität", "Parity")), mkVal("", "18 TB"), mkName("Disk 1"), mkVal("", "34 °C"), mkName("Cache"), mkVal("", "1 TB")]; },
-          "ccs.": function () { return [mkName(T("Systemeinstellungen", "System Settings")), mkName(T("Netzwerkdienste", "Network Services")), mkName(T("Benutzerwerkzeuge", "User Utilities"))]; },
-          "cct.": function () { return [mkName(T("Über", "About")), mkName(T("Systeminformationen", "System Information")), mkName(T("Benutzerwerkzeuge", "User Utilities"))]; },
-          "ccf.": function () { return ["Star", "Gear", "Folder"].map(mkTile); }
+          "ttd.": function () { return [mkName("nextcloud"), mkVal("CPU", "2/8"), mkVal("RAM", "1.2G"), mkName("plex"), mkVal("IP", ".20.9"), mkVal("Port", "443"), mkName("grafana")]; },
+          "ttv.": function () { return [mkName("Windows 11"), mkVal("CPU", "4"), mkVal("RAM", "8G"), mkName("Home Assistant"), mkVal("IP", ".20.30"), mkVal("BW", "100M")]; },
+          "ttp.": function () { return [mkVal("Von", "dlandon"), mkVal("Version", "2026.10.01"), mkVal("", "Changelog"), mkVal("Von", "Squid"), mkVal("Version", "2026.09.14"), mkVal("", "Changelog")]; },
+          "ttm.": function () { return [mkName(T("Parität", "Parity")), mkVal("", "18 TB"), mkName("Disk 1"), mkVal("", "34 °C"), mkName("Cache"), mkVal("", "1 TB")]; },
+          "tts.": function () { return [mkName(T("Systemeinstellungen", "System Settings")), mkName(T("Netzwerkdienste", "Network Services")), mkName(T("Benutzerwerkzeuge", "User Utilities"))]; },
+          "ttt.": function () { return [mkName(T("Über", "About")), mkName(T("Systeminformationen", "System Information")), mkName(T("Benutzerwerkzeuge", "User Utilities"))]; },
+          "ttf.": function () { return ["Star", "Gear", "Folder"].map(mkTile); }
         })[P]();
       }
       pvBadges.forEach(function (b9) { pv.appendChild(b9); });
@@ -1971,7 +1971,7 @@
         swMarkRow(pr._row, acc);   // the preset row's tick follows the colour the preview shows
       }
       paintPv();
-      if (!palMode) { cA.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview"))); cA.appendChild(pv); }
+      if (!palMode) { cA.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview"))); cA.appendChild(pv); }
       // An adopt flip or a global edit repaints this card with the effective colour, and the Logos
       // card below with the effective icon values. cBLT, applyBgClasses and tp are assigned further
       // down, and this refresher only ever runs once buildStyleCards has finished.
@@ -1994,23 +1994,23 @@
         var ic = get(prefix + "iconcolor", ""); if (/^#[0-9a-f]{6}$/i.test(ic)) return ic;
         return acc;
       }
-      function effIconBg() { return (ga() ? get("cc.iconbg", "0") : get(P + "iconbg", P === "ccs." || P === "cct." ? "1" : "0")) === "1"; }
-      function effIconStrength() { return parseInt(ga() ? get("cc.iconstrength", "100") : get(P + "iconstrength", "100"), 10) || 100; }
-      function applyBgClasses() { var on = effIconBg(); cB.classList.toggle("cc-bg-mode", on); tpw.classList.toggle("cc-prev-bg", on); }
+      function effIconBg() { return (ga() ? get("tt.iconbg", "0") : get(P + "iconbg", P === "tts." || P === "ttt." ? "1" : "0")) === "1"; }
+      function effIconStrength() { return parseInt(ga() ? get("tt.iconstrength", "100") : get(P + "iconstrength", "100"), 10) || 100; }
+      function applyBgClasses() { var on = effIconBg(); cB.classList.toggle("tt-bg-mode", on); tpw.classList.toggle("tt-prev-bg", on); }
       var cBLT = logoToggles(cB, {
         getBg: effIconBg,
         setBg: function (v) { set(P + "iconbg", v ? "1" : "0"); useOwn(); },
-        getBgColor: function () { return ga() ? bgColorAt("cc.") : bgColorAt(P); },
+        getBgColor: function () { return ga() ? bgColorAt("tt.") : bgColorAt(P); },
         setBgColor: function (v) { set(P + "iconbgcolor", v); useOwn(); },
-        getTint: function () { return ga() ? tintOnAt("cc.") : tintOnAt(P); },
+        getTint: function () { return ga() ? tintOnAt("tt.") : tintOnAt(P); },
         setTint: function (v) { set(P + "icontint", v ? "1" : "0"); useOwn(); },
-        getColor: function () { return ga() ? get("cc.iconcolor", "") : get(P + "iconcolor", ""); },
+        getColor: function () { return ga() ? get("tt.iconcolor", "") : get(P + "iconcolor", ""); },
         setColor: function (v) { set(P + "iconcolor", v); useOwn(); },
         // Adopting the rainbow is a global decision, flipped only on the global logos card, so
         // this answers the global key whatever ga() says: an area's own icon colours and whether
         // they follow the rainbow are separate questions. setAdopt is never called while
         // hideAdoptRow is set, and stays as a no-op in case a caller shows the row again.
-        getAdopt: function () { return get("cc.iconbgrainbow", "0") === "1"; },
+        getAdopt: function () { return get("tt.iconbgrainbow", "0") === "1"; },
         setAdopt: function () {},
         getAccent: function () { return acc; },
         onChange: function () { applyBgClasses(); try { tp(); } catch (e9) {} repaintLogoPrevs(); },
@@ -2018,11 +2018,11 @@
       });
       cBLT.strInput.value = String(istr);
       cBLT.strInput.addEventListener("input", function () { set(P + "iconstrength", cBLT.strInput.value); useOwn(); try { tp(); } catch (e9) {} repaintLogoPrevs(); });
-      cB.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview")));
+      cB.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview")));
       // the pipeline scope this area's items live under, so a per-item pin shows up here too
-      var PAREA = { "ccd.": "docker", "ccv.": "vm", "ccp.": "plugin" }[P];   // the areas whose rows carry real per-item logos
+      var PAREA = { "ttd.": "docker", "ttv.": "vm", "ttp.": "plugin" }[P];   // the areas whose rows carry real per-item logos
       var PSCOPE = PAREA || "docker";
-      var pvl = logoPreview(PSCOPE, "cc-set-tint-" + P.replace(/[^a-z]/g, ""));
+      var pvl = logoPreview(PSCOPE, "tt-set-tint-" + P.replace(/[^a-z]/g, ""));
       var tpw = pvl.el;
       // A sample whose name starts with a font-icon prefix is a glyph, which logoPreview renders
       // as an <i> coloured through CSS; the Settings and Tools tiles pass those rather than
@@ -2045,9 +2045,9 @@
         // The adopt state is the global key, like getAdopt() above, so the preview never
         // disagrees with what that answers.
         pvl.set({
-          bg: effIconBg(), bgColor: ga9 ? get("cc.iconbgcolor", "") : get(P + "iconbgcolor", ""),
-          tint: ga9 ? tintOnAt("cc.") : tintOnAt(P), color: ga9 ? get("cc.iconcolor", "") : get(P + "iconcolor", ""),
-          adopt: get("cc.iconbgrainbow", "0") === "1", strength: effIconStrength(), accent: acc, size: "48px"
+          bg: effIconBg(), bgColor: ga9 ? get("tt.iconbgcolor", "") : get(P + "iconbgcolor", ""),
+          tint: ga9 ? tintOnAt("tt.") : tintOnAt(P), color: ga9 ? get("tt.iconcolor", "") : get(P + "iconcolor", ""),
+          adopt: get("tt.iconbgrainbow", "0") === "1", strength: effIconStrength(), accent: acc, size: "48px"
         });
       }
       cB.appendChild(tpw); tp(); applyBgClasses();
@@ -2056,7 +2056,7 @@
       if (adoptKey) { try { styleCardSync[adoptKey](); } catch (e9) {} }
       if (!noLogos) into.appendChild(cB); // header tab: badges only, no logo card
       if (adoptKey) {
-        var showCards = function (own) { cA.classList.toggle("cc-set-off", !own); cB.classList.toggle("cc-set-off", !own); };
+        var showCards = function (own) { cA.classList.toggle("tt-set-off", !own); cB.classList.toggle("tt-set-off", !own); };
         showCards(localStorage.getItem(adoptKey) === "0");
         (areaSync[adoptKey] = areaSync[adoptKey] || []).push(showCards);
       }
@@ -2065,56 +2065,56 @@
     // bar section has the same cards as Plugins and VMs, plus the footer switch and the status
     // island card.
     var cV = card(T("Stil", "Style"));
-    cV.appendChild(colourRow("cc.stylevms"));
+    cV.appendChild(colourRow("tt.stylevms"));
     cV.appendChild(tabviewRow("vms", syncVmsBar));
     var cH = card(T("Stil", "Style"));
-    cH.appendChild(colourRow("cc.styleheader"));
+    cH.appendChild(colourRow("tt.styleheader"));
     // The footer bar is hidden by default. header.js applies it, and it sits in the Theming card
     // rather than here: it is one global on/off for a page element, like density and tile size,
     // not part of the header area itself.
     if (themingCard) {
-      var cHf = el("div", "cc-set-row cc-set-inline");
-      var cHfL = el("span", "cc-set-lblwrap");
+      var cHf = el("div", "tt-set-row tt-set-inline");
+      var cHfL = el("span", "tt-set-lblwrap");
       cHfL.appendChild(el("span", null, T("Fußleiste ausblenden", "Hide footer bar")));
       cHfL.appendChild(infoIcon(T("Blendet die untere Statusleiste komplett aus.", "Hides the bottom status bar completely.")));
       cHf.appendChild(cHfL);
-      cHf.appendChild(toggle(get("cc.footer", "1") !== "0", function (v) { set("cc.footer", v ? "1" : "0"); syncHeaderBar(); }));
+      cHf.appendChild(toggle(get("tt.footer", "1") !== "0", function (v) { set("tt.footer", v ? "1" : "0"); syncHeaderBar(); }));
       themingCard.appendChild(cHf);
     }
     var cSh = card(T("Stil", "Style"));
-    cSh.appendChild(colourRow("cc.styleshares"));
+    cSh.appendChild(colourRow("tt.styleshares"));
     cSh.appendChild(tabviewRow("shares", syncSharesBar));
     var cShV = card(T("Ansicht", "View"));
     shareViewRow(cShV);
     wrapShares.appendChild(cShV);
     var cSet = card(T("Stil", "Style"));
-    cSet.appendChild(colourRow("cc.stylesettings"));
-    // tile size of the /Settings + /Tools grid is the GLOBAL cc.sgsize control in Allgemein (no per-tab copy).
+    cSet.appendChild(colourRow("tt.stylesettings"));
+    // tile size of the /Settings + /Tools grid is the GLOBAL tt.sgsize control in Allgemein (no per-tab copy).
     var cFav = card(T("Stil", "Style"));
-    cFav.appendChild(colourRow("cc.stylefavorites"));
+    cFav.appendChild(colourRow("tt.stylefavorites"));
     var cStart = card(T("Stil", "Style"));
-    cStart.appendChild(colourRow("cc.stylemain"));
+    cStart.appendChild(colourRow("tt.stylemain"));
     cStart.appendChild(tabviewRow("main", syncSharesBar));
     var cDisks = card(T("Ansicht", "View"));
     diskViewRow(cDisks);
     wrapStart.appendChild(cDisks);
     wrapHeader.appendChild(cH); wrapShares.appendChild(cSh); wrapPlugin.appendChild(cP); wrapVms.appendChild(cV); wrapSettings.appendChild(cSet); wrapFavorites.appendChild(cFav); wrapStart.appendChild(cStart);
     var cTools = card(T("Stil", "Style"));
-    cTools.appendChild(colourRow("cc.styletools"));
+    cTools.appendChild(colourRow("tt.styletools"));
     wrapTools.appendChild(cTools);
-    function syncPluginsBar() { try { if (typeof window.ccPluginsApply === "function") window.ccPluginsApply(); } catch (e) {} }
-    function syncVmsBar() { try { if (typeof window.ccVmsApply === "function") window.ccVmsApply(); } catch (e) {} }
-    buildStyleCards("cch.", wrapHeader, [], true);
+    function syncPluginsBar() { try { if (typeof window.ttPluginsApply === "function") window.ttPluginsApply(); } catch (e) {} }
+    function syncVmsBar() { try { if (typeof window.ttVmsApply === "function") window.ttVmsApply(); } catch (e) {} }
+    buildStyleCards("tth.", wrapHeader, [], true);
     // Kopfbereich covers the main menu bar AND the top strip: the Status-Insel (top strip)
-    // belongs to THIS area. header.js renders it and reads cc.island / cc.tempwarn live.
+    // belongs to THIS area. header.js renders it and reads tt.island / tt.tempwarn live.
     (function () {
       var cI = card(T("Status-Insel", "Status island"), T("Die Status-Insel im oberen Streifen gehört zum Kopfbereich.", "The status island in the top strip belongs to the header area."));
       // What the island shows only matters while it is shown, so those rows are shut while it is off.
       var shown = [];
-      var gate = function () { var on = get("cc.island", "1") !== "0"; shown.forEach(function (r) { setRowEnabled(r, on); }); };
-      cI.appendChild(toggleRow(T("Status-Insel anzeigen", "Show status island"), T("Zeigt oben rechts die Insel mit den Werten des Servers.", "Shows the island with the server's readings at the top right."), get("cc.island", "1") !== "0", function (v) { set("cc.island", v ? "1" : "0"); gate(); syncHeaderBar(); }));
+      var gate = function () { var on = get("tt.island", "1") !== "0"; shown.forEach(function (r) { setRowEnabled(r, on); }); };
+      cI.appendChild(toggleRow(T("Status-Insel anzeigen", "Show status island"), T("Zeigt oben rechts die Insel mit den Werten des Servers.", "Shows the island with the server's readings at the top right."), get("tt.island", "1") !== "0", function (v) { set("tt.island", v ? "1" : "0"); gate(); syncHeaderBar(); }));
       // one switch per chip; header.js renders them in a fixed order and reads the keys live
-      shown.push(cI.appendChild(el("div", "cc-set-lbl", T("Angezeigte Elemente", "Shown elements"))));
+      shown.push(cI.appendChild(el("div", "tt-set-lbl", T("Angezeigte Elemente", "Shown elements"))));
       [
         ["uptime", T("Betriebszeit", "Uptime"), T("Wie lange der Server schon läuft.", "How long the server has been running.")],
         ["os", T("Unraid-Edition", "Unraid edition"), T("Welche Unraid-Lizenz der Server hat, etwa Plus oder Pro.", "Which Unraid licence the server has, such as Plus or Pro.")],
@@ -2127,59 +2127,59 @@
         ["net", T("Netzwerk-Traffic", "Network traffic"), T("Wie viel der Server gerade empfängt und sendet.", "How much the server is receiving and sending right now.")],
         ["temps", T("Temperaturen", "Temperatures"), T("Die Temperaturen von Prozessor und Mainboard, farbig ab der Warnschwelle.", "The processor and board temperatures, coloured from the warning threshold up.")]
       ].forEach(function (it) {
-        shown.push(cI.appendChild(toggleRow(it[1], it[2], get("cc.isl." + it[0], "1") !== "0", function (v) { set("cc.isl." + it[0], v ? "1" : "0"); syncHeaderBar(); })));
+        shown.push(cI.appendChild(toggleRow(it[1], it[2], get("tt.isl." + it[0], "1") !== "0", function (v) { set("tt.isl." + it[0], v ? "1" : "0"); syncHeaderBar(); })));
       });
       shown.push(cI.appendChild(tempWarnRow(syncHeaderBar)));
       gate();
       wrapHeader.appendChild(cI);
     })();
-    // The main-tab icons are markup CC inserts rather than a native element, so they get an on/off
+    // The main-tab icons are markup TowerTorch inserts rather than a native element, so they get an on/off
     // of their own. header.js reads the key live and both inserts and removes them on a flip;
     // nothing else clears an icon already in the DOM.
     (function () {
       var cT = card(T("Haupttabs", "Main tabs"), T("Icon (Tabler, MIT-lizenziert) und/oder Text vor jedem Haupttab-Namen (Übersicht, Docker, VMs, …). Beides aus ist möglich, zeigt dann eine leere Pille.", "Icon (Tabler, MIT licensed) and/or text for every main tab label (Dashboard, Docker, VMs, …). Turning both off is possible and shows an empty pill."));
-      cT.appendChild(toggleRow(T("Icons anzeigen", "Show icons"), T("Setzt vor jeden Tab der Menüleiste ein kleines Symbol.", "Puts a small icon before every tab in the menu bar."), get("cc.tabicons", "1") !== "0", function (v) { set("cc.tabicons", v ? "1" : "0"); try { window.ccTabIcons && window.ccTabIcons(); } catch (e) {} }));
+      cT.appendChild(toggleRow(T("Icons anzeigen", "Show icons"), T("Setzt vor jeden Tab der Menüleiste ein kleines Symbol.", "Puts a small icon before every tab in the menu bar."), get("tt.tabicons", "1") !== "0", function (v) { set("tt.tabicons", v ? "1" : "0"); try { window.ttTabIcons && window.ttTabIcons(); } catch (e) {} }));
       // an icon-only mode beside the icon switch, in the same card, since both fill the same pill
-      cT.appendChild(toggleRow(T("Text anzeigen", "Show text"), T("Zeigt den Namen in jedem Tab, ohne ihn bleibt nur das Symbol.", "Shows the name in each tab, without it only the icon stays."), get("cc.tabtext", "1") !== "0", function (v) { set("cc.tabtext", v ? "1" : "0"); try { window.ccTabIcons && window.ccTabIcons(); } catch (e) {} }));
+      cT.appendChild(toggleRow(T("Text anzeigen", "Show text"), T("Zeigt den Namen in jedem Tab, ohne ihn bleibt nur das Symbol.", "Shows the name in each tab, without it only the icon stays."), get("tt.tabtext", "1") !== "0", function (v) { set("tt.tabtext", v ? "1" : "0"); try { window.ttTabIcons && window.ttTabIcons(); } catch (e) {} }));
       wrapHeader.appendChild(cT);
     })();
     // GlimStone's label engine on Unraid's own buttons, beside the main tabs' icon and text.
     // labels.js reads the key on every page and redraws at once on a change.
     (function () {
-      var LM = ["text", "textGlyph", "glyph", "reactive"], cur = get("cc.labels.buttons", "textGlyph");
+      var LM = ["text", "textGlyph", "glyph", "reactive"], cur = get("tt.labels.buttons", "textGlyph");
       var cL = card(T("Beschriftungen", "Labels"), T("Wie viel von einem Bedienelement gezeigt wird: seine Wörter, sein Symbol oder beides.", "How much of a control is shown: its words, its symbol, or both."));
       cL.appendChild(dropRow(T("Buttons", "Buttons"),
         [["text", T("Text", "Text"), "IconLabelText"], ["textGlyph", T("Text und Symbol", "Text and symbol"), "IconLabelTextGlyph"], ["glyph", T("Symbol", "Symbol"), "IconLabelGlyph"], ["reactive", T("Reaktiv", "Reactive"), "IconLabelReactive"]],
         LM.indexOf(cur) < 0 ? "textGlyph" : cur,
-        function (v) { set("cc.labels.buttons", v); try { window.ccLabelsApply && window.ccLabelsApply(); } catch (e) {} },
+        function (v) { set("tt.labels.buttons", v); try { window.ttLabelsApply && window.ttLabelsApply(); } catch (e) {} },
         T("Gilt für Unraids eigene Buttons, die TowerTorch als Badge zeichnet. Reaktiv zeigt nur das Symbol und blendet die Wörter ein, sobald du darauf zeigst oder sie mit der Tastatur erreichst. Ein Button ohne passendes Symbol behält seinen Text.",
           "Applies to Unraid's own buttons that TowerTorch draws as badges. Reactive shows the symbol alone and slides the words in when you point at it or reach it with the keyboard. A button without a matching symbol keeps its text."), true));
       wrapHeader.appendChild(cL);
     })();
-    // The server name's look. header.js reads the cc.brand.* keys live and inlines them, so the
+    // The server name's look. header.js reads the tt.brand.* keys live and inlines them, so the
     // real header is the preview. The look is set with dropdowns, the size also by a value of its
     // own, and the colour with a picker like every other colour control here.
     (function () {
       var cB = card(T("Servername", "Server name"), T("Aussehen des Servernamens oben links. Änderungen erscheinen live im Kopfbereich.", "Look of the server name at the top left. Changes appear live in the header."));
-      // A name for CC's header alone: Unraid's own server name stays as it is, and an empty field
+      // A name for TowerTorch's header alone: Unraid's own server name stays as it is, and an empty field
       // shows it again. The field shows it as the placeholder, read where header.js reads it.
-      var nmRow = el("div", "cc-set-row"), nmL = el("span", "cc-set-rl", T("Angezeigter Name", "Display name"));
+      var nmRow = el("div", "tt-set-row"), nmL = el("span", "tt-set-rl", T("Angezeigter Name", "Display name"));
       nmL.appendChild(infoIcon(T("Der Name, den TowerTorch oben links im Kopfbereich zeigt. Leer zeigt Unraids Servernamen. Unraids eigener Servername bleibt dabei, wie er ist.", "The name TowerTorch shows at the top left of the header. Empty shows Unraid's server name. Unraid's own server name stays as it is.")));
-      var nmIn = el("input", "cc-set-txt"); nmIn.id = "cc-set-brandname"; nmIn.type = "text"; nmIn.maxLength = 40; nmIn.spellcheck = false;
-      nmIn.value = get("cc.brand.name", ""); nmIn.placeholder = (document.title.split("/")[0] || "").trim() || "Unraid";
-      nmIn.addEventListener("input", function () { var v = nmIn.value.trim(); if (v) set("cc.brand.name", v); else del("cc.brand.name"); syncHeaderBar(); });
+      var nmIn = el("input", "tt-set-txt"); nmIn.id = "tt-set-brandname"; nmIn.type = "text"; nmIn.maxLength = 40; nmIn.spellcheck = false;
+      nmIn.value = get("tt.brand.name", ""); nmIn.placeholder = (document.title.split("/")[0] || "").trim() || "Unraid";
+      nmIn.addEventListener("input", function () { var v = nmIn.value.trim(); if (v) set("tt.brand.name", v); else del("tt.brand.name"); syncHeaderBar(); });
       nmRow.appendChild(nmL); nmRow.appendChild(nmIn); cB.appendChild(nmRow);
-      cB.appendChild(toggleRow(T("Logo zeigen", "Show logo"), T("Zeigt das Logo links vom Servernamen, dasselbe wie auf der Anmeldeseite. Ein eigenes wählst du unter Theming bei Logo, ohne eines ist es das TowerTorch-Zeichen. Es wächst mit der Größe des Namens.", "Shows the logo left of the server name, the same one as on the login page. Pick your own under Theming at Logo; without one it is the TowerTorch mark. It grows with the name's size."), get("cc.brand.logo", "0") === "1", function (v) { set("cc.brand.logo", v ? "1" : "0"); syncHeaderBar(); }));
+      cB.appendChild(toggleRow(T("Logo zeigen", "Show logo"), T("Zeigt das Logo links vom Servernamen, dasselbe wie auf der Anmeldeseite. Ein eigenes wählst du unter Theming bei Logo, ohne eines ist es das TowerTorch-Zeichen. Es wächst mit der Größe des Namens.", "Shows the logo left of the server name, the same one as on the login page. Pick your own under Theming at Logo; without one it is the TowerTorch mark. It grows with the name's size."), get("tt.brand.logo", "0") === "1", function (v) { set("tt.brand.logo", v ? "1" : "0"); syncHeaderBar(); }));
       var SZ = ["16", "18", "20", "22", "24", "26", "28", "30", "32", "36", "40", "44", "48", "56", "64"].map(function (s) { return [s, s + " px"]; });
       cB.appendChild(ownValueRow({
-        key: "cc.brand.size", def: "30", min: 10, max: 120, unit: "px", presets: SZ,
+        key: "tt.brand.size", def: "30", min: 10, max: 120, unit: "px", presets: SZ,
         label: T("Größe", "Size"),
         aria: T("Eigene Schriftgröße in px", "Own font size in px"),
         help: T("Die Schriftgröße des Servernamens.", "The font size of the server name.")
       }, syncHeaderBar));
-      cB.appendChild(dropRow(T("Stärke", "Weight"), [["300", T("Dünn", "Thin"), "IconWeightThin"], ["400", "Normal", "IconWeightRegular"], ["500", "Medium", "IconWeightMedium"], ["650", T("Halbfett", "Semibold"), "IconWeightSemibold"], ["800", T("Fett", "Bold"), "IconWeightBold"]], get("cc.brand.weight", "650"), function (v) { set("cc.brand.weight", v); syncHeaderBar(); },
+      cB.appendChild(dropRow(T("Stärke", "Weight"), [["300", T("Dünn", "Thin"), "IconWeightThin"], ["400", "Normal", "IconWeightRegular"], ["500", "Medium", "IconWeightMedium"], ["650", T("Halbfett", "Semibold"), "IconWeightSemibold"], ["800", T("Fett", "Bold"), "IconWeightBold"]], get("tt.brand.weight", "650"), function (v) { set("tt.brand.weight", v); syncHeaderBar(); },
         T("Wie kräftig der Servername geschrieben ist.", "How heavy the server name is set.")));
-      cB.appendChild(dropRow(T("Kursiv", "Italic"), [["0", T("Normal", "Normal"), "IconUpright"], ["1", T("Kursiv", "Italic"), "IconItalic"]], get("cc.brand.italic", "0"), function (v) { set("cc.brand.italic", v); syncHeaderBar(); },
+      cB.appendChild(dropRow(T("Kursiv", "Italic"), [["0", T("Normal", "Normal"), "IconUpright"], ["1", T("Kursiv", "Italic"), "IconItalic"]], get("tt.brand.italic", "0"), function (v) { set("tt.brand.italic", v); syncHeaderBar(); },
         T("Stellt den Servernamen schräg.", "Sets the server name in italics.")));
       // System faces, which render where the client has them. The Google families below are
       // downloaded, so they render anywhere.
@@ -2221,17 +2221,17 @@
         ['"Trebuchet MS",Helvetica,sans-serif', "Trebuchet MS"],
         ['Verdana,Geneva,sans-serif', "Verdana"]
       ];
-      var GF = (window.CCTheme && window.CCTheme.gfonts) ? window.CCTheme.gfonts : [];
+      var GF = (window.TTTheme && window.TTTheme.gfonts) ? window.TTTheme.gfonts : [];
       var rest = SYS.slice();
       GF.forEach(function (gf) { var val = '"' + gf[0] + '",' + gf[1]; rest.push([val, gf[0], val]); }); // Google faces (always render)
       rest.sort(function (a, b) { return a[1].localeCompare(b[1]); });   // system and Google faces in one alphabetical list
       var FONTS = [["", T("Standard", "Default")], ['system-ui,-apple-system,"Segoe UI",sans-serif', "System"]]
         .concat(rest).map(function (f) { return [f[0], f[1], f[2] || f[0]]; }); // o[2] = self-preview face
       // load the Google faces so their dropdown previews (and any chosen one on this page) actually render
-      try { if (window.CCTheme && window.CCTheme.loadGFonts) window.CCTheme.loadGFonts(GF.map(function (gf) { return gf[0]; })); } catch (e) {}
-      cB.appendChild(dropRow(T("Schriftart", "Font"), FONTS, get("cc.brand.font", ""), function (v) { set("cc.brand.font", v); syncHeaderBar(); },
+      try { if (window.TTTheme && window.TTTheme.loadGFonts) window.TTTheme.loadGFonts(GF.map(function (gf) { return gf[0]; })); } catch (e) {}
+      cB.appendChild(dropRow(T("Schriftart", "Font"), FONTS, get("tt.brand.font", ""), function (v) { set("tt.brand.font", v); syncHeaderBar(); },
         T("Die Schrift des Servernamens. Standard nimmt Unraids eigene.", "The server name's font. Default uses Unraid's own.")));
-      var brandCol = colourField(get("cc.brand.color", ""), function (v) { if (v) set("cc.brand.color", v); else del("cc.brand.color"); syncHeaderBar(); }, { fallback: "#f4f4f4", placeholder: "#F4F4F4", clearable: true });
+      var brandCol = colourField(get("tt.brand.color", ""), function (v) { if (v) set("tt.brand.color", v); else del("tt.brand.color"); syncHeaderBar(); }, { fallback: "#f4f4f4", placeholder: "#F4F4F4", clearable: true });
       cB.appendChild(fieldRow(T("Farbe", "Colour"), T("Ein leeres Hex-Feld lässt den Namen in der hellen Standardfarbe.", "An empty hex field leaves the name in the light default colour."), brandCol));
       wrapHeader.appendChild(cB);
     })();
@@ -2252,35 +2252,35 @@
         ["info", T("Info", "Info"), T("Zeigt den Knopf mit den Systeminfos des Servers.", "Shows the button with the server's system info.")],
         ["log", T("Protokoll", "Log"), T("Zeigt den Knopf, der das Systemprotokoll öffnet.", "Shows the button that opens the system log.")]
       ].forEach(function (ic) {
-        cIc.appendChild(toggleRow(ic[1], ic[2], get("cc.hideicon." + ic[0], "0") === "0", function (v) { set("cc.hideicon." + ic[0], v ? "0" : "1"); syncHeaderBar(); }));
+        cIc.appendChild(toggleRow(ic[1], ic[2], get("tt.hideicon." + ic[0], "0") === "0", function (v) { set("tt.hideicon." + ic[0], v ? "0" : "1"); syncHeaderBar(); }));
       });
       wrapHeader.appendChild(cIc);
     })();
-    buildStyleCards("ccsh.", wrapShares, [], true); // the shares tab pills are glyphs, so badges only
-    buildStyleCards("ccs.", wrapSettings, ["fa-cog", "fa-globe", "fa-star"], false); // the settings tiles are glyphs, so the preview shows sample ones
-    buildStyleCards("cct.", wrapTools, ["fa-wrench", "fa-terminal", "fa-hdd-o"], false);
-    buildStyleCards("ccp.", wrapPlugin, ["/plugins/dynamix.plugin.manager/images/dynamix.plugin.manager.png", "/plugins/dynamix.docker.manager/images/dynamix.docker.manager.png", "/plugins/towertorch/images/towertorch.png"]);
-    buildStyleCards("ccv.", wrapVms, ["/plugins/dynamix.vm.manager/templates/images/linux.png", "/plugins/dynamix.vm.manager/templates/images/windows.png", "/plugins/towertorch/images/towertorch.png"]);
-    buildStyleCards("ccf.", wrapFavorites, ["fa-star", "fa-heart", "fa-cog"], false); // glyph tiles again
-    buildStyleCards("ccm.", wrapStart, [], true); // /Main has value and name badges but no per-row logos
-    // Export, import and reset of every cc-family setting, one row in the Theming card with the
+    buildStyleCards("ttsh.", wrapShares, [], true); // the shares tab pills are glyphs, so badges only
+    buildStyleCards("tts.", wrapSettings, ["fa-cog", "fa-globe", "fa-star"], false); // the settings tiles are glyphs, so the preview shows sample ones
+    buildStyleCards("ttt.", wrapTools, ["fa-wrench", "fa-terminal", "fa-hdd-o"], false);
+    buildStyleCards("ttp.", wrapPlugin, ["/plugins/dynamix.plugin.manager/images/dynamix.plugin.manager.png", "/plugins/dynamix.docker.manager/images/dynamix.docker.manager.png", "/plugins/towertorch/images/towertorch.png"]);
+    buildStyleCards("ttv.", wrapVms, ["/plugins/dynamix.vm.manager/templates/images/linux.png", "/plugins/dynamix.vm.manager/templates/images/windows.png", "/plugins/towertorch/images/towertorch.png"]);
+    buildStyleCards("ttf.", wrapFavorites, ["fa-star", "fa-heart", "fa-cog"], false); // glyph tiles again
+    buildStyleCards("ttm.", wrapStart, [], true); // /Main has value and name badges but no per-row logos
+    // Export, import and reset of every tt-family setting, one row in the Theming card with the
     // three buttons together at its end.
     (function () {
       var cX = themingCard;
-      var lblw = el("span", "cc-set-lblwrap");
+      var lblw = el("span", "tt-set-lblwrap");
       lblw.appendChild(el("span", null, T("Sichern & Übertragen", "Backup & transfer")));
-      lblw.appendChild(infoIcon(T("Exportiert alle TowerTorch-Einstellungen (cc.*-Schlüssel) als JSON-Datei. Der Import schreibt sie zurück und lädt die Seite neu.", "Exports every TowerTorch setting (cc.* keys) as a JSON file. Import writes them back and reloads the page.")));
-      var ex = labelled(el("span", "cc-btn cc-set-xbtn"), "Export", T("Exportieren", "Export"));
+      lblw.appendChild(infoIcon(T("Exportiert alle TowerTorch-Einstellungen (tt.*-Schlüssel) als JSON-Datei. Der Import schreibt sie zurück und lädt die Seite neu.", "Exports every TowerTorch setting (tt.* keys) as a JSON file. Import writes them back and reloads the page.")));
+      var ex = labelled(el("span", "tt-btn tt-set-xbtn"), "Export", T("Exportieren", "Export"));
       ex.addEventListener("click", function () {
         try {
-          // every cc-family key but cc.stateCache, the same set the engine mirrors
+          // every tt-family key but tt.stateCache, the same set the engine mirrors
           var blob = new Blob([JSON.stringify(collectUISettings(), null, 2)], { type: "application/json" });
           var a = el("a"); a.href = URL.createObjectURL(blob); a.download = "towertorch-settings.json";
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
           setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
         } catch (e) { failed(ex, T("Export fehlgeschlagen: ", "Export failed: ") + ((e && e.message) || e)); }
       });
-      var im = labelled(el("span", "cc-btn cc-set-xbtn"), "Import", T("Importieren", "Import"));
+      var im = labelled(el("span", "tt-btn tt-set-xbtn"), "Import", T("Importieren", "Import"));
       var fin = el("input"); fin.type = "file"; fin.accept = ".json,application/json"; fin.style.display = "none";
       fin.addEventListener("change", function () {
         var f = fin.files && fin.files[0]; fin.value = ""; if (!f) return;
@@ -2288,11 +2288,11 @@
         rd.onload = function () {
           var o = null;
           try { o = JSON.parse(String(rd.result)); } catch (e) { failed(im, T("Keine gültige JSON-Datei.", "Not a valid JSON file.")); return; }
-          // it has to be a flat object of cc-family string keys, and never cc.stateCache
+          // it has to be a flat object of tt-family string keys, and never tt.stateCache
           var ks = o && typeof o === "object" && !Array.isArray(o) ? Object.keys(o) : [];
-          var bad = ks.filter(function (k) { return !/^cc[a-z]*\./.test(k) || k === "cc.stateCache" || typeof o[k] !== "string"; });
-          if (!ks.length || bad.length) { failed(im, T("Ungültiges Format: erwartet wird ein flaches Objekt mit cc.*-Textwerten.", "Invalid format: expected a flat object of cc.* string values.")); return; }
-          var w = window.__ccLS || localStorage.setItem.bind(localStorage); // a raw write, bypassing the mirror debounce
+          var bad = ks.filter(function (k) { return !/^tt[a-z]*\./.test(k) || k === "tt.stateCache" || typeof o[k] !== "string"; });
+          if (!ks.length || bad.length) { failed(im, T("Ungültiges Format: erwartet wird ein flaches Objekt mit tt.*-Textwerten.", "Invalid format: expected a flat object of tt.* string values.")); return; }
+          var w = window.__ttLS || localStorage.setItem.bind(localStorage); // a raw write, bypassing the mirror debounce
           ks.forEach(function (k) { try { w(k, o[k]); } catch (e) {} });
           // The engine mirror is written before the reload: the reloaded page adopts ui_settings
           // from the engine, which would otherwise revert the import.
@@ -2310,13 +2310,13 @@
         rd.readAsText(f);
       });
       im.addEventListener("click", function () { fin.click(); });
-      // Reset clears every cc.* key and the engine mirror and reloads, after a window has asked.
+      // Reset clears every tt.* key and the engine mirror and reloads, after a window has asked.
       // The start plan and the engine config outside ui_settings stay.
-      var rs = labelled(el("span", "cc-btn cc-set-xbtn"), "Refresh", T("Alles zurücksetzen", "Reset all"));   // the colour of Export and Import beside it, never red
-      if (window.CCTheme) window.CCTheme.pressable(rs);   // focus comes back here when the window closes
+      var rs = labelled(el("span", "tt-btn tt-set-xbtn"), "Refresh", T("Alles zurücksetzen", "Reset all"));   // the colour of Export and Import beside it, never red
+      if (window.TTTheme) window.TTTheme.pressable(rs);   // focus comes back here when the window closes
       rs.addEventListener("click", function () {
-        if (!window.CCTheme || !window.CCTheme.ask) return;
-        window.CCTheme.ask({
+        if (!window.TTTheme || !window.TTTheme.ask) return;
+        window.TTTheme.ask({
           title: T("Alle Einstellungen zurücksetzen?", "Reset all settings?"),
           text: T("Alles, was TowerTorch im Browser speichert, also Farben, Form und Bereiche, geht auf den Standard zurück, die Kopie in der Engine auch. Danach lädt die Seite neu. Startplan, Zeitpläne, Limits und Benachrichtigungen bleiben.",
             "Everything TowerTorch keeps in the browser, such as colours, shape and areas, goes back to its default, including the engine's copy, and the page reloads. The start plan, schedules, limits and notifications stay."),
@@ -2325,13 +2325,13 @@
       });
       function resetAll() {
         try {
-          var kill = []; for (var i9 = 0; i9 < localStorage.length; i9++) { var k9 = localStorage.key(i9); if (k9 && /^cc[a-z]*\./.test(k9) && k9 !== "cc.stateCache") kill.push(k9); }
+          var kill = []; for (var i9 = 0; i9 < localStorage.length; i9++) { var k9 = localStorage.key(i9); if (k9 && /^tt[a-z]*\./.test(k9) && k9 !== "tt.stateCache") kill.push(k9); }
           kill.forEach(function (k9) { try { localStorage.removeItem(k9); } catch (e9) {} });
           withConfigLock(function () { return api("GET", "config").then(function (c) { if (!c || typeof c !== "object") return; c.ui_settings = {}; return api("PUT", "config", c); }); })
             .then(function () { location.reload(); }, function () { location.reload(); });
         } catch (e) { failed(rs, T("Zurücksetzen fehlgeschlagen: ", "Reset failed: ") + ((e && e.message) || e)); }
       }
-      var brow = el("div", "cc-set-row cc-set-inline"), bend = el("span", "cc-set-colend");
+      var brow = el("div", "tt-set-row tt-set-inline"), bend = el("span", "tt-set-colend");
       bend.appendChild(ex); bend.appendChild(im); bend.appendChild(rs);
       brow.appendChild(lblw); brow.appendChild(bend);
       cX.appendChild(brow); cX.appendChild(fin);
@@ -2339,26 +2339,26 @@
     // The search filters cards and rows across every tab, matching a row's text and the
     // explanations in its bubbles, so a word that only stands in an (i) still finds its row. An
     // empty query restores the tabbed view.
-    var searchEmpty = el("div", "cc-set-empty"); searchEmpty.style.display = "none";
+    var searchEmpty = el("div", "tt-set-empty"); searchEmpty.style.display = "none";
     searchEmpty.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 3.072a8 8 0 0 1 2.32 11.834l5.387 5.387a1 1 0 0 1 -1.414 1.414l-5.388 -5.387a8 8 0 1 1 -.905 -13.249" /></svg>';
-    var emptyText = el("div"), emptyTitle = el("div", "cc-set-empty-t", T("Keine Treffer", "No matches")), emptyHint = el("div", "cc-set-empty-h");
+    var emptyText = el("div"), emptyTitle = el("div", "tt-set-empty-t", T("Keine Treffer", "No matches")), emptyHint = el("div", "tt-set-empty-h");
     emptyText.appendChild(emptyTitle); emptyText.appendChild(emptyHint); searchEmpty.appendChild(emptyText);
     main.appendChild(searchEmpty);
     function restore() {
-      Array.prototype.forEach.call(root.querySelectorAll(".cc-set-card, .cc-set-row, .cc-set-lbl, .cc-set-prose"), function (e9) { e9.style.removeProperty("display"); });
+      Array.prototype.forEach.call(root.querySelectorAll(".tt-set-card, .tt-set-row, .tt-set-lbl, .tt-set-prose"), function (e9) { e9.style.removeProperty("display"); });
       searchEmpty.style.display = "none";
-      var st9 = localStorage.getItem("cc.settab"), ix9 = 0; SECS.forEach(function (sc9, j9) { if (sc9.id === st9) ix9 = j9; }); showSec(ix9);
+      var st9 = localStorage.getItem("tt.settab"), ix9 = 0; SECS.forEach(function (sc9, j9) { if (sc9.id === st9) ix9 = j9; }); showSec(ix9);
     }
     function runFilter(q) {
       var raw = (q || "").trim(); q = raw.toLowerCase();
       if (!q) { restore(); return; }
       // The matches come from every tab, so no tile is the chosen one while a query stands.
-      tabBtns.forEach(function (b) { b.classList.remove("cc-set-tab-on"); b.setAttribute("aria-selected", "false"); });
+      tabBtns.forEach(function (b) { b.classList.remove("tt-set-tab-on"); b.setAttribute("aria-selected", "false"); });
       SECS.forEach(function (sc9) { sc9.w.style.display = ""; });
       var shown = 0;
-      Array.prototype.forEach.call(root.querySelectorAll(".cc-set-card"), function (cardEl) {
-        var h9 = cardEl.querySelector(".cc-set-h"), titleHit = !!h9 && searchText(h9).indexOf(q) >= 0, any = false;
-        Array.prototype.forEach.call(cardEl.querySelectorAll(".cc-set-row, .cc-set-lbl, .cc-set-prose"), function (r9) {
+      Array.prototype.forEach.call(root.querySelectorAll(".tt-set-card"), function (cardEl) {
+        var h9 = cardEl.querySelector(".tt-set-h"), titleHit = !!h9 && searchText(h9).indexOf(q) >= 0, any = false;
+        Array.prototype.forEach.call(cardEl.querySelectorAll(".tt-set-row, .tt-set-lbl, .tt-set-prose"), function (r9) {
           var hit = titleHit || searchText(r9).indexOf(q) >= 0; r9.style.display = hit ? "" : "none"; if (hit) any = true;
         });
         cardEl.style.display = (titleHit || any) ? "" : "none";
@@ -2370,24 +2370,24 @@
     // The Info tab in GlimStone's order: Version, Help, About.
     (function () {
       var cVer = card(T("Version", "Version"));
-      cVer.appendChild(versionRow("UI", verLink(CC_VER, REPO)));
-      var engine = el("span", "cc-set-ver", "…");
+      cVer.appendChild(versionRow("UI", verLink(TT_VER, REPO)));
+      var engine = el("span", "tt-set-ver", "…");
       cVer.appendChild(versionRow("Engine", engine));
       cVer.appendChild(versionRow("GlimStone", verLink(GLS_VER, GLS_REPO)));
       // the version of the daemon that is running, so an update that did not restart it shows
       apiRead("state").then(function (st) {
         if (st && st.version) engine.parentNode.replaceChild(verLink(String(st.version), REPO), engine);
         else engine.textContent = T("unbekannt", "unknown");
-      }).catch(function () { engine.textContent = T("nicht erreichbar", "not reachable"); engine.classList.add("cc-set-verbad"); });
-      var crow = el("div", "cc-set-btnrow");
-      var notes = labelled(actionBtn("", "cc-btn cc-set-xbtn cc-set-notes", function () { openReleaseNotes(notes); }), "WhatsNew", T("Versionshinweise", "Release notes"));
-      var chk = labelled(actionBtn("", "cc-btn cc-set-xbtn cc-set-check", function () { checkUpdates(chk); }), "Update", T("Nach Updates suchen", "Check for updates"));
+      }).catch(function () { engine.textContent = T("nicht erreichbar", "not reachable"); engine.classList.add("tt-set-verbad"); });
+      var crow = el("div", "tt-set-btnrow");
+      var notes = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-notes", function () { openReleaseNotes(notes); }), "WhatsNew", T("Versionshinweise", "Release notes"));
+      var chk = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-check", function () { checkUpdates(chk); }), "Update", T("Nach Updates suchen", "Check for updates"));
       crow.appendChild(notes); crow.appendChild(chk); cVer.appendChild(crow);
       wrapInfo.appendChild(cVer);
 
       var cHelp = card(T("Hilfe", "Help"));
-      cHelp.appendChild(el("p", "cc-set-prose", T("Probleme, Wünsche oder Vorschläge? Mach gern ein Issue auf GitHub auf, oder schreib eine E-Mail.", "Problems, wishes or suggestions? You're welcome to open an issue on GitHub, or send an email.")));
-      var hrow = el("div", "cc-rbtn-rows");
+      cHelp.appendChild(el("p", "tt-set-prose", T("Probleme, Wünsche oder Vorschläge? Mach gern ein Issue auf GitHub auf, oder schreib eine E-Mail.", "Problems, wishes or suggestions? You're welcome to open an issue on GitHub, or send an email.")));
+      var hrow = el("div", "tt-rbtn-rows");
       hrow.appendChild(readmeBtn({ brand: "github", name: "GitHub", mark: BRAND_MARKS.github, href: REPO }));
       hrow.appendChild(readmeBtn({ brand: "house", name: T("E-Mail", "Email"), mark: BRAND_MARKS.mail, href: "mailto:hello@halleluja.design?subject=TowerTorch" }));
       var bug = readmeBtn({ brand: "house", name: T("Fehlerbericht", "Bug report"), sub: T("Herunterladen", "Download"), mark: BRAND_MARKS.bug, run: function () { downloadBugReport(bug); } });
@@ -2396,11 +2396,11 @@
       wrapInfo.appendChild(cHelp);
 
       var cAbout = card(T("Über", "About"));
-      cAbout.appendChild(el("p", "cc-set-prose", T("TowerTorch ist ein kostenloses Plugin für Unraids Docker-, Plugin- und VM-Tabs, gebaut von einem einzelnen Ritter an Abenden und Wochenenden, ohne Konto, ohne Telemetrie und ohne Werbung.", "TowerTorch is a free plugin for Unraid's Docker, Plugins and VM tabs, built by one knight on evenings and weekends, with no accounts, no telemetry and no ads.")));
-      cAbout.appendChild(el("p", "cc-set-prose", T("Wenn es sich einen Platz auf deinem Server verdient hat, wirf deinem Ritter eine Münze zu: Das hilft bei den Kosten und hält das Projekt am Leben.", "If it has earned a place on your server, toss a coin to your knight: it helps cover the costs and keeps the project alive.")));
+      cAbout.appendChild(el("p", "tt-set-prose", T("TowerTorch ist ein kostenloses Plugin für Unraids Docker-, Plugin- und VM-Tabs, gebaut von einem einzelnen Ritter an Abenden und Wochenenden, ohne Konto, ohne Telemetrie und ohne Werbung.", "TowerTorch is a free plugin for Unraid's Docker, Plugins and VM tabs, built by one knight on evenings and weekends, with no accounts, no telemetry and no ads.")));
+      cAbout.appendChild(el("p", "tt-set-prose", T("Wenn es sich einen Platz auf deinem Server verdient hat, wirf deinem Ritter eine Münze zu: Das hilft bei den Kosten und hält das Projekt am Leben.", "If it has earned a place on your server, toss a coin to your knight: it helps cover the costs and keeps the project alive.")));
       // The give row in its house form: hosted pages first, the wallet last. Each opens its window
       // in the page (give.js) and keeps its address for a middle click.
-      var give = el("div", "cc-rbtn-rows cc-set-give"), G = window.CCGive || {};
+      var give = el("div", "tt-rbtn-rows tt-set-give"), G = window.TTGive || {};
       give.appendChild(readmeBtn({ brand: "coffee", name: "Buy me a coffee", art: BRAND_MARKS.coffee, href: "https://buymeacoffee.com/junkerderprovinz", open: G.coffee }));
       give.appendChild(readmeBtn({ brand: "paypal", name: "PayPal", mark: BRAND_MARKS.paypal, href: "https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS", open: G.paypal }));
       give.appendChild(readmeBtn({ brand: "bitcoin", name: T("Krypto", "Crypto"), mark: BRAND_MARKS.bitcoin, href: "https://junkerderprovinz.github.io/junkerderprovinz/", open: G.crypto }));
@@ -2408,19 +2408,19 @@
       wrapInfo.appendChild(cAbout);
     })();
     refreshTabs();
-    // cc.settab holds a section id; an older numeric index, or anything unknown, lands on the
+    // tt.settab holds a section id; an older numeric index, or anything unknown, lands on the
     // first section.
-    var st0 = localStorage.getItem("cc.settab"), ix0 = 0;
+    var st0 = localStorage.getItem("tt.settab"), ix0 = 0;
     SECS.forEach(function (sc9, j9) { if (sc9.id === st0) ix0 = j9; });
     showSec(ix0);
     setSearch.addEventListener("input", function () { runFilter(setSearch.value); });
     paintPrev(); paintToggles(); paintSelects(); paintCardHeads();
     if (window.scrollY !== keepY) window.scrollTo(0, keepY);
   }
-  // This page's own .cc-dsel dropdowns take the colour mode through the painter every area shares
-  // (cc-theme.js); without the stamp each option would show the flat accent in rainbow and flag
+  // This page's own .tt-dsel dropdowns take the colour mode through the painter every area shares
+  // (tt-theme.js); without the stamp each option would show the flat accent in rainbow and flag
   // mode. It runs from the same render step as paintToggles(), so the two cannot drift apart.
-  function paintSelects() { try { if (window.CCTheme && window.CCTheme.paintSelects) window.CCTheme.paintSelects(root || document); } catch (e) {} }
+  function paintSelects() { try { if (window.TTTheme && window.TTTheme.paintSelects) window.TTTheme.paintSelects(root || document); } catch (e) {} }
   // Notifications and the shaping interface save as they change: a switch at once, reverting when
   // the engine refuses, and a text field once typing has been quiet for a moment, keeping what was
   // typed. Each save reads the live config, changes its own field and writes it back, so the
@@ -2447,46 +2447,46 @@
   // dark text on a light background and white on a dark one, by perceived luminance
   function idealText(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff"; }
   // The preview uses the real palette, so it matches what the Docker tab shows.
-  function paintPrev() { var p = document.getElementById("cc-set-prev"); if (!p) return; var DEF = (window.CCTheme && window.CCTheme.RB) || ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"]; var pal = DEF; try { var fj = get("cc.flagmode", "0") === "1" ? JSON.parse(get("cc.flagpal", "null")) : null; var j = (fj && fj.length) ? fj : JSON.parse(get("cc.rbpal", "null")); if (j && j.length) pal = j; } catch (e) {} if (window.CCTheme && window.CCTheme.surfacePalette) pal = window.CCTheme.surfacePalette(pal, accent); Array.prototype.slice.call(p.children).forEach(function (b, i) { var c = rainbow ? pal[i % pal.length] : accent; b.style.background = c; b.style.color = idealText(c); }); }
+  function paintPrev() { var p = document.getElementById("tt-set-prev"); if (!p) return; var DEF = (window.TTTheme && window.TTTheme.RB) || ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"]; var pal = DEF; try { var fj = get("tt.flagmode", "0") === "1" ? JSON.parse(get("tt.flagpal", "null")) : null; var j = (fj && fj.length) ? fj : JSON.parse(get("tt.rbpal", "null")); if (j && j.length) pal = j; } catch (e) {} if (window.TTTheme && window.TTTheme.surfacePalette) pal = window.TTTheme.surfacePalette(pal, accent); Array.prototype.slice.call(p.children).forEach(function (b, i) { var c = rainbow ? pal[i % pal.length] : accent; b.style.background = c; b.style.color = idealText(c); }); }
   // Every toggle on this page follows the colour engine. In rainbow mode each takes its own slot
   // from the shared seed, as the badges elsewhere do; otherwise the stamp is cleared and the
   // track's CSS falls back through the shared vars to the accent.
   function paintToggles() {
     if (!root) return;
-    var rbC = (window.CCTheme && window.CCTheme.rbColor) || function (i, a) { return a; };
-    var tgls = root.querySelectorAll(".cc-set-toggle, .cc-set-mode .cc-seg-on");   // the chosen mode wears a colour of its own, like a switch
+    var rbC = (window.TTTheme && window.TTTheme.rbColor) || function (i, a) { return a; };
+    var tgls = root.querySelectorAll(".tt-set-toggle, .tt-set-mode .tt-seg-on");   // the chosen mode wears a colour of its own, like a switch
     for (var i = 0; i < tgls.length; i++) {
       var t = tgls[i];
-      if (rainbow) { var c = rbC(i, accent); t.style.setProperty("--cc-rb-c", c); t.style.setProperty("--cc-rb-ct", idealText(c)); }
-      else { t.style.removeProperty("--cc-rb-c"); t.style.removeProperty("--cc-rb-ct"); }
+      if (rainbow) { var c = rbC(i, accent); t.style.setProperty("--tt-rb-c", c); t.style.setProperty("--tt-rb-ct", idealText(c)); }
+      else { t.style.removeProperty("--tt-rb-c"); t.style.removeProperty("--tt-rb-ct"); }
     }
     // A lit view sketch wears the colour of the segment chosen above it, so the two always agree.
-    Array.prototype.forEach.call(root.querySelectorAll(".cc-set-viewslot"), function (slot) {
-      var on = slot.querySelector(".cc-set-mode .cc-seg-on"), c = on ? on.style.getPropertyValue("--cc-rb-c") : "";
-      Array.prototype.forEach.call(slot.closest(".cc-set-card").querySelectorAll(".cc-set-vp"), function (fig) {
-        if (c && fig.classList.contains("cc-set-vp-on")) fig.style.setProperty("--cc-rb-c", c); else fig.style.removeProperty("--cc-rb-c");
+    Array.prototype.forEach.call(root.querySelectorAll(".tt-set-viewslot"), function (slot) {
+      var on = slot.querySelector(".tt-set-mode .tt-seg-on"), c = on ? on.style.getPropertyValue("--tt-rb-c") : "";
+      Array.prototype.forEach.call(slot.closest(".tt-set-card").querySelectorAll(".tt-set-vp"), function (fig) {
+        if (c && fig.classList.contains("tt-set-vp-on")) fig.style.setProperty("--tt-rb-c", c); else fig.style.removeProperty("--tt-rb-c");
       });
     });
   }
   // A card title counts through the palette from the first card of its own tab, so every tab
   // starts on the same hue. Without rainbow the stamp goes and the badge falls back to the accent.
   function paintCardHeads() {
-    var rbC = (window.CCTheme && window.CCTheme.rbColor) || function (i, a) { return a; };
-    Array.prototype.forEach.call(root.querySelectorAll(".cc-set-wrap"), function (w) {
-      Array.prototype.forEach.call(w.querySelectorAll(".cc-set-card > .cc-set-h"), function (h, i) {
-        if (rainbow) { var c = rbC(i, accent); h.style.setProperty("--cc-rb-c", c); h.style.setProperty("--cc-rb-ct", idealText(c)); }
-        else { h.style.removeProperty("--cc-rb-c"); h.style.removeProperty("--cc-rb-ct"); }
+    var rbC = (window.TTTheme && window.TTTheme.rbColor) || function (i, a) { return a; };
+    Array.prototype.forEach.call(root.querySelectorAll(".tt-set-wrap"), function (w) {
+      Array.prototype.forEach.call(w.querySelectorAll(".tt-set-card > .tt-set-h"), function (h, i) {
+        if (rainbow) { var c = rbC(i, accent); h.style.setProperty("--tt-rb-c", c); h.style.setProperty("--tt-rb-ct", idealText(c)); }
+        else { h.style.removeProperty("--tt-rb-c"); h.style.removeProperty("--tt-rb-ct"); }
       });
     });
   }
   // live-highlight the preset swatch that matches the current accent (no re-render)
-  function syncSwOn() { Array.prototype.slice.call(document.querySelectorAll("#cc-settings .cc-set-swrow-global")).forEach(function (row) { swMarkRow(row, accent); }); }
+  function syncSwOn() { Array.prototype.slice.call(document.querySelectorAll("#tt-settings .tt-set-swrow-global")).forEach(function (row) { swMarkRow(row, accent); }); }
   function thc(t) { var e = el("th", null, t); return e; }
-  // The badge-visibility matrix is a grid of on/off settings, so each cell is the shared .cc-cb
+  // The badge-visibility matrix is a grid of on/off settings, so each cell is the shared .tt-cb
   // switch, carrying its own badge's colour and the ink for its knob.
-  function chkCell(key, v, color) { var td = el("td", "cc-set-chk"); var cb = el("input", "cc-cb"); cb.type = "checkbox"; cb.checked = !!(colview[key] && colview[key][v]); if (rainbow && color) { cb.style.setProperty("--cc-rb-c", color); cb.style.setProperty("--cc-rb-ct", idealText(color)); } cb.addEventListener("change", function () { var cur = colview[key] || { s: true, a: true }; colview[key] = { s: cur.s, a: cur.a }; colview[key][v] = cb.checked; set("cc.colview2", JSON.stringify(colview)); }); td.appendChild(cb); return td; }
+  function chkCell(key, v, color) { var td = el("td", "tt-set-chk"); var cb = el("input", "tt-cb"); cb.type = "checkbox"; cb.checked = !!(colview[key] && colview[key][v]); if (rainbow && color) { cb.style.setProperty("--tt-rb-c", color); cb.style.setProperty("--tt-rb-ct", idealText(color)); } cb.addEventListener("change", function () { var cur = colview[key] || { s: true, a: true }; colview[key] = { s: cur.s, a: cur.a }; colview[key][v] = cb.checked; set("tt.colview2", JSON.stringify(colview)); }); td.appendChild(cb); return td; }
   function versionRow(name, value) {
-    var row = el("div", "cc-set-row cc-set-inline");
+    var row = el("div", "tt-set-row tt-set-inline");
     row.appendChild(el("span", null, name)); row.appendChild(value);
     return row;
   }
@@ -2494,28 +2494,28 @@
   // build, shows its name without a link, since the link would lead nowhere.
   function verLink(ver, repo) {
     var v = String(ver || "").replace(/^v/, "");
-    if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(v)) return el("span", "cc-set-ver", v);
-    var a = el("a", "cc-btn cc-set-ver", v);
+    if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(v)) return el("span", "tt-set-ver", v);
+    var a = el("a", "tt-btn tt-set-ver", v);
     a.href = repo + "/releases/tag/v" + v; a.target = "_blank"; a.rel = "noopener noreferrer";
     return a;
   }
   // The marks on the Info tab's README buttons: Buy Me a Coffee's own artwork, PayPal and Bitcoin
   // from Simple Icons (CC0), GitHub's Octicon (MIT), and GlimStone's envelope and bug glyphs.
   var BRAND_MARKS = {
-    coffee: '<svg viewBox="0 0 841.9 245.3"><path fill="var(--cc-mark-ink, var(--cc-brand-coffee))" d="M110.7,113.9c-4.4,1.9-9.4,4.2-15.9,4.2s-5.5-.4-8-1.2l4.5,47.9c.2,2,1.1,3.9,2.5,5.2,1.4,1.4,3.3,2.1,5.2,2.1,0,0,6.3.3,8.5.3s9.1-.3,9.1-.3c1.9,0,3.7-.7,5.2-2.1,1.4-1.4,2.4-3.2,2.5-5.2l4.8-53c-2.1-.7-4.3-1.3-6.7-1.3-4.2,0-7.6,1.5-11.6,3.2h0Z"/><path fill="var(--cc-mark-ink, var(--cc-brand-coffee))" d="M149.7,89.1l-.6-3.5c-.6-3.2-2-6.2-5.1-7.4-1-.3-2.1-.5-2.9-1.3s-1-1.9-1.2-3c-.3-2-.6-4.1-1-6-.3-1.7-.5-3.6-1.3-5.2-1-2.1-3.1-3.3-5.1-4.2-1.1-.4-2.1-.7-3.2-1.1-5.1-1.4-10.5-1.9-15.7-2.2-6.3-.3-12.6-.2-18.9.3-4.7.4-9.6,1-14.1,2.7-1.6.6-3.3,1.4-4.5,2.7-1.5,1.6-2,4.1-.9,6.1.7,1.4,2.1,2.5,3.5,3.1,1.8.9,3.7,1.5,5.8,1.9,5.5,1.3,11.2,1.7,16.8,1.9,6.2.2,12.5,0,18.6-.6,1.5-.2,3.1-.4,4.6-.6,1.8-.3,3-2.8,2.5-4.4-.6-2-2.4-2.8-4.3-2.6-.3,0-.5,0-.9.1h-.2c-.6.1-1.3.2-1.9.2-1.4.1-2.7.3-4.1.4-3,.2-6.1.3-9.1.3s-6,0-9-.3c-1.4,0-2.7-.2-4.1-.3-.6,0-1.3-.1-1.8-.2h-1.4c-1.3-.3-2.5-.5-3.7-.7-.1,0-.2,0-.3-.2s-.1-.2-.1-.3,0-.2.1-.3c0-.1.2-.2.3-.2h0c1.1-.2,2.1-.4,3.2-.6.3,0,.7-.1,1.1-.2h0c.6,0,1.4-.2,2-.2,5.8-.6,11.7-.9,17.6-.6,2.9,0,5.7.2,8.5.5.6,0,1.2.1,1.8.2h1.2c1.4.3,2.8.5,4.1.9,2,.4,4.6.6,5.5,2.9.3.7.4,1.5.5,2.2l.2,1h0c.4,2.2,1,4.6,1.4,6.8v.5c0,.2,0,.3-.2.4,0,.1-.2.2-.3.3s-.3.1-.4.2h-.6c-.9.1-1.8.2-2.7.3-1.8.2-3.5.4-5.4.5-3.5.3-7.2.5-10.7.6h-5.5c-7.3,0-14.4-.4-21.7-1.3-.7,0-1.6-.2-2.4-.3.6,0-.4,0-.6,0-.5,0-1-.1-1.5-.2-1.7-.2-3.3-.5-5-.9-2-.3-4-.2-5.8.9-1.5.9-2.7,2.1-3.4,3.7-.7,1.7-1,3.5-1.4,5.4s-.9,3.7-.6,5.6c.4,4,3.1,7.3,7.1,8,3.6.6,7.3,1.3,11,1.7,14.4,1.8,29,2,43.6.6,1.2-.1,2.4-.2,3.5-.4.3,0,.7,0,1.1.1s.6.3,1,.6.4.6.6,1,.2.7.1,1.2l-.3,3.7c-.7,7.5-1.5,15-2.2,22.5-.7,7.9-1.5,15.7-2.4,23.5-.2,2.2-.4,4.4-.6,6.6-.2,2.1-.2,4.4-.6,6.5-.6,3.4-2.9,5.5-6.1,6.2-3,.6-6,1.1-9,1.1s-6.7-.1-10.1-.1-7.9-.3-10.7-3.1c-2.5-2.5-2.8-6.2-3.1-9.5-.4-4.4-.9-8.7-1.3-13.1l-2.5-24.2-1.6-15.6v-.7c-.2-1.9-1.5-3.7-3.4-3.6-1.7,0-3.6,1.6-3.4,3.6l1.2,11.7,2.4,24.1c.6,6.8,1.4,13.7,2,20.4.1,1.3.2,2.7.4,4,.7,7.2,6,11,12.5,12.1,3.9.6,7.7.7,11.6.9,4.9,0,10,.3,14.8-.6,7.2-1.4,12.6-6.4,13.4-14.1.2-2.2.4-4.5.6-6.7.7-7.4,1.5-14.9,2.2-22.3l2.4-24.2,1.1-11.1c0-.5.3-1.1.6-1.5s.9-.6,1.4-.7c2-.4,4.1-1.2,5.5-2.8,2.4-2.6,2.8-6,1.9-9.4h0ZM72.2,91.6v.4-.4ZM72.5,93.2h.1c0,.1-.1,0-.1,0ZM72.6,93.4c0,.2,0,.1,0,0ZM73,93.7h0ZM142.1,93.3c-.7.7-1.8,1.1-3,1.3-12.4,1.9-24.9,2.9-37.4,2.5-8.9-.3-17.8-1.4-26.6-2.7-.9-.1-1.8-.3-2.4-1-1.2-1.3-.5-3.7-.3-5.4.2-1.4.7-3.2,2.4-3.4,2.5-.3,5.4.7,7.8,1.2,3,.4,5.9.9,8.9,1.1,12.7,1.2,25.6,1.1,38.2-.7,2.4-.3,4.6-.6,6.8-1.1,2-.4,4.3-1.1,5.6,1.1.9,1.5,1,3.5.9,5.1,0,.7-.3,1.4-.9,1.9h0Z"/><path fill="currentColor" fill-rule="evenodd" d="M237.6,134.4c-1,1.8-2.2,3.4-4,4.7-1.7,1.3-3.6,2.5-5.8,3.3-2.2.9-4.5,1.4-6.7,1.7s-4.4.2-6.5,0c-2.1-.3-4-1.1-5.4-2.1l1.7-17.3c1.5-.5,3.4-1.1,5.8-1.6s4.7-1,7.2-1.2,4.8-.2,7,0c2.2.3,4,1,5.2,2.1.6.6,1.3,1.3,1.7,2s.7,1.5.9,2.2c.2,2.2,0,4.3-1.1,6h0ZM213.4,97.6c1.1-.6,2.5-1.3,4-1.8,1.6-.5,3.1-.9,4.8-1.1,1.6-.2,3.2-.2,4.8,0,1.6.1,2.9.5,4.2,1.3,1.2.7,2,1.7,2.7,3.1s.7,3,.4,5.1c-.2,1.6-.9,3-1.9,4.2s-2.4,2-4,2.9c-1.6.7-3.2,1.4-4.9,1.8s-3.4.7-5,1c-1.6.2-3,.3-4.2.4h-2.4l1.6-16.7h0v-.2ZM246.2,123.3c-.9-1.8-2-3.4-3.4-4.8s-3.1-2.4-5-3c.9-.6,1.7-1.7,2.5-3.2s1.5-3.1,2.1-4.8c.5-1.7,1-3.5,1.2-5.2s.1-3.3-.2-4.5c-.9-3.2-2.4-5.7-4.3-7.4-1.9-1.8-4.2-3-6.7-3.7-2.6-.6-5.4-.9-8.5-.4s-6.2,1.2-9.5,2.4v-1.8c0-.7-.4-1.5-1.2-2s-1.7-1-2.8-1.1-2,.1-3,.6c-1,.5-1.6,1.6-2,3-.4,4.7-.9,9.6-1.3,14.8s-.9,10.3-1.4,15.5c-.4,5.2-1,10.4-1.4,15.5-.4,5.1-1,10.1-1.4,14.8.1,1.4.5,2.6,1.2,3.3.6.7,1.4,1.3,2.2,1.4s1.7,0,2.7-.4,1.7-1.2,2.5-2.4c2.1,1.2,4.5,1.9,7.2,2.2s5.4.3,8,0,5.5-1,8-1.9c2.7-1,5-2.1,7.2-3.5s4-3,5.5-4.8,2.5-3.7,2.9-5.9.6-4.3.4-6.4c-.2-2.1-.7-4.2-1.6-6h.2Z"/><path fill="currentColor" fill-rule="evenodd" d="M323.5,164.9c-.3,1.7-.6,3.5-1.2,5.5s-1.2,3.6-1.8,5.2c-.7,1.6-1.5,2.9-2.4,3.9-.9,1-1.8,1.4-2.8,1.2-.7-.1-1.3-.6-1.5-1.5-.2-.9-.2-2,0-3.3s.6-2.8,1.2-4.5c.6-1.6,1.4-3.3,2.2-4.9.9-1.6,1.8-3.2,3-4.7,1.1-1.5,2.2-2.8,3.5-3.7.2.3.4,1.1.3,2.4s-.2,2.8-.4,4.5h-.2ZM350.4,130.6c-.7-.7-1.6-1.3-2.7-1.3-1.1-.1-2,.4-3.1,1.7-.6,1.3-1.6,2.5-2.7,3.6-1.1,1.2-2.1,2.2-3.3,3.2s-2.2,1.7-3.2,2.5c-1.1.6-1.8,1.2-2.5,1.5-.2-1.7-.3-3.5-.3-5.5s0-4,.1-5.9c.1-2.9.5-5.7,1-8.6s1.2-5.8,2.1-8.6c0-1.5-.3-2.7-1.1-3.6-.6-1-1.5-1.5-2.5-1.7s-2-.1-3,.4-1.9,1.4-2.7,2.7c-.6,1.7-1.4,3.7-2.1,5.9-.9,2.1-1.7,4.4-2.8,6.6s-2.1,4.4-3.4,6.5-2.7,4-4.2,5.6-3.1,2.9-4.9,3.9c-1.8,1-3.6,1.3-5.8,1.2-1-.2-1.6-1-2-2.1s-.6-2.6-.7-4.4,0-3.6.2-5.8.5-4.2,1-6.2.9-4,1.3-5.9,1-3.4,1.4-4.7c.6-1.5.6-2.8,0-3.9s-1.5-1.7-2.6-2-2.2-.3-3.5,0c-1.2.3-2.1,1.2-2.6,2.5-.9,2.1-1.7,4.6-2.5,7.3s-1.3,5.5-1.8,8.3c-.4,2.9-.7,5.7-.7,8.6v.5c-1.2,3.1-2.2,5.4-3.3,7-1.4,2-2.9,2.9-4.6,2.6-.7-.3-1.2-1.1-1.5-2.2-.2-1.2-.3-2.6-.2-4.3,0-1.7.3-3.6.6-5.8.3-2.1.7-4.4,1.2-6.6.5-2.2,1-4.6,1.5-7s1-4.5,1.4-6.5c0-1.8-.6-3.2-1.6-4.3s-2.5-1.4-4.3-1.2c-1.3.5-2.2,1.2-2.8,2s-1.1,1.9-1.5,3.2c-.2.6-.5,2-1,4.1s-1,4.4-1.6,7.1-1.5,5.5-2.4,8.3c-.9,2.9-1.9,5.6-3,7.8-1.1,2.4-2.4,4.3-3.6,5.7s-2.8,2-4.3,1.7c-.9-.1-1.4-1.1-1.6-2.6s-.3-3.5-.1-5.9.4-4.8,1-7.6c.4-2.8,1-5.4,1.5-7.9.5-2.5,1-4.7,1.4-6.5.4-1.9.7-3.2.9-3.7,0-1.5-.3-2.8-1.1-3.6s-1.5-1.5-2.5-1.7-2-.1-3,.4c-1.1.5-1.9,1.4-2.7,2.7-.2,1.4-.6,3.1-1.1,4.9-.4,1.9-.9,3.7-1.2,5.8s-.7,3.9-1.1,5.8-.6,3.5-.7,4.9c-.1,1.1-.2,2.5-.3,4.1s-.2,3.3-.2,5.1.1,3.5.4,5.4c.2,1.7.7,3.4,1.4,4.8s1.6,2.7,2.9,3.6,2.8,1.5,4.7,1.6c1.9.1,3.6,0,5.1-.4s2.8-1.1,4-1.8c1.2-.9,2.2-1.8,3.2-3s1.9-2.5,2.9-3.7c.9,2,2,3.5,3.5,4.7,1.4,1.1,2.9,1.7,4.5,1.9s3.2,0,4.8-.6,3.1-1.8,4.4-3.3c.9-1,1.7-2,2.5-3.3.3.5.6,1.1,1.1,1.6,1.3,1.7,3.1,2.9,5.2,3.4,2.4.6,4.7.7,7,.3s4.4-1.2,6.5-2.2c2-1.1,4-2.5,5.8-4s3.3-3.2,4.6-4.8v7c-2.7,1.8-5.1,4.1-7.5,6.6s-4.4,5.4-6.2,8.2c-1.7,2.9-3.2,5.9-4.2,8.9s-1.5,5.8-1.5,8.5.6,4.9,1.8,6.8c1.2,1.9,3.2,3.3,6,4.2,2.9.9,5.4,1,7.5,0,2.1-.9,4.1-2.2,5.7-4.2,1.6-1.9,2.9-4.3,4-7.1s1.8-5.7,2.5-8.7c.6-3,1-6,1.2-8.9s.1-5.5,0-7.7c4.5-1.9,8.2-4.3,11.1-7.2,2.9-2.9,5.4-6,7.2-9.2.5-.7.7-1.7.6-2.9-.2-1.1-.6-2-1.4-2.9h0v.3Z"/><path fill="currentColor" fill-rule="evenodd" d="M450.4,125.6c.1-1.2.4-2.5.7-3.9s.7-2.7,1.2-3.9c.4-1.3,1.1-2.4,1.7-3.3s1.3-1.6,2-2,1.4-.3,2.1.1,1.3,1.5,1.5,3c.2,1.5,0,3.2-.5,4.9s-1.5,3.3-3,4.9c-1.4,1.5-3.3,2.6-5.8,3-.1-.7,0-1.7,0-2.9h0ZM477.9,128.8c-.9-.2-1.7-.3-2.5,0-.7.2-1.3.7-1.5,1.6-.4,1.7-1.1,3.4-2,5.1s-2,3.4-3.4,5c-1.4,1.6-2.9,3-4.6,4.2-1.7,1.2-3.4,2-5.4,2.6-1.8.5-3.4.6-4.6.2-1.2-.4-2.1-1.2-2.9-2.2s-1.2-2.4-1.5-3.9c-.3-1.5-.5-3.1-.5-4.7,3,.2,5.7-.3,8-1.6s4.4-3,6-5.1,2.9-4.5,3.7-7.2,1.3-5.4,1.4-7.9c0-2.5-.3-4.6-1.1-6.3s-1.8-3-3.2-4-2.9-1.5-4.6-1.6c-1.7-.1-3.5,0-5.4.7-2.1.7-4,1.9-5.5,3.6s-2.8,3.6-3.7,5.8-1.8,4.5-2.4,7.1-1,5-1.3,7.5c-.2,2.1-.3,4.3-.4,6.3-.1.2-.2.5-.3.7-.9,1.9-1.8,3.7-2.9,5.5s-2.2,3.3-3.6,4.5c-1.3,1.2-2.7,1.6-4.2,1.3-.9-.2-1.3-1.2-1.4-2.9,0-1.7,0-3.9.3-6.4.2-2.6.5-5.4,1-8.3.3-3,.5-5.9.5-8.6s-.4-4.6-1.4-6.8c-.9-2.1-2.1-4-3.6-5.5-1.6-1.5-3.3-2.4-5.5-2.9-2-.4-4.3-.1-6.6,1s-4.3,2.7-5.7,4.7-2.7,4.1-3.9,6.3c-.4-1.7-1.1-3.2-1.8-4.7-.9-1.5-1.8-2.7-3-3.7s-2.6-1.9-4-2.6-3-1-4.7-1-3.1.3-4.4,1c-1.4.6-2.6,1.4-3.7,2.4-1.1,1-2.1,2-3,3.2s-1.7,2.4-2.4,3.5c-.1-1.4-.2-2.6-.3-3.6s-.4-1.9-.7-2.6-.9-1.3-1.5-1.6-1.5-.5-2.7-.5-1.2.1-1.7.3-1.1.5-1.5,1-.7,1-1.1,1.5-.3,1.3-.2,2.1c0,.5.2,1.3.4,2.1.2.9.4,1.9.6,3.2s.4,2.9.5,4.8.2,4.2.1,6.8c0,2.7-.2,5.9-.6,9.5-.3,3.6-.9,7.8-1.6,12.6-.1,1.1.3,2,1.3,2.7s2,1.1,3.2,1.2,2.4-.1,3.4-.6,1.7-1.5,1.8-2.8c.1-2.5.4-5.1,1-7.9.4-2.8,1-5.6,1.7-8.3s1.4-5.4,2.2-7.8c.9-2.5,1.8-4.7,2.8-6.5,1.1-1.9,2.1-3.4,3.2-4.5,1.1-1.2,2.2-1.7,3.5-1.7s2.7.6,3.4,2c.9,1.4,1.4,3.1,1.7,5.1.3,2.1.5,4.4.4,7s-.1,4.9-.3,7.3c-.2,2.4-.4,4.4-.6,6.2s-.4,3.1-.5,3.7c0,1.2.4,2.1,1.4,2.9s1.9,1.2,3.1,1.3c1.2.1,2.2,0,3.2-.6s1.6-1.5,1.7-2.8c.5-3.7,1.3-7.6,2.1-11.5,1-3.9,2-7.3,3.2-10.3,1.2-3,2.5-5.5,4-7.4,1.5-1.9,3-2.9,4.6-2.9s1.5.5,1.9,1.7.6,2.8.6,4.7-.1,3-.3,4.5c-.2,1.6-.5,3.2-.9,4.8s-.6,3.3-.9,5.1-.3,3.5-.3,5.5.1,2.9.4,4.6.7,3.4,1.5,4.9c.7,1.6,1.7,2.9,3.1,4s3,1.6,4.9,1.6c3,0,5.7-.6,8-1.9s4.3-3,6-5c0-.1.1-.2.2-.3.1.3.2.6.4,1,1.2,2.4,2.7,4.1,4.6,5.4s4.3,1.9,7,2.1c2.7.1,5.6-.3,8.7-1.5,2.4-.9,4.4-1.9,6.1-3.2s3.2-2.8,4.6-4.6,2.7-3.9,3.7-6.3,2.2-5.1,3.4-8.1c.2-.9,0-1.6-.5-2.2-.6-.6-1.4-1.1-2.2-1.4h0v-.5Z"/><path fill="currentColor" fill-rule="evenodd" d="M521,120.1c-.2,1.6-.6,3.2-1.1,5.1s-1.1,3.9-1.7,5.8c-.6,2-1.5,3.9-2.6,5.5-1,1.6-2.1,2.9-3.4,3.9-1.3,1-2.8,1.3-4.5,1.2-.9-.1-1.5-.6-1.9-1.7s-.6-2.4-.7-4.1c0-1.6.1-3.4.4-5.4s.9-3.9,1.5-5.8,1.5-3.6,2.5-5.1c1-1.6,2-2.8,3.3-3.6s2.6-1.3,4.1-1.2c1.5,0,3.1.7,4.8,2.2-.1.6-.3,1.8-.5,3.3h-.1ZM549.2,126c-.9-.4-1.6-.5-2.6-.3-.9.2-1.5,1.1-1.8,2.4-.2,1.5-.6,3.2-1.4,5.2-.7,2-1.6,3.9-2.8,5.7-1.1,1.8-2.4,3.3-3.7,4.5-1.4,1.2-2.9,1.7-4.5,1.6-1.3-.1-2.2-.7-2.8-2s-.9-2.8-.9-4.7.1-4,.5-6.3.9-4.7,1.4-7,1.1-4.5,1.7-6.6c.5-2.1,1.1-4,1.4-5.5.4-1.3.3-2.5-.4-3.3-.6-1-1.5-1.6-2.6-1.9-1.1-.4-2-.5-3.1-.3s-1.7.7-2,1.7c-3.1-2.7-6.1-4.2-9-4.4s-5.6.4-7.9,1.9c-2.5,1.5-4.6,3.6-6.4,6.4-1.9,2.8-3.4,5.9-4.6,9.1s-1.9,6.6-2.1,10.1c-.3,3.4,0,6.5.6,9.4.7,2.8,2,5.1,4,7,1.9,1.8,4.4,2.7,7.6,2.7s2.8-.3,4.2-.9,2.6-1.3,3.6-2,2.1-1.6,2.9-2.5,1.5-1.6,2-2.1c.3,1.9,1,3.5,1.8,4.8s1.8,2.4,2.9,3.2,2.2,1.5,3.4,1.8c1.2.4,2.4.5,3.4.5,2.5,0,4.8-.9,7-2.6,2.1-1.7,4.1-3.7,5.8-6.2,1.7-2.5,3.1-5,4.3-7.7,1.1-2.7,1.8-5.1,2.2-7.3.3-.7.3-1.6-.2-2.5s-1.2-1.5-2-1.9h.1Z"/><path fill="currentColor" fill-rule="evenodd" d="M691.9,169.7c-.4,1.8-1.2,3.3-2.1,4.5-1,1.3-2.1,1.9-3.5,1.9s-1.6-.4-2-1.4c-.5-1-.9-2.2-1-3.9-.2-1.6-.2-3.3-.2-5.4s0-3.9.2-5.8c.1-1.9.3-3.6.5-5.4.2-1.6.3-2.9.4-3.7,1.8.2,3.3,1,4.5,2.4,1.2,1.3,2.1,2.9,2.8,4.8.6,1.8,1,3.9,1.1,6,0,2.1,0,4.1-.5,5.9h-.1ZM663.2,169.7c-.4,1.8-1.2,3.3-2.1,4.5-1,1.3-2.1,1.9-3.5,1.9s-1.6-.4-2-1.4c-.5-1-.9-2.2-1-3.9-.2-1.6-.2-3.3-.2-5.4s0-3.9.2-5.8c.1-1.9.3-3.6.5-5.4.2-1.6.3-2.9.4-3.7,1.8.2,3.3,1,4.5,2.4,1.2,1.3,2.1,2.9,2.8,4.8.6,1.8,1,3.9,1.1,6,0,2.1,0,4.1-.5,5.9h-.1ZM633.8,124.9c0,1.3-.2,2.4-.3,3.3-.2,1-.4,1.6-.7,1.8-.5-.3-1.3-1.2-2.1-2.5s-1.5-2.8-1.9-4.5-.6-3.3-.4-4.9c.2-1.6,1.1-2.9,2.5-3.7.5-.3,1.1-.2,1.5.3s.7,1.4,1.1,2.4c.2,1.1.4,2.2.5,3.6,0,1.4.1,2.7,0,4h0v.2ZM626.7,140.6c-.9.9-1.7,1.6-2.8,2.2s-2,1.1-3.1,1.4-2,.4-2.9.2c-2.4-.4-4.2-1.5-5.5-3.1s-2-3.4-2.5-5.6c-.3-2.1-.3-4.4.1-6.8.4-2.5,1.2-4.7,2.1-6.7s2.2-3.9,3.6-5.4,3-2.5,4.7-2.8c-.6,2.7-.9,5.5-.6,8.3.2,2.9.9,5.6,2,8.1.7,1.5,1.6,2.9,2.7,4.2s2.2,2.4,3.7,3.2c-.4.9-1.1,1.8-1.8,2.7h.1ZM714.5,125.6c.2-1.2.4-2.5.7-3.9.3-1.3.7-2.7,1.2-3.9.5-1.3,1.1-2.4,1.7-3.3s1.3-1.6,2-2,1.4-.3,2.1.1,1.3,1.5,1.5,3,0,3.2-.5,4.9-1.5,3.3-3,4.9-3.3,2.6-5.8,3v-2.9h0ZM746.4,125.6c.2-1.2.4-2.5.7-3.9.3-1.3.7-2.7,1.2-3.9.5-1.3,1.1-2.4,1.7-3.3s1.3-1.6,2-2,1.4-.3,2.1.1,1.3,1.5,1.5,3,0,3.2-.5,4.9-1.5,3.3-3,4.9c-1.4,1.5-3.3,2.6-5.8,3v-2.9h0ZM776.2,130.2c-.6-.6-1.4-1.1-2.2-1.4s-1.7-.3-2.5,0c-.7.2-1.3.7-1.5,1.6-.4,1.7-1.1,3.4-2,5.1s-2,3.4-3.4,5-2.9,3-4.6,4.2-3.4,2-5.4,2.6c-1.8.5-3.4.6-4.6.2-1.2-.4-2.1-1.2-2.9-2.2s-1.3-2.4-1.5-3.9c-.3-1.5-.5-3.1-.5-4.7,3,.2,5.7-.3,8-1.6s4.4-3,6-5.1,2.9-4.5,3.7-7.2,1.3-5.4,1.4-7.9c0-2.5-.3-4.6-1.1-6.3s-1.8-3-3.2-4-2.9-1.5-4.6-1.6-3.5,0-5.4.7c-2.1.7-4,1.9-5.6,3.6-1.5,1.6-2.8,3.6-3.7,5.8s-1.8,4.5-2.4,7.1-1,5-1.3,7.5c-.2,2.4-.4,4.6-.4,6.8-.2.4-.4.9-.6,1.3-1,1.7-2,3.4-3.4,5s-2.9,3-4.6,4.2-3.4,2-5.4,2.6c-1.8.5-3.4.6-4.6.2-1.2-.4-2.1-1.2-2.9-2.2s-1.3-2.4-1.5-3.9c-.3-1.5-.5-3.1-.5-4.7,3,.2,5.7-.3,8-1.6s4.4-3,6-5.1,2.9-4.5,3.7-7.2,1.3-5.4,1.4-7.9c0-2.5-.3-4.6-1.1-6.3s-1.8-3-3.2-4-2.9-1.5-4.6-1.6-3.5,0-5.4.7c-2.1.7-4,1.9-5.6,3.6-1.5,1.6-2.8,3.6-3.7,5.8s-1.8,4.5-2.4,7.1-1,5-1.3,7.5c-.1,1.4-.2,2.7-.3,4.1-.5.4-1,.9-1.5,1.3-1.8,1.5-3.7,2.8-5.8,4-2,1.2-4.1,2.1-6.2,2.9s-4.4,1.2-6.6,1.4l4.9-52.4c.3-1.1.2-2-.5-2.9s-1.5-1.4-2.5-1.7c-1-.3-2-.3-3.2,0-1.2.4-2,1.2-2.8,2.6-.3,2-.7,4.7-1.2,8.2s-.7,7.3-1.2,11.3-.7,8.3-1.2,12.7c-.4,4.4-.7,8.5-1.1,12.2v.5c-.4.4-.9.7-1.4,1.2-1.8,1.5-3.7,2.8-5.8,4-2,1.2-4.1,2.1-6.2,2.9s-4.4,1.2-6.6,1.4l4.9-52.4c.3-1.1.2-2-.5-2.9s-1.5-1.4-2.5-1.7c-1-.3-2-.3-3.2,0-1.2.4-2,1.2-2.8,2.6-.3,2-.7,4.7-1.2,8.2s-.7,7.3-1.2,11.3-.7,8.3-1.2,12.7c-.4,4.4-.7,8.5-1.1,12.2v.2c-.9.4-1.7.7-2.7,1-1,.3-2.1.4-3.4.5.2-1,.4-2,.5-3.2s.2-2.4.3-3.6v-3.7c0-1.3,0-2.5-.2-3.4-.2-2.2-.7-4.4-1.5-6.4s-1.7-3.7-2.9-5.1c-1.2-1.4-2.8-2.2-4.6-2.8-1.8-.4-4-.3-6.4.4-3.6-.4-6.8-.1-9.7,1-2.9,1.2-5.4,2.8-7.5,4.9s-3.9,4.7-5.1,7.6c-1.4,2.9-2.2,5.9-2.7,9-.2,1.3-.3,2.6-.3,3.9-.9,1.7-1.7,3.1-2.7,4.4-1.4,1.7-2.9,3.2-4.4,4.3-1.5,1.1-3,1.9-4.5,2.6-1.5.5-2.8,1-4,1.2-1.4.2-2.7.3-4,0-1.3-.2-2.5-.9-3.5-1.8-.9-.7-1.5-1.9-1.9-3.5-.4-1.6-.7-3.5-.7-5.6s0-4.3.2-6.5.6-4.4,1.3-6.4c.5-2,1.3-3.9,2.2-5.5.9-1.6,1.9-2.8,3.2-3.4.6.1,1.1.5,1.3,1.2s.2,1.6.1,2.6c0,1-.2,2-.3,3-.2,1.1-.2,1.9-.2,2.6.2,1.4.7,2.6,1.5,3.3s1.6,1.3,2.6,1.4c1,.1,1.9,0,2.8-.6,1-.5,1.7-1.5,2.2-2.8h.2l1.1-10.1c.3-1.4,0-2.6-.6-3.6-.7-1.1-1.7-1.6-2.9-1.8-1.5-2.2-3.6-3.4-6.2-3.5-2.7-.1-5.4.7-8,2.6-1.7,1.2-3.2,2.9-4.5,5s-2.4,4.5-3.2,7.1-1.4,5.4-1.7,8.2-.4,5.7-.2,8.5.7,5.4,1.5,7.7c.7,2.5,1.8,4.5,3.2,6.1,1.2,1.4,2.5,2.5,4,3.1,1.5.6,3,1.1,4.6,1.2s3.2,0,4.8-.2,3.1-.6,4.5-1.2c1.8-.6,3.7-1.6,5.7-2.6,1.9-1.1,3.9-2.4,5.7-3.7,1-.7,1.8-1.6,2.8-2.6.4,1,.9,1.9,1.4,2.9,1.4,2.4,3.3,4.3,5.8,5.8,2.5,1.5,5.5,2.1,9,2.1s7.3-1.1,10.5-2.9c3.2-1.9,5.9-4.6,7.9-8.2,3.1,0,6.1-.5,9.1-1.5v1c-.2,2.8-.3,4.7-.3,5.7,0,1.7-.2,3.9-.3,6.4-.2,2.6-.3,5.2-.3,8s0,5.7.3,8.6c.2,2.9.9,5.5,1.7,7.8s2,4.3,3.6,6c1.6,1.6,3.6,2.6,6.1,2.9,2.7.3,5-.1,7-1.4s3.5-3.1,4.8-5.5c1.2-2.2,2-4.9,2.6-7.9.5-3,.6-6,.4-9.1s-.7-5.9-1.7-8.6-2.1-4.9-3.7-6.6c1-.2,2.1-.7,3.4-1.5s2.7-1.6,4.1-2.5c.3-.2.6-.4,1.1-.6-.1,1.8-.2,3.2-.2,4,0,1.7-.2,3.9-.3,6.4-.2,2.6-.3,5.2-.3,8s0,5.7.3,8.6c.2,2.9.9,5.5,1.7,7.8s2,4.3,3.6,6c1.6,1.6,3.6,2.6,6.1,2.9,2.7.3,5-.1,7-1.4s3.5-3.1,4.8-5.5c1.2-2.2,2-4.9,2.6-7.9.5-3,.6-6,.4-9.1s-.7-5.9-1.7-8.6-2.1-4.9-3.7-6.6c1-.2,2.1-.7,3.4-1.5s2.7-1.6,4.1-2.5c.7-.5,1.5-1,2.1-1.5.3,2.6.9,4.8,1.8,6.7,1.2,2.4,2.7,4.1,4.6,5.4s4.3,1.9,6.8,2.1c2.7.1,5.6-.3,8.7-1.5,2.4-.9,4.4-1.9,6.1-3.2,1.7-1.3,3.2-2.8,4.6-4.6,0-.1.2-.2.2-.3.2.7.5,1.5.9,2.1,1.2,2.4,2.7,4.1,4.6,5.4s4.3,1.9,6.8,2.1c2.7.1,5.6-.3,8.7-1.5,2.4-.9,4.4-1.9,6.1-3.2,1.7-1.3,3.2-2.8,4.6-4.6s2.7-3.9,3.7-6.3c1.2-2.4,2.2-5.1,3.4-8.1.2-.9,0-1.6-.6-2.2h0v-.2Z"/></svg>',
+    coffee: '<svg viewBox="0 0 841.9 245.3"><path fill="var(--tt-mark-ink, var(--tt-brand-coffee))" d="M110.7,113.9c-4.4,1.9-9.4,4.2-15.9,4.2s-5.5-.4-8-1.2l4.5,47.9c.2,2,1.1,3.9,2.5,5.2,1.4,1.4,3.3,2.1,5.2,2.1,0,0,6.3.3,8.5.3s9.1-.3,9.1-.3c1.9,0,3.7-.7,5.2-2.1,1.4-1.4,2.4-3.2,2.5-5.2l4.8-53c-2.1-.7-4.3-1.3-6.7-1.3-4.2,0-7.6,1.5-11.6,3.2h0Z"/><path fill="var(--tt-mark-ink, var(--tt-brand-coffee))" d="M149.7,89.1l-.6-3.5c-.6-3.2-2-6.2-5.1-7.4-1-.3-2.1-.5-2.9-1.3s-1-1.9-1.2-3c-.3-2-.6-4.1-1-6-.3-1.7-.5-3.6-1.3-5.2-1-2.1-3.1-3.3-5.1-4.2-1.1-.4-2.1-.7-3.2-1.1-5.1-1.4-10.5-1.9-15.7-2.2-6.3-.3-12.6-.2-18.9.3-4.7.4-9.6,1-14.1,2.7-1.6.6-3.3,1.4-4.5,2.7-1.5,1.6-2,4.1-.9,6.1.7,1.4,2.1,2.5,3.5,3.1,1.8.9,3.7,1.5,5.8,1.9,5.5,1.3,11.2,1.7,16.8,1.9,6.2.2,12.5,0,18.6-.6,1.5-.2,3.1-.4,4.6-.6,1.8-.3,3-2.8,2.5-4.4-.6-2-2.4-2.8-4.3-2.6-.3,0-.5,0-.9.1h-.2c-.6.1-1.3.2-1.9.2-1.4.1-2.7.3-4.1.4-3,.2-6.1.3-9.1.3s-6,0-9-.3c-1.4,0-2.7-.2-4.1-.3-.6,0-1.3-.1-1.8-.2h-1.4c-1.3-.3-2.5-.5-3.7-.7-.1,0-.2,0-.3-.2s-.1-.2-.1-.3,0-.2.1-.3c0-.1.2-.2.3-.2h0c1.1-.2,2.1-.4,3.2-.6.3,0,.7-.1,1.1-.2h0c.6,0,1.4-.2,2-.2,5.8-.6,11.7-.9,17.6-.6,2.9,0,5.7.2,8.5.5.6,0,1.2.1,1.8.2h1.2c1.4.3,2.8.5,4.1.9,2,.4,4.6.6,5.5,2.9.3.7.4,1.5.5,2.2l.2,1h0c.4,2.2,1,4.6,1.4,6.8v.5c0,.2,0,.3-.2.4,0,.1-.2.2-.3.3s-.3.1-.4.2h-.6c-.9.1-1.8.2-2.7.3-1.8.2-3.5.4-5.4.5-3.5.3-7.2.5-10.7.6h-5.5c-7.3,0-14.4-.4-21.7-1.3-.7,0-1.6-.2-2.4-.3.6,0-.4,0-.6,0-.5,0-1-.1-1.5-.2-1.7-.2-3.3-.5-5-.9-2-.3-4-.2-5.8.9-1.5.9-2.7,2.1-3.4,3.7-.7,1.7-1,3.5-1.4,5.4s-.9,3.7-.6,5.6c.4,4,3.1,7.3,7.1,8,3.6.6,7.3,1.3,11,1.7,14.4,1.8,29,2,43.6.6,1.2-.1,2.4-.2,3.5-.4.3,0,.7,0,1.1.1s.6.3,1,.6.4.6.6,1,.2.7.1,1.2l-.3,3.7c-.7,7.5-1.5,15-2.2,22.5-.7,7.9-1.5,15.7-2.4,23.5-.2,2.2-.4,4.4-.6,6.6-.2,2.1-.2,4.4-.6,6.5-.6,3.4-2.9,5.5-6.1,6.2-3,.6-6,1.1-9,1.1s-6.7-.1-10.1-.1-7.9-.3-10.7-3.1c-2.5-2.5-2.8-6.2-3.1-9.5-.4-4.4-.9-8.7-1.3-13.1l-2.5-24.2-1.6-15.6v-.7c-.2-1.9-1.5-3.7-3.4-3.6-1.7,0-3.6,1.6-3.4,3.6l1.2,11.7,2.4,24.1c.6,6.8,1.4,13.7,2,20.4.1,1.3.2,2.7.4,4,.7,7.2,6,11,12.5,12.1,3.9.6,7.7.7,11.6.9,4.9,0,10,.3,14.8-.6,7.2-1.4,12.6-6.4,13.4-14.1.2-2.2.4-4.5.6-6.7.7-7.4,1.5-14.9,2.2-22.3l2.4-24.2,1.1-11.1c0-.5.3-1.1.6-1.5s.9-.6,1.4-.7c2-.4,4.1-1.2,5.5-2.8,2.4-2.6,2.8-6,1.9-9.4h0ZM72.2,91.6v.4-.4ZM72.5,93.2h.1c0,.1-.1,0-.1,0ZM72.6,93.4c0,.2,0,.1,0,0ZM73,93.7h0ZM142.1,93.3c-.7.7-1.8,1.1-3,1.3-12.4,1.9-24.9,2.9-37.4,2.5-8.9-.3-17.8-1.4-26.6-2.7-.9-.1-1.8-.3-2.4-1-1.2-1.3-.5-3.7-.3-5.4.2-1.4.7-3.2,2.4-3.4,2.5-.3,5.4.7,7.8,1.2,3,.4,5.9.9,8.9,1.1,12.7,1.2,25.6,1.1,38.2-.7,2.4-.3,4.6-.6,6.8-1.1,2-.4,4.3-1.1,5.6,1.1.9,1.5,1,3.5.9,5.1,0,.7-.3,1.4-.9,1.9h0Z"/><path fill="currentColor" fill-rule="evenodd" d="M237.6,134.4c-1,1.8-2.2,3.4-4,4.7-1.7,1.3-3.6,2.5-5.8,3.3-2.2.9-4.5,1.4-6.7,1.7s-4.4.2-6.5,0c-2.1-.3-4-1.1-5.4-2.1l1.7-17.3c1.5-.5,3.4-1.1,5.8-1.6s4.7-1,7.2-1.2,4.8-.2,7,0c2.2.3,4,1,5.2,2.1.6.6,1.3,1.3,1.7,2s.7,1.5.9,2.2c.2,2.2,0,4.3-1.1,6h0ZM213.4,97.6c1.1-.6,2.5-1.3,4-1.8,1.6-.5,3.1-.9,4.8-1.1,1.6-.2,3.2-.2,4.8,0,1.6.1,2.9.5,4.2,1.3,1.2.7,2,1.7,2.7,3.1s.7,3,.4,5.1c-.2,1.6-.9,3-1.9,4.2s-2.4,2-4,2.9c-1.6.7-3.2,1.4-4.9,1.8s-3.4.7-5,1c-1.6.2-3,.3-4.2.4h-2.4l1.6-16.7h0v-.2ZM246.2,123.3c-.9-1.8-2-3.4-3.4-4.8s-3.1-2.4-5-3c.9-.6,1.7-1.7,2.5-3.2s1.5-3.1,2.1-4.8c.5-1.7,1-3.5,1.2-5.2s.1-3.3-.2-4.5c-.9-3.2-2.4-5.7-4.3-7.4-1.9-1.8-4.2-3-6.7-3.7-2.6-.6-5.4-.9-8.5-.4s-6.2,1.2-9.5,2.4v-1.8c0-.7-.4-1.5-1.2-2s-1.7-1-2.8-1.1-2,.1-3,.6c-1,.5-1.6,1.6-2,3-.4,4.7-.9,9.6-1.3,14.8s-.9,10.3-1.4,15.5c-.4,5.2-1,10.4-1.4,15.5-.4,5.1-1,10.1-1.4,14.8.1,1.4.5,2.6,1.2,3.3.6.7,1.4,1.3,2.2,1.4s1.7,0,2.7-.4,1.7-1.2,2.5-2.4c2.1,1.2,4.5,1.9,7.2,2.2s5.4.3,8,0,5.5-1,8-1.9c2.7-1,5-2.1,7.2-3.5s4-3,5.5-4.8,2.5-3.7,2.9-5.9.6-4.3.4-6.4c-.2-2.1-.7-4.2-1.6-6h.2Z"/><path fill="currentColor" fill-rule="evenodd" d="M323.5,164.9c-.3,1.7-.6,3.5-1.2,5.5s-1.2,3.6-1.8,5.2c-.7,1.6-1.5,2.9-2.4,3.9-.9,1-1.8,1.4-2.8,1.2-.7-.1-1.3-.6-1.5-1.5-.2-.9-.2-2,0-3.3s.6-2.8,1.2-4.5c.6-1.6,1.4-3.3,2.2-4.9.9-1.6,1.8-3.2,3-4.7,1.1-1.5,2.2-2.8,3.5-3.7.2.3.4,1.1.3,2.4s-.2,2.8-.4,4.5h-.2ZM350.4,130.6c-.7-.7-1.6-1.3-2.7-1.3-1.1-.1-2,.4-3.1,1.7-.6,1.3-1.6,2.5-2.7,3.6-1.1,1.2-2.1,2.2-3.3,3.2s-2.2,1.7-3.2,2.5c-1.1.6-1.8,1.2-2.5,1.5-.2-1.7-.3-3.5-.3-5.5s0-4,.1-5.9c.1-2.9.5-5.7,1-8.6s1.2-5.8,2.1-8.6c0-1.5-.3-2.7-1.1-3.6-.6-1-1.5-1.5-2.5-1.7s-2-.1-3,.4-1.9,1.4-2.7,2.7c-.6,1.7-1.4,3.7-2.1,5.9-.9,2.1-1.7,4.4-2.8,6.6s-2.1,4.4-3.4,6.5-2.7,4-4.2,5.6-3.1,2.9-4.9,3.9c-1.8,1-3.6,1.3-5.8,1.2-1-.2-1.6-1-2-2.1s-.6-2.6-.7-4.4,0-3.6.2-5.8.5-4.2,1-6.2.9-4,1.3-5.9,1-3.4,1.4-4.7c.6-1.5.6-2.8,0-3.9s-1.5-1.7-2.6-2-2.2-.3-3.5,0c-1.2.3-2.1,1.2-2.6,2.5-.9,2.1-1.7,4.6-2.5,7.3s-1.3,5.5-1.8,8.3c-.4,2.9-.7,5.7-.7,8.6v.5c-1.2,3.1-2.2,5.4-3.3,7-1.4,2-2.9,2.9-4.6,2.6-.7-.3-1.2-1.1-1.5-2.2-.2-1.2-.3-2.6-.2-4.3,0-1.7.3-3.6.6-5.8.3-2.1.7-4.4,1.2-6.6.5-2.2,1-4.6,1.5-7s1-4.5,1.4-6.5c0-1.8-.6-3.2-1.6-4.3s-2.5-1.4-4.3-1.2c-1.3.5-2.2,1.2-2.8,2s-1.1,1.9-1.5,3.2c-.2.6-.5,2-1,4.1s-1,4.4-1.6,7.1-1.5,5.5-2.4,8.3c-.9,2.9-1.9,5.6-3,7.8-1.1,2.4-2.4,4.3-3.6,5.7s-2.8,2-4.3,1.7c-.9-.1-1.4-1.1-1.6-2.6s-.3-3.5-.1-5.9.4-4.8,1-7.6c.4-2.8,1-5.4,1.5-7.9.5-2.5,1-4.7,1.4-6.5.4-1.9.7-3.2.9-3.7,0-1.5-.3-2.8-1.1-3.6s-1.5-1.5-2.5-1.7-2-.1-3,.4c-1.1.5-1.9,1.4-2.7,2.7-.2,1.4-.6,3.1-1.1,4.9-.4,1.9-.9,3.7-1.2,5.8s-.7,3.9-1.1,5.8-.6,3.5-.7,4.9c-.1,1.1-.2,2.5-.3,4.1s-.2,3.3-.2,5.1.1,3.5.4,5.4c.2,1.7.7,3.4,1.4,4.8s1.6,2.7,2.9,3.6,2.8,1.5,4.7,1.6c1.9.1,3.6,0,5.1-.4s2.8-1.1,4-1.8c1.2-.9,2.2-1.8,3.2-3s1.9-2.5,2.9-3.7c.9,2,2,3.5,3.5,4.7,1.4,1.1,2.9,1.7,4.5,1.9s3.2,0,4.8-.6,3.1-1.8,4.4-3.3c.9-1,1.7-2,2.5-3.3.3.5.6,1.1,1.1,1.6,1.3,1.7,3.1,2.9,5.2,3.4,2.4.6,4.7.7,7,.3s4.4-1.2,6.5-2.2c2-1.1,4-2.5,5.8-4s3.3-3.2,4.6-4.8v7c-2.7,1.8-5.1,4.1-7.5,6.6s-4.4,5.4-6.2,8.2c-1.7,2.9-3.2,5.9-4.2,8.9s-1.5,5.8-1.5,8.5.6,4.9,1.8,6.8c1.2,1.9,3.2,3.3,6,4.2,2.9.9,5.4,1,7.5,0,2.1-.9,4.1-2.2,5.7-4.2,1.6-1.9,2.9-4.3,4-7.1s1.8-5.7,2.5-8.7c.6-3,1-6,1.2-8.9s.1-5.5,0-7.7c4.5-1.9,8.2-4.3,11.1-7.2,2.9-2.9,5.4-6,7.2-9.2.5-.7.7-1.7.6-2.9-.2-1.1-.6-2-1.4-2.9h0v.3Z"/><path fill="currentColor" fill-rule="evenodd" d="M450.4,125.6c.1-1.2.4-2.5.7-3.9s.7-2.7,1.2-3.9c.4-1.3,1.1-2.4,1.7-3.3s1.3-1.6,2-2,1.4-.3,2.1.1,1.3,1.5,1.5,3c.2,1.5,0,3.2-.5,4.9s-1.5,3.3-3,4.9c-1.4,1.5-3.3,2.6-5.8,3-.1-.7,0-1.7,0-2.9h0ZM477.9,128.8c-.9-.2-1.7-.3-2.5,0-.7.2-1.3.7-1.5,1.6-.4,1.7-1.1,3.4-2,5.1s-2,3.4-3.4,5c-1.4,1.6-2.9,3-4.6,4.2-1.7,1.2-3.4,2-5.4,2.6-1.8.5-3.4.6-4.6.2-1.2-.4-2.1-1.2-2.9-2.2s-1.2-2.4-1.5-3.9c-.3-1.5-.5-3.1-.5-4.7,3,.2,5.7-.3,8-1.6s4.4-3,6-5.1,2.9-4.5,3.7-7.2,1.3-5.4,1.4-7.9c0-2.5-.3-4.6-1.1-6.3s-1.8-3-3.2-4-2.9-1.5-4.6-1.6c-1.7-.1-3.5,0-5.4.7-2.1.7-4,1.9-5.5,3.6s-2.8,3.6-3.7,5.8-1.8,4.5-2.4,7.1-1,5-1.3,7.5c-.2,2.1-.3,4.3-.4,6.3-.1.2-.2.5-.3.7-.9,1.9-1.8,3.7-2.9,5.5s-2.2,3.3-3.6,4.5c-1.3,1.2-2.7,1.6-4.2,1.3-.9-.2-1.3-1.2-1.4-2.9,0-1.7,0-3.9.3-6.4.2-2.6.5-5.4,1-8.3.3-3,.5-5.9.5-8.6s-.4-4.6-1.4-6.8c-.9-2.1-2.1-4-3.6-5.5-1.6-1.5-3.3-2.4-5.5-2.9-2-.4-4.3-.1-6.6,1s-4.3,2.7-5.7,4.7-2.7,4.1-3.9,6.3c-.4-1.7-1.1-3.2-1.8-4.7-.9-1.5-1.8-2.7-3-3.7s-2.6-1.9-4-2.6-3-1-4.7-1-3.1.3-4.4,1c-1.4.6-2.6,1.4-3.7,2.4-1.1,1-2.1,2-3,3.2s-1.7,2.4-2.4,3.5c-.1-1.4-.2-2.6-.3-3.6s-.4-1.9-.7-2.6-.9-1.3-1.5-1.6-1.5-.5-2.7-.5-1.2.1-1.7.3-1.1.5-1.5,1-.7,1-1.1,1.5-.3,1.3-.2,2.1c0,.5.2,1.3.4,2.1.2.9.4,1.9.6,3.2s.4,2.9.5,4.8.2,4.2.1,6.8c0,2.7-.2,5.9-.6,9.5-.3,3.6-.9,7.8-1.6,12.6-.1,1.1.3,2,1.3,2.7s2,1.1,3.2,1.2,2.4-.1,3.4-.6,1.7-1.5,1.8-2.8c.1-2.5.4-5.1,1-7.9.4-2.8,1-5.6,1.7-8.3s1.4-5.4,2.2-7.8c.9-2.5,1.8-4.7,2.8-6.5,1.1-1.9,2.1-3.4,3.2-4.5,1.1-1.2,2.2-1.7,3.5-1.7s2.7.6,3.4,2c.9,1.4,1.4,3.1,1.7,5.1.3,2.1.5,4.4.4,7s-.1,4.9-.3,7.3c-.2,2.4-.4,4.4-.6,6.2s-.4,3.1-.5,3.7c0,1.2.4,2.1,1.4,2.9s1.9,1.2,3.1,1.3c1.2.1,2.2,0,3.2-.6s1.6-1.5,1.7-2.8c.5-3.7,1.3-7.6,2.1-11.5,1-3.9,2-7.3,3.2-10.3,1.2-3,2.5-5.5,4-7.4,1.5-1.9,3-2.9,4.6-2.9s1.5.5,1.9,1.7.6,2.8.6,4.7-.1,3-.3,4.5c-.2,1.6-.5,3.2-.9,4.8s-.6,3.3-.9,5.1-.3,3.5-.3,5.5.1,2.9.4,4.6.7,3.4,1.5,4.9c.7,1.6,1.7,2.9,3.1,4s3,1.6,4.9,1.6c3,0,5.7-.6,8-1.9s4.3-3,6-5c0-.1.1-.2.2-.3.1.3.2.6.4,1,1.2,2.4,2.7,4.1,4.6,5.4s4.3,1.9,7,2.1c2.7.1,5.6-.3,8.7-1.5,2.4-.9,4.4-1.9,6.1-3.2s3.2-2.8,4.6-4.6,2.7-3.9,3.7-6.3,2.2-5.1,3.4-8.1c.2-.9,0-1.6-.5-2.2-.6-.6-1.4-1.1-2.2-1.4h0v-.5Z"/><path fill="currentColor" fill-rule="evenodd" d="M521,120.1c-.2,1.6-.6,3.2-1.1,5.1s-1.1,3.9-1.7,5.8c-.6,2-1.5,3.9-2.6,5.5-1,1.6-2.1,2.9-3.4,3.9-1.3,1-2.8,1.3-4.5,1.2-.9-.1-1.5-.6-1.9-1.7s-.6-2.4-.7-4.1c0-1.6.1-3.4.4-5.4s.9-3.9,1.5-5.8,1.5-3.6,2.5-5.1c1-1.6,2-2.8,3.3-3.6s2.6-1.3,4.1-1.2c1.5,0,3.1.7,4.8,2.2-.1.6-.3,1.8-.5,3.3h-.1ZM549.2,126c-.9-.4-1.6-.5-2.6-.3-.9.2-1.5,1.1-1.8,2.4-.2,1.5-.6,3.2-1.4,5.2-.7,2-1.6,3.9-2.8,5.7-1.1,1.8-2.4,3.3-3.7,4.5-1.4,1.2-2.9,1.7-4.5,1.6-1.3-.1-2.2-.7-2.8-2s-.9-2.8-.9-4.7.1-4,.5-6.3.9-4.7,1.4-7,1.1-4.5,1.7-6.6c.5-2.1,1.1-4,1.4-5.5.4-1.3.3-2.5-.4-3.3-.6-1-1.5-1.6-2.6-1.9-1.1-.4-2-.5-3.1-.3s-1.7.7-2,1.7c-3.1-2.7-6.1-4.2-9-4.4s-5.6.4-7.9,1.9c-2.5,1.5-4.6,3.6-6.4,6.4-1.9,2.8-3.4,5.9-4.6,9.1s-1.9,6.6-2.1,10.1c-.3,3.4,0,6.5.6,9.4.7,2.8,2,5.1,4,7,1.9,1.8,4.4,2.7,7.6,2.7s2.8-.3,4.2-.9,2.6-1.3,3.6-2,2.1-1.6,2.9-2.5,1.5-1.6,2-2.1c.3,1.9,1,3.5,1.8,4.8s1.8,2.4,2.9,3.2,2.2,1.5,3.4,1.8c1.2.4,2.4.5,3.4.5,2.5,0,4.8-.9,7-2.6,2.1-1.7,4.1-3.7,5.8-6.2,1.7-2.5,3.1-5,4.3-7.7,1.1-2.7,1.8-5.1,2.2-7.3.3-.7.3-1.6-.2-2.5s-1.2-1.5-2-1.9h.1Z"/><path fill="currentColor" fill-rule="evenodd" d="M691.9,169.7c-.4,1.8-1.2,3.3-2.1,4.5-1,1.3-2.1,1.9-3.5,1.9s-1.6-.4-2-1.4c-.5-1-.9-2.2-1-3.9-.2-1.6-.2-3.3-.2-5.4s0-3.9.2-5.8c.1-1.9.3-3.6.5-5.4.2-1.6.3-2.9.4-3.7,1.8.2,3.3,1,4.5,2.4,1.2,1.3,2.1,2.9,2.8,4.8.6,1.8,1,3.9,1.1,6,0,2.1,0,4.1-.5,5.9h-.1ZM663.2,169.7c-.4,1.8-1.2,3.3-2.1,4.5-1,1.3-2.1,1.9-3.5,1.9s-1.6-.4-2-1.4c-.5-1-.9-2.2-1-3.9-.2-1.6-.2-3.3-.2-5.4s0-3.9.2-5.8c.1-1.9.3-3.6.5-5.4.2-1.6.3-2.9.4-3.7,1.8.2,3.3,1,4.5,2.4,1.2,1.3,2.1,2.9,2.8,4.8.6,1.8,1,3.9,1.1,6,0,2.1,0,4.1-.5,5.9h-.1ZM633.8,124.9c0,1.3-.2,2.4-.3,3.3-.2,1-.4,1.6-.7,1.8-.5-.3-1.3-1.2-2.1-2.5s-1.5-2.8-1.9-4.5-.6-3.3-.4-4.9c.2-1.6,1.1-2.9,2.5-3.7.5-.3,1.1-.2,1.5.3s.7,1.4,1.1,2.4c.2,1.1.4,2.2.5,3.6,0,1.4.1,2.7,0,4h0v.2ZM626.7,140.6c-.9.9-1.7,1.6-2.8,2.2s-2,1.1-3.1,1.4-2,.4-2.9.2c-2.4-.4-4.2-1.5-5.5-3.1s-2-3.4-2.5-5.6c-.3-2.1-.3-4.4.1-6.8.4-2.5,1.2-4.7,2.1-6.7s2.2-3.9,3.6-5.4,3-2.5,4.7-2.8c-.6,2.7-.9,5.5-.6,8.3.2,2.9.9,5.6,2,8.1.7,1.5,1.6,2.9,2.7,4.2s2.2,2.4,3.7,3.2c-.4.9-1.1,1.8-1.8,2.7h.1ZM714.5,125.6c.2-1.2.4-2.5.7-3.9.3-1.3.7-2.7,1.2-3.9.5-1.3,1.1-2.4,1.7-3.3s1.3-1.6,2-2,1.4-.3,2.1.1,1.3,1.5,1.5,3,0,3.2-.5,4.9-1.5,3.3-3,4.9-3.3,2.6-5.8,3v-2.9h0ZM746.4,125.6c.2-1.2.4-2.5.7-3.9.3-1.3.7-2.7,1.2-3.9.5-1.3,1.1-2.4,1.7-3.3s1.3-1.6,2-2,1.4-.3,2.1.1,1.3,1.5,1.5,3,0,3.2-.5,4.9-1.5,3.3-3,4.9c-1.4,1.5-3.3,2.6-5.8,3v-2.9h0ZM776.2,130.2c-.6-.6-1.4-1.1-2.2-1.4s-1.7-.3-2.5,0c-.7.2-1.3.7-1.5,1.6-.4,1.7-1.1,3.4-2,5.1s-2,3.4-3.4,5-2.9,3-4.6,4.2-3.4,2-5.4,2.6c-1.8.5-3.4.6-4.6.2-1.2-.4-2.1-1.2-2.9-2.2s-1.3-2.4-1.5-3.9c-.3-1.5-.5-3.1-.5-4.7,3,.2,5.7-.3,8-1.6s4.4-3,6-5.1,2.9-4.5,3.7-7.2,1.3-5.4,1.4-7.9c0-2.5-.3-4.6-1.1-6.3s-1.8-3-3.2-4-2.9-1.5-4.6-1.6-3.5,0-5.4.7c-2.1.7-4,1.9-5.6,3.6-1.5,1.6-2.8,3.6-3.7,5.8s-1.8,4.5-2.4,7.1-1,5-1.3,7.5c-.2,2.4-.4,4.6-.4,6.8-.2.4-.4.9-.6,1.3-1,1.7-2,3.4-3.4,5s-2.9,3-4.6,4.2-3.4,2-5.4,2.6c-1.8.5-3.4.6-4.6.2-1.2-.4-2.1-1.2-2.9-2.2s-1.3-2.4-1.5-3.9c-.3-1.5-.5-3.1-.5-4.7,3,.2,5.7-.3,8-1.6s4.4-3,6-5.1,2.9-4.5,3.7-7.2,1.3-5.4,1.4-7.9c0-2.5-.3-4.6-1.1-6.3s-1.8-3-3.2-4-2.9-1.5-4.6-1.6-3.5,0-5.4.7c-2.1.7-4,1.9-5.6,3.6-1.5,1.6-2.8,3.6-3.7,5.8s-1.8,4.5-2.4,7.1-1,5-1.3,7.5c-.1,1.4-.2,2.7-.3,4.1-.5.4-1,.9-1.5,1.3-1.8,1.5-3.7,2.8-5.8,4-2,1.2-4.1,2.1-6.2,2.9s-4.4,1.2-6.6,1.4l4.9-52.4c.3-1.1.2-2-.5-2.9s-1.5-1.4-2.5-1.7c-1-.3-2-.3-3.2,0-1.2.4-2,1.2-2.8,2.6-.3,2-.7,4.7-1.2,8.2s-.7,7.3-1.2,11.3-.7,8.3-1.2,12.7c-.4,4.4-.7,8.5-1.1,12.2v.5c-.4.4-.9.7-1.4,1.2-1.8,1.5-3.7,2.8-5.8,4-2,1.2-4.1,2.1-6.2,2.9s-4.4,1.2-6.6,1.4l4.9-52.4c.3-1.1.2-2-.5-2.9s-1.5-1.4-2.5-1.7c-1-.3-2-.3-3.2,0-1.2.4-2,1.2-2.8,2.6-.3,2-.7,4.7-1.2,8.2s-.7,7.3-1.2,11.3-.7,8.3-1.2,12.7c-.4,4.4-.7,8.5-1.1,12.2v.2c-.9.4-1.7.7-2.7,1-1,.3-2.1.4-3.4.5.2-1,.4-2,.5-3.2s.2-2.4.3-3.6v-3.7c0-1.3,0-2.5-.2-3.4-.2-2.2-.7-4.4-1.5-6.4s-1.7-3.7-2.9-5.1c-1.2-1.4-2.8-2.2-4.6-2.8-1.8-.4-4-.3-6.4.4-3.6-.4-6.8-.1-9.7,1-2.9,1.2-5.4,2.8-7.5,4.9s-3.9,4.7-5.1,7.6c-1.4,2.9-2.2,5.9-2.7,9-.2,1.3-.3,2.6-.3,3.9-.9,1.7-1.7,3.1-2.7,4.4-1.4,1.7-2.9,3.2-4.4,4.3-1.5,1.1-3,1.9-4.5,2.6-1.5.5-2.8,1-4,1.2-1.4.2-2.7.3-4,0-1.3-.2-2.5-.9-3.5-1.8-.9-.7-1.5-1.9-1.9-3.5-.4-1.6-.7-3.5-.7-5.6s0-4.3.2-6.5.6-4.4,1.3-6.4c.5-2,1.3-3.9,2.2-5.5.9-1.6,1.9-2.8,3.2-3.4.6.1,1.1.5,1.3,1.2s.2,1.6.1,2.6c0,1-.2,2-.3,3-.2,1.1-.2,1.9-.2,2.6.2,1.4.7,2.6,1.5,3.3s1.6,1.3,2.6,1.4c1,.1,1.9,0,2.8-.6,1-.5,1.7-1.5,2.2-2.8h.2l1.1-10.1c.3-1.4,0-2.6-.6-3.6-.7-1.1-1.7-1.6-2.9-1.8-1.5-2.2-3.6-3.4-6.2-3.5-2.7-.1-5.4.7-8,2.6-1.7,1.2-3.2,2.9-4.5,5s-2.4,4.5-3.2,7.1-1.4,5.4-1.7,8.2-.4,5.7-.2,8.5.7,5.4,1.5,7.7c.7,2.5,1.8,4.5,3.2,6.1,1.2,1.4,2.5,2.5,4,3.1,1.5.6,3,1.1,4.6,1.2s3.2,0,4.8-.2,3.1-.6,4.5-1.2c1.8-.6,3.7-1.6,5.7-2.6,1.9-1.1,3.9-2.4,5.7-3.7,1-.7,1.8-1.6,2.8-2.6.4,1,.9,1.9,1.4,2.9,1.4,2.4,3.3,4.3,5.8,5.8,2.5,1.5,5.5,2.1,9,2.1s7.3-1.1,10.5-2.9c3.2-1.9,5.9-4.6,7.9-8.2,3.1,0,6.1-.5,9.1-1.5v1c-.2,2.8-.3,4.7-.3,5.7,0,1.7-.2,3.9-.3,6.4-.2,2.6-.3,5.2-.3,8s0,5.7.3,8.6c.2,2.9.9,5.5,1.7,7.8s2,4.3,3.6,6c1.6,1.6,3.6,2.6,6.1,2.9,2.7.3,5-.1,7-1.4s3.5-3.1,4.8-5.5c1.2-2.2,2-4.9,2.6-7.9.5-3,.6-6,.4-9.1s-.7-5.9-1.7-8.6-2.1-4.9-3.7-6.6c1-.2,2.1-.7,3.4-1.5s2.7-1.6,4.1-2.5c.3-.2.6-.4,1.1-.6-.1,1.8-.2,3.2-.2,4,0,1.7-.2,3.9-.3,6.4-.2,2.6-.3,5.2-.3,8s0,5.7.3,8.6c.2,2.9.9,5.5,1.7,7.8s2,4.3,3.6,6c1.6,1.6,3.6,2.6,6.1,2.9,2.7.3,5-.1,7-1.4s3.5-3.1,4.8-5.5c1.2-2.2,2-4.9,2.6-7.9.5-3,.6-6,.4-9.1s-.7-5.9-1.7-8.6-2.1-4.9-3.7-6.6c1-.2,2.1-.7,3.4-1.5s2.7-1.6,4.1-2.5c.7-.5,1.5-1,2.1-1.5.3,2.6.9,4.8,1.8,6.7,1.2,2.4,2.7,4.1,4.6,5.4s4.3,1.9,6.8,2.1c2.7.1,5.6-.3,8.7-1.5,2.4-.9,4.4-1.9,6.1-3.2,1.7-1.3,3.2-2.8,4.6-4.6,0-.1.2-.2.2-.3.2.7.5,1.5.9,2.1,1.2,2.4,2.7,4.1,4.6,5.4s4.3,1.9,6.8,2.1c2.7.1,5.6-.3,8.7-1.5,2.4-.9,4.4-1.9,6.1-3.2,1.7-1.3,3.2-2.8,4.6-4.6s2.7-3.9,3.7-6.3c1.2-2.4,2.2-5.1,3.4-8.1.2-.9,0-1.6-.6-2.2h0v-.2Z"/></svg>',
     paypal: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.607 4.653H8.941L6.645 19.251H1.82L4.862 0h7.995c3.754 0 6.375 2.294 6.473 5.513-.648-.478-2.105-.86-3.722-.86m6.57 5.546c0 3.41-3.01 6.853-6.958 6.853h-2.493L11.595 24H6.74l1.845-11.538h3.592c4.208 0 7.346-3.634 7.153-6.949a5.24 5.24 0 0 1 2.848 4.686M9.653 5.546h6.408c.907 0 1.942.222 2.363.541-.195 2.741-2.655 5.483-6.441 5.483H8.714Z"/></svg>',
     bitcoin: '<svg viewBox="3.961 4.178 15.2 15.2" fill="currentColor"><path d="M17.288 10.291c.24-1.59-.974-2.45-2.64-3.03l.54-2.153-1.315-.33-.525 2.107c-.345-.087-.705-.167-1.064-.25l.526-2.127-1.32-.33-.54 2.165c-.285-.067-.565-.132-.84-.2l-1.815-.45-.35 1.407s.975.225.955.236c.535.136.63.486.615.766l-1.477 5.92c-.075.166-.24.406-.614.314.015.02-.96-.24-.96-.24l-.66 1.51 1.71.426.93.242-.54 2.19 1.32.327.54-2.17c.36.1.705.19 1.05.273l-.51 2.154 1.32.33.545-2.19c2.24.427 3.93.257 4.64-1.774.57-1.637-.03-2.58-1.217-3.196.854-.193 1.5-.76 1.68-1.93h.01zm-3.01 4.22c-.404 1.64-3.157.75-4.05.53l.72-2.9c.896.23 3.757.67 3.33 2.37zm.41-4.24c-.37 1.49-2.662.735-3.405.55l.654-2.64c.744.18 3.137.524 2.75 2.084v.006z"/></svg>',
     github: '<svg viewBox="0 0 20 20" fill="currentColor"><path transform="scale(1.25)" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>',
-    mail: '<svg viewBox="0 0 14 14" class="cc-mark-rest" fill="currentColor"><g><path fill="currentColor" fill-rule="evenodd" d="M0 2.75a1.5 1.5 0 0 1 1.5 -1.5h11a1.5 1.5 0 0 1 1.5 1.5v0.342L7.383 7.504A0.72 0.72 0 0 1 7 7.607a0.72 0.72 0 0 1 -0.383 -0.103L0 3.092V2.75Zm0 1.844v6.656a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5 -1.5V4.594L8.073 8.546l-0.005 0.004A1.966 1.966 0 0 1 7 8.857c-0.375 0 -0.753 -0.102 -1.068 -0.307l-0.005 -0.004L0 4.594Z" clip-rule="evenodd"></path></g></svg><svg viewBox="2 0.32 20 20" class="cc-mark-hover" fill="currentColor"><path d="M4,8L12,13L20,8V8L12,3L4,8V8M22,8V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V8C2,7.27 2.39,6.64 2.97,6.29L12,0.64L21.03,6.29C21.61,6.64 22,7.27 22,8Z" /></svg>',
+    mail: '<svg viewBox="0 0 14 14" class="tt-mark-rest" fill="currentColor"><g><path fill="currentColor" fill-rule="evenodd" d="M0 2.75a1.5 1.5 0 0 1 1.5 -1.5h11a1.5 1.5 0 0 1 1.5 1.5v0.342L7.383 7.504A0.72 0.72 0 0 1 7 7.607a0.72 0.72 0 0 1 -0.383 -0.103L0 3.092V2.75Zm0 1.844v6.656a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5 -1.5V4.594L8.073 8.546l-0.005 0.004A1.966 1.966 0 0 1 7 8.857c-0.375 0 -0.753 -0.102 -1.068 -0.307l-0.005 -0.004L0 4.594Z" clip-rule="evenodd"></path></g></svg><svg viewBox="2 0.32 20 20" class="tt-mark-hover" fill="currentColor"><path d="M4,8L12,13L20,8V8L12,3L4,8V8M22,8V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V8C2,7.27 2.39,6.64 2.97,6.29L12,0.64L21.03,6.29C21.61,6.64 22,7.27 22,8Z" /></svg>',
     bug: '<svg viewBox="0.05 0.05 13.9 13.9" fill="currentColor"><g><path fill="currentColor" fill-rule="evenodd" d="M10.1346 1.71069c0.0001 -0.41421 -0.33558 -0.750107 -0.74979 -0.750241 -0.41421 -0.000133 -0.75011 0.335541 -0.75024 0.749761 -0.00009 0.2881 -0.07634 0.57107 -0.22101 0.82022 -0.10982 0.18914 -0.25611 0.35369 -0.42966 0.48451 -0.31826 -0.06272 -0.64724 -0.0956 -0.98389 -0.0956 -0.33664 0 -0.6656 0.03288 -0.98385 0.09559 -0.17354 -0.13081 -0.31983 -0.29536 -0.42965 -0.4845 -0.14466 -0.24915 -0.22091 -0.53212 -0.221 -0.82022 -0.00013 -0.41422 -0.33603 -0.749894 -0.75024 -0.749761 -0.41422 0.000134 -0.74989 0.336031 -0.74976 0.750241 0.00018 0.5525 0.14639 1.09515 0.42382 1.57294 0.06078 0.10469 0.12739 0.20544 0.1994 0.30185 -0.47748 0.27348 -0.90612 0.62255 -1.26961 1.03089 -0.22639 -0.16753 -0.47029 -0.31148 -0.72801 -0.42907 -0.53139 -0.24246 -1.10894 -0.36711 -1.693029 -0.36541 -0.414212 0.0012 -0.7490202 0.33796 -0.7478154 0.75217 0.0012048 0.41422 0.3379664 0.74902 0.7521784 0.74782 0.367766 -0.00107 0.731426 0.07742 1.066006 0.23008 0.18909 0.08628 0.36637 0.19509 0.52815 0.32367 -0.18431 0.40261 -0.31734 0.83359 -0.39077 1.28459H0.800262c-0.414213 0 -0.7499995 0.33578 -0.7499995 0.75 0 0.41421 0.3357865 0.75 0.7499995 0.75H1.98524c0.06223 0.46278 0.18702 0.90575 0.36557 1.32009 -0.14925 0.11319 -0.31095 0.20989 -0.48236 0.28809 -0.33458 0.1527 -0.69824 0.2312 -1.066006 0.2301 -0.414212 -0.0012 -0.7509736 0.3336 -0.7521784 0.7478 -0.0012048 0.4142 0.3336034 0.751 0.7478154 0.7522 0.584089 0.0017 1.161639 -0.1229 1.693029 -0.3654 0.22985 -0.1049 0.44871 -0.2307 0.65395 -0.3756 0.92816 1.0905 2.31077 1.7822 3.85495 1.7822 1.54417 0 2.92679 -0.6917 3.85499 -1.7822 0.2052 0.1449 0.4241 0.2707 0.6539 0.3756 0.5314 0.2425 1.109 0.3671 1.6931 0.3654 0.4142 -0.0012 0.749 -0.338 0.7478 -0.7522 -0.0012 -0.4142 -0.338 -0.749 -0.7522 -0.7478 -0.3678 0.0011 -0.7314 -0.0774 -1.066 -0.2301 -0.1714 -0.0782 -0.3331 -0.1749 -0.4824 -0.2881 0.1786 -0.41434 0.3033 -0.8573 0.3656 -1.32008h1.185c0.4142 0 0.75 -0.33579 0.75 -0.75 0 -0.41422 -0.3358 -0.75 -0.75 -0.75h-1.2056c-0.0734 -0.45099 -0.2065 -0.88197 -0.3908 -1.28458 0.1618 -0.12859 0.3391 -0.2374 0.5282 -0.32368 0.3346 -0.15266 0.6982 -0.23115 1.066 -0.23008 0.4142 0.0012 0.751 -0.3336 0.7522 -0.74782 0.0012 -0.41421 -0.3336 -0.75097 -0.7478 -0.75217 -0.5841 -0.0017 -1.1617 0.12295 -1.6931 0.36541 -0.2577 0.11759 -0.5016 0.26155 -0.728 0.42908 -0.3635 -0.40833 -0.79211 -0.75739 -1.26958 -1.03087 0.07202 -0.09642 0.13864 -0.19718 0.19943 -0.30188 0.27743 -0.47779 0.42365 -1.02043 0.42385 -1.57294ZM7.00001 4.41934c1.42372 0 2.65224 0.83571 3.22179 2.04334H3.77821c0.56955 -1.20763 1.79808 -2.04334 3.2218 -2.04334Z" clip-rule="evenodd"></path></g></svg>'
   };
   // A button in the shape of the README's buttons (GlimStone, "The App tab"): the mark and the name
   // at rest, and under the pointer the brand's own colour, a second line and one sheen. A link
   // opens in a new tab, and a run button does its work on the page.
   function readmeBtn(o) {
-    var unit = el("span", "cc-rbtn-unit cc-tile-" + o.brand), b;
+    var unit = el("span", "tt-rbtn-unit tt-tile-" + o.brand), b;
     if (o.href) {
-      b = el("a", "cc-rbtn");
+      b = el("a", "tt-rbtn");
       b.href = o.href;
       if (!/^mailto:/.test(o.href)) { b.target = "_blank"; b.rel = "noopener noreferrer"; }
       if (o.open) {
@@ -2529,25 +2529,25 @@
         });
       }
     } else {
-      b = actionBtn("", "cc-rbtn", o.run);
+      b = actionBtn("", "tt-rbtn", o.run);
     }
     b.setAttribute("aria-label", o.sub ? o.name + " " + o.sub : o.name);
     if (o.art) {
-      var art = el("span", "cc-rbtn-art"); art.innerHTML = o.art; b.appendChild(art);
+      var art = el("span", "tt-rbtn-art"); art.innerHTML = o.art; b.appendChild(art);
     } else {
-      var mk = el("span", "cc-rbtn-mark cc-" + o.brand + "-mark"); mk.innerHTML = o.mark; b.appendChild(mk);
-      var tx = el("span", "cc-rbtn-text"); tx.appendChild(el("span", "cc-rbtn-name", o.name));
-      if (o.sub) tx.appendChild(el("span", "cc-rbtn-sub", o.sub));
+      var mk = el("span", "tt-rbtn-mark tt-" + o.brand + "-mark"); mk.innerHTML = o.mark; b.appendChild(mk);
+      var tx = el("span", "tt-rbtn-text"); tx.appendChild(el("span", "tt-rbtn-name", o.name));
+      if (o.sub) tx.appendChild(el("span", "tt-rbtn-sub", o.sub));
       b.appendChild(tx);
     }
-    unit.appendChild(b); unit.appendChild(el("span", "cc-rbtn-sheen"));
+    unit.appendChild(b); unit.appendChild(el("span", "tt-rbtn-sheen"));
     return unit;
   }
   // The bug report is a file the engine writes without passwords, keys or webhook addresses. It is
   // saved as a download, and then GitHub's bug form opens so the file can be attached there. The
   // form's tab opens before the request, inside the click, or a popup blocker would stop it.
   function downloadBugReport(unit) {
-    var ctl = unit.querySelector(".cc-rbtn"), tab = window.open("about:blank", "_blank");
+    var ctl = unit.querySelector(".tt-rbtn"), tab = window.open("about:blank", "_blank");
     if (tab) tab.opener = null;
     fetch(PROXY + "?path=bugreport", { credentials: "same-origin" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); })
@@ -2557,9 +2557,9 @@
         a.download = "towertorch-bugreport-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + ".txt";
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
-        var form = REPO + "/issues/new?template=bug_report.yml&version=" + encodeURIComponent(CC_VER);
+        var form = REPO + "/issues/new?template=bug_report.yml&version=" + encodeURIComponent(TT_VER);
         if (tab) tab.location.href = form; else window.open(form, "_blank", "noopener");
-        if (window.CCTheme && window.CCTheme.toast) window.CCTheme.toast(T("Fehlerbericht gespeichert. Häng die Datei im GitHub-Formular an.", "Bug report saved. Attach the file in the GitHub form."));
+        if (window.TTTheme && window.TTTheme.toast) window.TTTheme.toast(T("Fehlerbericht gespeichert. Häng die Datei im GitHub-Formular an.", "Bug report saved. Attach the file in the GitHub form."));
       })
       .catch(function (e) {
         if (tab) tab.close();
@@ -2595,18 +2595,18 @@
   // The check shows its verdict on the button itself: green when this build is the latest
   // release, orange with the newer number, red and shaken when the check fails.
   function checkUpdates(btn) {
-    btn.classList.remove("cc-set-chk-ok", "cc-set-chk-new", "cc-set-chk-bad");
+    btn.classList.remove("tt-set-chk-ok", "tt-set-chk-new", "tt-set-chk-bad");
     labelled(btn, "Update", T("Prüfe …", "Checking …"));
     return fetch(LATEST_API, { headers: { Accept: "application/vnd.github+json" } })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (j) {
         var latest = String((j && j.tag_name) || "").replace(/^v/, "");
         if (!/^\d+\.\d+\.\d+$/.test(latest)) throw new Error(T("keine Versionsnummer in der Antwort", "no version number in the answer"));
-        if (verCmp(latest, CC_VER) > 0) { btn.classList.add("cc-set-chk-new"); labelled(btn, "UpdateAvailable", T(latest + " verfügbar", latest + " available")); }
-        else { btn.classList.add("cc-set-chk-ok"); labelled(btn, "UpToDate", T("Aktuell", "Up to date")); }
+        if (verCmp(latest, TT_VER) > 0) { btn.classList.add("tt-set-chk-new"); labelled(btn, "UpdateAvailable", T(latest + " verfügbar", latest + " available")); }
+        else { btn.classList.add("tt-set-chk-ok"); labelled(btn, "UpToDate", T("Aktuell", "Up to date")); }
       })
       .catch(function (e) {
-        btn.classList.add("cc-set-chk-bad"); labelled(btn, "Warning", T("Prüfung fehlgeschlagen", "Check failed"));
+        btn.classList.add("tt-set-chk-bad"); labelled(btn, "Warning", T("Prüfung fehlgeschlagen", "Check failed"));
         failed(btn, T("Die Update-Prüfung ist fehlgeschlagen: ", "The update check failed: ") + ((e && e.message) || e));
       });
   }
@@ -2618,22 +2618,22 @@
     return { api: LATEST_API, page: REPO + "/releases", ver: "" };
   }
   function openReleaseNotes(opener) {
-    var C = window.CCTheme; if (!C || !C.modal) return;
-    var src = notesSource(CC_VER);
-    var win = el("div", "cc-win cc-dlg cc-win-notes");
-    var title = el("div", "cc-win-title", src.ver ? T("Neu in ", "New in ") + src.ver : T("Versionshinweise", "Release notes"));
-    var card = el("div", "cc-win-card cc-notes");
+    var C = window.TTTheme; if (!C || !C.modal) return;
+    var src = notesSource(TT_VER);
+    var win = el("div", "tt-win tt-dlg tt-win-notes");
+    var title = el("div", "tt-win-title", src.ver ? T("Neu in ", "New in ") + src.ver : T("Versionshinweise", "Release notes"));
+    var card = el("div", "tt-win-card tt-notes");
     card.setAttribute("tabindex", "0");   // long notes scroll, and the keyboard needs a way in
-    card.appendChild(el("p", "cc-win-text", T("Lade Versionshinweise …", "Loading the release notes …")));
-    var act = el("div", "cc-win-act");
-    var link = labelled(el("a", "cc-win-btn cc-win-link"), "Github", T("Auf GitHub ansehen", "View on GitHub"));
+    card.appendChild(el("p", "tt-win-text", T("Lade Versionshinweise …", "Loading the release notes …")));
+    var act = el("div", "tt-win-act");
+    var link = labelled(el("a", "tt-win-btn tt-win-link"), "Github", T("Auf GitHub ansehen", "View on GitHub"));
     link.href = src.page; link.target = "_blank"; link.rel = "noopener noreferrer";
     act.appendChild(link);
     win.appendChild(title); win.appendChild(card); win.appendChild(act);
     document.body.appendChild(win);
     C.paintWin(win);
     C.modal(win, { opener: opener, focus: card });
-    function say(text) { card.textContent = ""; card.appendChild(el("p", "cc-win-text", text)); }
+    function say(text) { card.textContent = ""; card.appendChild(el("p", "tt-win-text", text)); }
     fetch(src.api, { headers: { Accept: "application/vnd.github+json" } })
       .then(function (r) { if (r.status === 404) throw new Error("missing"); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (j) {
@@ -2683,7 +2683,7 @@
     });
     blocks.forEach(function (b) {
       if (b.type === "pre") { var pre = el("pre"); pre.appendChild(el("code", null, b.text)); into.appendChild(pre); return; }
-      if (b.type === "h") { var h = el("div", "cc-notes-h"); h.setAttribute("role", "heading"); h.setAttribute("aria-level", "3"); notesInline(b.text, h); into.appendChild(h); return; }
+      if (b.type === "h") { var h = el("div", "tt-notes-h"); h.setAttribute("role", "heading"); h.setAttribute("aria-level", "3"); notesInline(b.text, h); into.appendChild(h); return; }
       if (b.type === "p") { var p = el("p"); notesInline(b.text, p); into.appendChild(p); return; }
       var list = el(b.type);
       b.items.forEach(function (t) { var li = el("li"); notesInline(t, li); list.appendChild(li); });
@@ -2705,20 +2705,20 @@
     return b;
   }
   // A dropdown of areas that runs an action on a pick. It has no <select> behind it, so the shared
-  // wheel step in cc-theme.js passes it by and a turn of the wheel never adds an exception.
+  // wheel step in tt-theme.js passes it by and a turn of the wheel never adds an exception.
   function areaPicker(label, items, onPick) {
-    var wrap = el("span", "cc-dsel"), trig = el("span", "cc-dsel-trigger", label), panel = el("div", "cc-dsel-panel");
+    var wrap = el("span", "tt-dsel"), trig = el("span", "tt-dsel-trigger", label), panel = el("div", "tt-dsel-panel");
     items.forEach(function (it) {
-      var o = el("div", "cc-dsel-opt", it[2]);
-      o.addEventListener("click", function (ev) { ev.stopPropagation(); wrap.classList.remove("cc-open"); onPick(it); });
+      var o = el("div", "tt-dsel-opt", it[2]);
+      o.addEventListener("click", function (ev) { ev.stopPropagation(); wrap.classList.remove("tt-open"); onPick(it); });
       panel.appendChild(o);
     });
-    trig.addEventListener("click", function (ev) { ev.stopPropagation(); if (wrap.classList.toggle("cc-open")) ccDselPosition(trig, panel); });
+    trig.addEventListener("click", function (ev) { ev.stopPropagation(); if (wrap.classList.toggle("tt-open")) ttDselPosition(trig, panel); });
     wrap.appendChild(trig); wrap.appendChild(panel);
     return wrap;
   }
-  // The Docker view, the same choice as the gear menu there: cc.view for this browser and the
-  // organizer's ccViewMode, which docker.js prefers on load, so either place sets both. Folders
+  // The Docker view, the same choice as the gear menu there: tt.view for this browser and the
+  // organizer's ttViewMode, which docker.js prefers on load, so either place sets both. Folders
   // need the organizer, which shows an empty folder view with a tile for a first folder, and the
   // cards and folders need the theming.
   var VIEW_ORG_Q = "{ docker { organizer { views { id prefs flatEntries { type } } } } }";
@@ -2737,13 +2737,13 @@
   // The preview shows the chosen view alone, since a sketch of every view beside the selector would
   // read as a second selector for the same choice.
   function viewPreview(opts, sketch) {
-    var box = el("div", "cc-set-viewprev"), fig = el("div", "cc-set-vp cc-set-vp-on");
-    box.appendChild(el("div", "cc-set-lbl", T("Vorschau", "Preview"))); box.appendChild(fig);
+    var box = el("div", "tt-set-viewprev"), fig = el("div", "tt-set-vp tt-set-vp-on");
+    box.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview"))); box.appendChild(fig);
     // paintToggles() gives the sketch the colour of the chosen segment.
     function mark(v) {
       var o = opts.filter(function (x) { return x[0] === v; })[0] || opts[0];
       fig.innerHTML = (sketch || viewSketch)(o[0]);
-      fig.appendChild(el("span", "cc-set-vp-lbl", o[1]));
+      fig.appendChild(el("span", "tt-set-vp-lbl", o[1]));
       paintToggles();
     }
     return { el: box, mark: mark };
@@ -2751,33 +2751,33 @@
   function viewRow(c) {
     var label = T("Ansicht", "View");
     var help = T("Wie der Docker-Tab die Container zeigt, dieselbe Wahl wie im Zahnrad-Menü dort. Ordner lässt sich wählen, sobald Unraid Ordner für Docker anbietet; ohne Ordner zeigt die Ansicht die Container und eine Kachel „Neuer Ordner“.", "How the Docker tab shows the containers, the same choice as its gear menu. Folders can be picked once Unraid offers folders for Docker; with none yet, the view shows the containers and a “New folder” tile.");
-    if (get("cc.theming", "1") === "0") {
+    if (get("tt.theming", "1") === "0") {
       c.appendChild(lockRow(label, T("Liste, solange das Theming aus ist", "List while theming is off"), T("Zum Theming", "Go to Theming"), function () { jumpTo("general", "Theming"); }, help));
       return;
     }
-    var slot = el("div", "cc-set-viewslot"), side = el("div");
+    var slot = el("div", "tt-set-viewslot"), side = el("div");
     c.appendChild(slot); c.appendChild(side);
     function draw(org) {
       var opts = [["list", T("Liste", "List"), "IconViewList"], ["grid", T("Raster", "Grid"), "IconViewGrid"], ["folder", T("Ordner", "Folders"), "IconFolder", !org]];
-      var cur = (org && org.prefs && org.prefs.ccViewMode) || get("cc.view", "list");
+      var cur = (org && org.prefs && org.prefs.ttViewMode) || get("tt.view", "list");
       if (!opts.some(function (o) { return o[0] === cur && !o[3]; })) cur = "list";
       slot.innerHTML = ""; side.innerHTML = "";
       var prev = viewPreview(opts);
       slot.appendChild(dropRow(label, opts, cur, function (v) {
-        set("cc.view", v);
+        set("tt.view", v);
         prev.mark(v);
-        if (!org || !window.ccGql) return;
+        if (!org || !window.ttGql) return;
         var prefs = {}, was = org.prefs && typeof org.prefs === "object" ? org.prefs : {};
         Object.keys(was).forEach(function (k) { prefs[k] = was[k]; });
-        prefs.ccViewMode = v;
-        window.ccGql(VIEW_ORG_SAVE, { viewId: org.id, prefs: prefs }).then(function (r) { return r.json(); })
+        prefs.ttViewMode = v;
+        window.ttGql(VIEW_ORG_SAVE, { viewId: org.id, prefs: prefs }).then(function (r) { return r.json(); })
           .then(function (j) { if (j && !j.errors) org.prefs = prefs; }).catch(function () {});
       }, help));
       side.appendChild(prev.el);
       prev.mark(cur);
     }
     draw(null);
-    if (window.ccGql) window.ccGql(VIEW_ORG_Q).then(function (r) { return r.json(); }).then(function (j) {
+    if (window.ttGql) window.ttGql(VIEW_ORG_Q).then(function (r) { return r.json(); }).then(function (j) {
       var v = j && j.data && j.data.docker && j.data.docker.organizer && j.data.docker.organizer.views;
       if (v && v[0]) draw(v[0]);
     }).catch(function () {});
@@ -2794,15 +2794,15 @@
   function diskViewRow(c) {
     var label = T("Datenträger", "Disks");
     var help = T("Wie der Tab Start die Datenträger zeigt: als Liste wie in Unraid oder als Kacheln mit einem Bild von jedem Laufwerk. Der Schalter oben im Tab Start stellt dasselbe um.", "How the Main tab shows the disks: as Unraid's list or as tiles with a picture of each drive. The switch at the top of the Main tab changes the same setting.");
-    if (get("cc.theming", "1") === "0") {
+    if (get("tt.theming", "1") === "0") {
       c.appendChild(lockRow(label, T("Liste, solange das Theming aus ist", "List while theming is off"), T("Zum Theming", "Go to Theming"), function () { jumpTo("general", "Theming"); }, help));
       return;
     }
     var opts = [["list", T("Liste", "List"), "IconViewList"], ["tiles", T("Kacheln", "Tiles"), "IconViewGrid"]];
-    var cur = get("cc.diskview", "tiles") === "list" ? "list" : "tiles";
-    var prev = viewPreview(opts, diskSketch), slot = el("div", "cc-set-viewslot cc-set-diskview");
+    var cur = get("tt.diskview", "tiles") === "list" ? "list" : "tiles";
+    var prev = viewPreview(opts, diskSketch), slot = el("div", "tt-set-viewslot tt-set-diskview");
     slot.appendChild(dropRow(label, opts, cur, function (v) {
-      set("cc.diskview", v);
+      set("tt.diskview", v);
       prev.mark(v);
     }, help));
     c.appendChild(slot); c.appendChild(prev.el);
@@ -2820,15 +2820,15 @@
   function shareViewRow(c) {
     var label = T("Freigaben", "Shares");
     var help = T("Wie der Tab Freigaben die Benutzer- und Datenträgerfreigaben zeigt: als Liste wie in Unraid oder als Kacheln mit Export, Speicher und Größe je Freigabe. Der Schalter oben im Tab Freigaben stellt dasselbe um.", "How the Shares tab shows the user and disk shares: as Unraid's list or as tiles with the export, storage and size of each share. The switch at the top of the Shares tab changes the same setting.");
-    if (get("cc.theming", "1") === "0") {
+    if (get("tt.theming", "1") === "0") {
       c.appendChild(lockRow(label, T("Liste, solange das Theming aus ist", "List while theming is off"), T("Zum Theming", "Go to Theming"), function () { jumpTo("general", "Theming"); }, help));
       return;
     }
     var opts = [["list", T("Liste", "List"), "IconViewList"], ["tiles", T("Kacheln", "Tiles"), "IconViewGrid"]];
-    var cur = get("cc.shareview", "tiles") === "list" ? "list" : "tiles";
-    var prev = viewPreview(opts, shareSketch), slot = el("div", "cc-set-viewslot cc-set-shareview");
+    var cur = get("tt.shareview", "tiles") === "list" ? "list" : "tiles";
+    var prev = viewPreview(opts, shareSketch), slot = el("div", "tt-set-viewslot tt-set-shareview");
     slot.appendChild(dropRow(label, opts, cur, function (v) {
-      set("cc.shareview", v);
+      set("tt.shareview", v);
       prev.mark(v);
     }, help));
     c.appendChild(slot); c.appendChild(prev.el);
@@ -2838,15 +2838,15 @@
   function pluginViewRow(c) {
     var label = T("Plugins", "Plugins");
     var help = T("Wie der Tab Plugins die installierten Plugins zeigt: als Liste wie in Unraid oder als Kacheln mit Logo, Version, Status und Aktionen je Plugin. Der Schalter oben im Tab Plugins stellt dasselbe um.", "How the Plugins tab shows the installed plugins: as Unraid's list or as tiles with the logo, version, status and actions of each plugin. The switch at the top of the Plugins tab changes the same setting.");
-    if (get("cc.theming", "1") === "0") {
+    if (get("tt.theming", "1") === "0") {
       c.appendChild(lockRow(label, T("Liste, solange das Theming aus ist", "List while theming is off"), T("Zum Theming", "Go to Theming"), function () { jumpTo("general", "Theming"); }, help));
       return;
     }
     var opts = [["list", T("Liste", "List"), "IconViewList"], ["tiles", T("Kacheln", "Tiles"), "IconViewGrid"]];
-    var cur = get("cc.pluginview", "tiles") === "list" ? "list" : "tiles";
-    var prev = viewPreview(opts, function (kind) { return viewSketch(kind === "list" ? "list" : "grid"); }), slot = el("div", "cc-set-viewslot cc-set-pluginview");
+    var cur = get("tt.pluginview", "tiles") === "list" ? "list" : "tiles";
+    var prev = viewPreview(opts, function (kind) { return viewSketch(kind === "list" ? "list" : "grid"); }), slot = el("div", "tt-set-viewslot tt-set-pluginview");
     slot.appendChild(dropRow(label, opts, cur, function (v) {
-      set("cc.pluginview", v);
+      set("tt.pluginview", v);
       prev.mark(v);
     }, help));
     c.appendChild(slot); c.appendChild(prev.el);
@@ -2859,10 +2859,10 @@
   function ownValueRow(o, onChange) {
     var stored = function () { return get(o.key, o.def); };
     var isPreset = function (v) { return o.presets.some(function (p) { return p[0] === v; }); };
-    var field = el("span", "cc-set-numwrap"), num = el("input", "cc-set-txt cc-set-num");
+    var field = el("span", "tt-set-numwrap"), num = el("input", "tt-set-txt tt-set-num");
     num.type = "text"; num.inputMode = "numeric"; num.maxLength = 3; num.spellcheck = false;
     num.setAttribute("aria-label", o.aria);
-    field.appendChild(num); field.appendChild(el("span", "cc-set-unit", o.unit));
+    field.appendChild(num); field.appendChild(el("span", "tt-set-unit", o.unit));
     field.hidden = isPreset(stored());
     num.value = stored();
     // a long list is a dropdown, whose third entry would be read as a font face
@@ -2886,15 +2886,15 @@
     });
     // GlimStone: the selector keeps the row's end and the free value stands at the end of a line
     // of its own under it.
-    field.classList.add("cc-set-ownline");
-    row.classList.add("cc-set-ownrow");
+    field.classList.add("tt-set-ownline");
+    row.classList.add("tt-set-ownrow");
     row.appendChild(field);
     return row;
   }
   function tempWarnRow(onChange) {
     var presets = [["50", "50 °C", "IconTempLow"], ["60", "60 °C", "IconTempMid"], ["70", "70 °C", "IconTempHigh"]];
     return ownValueRow({
-      key: "cc.tempwarn", def: "60", min: 30, max: 110, unit: "°C", presets: presets,
+      key: "tt.tempwarn", def: "60", min: 30, max: 110, unit: "°C", presets: presets,
       label: T("Temperatur-Warnschwelle", "Temperature warning threshold"),
       aria: T("Eigene Warnschwelle in °C", "Own warning threshold in °C"),
       help: T("Ab dieser Temperatur wird ein Wert in der Status-Insel orange, 15 °C darüber rot.", "From this temperature a reading in the status island turns orange, and red 15 °C above it.")
@@ -2905,75 +2905,75 @@
   }
   // A setting with up to six choices is GlimStone's horizontal selector at the end of its row,
   // where an option is [value, label, glyph]. A longer list stays a dropdown, a native select
-  // dressed as a CC control, where an option is [value, label, face] and the font list previews
+  // dressed as a TowerTorch control, where an option is [value, label, face] and the font list previews
   // each face.
   var SEG_MAX = 6;
   function dropRow(labelText, opts, cur, onChange, help, pairs) {
     if (opts.length <= SEG_MAX) {
-      var srow = el("div", "cc-set-row cc-set-inline"), lw = el("span", "cc-set-lblwrap");
+      var srow = el("div", "tt-set-row tt-set-inline"), lw = el("span", "tt-set-lblwrap");
       lw.appendChild(el("span", null, labelText)); if (help) lw.appendChild(infoIcon(help));
       srow.appendChild(lw); srow.appendChild(segPicker(opts, cur, onChange, pairs));
       return srow;
     }
-    var row = el("div", "cc-set-row"); var rl = el("span", "cc-set-rl", labelText); if (help) rl.appendChild(infoIcon(help)); row.appendChild(rl);
-    var sel = el("select", "cc-set-sel");
+    var row = el("div", "tt-set-row"); var rl = el("span", "tt-set-rl", labelText); if (help) rl.appendChild(infoIcon(help)); row.appendChild(rl);
+    var sel = el("select", "tt-set-sel");
     opts.forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; if (o[0] === cur) op.selected = true; if (o[2]) op.style.fontFamily = o[2]; sel.appendChild(op); });
     sel.addEventListener("change", function () { onChange(sel.value); });
-    row.appendChild(ccDsel(sel)); return row;
+    row.appendChild(ttDsel(sel)); return row;
   }
   // The dropdowns use the same widget the Docker network dropdown does, rather than a native
   // select, whose opened list the browser draws in its own colours. As in docker.js, the native
   // select stays hidden as the source of truth, so its change event still runs the live effects,
   // and a trigger with a floating panel of chips renders on top of it.
-  function ccDsel(sel) {
-    var wrap = el("span", "cc-dsel"); sel.style.display = "none"; wrap.appendChild(sel);
+  function ttDsel(sel) {
+    var wrap = el("span", "tt-dsel"); sel.style.display = "none"; wrap.appendChild(sel);
     // The trigger takes the focus on a click and from Tab, which lets the wheel step the value
     // (GlimStone rule 14), and Enter or Space opens it.
-    var trig = el("span", "cc-dsel-trigger"); wrap.appendChild(trig);
-    if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(trig);
+    var trig = el("span", "tt-dsel-trigger"); wrap.appendChild(trig);
+    if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(trig);
     trig.setAttribute("aria-haspopup", "listbox");
-    var panel = el("div", "cc-dsel-panel"); wrap.appendChild(panel);
+    var panel = el("div", "tt-dsel-panel"); wrap.appendChild(panel);
     // Wide enough for the longest entry, the padding and the caret, so no choice is cut short.
     var longest = 0;
     for (var n = 0; n < sel.options.length; n++) longest = Math.max(longest, sel.options[n].text.length);
-    wrap.style.setProperty("--cc-dsel-w", "min(calc(" + longest + "ch + 52px), 340px)");
+    wrap.style.setProperty("--tt-dsel-w", "min(calc(" + longest + "ch + 52px), 340px)");
     for (var k = 0; k < sel.options.length; k++) {
       var o = sel.options[k];
-      var chip = el("div", "cc-dsel-opt", o.text); chip.setAttribute("data-i", k);
+      var chip = el("div", "tt-dsel-opt", o.text); chip.setAttribute("data-i", k);
       if (o.style.fontFamily) chip.style.fontFamily = o.style.fontFamily;   // in the font picker a chip previews its own face
       chip.addEventListener("click", (function (idx) {
         return function (ev) {
           ev.stopPropagation();
-          if (sel.options[idx].disabled) { if (window.CCTheme && window.CCTheme.deny) window.CCTheme.deny(ev.currentTarget); return; }
+          if (sel.options[idx].disabled) { if (window.TTTheme && window.TTTheme.deny) window.TTTheme.deny(ev.currentTarget); return; }
           sel.selectedIndex = idx;
           sel.dispatchEvent(new Event("change", { bubbles: true }));
-          ccDselSync(sel); wrap.classList.remove("cc-open"); trig.focus();
+          ttDselSync(sel); wrap.classList.remove("tt-open"); trig.focus();
         };
       })(k));
       panel.appendChild(chip);
     }
     trig.addEventListener("click", function (ev) {
       ev.stopPropagation();
-      ccDselSync(sel);
-      var open = wrap.classList.toggle("cc-open");
-      if (open) { var o2 = document.querySelectorAll("#cc-settings .cc-dsel.cc-open"); for (var j = 0; j < o2.length; j++) if (o2[j] !== wrap) o2[j].classList.remove("cc-open"); ccDselPosition(trig, panel); }
+      ttDselSync(sel);
+      var open = wrap.classList.toggle("tt-open");
+      if (open) { var o2 = document.querySelectorAll("#tt-settings .tt-dsel.tt-open"); for (var j = 0; j < o2.length; j++) if (o2[j] !== wrap) o2[j].classList.remove("tt-open"); ttDselPosition(trig, panel); }
     });
-    ccDselSync(sel); return wrap;
+    ttDselSync(sel); return wrap;
   }
-  function ccDselSync(sel) {
-    var w = sel.parentNode; if (!w || !w.classList || !w.classList.contains("cc-dsel")) return;
-    var t2 = w.querySelector(".cc-dsel-trigger"), c = w.querySelectorAll(".cc-dsel-opt");
+  function ttDselSync(sel) {
+    var w = sel.parentNode; if (!w || !w.classList || !w.classList.contains("tt-dsel")) return;
+    var t2 = w.querySelector(".tt-dsel-trigger"), c = w.querySelectorAll(".tt-dsel-opt");
     var label = sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : "";
     if (t2 && t2.textContent !== label) t2.textContent = label;   // written only on a change, so nothing churns
     for (var k = 0; k < c.length; k++) { var o = sel.options[+c[k].getAttribute("data-i")]; if (!o) continue; c[k].classList.toggle("is-selected", o.selected); c[k].classList.toggle("is-disabled", !!o.disabled); }
   }
-  // The wheel handler for a closed field lives in cc-theme.js; this page builds its own widgets,
+  // The wheel handler for a closed field lives in tt-theme.js; this page builds its own widgets,
   // so it hands over its own repaint. docker.js registers the same shape for its copy, the two
   // never load on one page, and each sync is a no-op on a wrapper that is not its own.
-  try { if (window.CCTheme && window.CCTheme.registerSelectSync) window.CCTheme.registerSelectSync(function (sel, wrap) { if (!wrap || !wrap.classList || !wrap.classList.contains("cc-dsel")) return false; ccDselSync(sel); return true; }); } catch (e) {}
+  try { if (window.TTTheme && window.TTTheme.registerSelectSync) window.TTTheme.registerSelectSync(function (sel, wrap) { if (!wrap || !wrap.classList || !wrap.classList.contains("tt-dsel")) return false; ttDselSync(sel); return true; }); } catch (e) {}
   // The panel is fixed on open, so the page's overflow cannot clip a long list, and it flips up
   // where there is more room above. No transform-ancestor maths, since this page has no dialog.
-  function ccDselPosition(trig, panel) {
+  function ttDselPosition(trig, panel) {
     try {
       var r = trig.getBoundingClientRect(), gap = 4, edge = 14;
       var below = window.innerHeight - r.bottom - edge, above = r.top - edge;
@@ -2983,17 +2983,17 @@
       else { panel.style.bottom = Math.round(window.innerHeight - r.top + gap) + "px"; panel.style.top = "auto"; panel.style.maxHeight = Math.max(140, above - gap) + "px"; }
     } catch (e) {}
   }
-  if (!window.__ccSetDsel) {   // one document-level close handler for the page's lifetime
-    window.__ccSetDsel = true;
-    document.addEventListener("click", function () { var o = document.querySelectorAll("#cc-settings .cc-dsel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open"); });
-    window.addEventListener("scroll", function (e) { var tgt = e && e.target; if (tgt && tgt.closest && tgt.closest(".cc-dsel-panel")) return; var o = document.querySelectorAll("#cc-settings .cc-dsel.cc-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("cc-open"); }, true);
+  if (!window.__ttSetDsel) {   // one document-level close handler for the page's lifetime
+    window.__ttSetDsel = true;
+    document.addEventListener("click", function () { var o = document.querySelectorAll("#tt-settings .tt-dsel.tt-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("tt-open"); });
+    window.addEventListener("scroll", function (e) { var tgt = e && e.target; if (tgt && tgt.closest && tgt.closest(".tt-dsel-panel")) return; var o = document.querySelectorAll("#tt-settings .tt-dsel.tt-open"); for (var i = 0; i < o.length; i++) o[i].classList.remove("tt-open"); }, true);
   }
   // Indents the whole panel, tab strip and cards alike, so it starts at the first main-menu
   // tab; header.js stamps the offset. Padding the root is safe to repeat, since the root's border
   // edge does not move with its own padding.
   function alignSetTabs() {
     try {
-      var al = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cc-align-left")) || 15;
+      var al = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--tt-align-left")) || 15;
       var rr = root.getBoundingClientRect();
       var need = al - rr.left;
       if (need > 0 && need < 60) root.style.paddingLeft = need + "px"; else root.style.paddingLeft = "";
@@ -3008,11 +3008,11 @@
 
   // The sub-tabs re-sort when the main menu order changes, whether by a drag or by an auto-mount.
   // A menu mutation re-runs render(), which re-reads the live order and rebuilds the strip while
-  // cc.settab preserves the active tab. Gated on the order string itself, so an unrelated menu
+  // tt.settab preserves the active tab. Gated on the order string itself, so an unrelated menu
   // mutation such as a badge stamp never triggers a rebuild. The order the first render() reads is
   // the starting point, or the first stamp after load would rebuild the page a third time.
-  if (!window.__ccSetNavObs) {
-    window.__ccSetNavObs = true;
+  if (!window.__ttSetNavObs) {
+    window.__ttSetNavObs = true;
     var menuEl9 = document.getElementById("menu");
     if (menuEl9 && window.MutationObserver) {
       var menuOrder = function () { return Array.prototype.map.call(document.querySelectorAll("#menu .nav-tile .nav-item:not(.util) > a[href]"), function (a9) { return a9.getAttribute("href"); }).join("|"); };

@@ -1,4 +1,4 @@
-// A custom property that names itself in its own value, such as --cc-ok: var(--cc-ok, #1f9d55),
+// A custom property that names itself in its own value, such as --tt-ok: var(--tt-ok, #1f9d55),
 // is a dependency cycle. The browser treats it as invalid, every consumer silently falls back to
 // its own literal, and the token stops meaning anything. This pins that no sheet declares one,
 // and that the call sites of the semantic tokens carry the token's own colour as their fallback,
@@ -48,7 +48,7 @@ console.log('\nEvery call site falls back to the colour its token holds');
 {
   const tokens = fs.readFileSync(TOKENS, 'utf8');
   const sources = files(ROOT, ['.css', '.js', '.php', '.page']).map((f) => [f, fs.readFileSync(f, 'utf8')]);
-  for (const name of ['--cc-ok', '--cc-warn', '--cc-err', '--cc-info']) {
+  for (const name of ['--tt-ok', '--tt-warn', '--tt-err', '--tt-info']) {
     const m = new RegExp(name + ':\\s*(#[0-9a-fA-F]{6})\\s*;').exec(tokens);
     ok(name + ' is a plain colour in the token sheet', !!m);
     if (!m) continue;
@@ -62,8 +62,8 @@ console.log('\nEvery call site falls back to the colour its token holds');
   }
 }
 
-// Header.css declares --cc-surface-card dark on :root. The Apps info card, the notification
-// items and the Unraid API cards paint it behind text in --cc-text, which the light override
+// Header.css declares --tt-surface-card dark on :root. The Apps info card, the notification
+// items and the Unraid API cards paint it behind text in --tt-text, which the light override
 // turns dark, so the card has to turn light with it or the text sits dark on dark.
 console.log('\nThe card surface follows the light themes like the text on it');
 {
@@ -72,12 +72,12 @@ console.log('\nThe card surface follows the light themes like the text on it');
   const light = (/html\.Theme--white,\s*html\.Theme--azure\s*\{([^}]*)\}/.exec(tokens) || [])[1] || '';
   const lum = (h) => { const n = parseInt(h.slice(1), 16); return 0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255); };
   ok('the light override block is found', light.length > 0);
-  ok('Header.css declares the card dark on :root', /:root\s*\{[^}]*--cc-surface-card:\s*#1[0-9a-f]{5}/i.test(header));
-  ok('the light override turns --cc-text dark', /--cc-text:\s*#[0-3][0-9a-f]{5}/i.test(light));
-  const card = /--cc-surface-card:\s*(#[0-9a-f]{6})/i.exec(light);
-  ok('the light override declares --cc-surface-card', !!card);
+  ok('Header.css declares the card dark on :root', /:root\s*\{[^}]*--tt-surface-card:\s*#1[0-9a-f]{5}/i.test(header));
+  ok('the light override turns --tt-text dark', /--tt-text:\s*#[0-3][0-9a-f]{5}/i.test(light));
+  const card = /--tt-surface-card:\s*(#[0-9a-f]{6})/i.exec(light);
+  ok('the light override declares --tt-surface-card', !!card);
   ok('and it is a light surface', !!card && lum(card[1]) > 200, card && card[1]);
-  ok('the info card reads the token', /#sidenavContent \.cc-ic-card\s*\{[^}]*background:\s*var\(--cc-surface-card/.test(tokens));
+  ok('the info card reads the token', /#sidenavContent \.tt-ic-card\s*\{[^}]*background:\s*var\(--tt-surface-card/.test(tokens));
 }
 
 // Unraid paints its header bar with --header-background-color, which the white theme keeps dark
@@ -91,38 +91,38 @@ console.log('\nChips on the header bar take the header ink, not the page ink');
   let dark = ''; const blocks = /(^|\})\s*html\s*\{([^}]*)\}/g; let b;
   while ((b = blocks.exec(tokens))) dark += b[2];
   const light = (/html\.Theme--white,\s*html\.Theme--azure\s*\{([^}]*)\}/.exec(tokens) || [])[1] || '';
-  const chipDark = (/--cc-text-chip:\s*(#[0-9a-f]{6})/i.exec(dark) || [])[1];
-  const inkDark = (/--cc-header-ink:\s*(#[0-9a-f]{6})/i.exec(dark) || [])[1];
+  const chipDark = (/--tt-text-chip:\s*(#[0-9a-f]{6})/i.exec(dark) || [])[1];
+  const inkDark = (/--tt-header-ink:\s*(#[0-9a-f]{6})/i.exec(dark) || [])[1];
   ok('the dark chip ink is found', !!chipDark);
   ok('the dark header ink is the dark chip ink, so the dark themes look the same', !!inkDark && inkDark === chipDark, inkDark + ' vs ' + chipDark);
-  ok('the light header ink is Unraid\'s header text colour', /--cc-header-ink:\s*var\(--header-text-color\b/.test(light));
+  ok('the light header ink is Unraid\'s header text colour', /--tt-header-ink:\s*var\(--header-text-color\b/.test(light));
   const rules = [];
   const re = /([^{}]+)\{([^}]*)\}/g; let m;
-  while ((m = re.exec(header))) if (/#menu|\[data-cc-trig\]|unraid-header-os-version/.test(m[1]) && /(^|;)\s*color:/.test(m[2])) rules.push([m[1].trim(), m[2]]);
+  while ((m = re.exec(header))) if (/#menu|\[data-tt-trig\]|unraid-header-os-version/.test(m[1]) && /(^|;)\s*color:/.test(m[2])) rules.push([m[1].trim(), m[2]]);
   ok('the header bar rules with a text colour are found', rules.length >= 5, String(rules.length));
-  const flip = rules.filter(([, b]) => /color:\s*var\(--cc-text(-chip|-dim)?\b/.test(b)).map(([s]) => s.slice(0, 80));
+  const flip = rules.filter(([, b]) => /color:\s*var\(--tt-text(-chip|-dim)?\b/.test(b)).map(([s]) => s.slice(0, 80));
   ok('none of them reads a page ink that flips with the theme', flip.length === 0, flip.join(' | '));
-  ok('the menu tabs read --cc-header-ink', rules.some(([s, b]) => /\.nav-item:not\(\.util\):not\(\.gui_search\) > a$/.test(s) && /var\(--cc-header-ink/.test(b)));
+  ok('the menu tabs read --tt-header-ink', rules.some(([s, b]) => /\.nav-item:not\(\.util\):not\(\.gui_search\) > a$/.test(s) && /var\(--tt-header-ink/.test(b)));
 }
 
-// Tools.css paints fieldsets and the Unraid API cards with --cc-tl-surface and leaves their text
+// Tools.css paints fieldsets and the Unraid API cards with --tt-tl-surface and leaves their text
 // to the page, so the surface needs a light value on the light themes.
 console.log('\nThe Tools card surface turns light with the page text');
 {
   const tools = fs.readFileSync(path.join(path.dirname(TOKENS), 'TowerTorch.Tools.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-  const light = (/html\.cc-tools-on\.Theme--white,\s*html\.cc-tools-on\.Theme--azure\s*\{([^}]*)\}/.exec(tools) || [])[1] || '';
+  const light = (/html\.tt-tools-on\.Theme--white,\s*html\.tt-tools-on\.Theme--azure\s*\{([^}]*)\}/.exec(tools) || [])[1] || '';
   ok('the light block for the Tools pages is found', light.length > 0);
-  ok('it gives --cc-tl-surface a light value', /--cc-tl-surface:\s*var\(--cc-surface-1\b/.test(light), light);
-  ok('it leaves the dark control fill --cc-tl-surface2 alone', !/--cc-tl-surface2/.test(light));
+  ok('it gives --tt-tl-surface a light value', /--tt-tl-surface:\s*var\(--tt-surface-1\b/.test(light), light);
+  ok('it leaves the dark control fill --tt-tl-surface2 alone', !/--tt-tl-surface2/.test(light));
 }
 
-// The Docker action bar is Unraid's footer colour and the CC settings hero sits on Unraid's page,
+// The Docker action bar is Unraid's footer colour and the TowerTorch settings hero sits on Unraid's page,
 // both of which follow the theme, so their text cannot be a dark-theme literal.
 console.log('\nText on Unraid\'s own surfaces follows the theme');
 {
   const docker = fs.readFileSync(path.join(path.dirname(TOKENS), '..', 'styles', 'docker.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-  const lbl = (/div\.js-actions \.cc-bar-adv-lbl\s*\{([^}]*)\}/.exec(docker) || [])[1] || '';
-  ok('the action bar label reads --cc-text-chip', /color:\s*var\(--cc-text-chip,\s*#cfcfcf\)/.test(lbl), lbl);
+  const lbl = (/div\.js-actions \.tt-bar-adv-lbl\s*\{([^}]*)\}/.exec(docker) || [])[1] || '';
+  ok('the action bar label reads --tt-text-chip', /color:\s*var\(--tt-text-chip,\s*#cfcfcf\)/.test(lbl), lbl);
   const bar = []; const re = /([^{}]+)\{([^}]*)\}/g; let m;
   while ((m = re.exec(docker))) if (/div\.js-actions/.test(m[1]) && /(^|;)\s*color:\s*#[c-f]/i.test(m[2])) bar.push(m[1].trim().slice(0, 90));
   ok('no action bar rule hard-codes a light ink', bar.length === 0, bar.join(' | '));

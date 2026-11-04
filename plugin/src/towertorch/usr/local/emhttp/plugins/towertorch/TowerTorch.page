@@ -3,14 +3,14 @@ Title="TowerTorch"
 Icon="towertorch.png"
 ---
 <?php
-/* Settings > Utilities. Appearance prefs live in localStorage under cc.* keys and reach the
+/* Settings > Utilities. Appearance prefs live in localStorage under tt.* keys and reach the
    Docker-tab enhancer live through the storage event. The Notifications card is the one piece of
    engine config: it goes through the same-origin proxy into config.json on the flash, which
    survives an uninstall like the start plan. */
 ?>
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/give.css')?>">
-<div id="cc-settings" class="cc-root"></div>
+<div id="tt-settings" class="tt-root"></div>
 <script defer src="<?autov('/plugins/towertorch/scripts/flags.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/give.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/settings.js')?>"></script>

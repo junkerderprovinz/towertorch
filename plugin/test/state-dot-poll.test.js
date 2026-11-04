@@ -38,35 +38,35 @@ function poll(badges, containers) {
   fn(doc, {}, (n) => containers[n], (s) => s, (c) => !!c.unhealthy, () => 'unhealthy', (k) => k, () => {})();
 }
 
-const DOT = badge('cc-badge cc-badge-running cc-ct-statedot', 'web');
-const TILE = badge('cc-badge cc-tile-dot cc-badge-running', 'web');
-const TOGGLE = badge('cc-badge cc-badge-running cc-badge-toggle', 'web');
+const DOT = badge('tt-badge tt-badge-running tt-ct-statedot', 'web');
+const TILE = badge('tt-badge tt-tile-dot tt-badge-running', 'web');
+const TOGGLE = badge('tt-badge tt-badge-running tt-badge-toggle', 'web');
 const box = { web: { name: 'web', state: 'running' } };
 
 console.log('\nThe poll keeps the class the hide rule needs');
 poll([DOT, TILE, TOGGLE], box);
-ok('the list dot is still a statedot after a poll', DOT.classList.contains('cc-ct-statedot'), DOT.className);
-ok('the tile dot is still a tile dot', TILE.classList.contains('cc-tile-dot'), TILE.className);
-ok('the toggle stays a toggle', TOGGLE.classList.contains('cc-badge-toggle'), TOGGLE.className);
+ok('the list dot is still a statedot after a poll', DOT.classList.contains('tt-ct-statedot'), DOT.className);
+ok('the tile dot is still a tile dot', TILE.classList.contains('tt-tile-dot'), TILE.className);
+ok('the toggle stays a toggle', TOGGLE.classList.contains('tt-badge-toggle'), TOGGLE.className);
 ok('the dot\'s tooltip is its state', DOT.getAttribute('data-tip') === 'running');
 
 box.web.state = 'exited';
 poll([DOT, TILE], box);
-ok('a container that stops swaps the state class', DOT.classList.contains('cc-badge-exited') && !DOT.classList.contains('cc-badge-running'), DOT.className);
-ok('without picking up a second state class', DOT.className.split(' ').filter((k) => /^cc-badge-(running|exited)$/.test(k)).length === 1, DOT.className);
+ok('a container that stops swaps the state class', DOT.classList.contains('tt-badge-exited') && !DOT.classList.contains('tt-badge-running'), DOT.className);
+ok('without picking up a second state class', DOT.className.split(' ').filter((k) => /^tt-badge-(running|exited)$/.test(k)).length === 1, DOT.className);
 box.web.state = 'running'; box.web.unhealthy = true;
 poll([DOT], box);
-ok('an unhealthy one gains the alert', DOT.classList.contains('cc-badge-alert'));
+ok('an unhealthy one gains the alert', DOT.classList.contains('tt-badge-alert'));
 box.web.unhealthy = false;
 poll([DOT], box);
-ok('and loses it again once healthy', !DOT.classList.contains('cc-badge-alert') && DOT.classList.contains('cc-ct-statedot'), DOT.className);
+ok('and loses it again once healthy', !DOT.classList.contains('tt-badge-alert') && DOT.classList.contains('tt-ct-statedot'), DOT.className);
 
 console.log('\nAfter the poll the hide rule still catches a running dot');
 {
-  const dotrow = { tag: 'div', classes: ['cc-ct-dotrow'], attrs: {}, states: {}, html: ['cc-docker-on'], has: ['> .cc-ct-statedot[data-name].cc-badge-running:not(.cc-badge-alert)'] };
+  const dotrow = { tag: 'div', classes: ['tt-ct-dotrow'], attrs: {}, states: {}, html: ['tt-docker-on'], has: ['> .tt-ct-statedot[data-name].tt-badge-running:not(.tt-badge-alert)'] };
   const d = candidates('docker', dotrow, 'display');
   ok('the list dot row is hidden', d.length > 0 && d[d.length - 1].value === 'none');
-  const tile = { tag: 'span', classes: TILE.className.split(' '), attrs: { 'data-name': 'web' }, states: {}, html: ['cc-docker-on'] };
+  const tile = { tag: 'span', classes: TILE.className.split(' '), attrs: { 'data-name': 'web' }, states: {}, html: ['tt-docker-on'] };
   box.web.state = 'running'; poll([TILE], box); tile.classes = TILE.className.split(' ');
   const c = candidates('docker', tile, 'display');
   ok('the tile dot is hidden', c.length > 0 && c[c.length - 1].value === 'none', c.map((x) => x.selector).join(' | '));

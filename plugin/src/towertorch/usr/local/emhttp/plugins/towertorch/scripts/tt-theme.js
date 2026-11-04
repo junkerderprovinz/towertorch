@@ -1,13 +1,13 @@
 /* TowerTorch: the theme helpers shared by every area script.
  *
  * Loaded on every page, synchronously, from TowerTorch.Tokens.page (Menu="Buttons:94"), so
- * window.CCTheme exists before any area script runs. The rainbow offset is one seed kept in
- * cc.rbseed, so every area starts the palette on the same hue and keeps it across reloads. Each
+ * window.TTTheme exists before any area script runs. The rainbow offset is one seed kept in
+ * tt.rbseed, so every area starts the palette on the same hue and keeps it across reloads. Each
  * area keeps an identical local fallback, so a missed load order degrades instead of breaking.
  */
 (function () {
   "use strict";
-  if (window.CCTheme) return;
+  if (window.TTTheme) return;
 
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function s(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -16,13 +16,13 @@
   // master switch at off in this browser before any area script reads it. The engine's copy of the
   // settings never sees that, so ?towertorch=on hands the switch back to whatever the copy says.
   var safe = /[?&]towertorch=(off|on)(?:&|$)/.exec(location.search);
-  if (safe && safe[1] === "off") s("tt.off", "1");
-  if (safe && safe[1] === "on") { try { localStorage.removeItem("tt.off"); localStorage.removeItem("cc.theming"); } catch (e) {} }
-  if (g("tt.off", "0") === "1") s("cc.theming", "0");
+  if (safe && safe[1] === "off") s("towertorch.off", "1");
+  if (safe && safe[1] === "on") { try { localStorage.removeItem("towertorch.off"); localStorage.removeItem("tt.theming"); } catch (e) {} }
+  if (g("towertorch.off", "0") === "1") s("tt.theming", "0");
 
   // GlimStone's palette, the Carbon 30 steps once round the wheel: red, orange, Sunflower, green,
   // teal, blue, purple and magenta. Sunflower is the default accent, so one position always matches
-  // it. A stored cc.rbpal replaces the whole set and is never rewritten.
+  // it. A stored tt.rbpal replaces the whole set and is never rewritten.
   var RB = ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"];
 
   // Dark ink or white on a fill, whichever has the higher contrast ratio. Against #161616 and white
@@ -34,7 +34,7 @@
     return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff";
   }
 
-  // cc.anim holds a GlimStone motion level, off, subtle or wild, and subtle when unset. The digits
+  // tt.anim holds a GlimStone motion level, off, subtle or wild, and subtle when unset. The digits
   // stored before the levels had names, 0, 1 and 2, read as the same three, so nobody's choice is
   // lost; header.js rewrites them to the names.
   function motionLevel(v) {
@@ -43,7 +43,7 @@
     return "subtle";
   }
 
-  // cc.badgeshape holds a GlimStone shape, round, soft or square, and round when unset. The names
+  // tt.badgeshape holds a GlimStone shape, round, soft or square, and round when unset. The names
   // stored before, pill, rounded, square and circle, read as the nearest of the three, so nobody's
   // choice is lost; header.js rewrites them to the new names.
   function shapeName(v) {
@@ -51,28 +51,28 @@
     if (v === "square") return "square";
     return "round";
   }
-  // One seed, picked at random once and kept in cc.rbseed, so seed % len gives the same rotation
+  // One seed, picked at random once and kept in tt.rbseed, so seed % len gives the same rotation
   // in every area and on every reload.
   function rbSeed(len) {
-    var v = parseInt(g("cc.rbseed", ""), 10);
-    if (isNaN(v) || v < 0) { v = Math.floor(Math.random() * 9973); s("cc.rbseed", String(v)); } // prime modulus base
+    var v = parseInt(g("tt.rbseed", ""), 10);
+    if (isNaN(v) || v < 0) { v = Math.floor(Math.random() * 9973); s("tt.rbseed", String(v)); } // prime modulus base
     return len > 0 ? (v % len) : 0;
   }
 
-  // Flag mode reads cc.flagpal, otherwise the user's cc.rbpal, otherwise the given default.
+  // Flag mode reads tt.flagpal, otherwise the user's tt.rbpal, otherwise the given default.
   function palette(def) {
     try {
-      if (g("cc.flagmode", "0") === "1") { var f = JSON.parse(g("cc.flagpal", "null")); if (f && f.length) return f; }
-      var p = JSON.parse(g("cc.rbpal", "null")); if (p && p.length) return p;
+      if (g("tt.flagmode", "0") === "1") { var f = JSON.parse(g("tt.flagpal", "null")); if (f && f.length) return f; }
+      var p = JSON.parse(g("tt.rbpal", "null")); if (p && p.length) return p;
     } catch (e) {}
     return def || RB;
   }
 
   // The colour of rainbow item i, or the plain accent when rainbow is off. Honours rotation
-  // (cc.rainbowrot, default on) and the shared seed.
+  // (tt.rainbowrot, default on) and the shared seed.
   function rbColor(i, accent, def) {
-    if (g("cc.rainbow", "0") !== "1") return accent;
-    var p = surfacePalette(palette(def), accent), off = g("cc.rainbowrot", "1") === "0" ? 0 : rbSeed(p.length);
+    if (g("tt.rainbow", "0") !== "1") return accent;
+    var p = surfacePalette(palette(def), accent), off = g("tt.rainbowrot", "1") === "0" ? 0 : rbSeed(p.length);
     return p[((i % p.length) + off) % p.length];
   }
 
@@ -84,7 +84,7 @@
   }
 
   // A near-black palette slot (the German flag's black stripe, a hand-picked #2a2a2a) paints an
-  // invisible badge on CC's #161616 surfaces, so a slot below the floor is swapped for the
+  // invisible badge on TowerTorch's #161616 surfaces, so a slot below the floor is swapped for the
   // palette's brightest slot, or for the accent when the whole palette is dark. header.js's
   // popBadge delegates here.
   //
@@ -120,7 +120,7 @@
     var c = document.documentElement.classList;
     return c.contains("Theme--white") || c.contains("Theme--azure");
   }
-  // The guard for the theme the page is in, for a colour that sits on CC's own surfaces.
+  // The guard for the theme the page is in, for a colour that sits on TowerTorch's own surfaces.
   function liftSurface(hex, accent, floor) {
     return lightTheme() ? liftLight(hex, accent, floor) : liftDark(hex, accent, floor);
   }
@@ -148,70 +148,70 @@
     return pal[i % pal.length];
   }
 
-  // Colour modes for the select replacements header.js does not paint: .cc-dsel (Docker form, CC
-  // settings, .cc-pop windows), .cc-sel (share detail) and .cc-drop (the Startplan "Hängt ab von"
-  // multi-select). It lives here because this is the only file loaded on every page. .cc-tsel is
-  // left out because ccPaintRotate() rotates it together with the toggles around it, and a second
+  // Colour modes for the select replacements header.js does not paint: .tt-dsel (Docker form, TowerTorch
+  // settings, .tt-pop windows), .tt-sel (share detail) and .tt-drop (the Startplan "Hängt ab von"
+  // multi-select). It lives here because this is the only file loaded on every page. .tt-tsel is
+  // left out because ttPaintRotate() rotates it together with the toggles around it, and a second
   // painter would fight it on every pass.
-  var CC_SEL_WRAPS = ".cc-dsel, .cc-sel";
-  var CC_SEL_PANELS = ".cc-dsel-panel, .cc-sel-panel, .cc-drop";
-  var CC_SEL_OPTS = ".cc-dsel-opt, .cc-sel-opt, .cc-drop-it";
+  var TT_SEL_WRAPS = ".tt-dsel, .tt-sel";
+  var TT_SEL_PANELS = ".tt-dsel-panel, .tt-sel-panel, .tt-drop";
+  var TT_SEL_OPTS = ".tt-dsel-opt, .tt-sel-opt, .tt-drop-it";
   function paintSelects(root) {
     try {
       var scope = (root && root.querySelectorAll) ? root : document;
-      // With rainbow or theming off the stamps are removed, so the sheets' var(--cc-rb-c,
-      // var(--cc-rbaccent, <area accent>)) chain falls back to the accent. Flag mode comes in
+      // With rainbow or theming off the stamps are removed, so the sheets' var(--tt-rb-c,
+      // var(--tt-rbaccent, <area accent>)) chain falls back to the accent. Flag mode comes in
       // through rbColor()'s palette().
-      var on = g("cc.theming", "1") !== "0" && g("cc.rainbow", "0") === "1";
+      var on = g("tt.theming", "1") !== "0" && g("tt.rainbow", "0") === "1";
       var i, n, c;
-      var wraps = scope.querySelectorAll(CC_SEL_WRAPS);
+      var wraps = scope.querySelectorAll(TT_SEL_WRAPS);
       for (i = 0; i < wraps.length; i++) {
-        if (!on) { wraps[i].style.removeProperty("--cc-rb-c"); wraps[i].style.removeProperty("--cc-rb-ct"); continue; }
+        if (!on) { wraps[i].style.removeProperty("--tt-rb-c"); wraps[i].style.removeProperty("--tt-rb-ct"); continue; }
         c = rbColor(i, null);   // guarded by `on`, so this never returns the null accent
-        wraps[i].style.setProperty("--cc-rb-c", c); wraps[i].style.setProperty("--cc-rb-ct", idealText(c));
+        wraps[i].style.setProperty("--tt-rb-c", c); wraps[i].style.setProperty("--tt-rb-ct", idealText(c));
       }
       // A dropdown wears one colour on its hovered and chosen option (GlimStone, "Under rainbow").
-      // A panel inside a stamped wrapper inherits the wrapper's; a .cc-drop has no wrapper and
+      // A panel inside a stamped wrapper inherits the wrapper's; a .tt-drop has no wrapper and
       // takes a slot of its own.
-      var panels = scope.querySelectorAll(CC_SEL_PANELS);
+      var panels = scope.querySelectorAll(TT_SEL_PANELS);
       for (var p = 0; p < panels.length; p++) {
-        var opts = panels[p].querySelectorAll(CC_SEL_OPTS);
-        for (n = 0; n < opts.length; n++) { opts[n].style.removeProperty("--cc-rb-c"); opts[n].style.removeProperty("--cc-rb-ct"); }
-        if (!on || panels[p].closest(CC_SEL_WRAPS)) { panels[p].style.removeProperty("--cc-rb-c"); panels[p].style.removeProperty("--cc-rb-ct"); continue; }
+        var opts = panels[p].querySelectorAll(TT_SEL_OPTS);
+        for (n = 0; n < opts.length; n++) { opts[n].style.removeProperty("--tt-rb-c"); opts[n].style.removeProperty("--tt-rb-ct"); }
+        if (!on || panels[p].closest(TT_SEL_WRAPS)) { panels[p].style.removeProperty("--tt-rb-c"); panels[p].style.removeProperty("--tt-rb-ct"); continue; }
         c = rbColor(wraps.length + p, null);
-        panels[p].style.setProperty("--cc-rb-c", c); panels[p].style.setProperty("--cc-rb-ct", idealText(c));
+        panels[p].style.setProperty("--tt-rb-c", c); panels[p].style.setProperty("--tt-rb-ct", idealText(c));
       }
     } catch (e) {}
   }
 
   // GlimStone rule 14: a closed select field with focus steps through its values with the scroll
   // wheel (reference/selectScroll.ts). It lives here because this file loads on every page.
-  // .cc-tsel (header.js), .cc-dsel (docker.js form, CC settings, .cc-pop) and .cc-sel (share
+  // .tt-tsel (header.js), .tt-dsel (docker.js form, TowerTorch settings, .tt-pop) and .tt-sel (share
   // detail) keep a hidden <select> as their value, so a wheel step changes its selectedIndex.
-  // .cc-drop is left out: it has no closed field, only a text input holding a comma list with no
+  // .tt-drop is left out: it has no closed field, only a text input holding a comma list with no
   // next value to step to.
   //
   // The handler acts only over a closed widget that has the focus, from a click or from Tab, so a
   // page with a dropdown on every row can scroll past them without changing one, and an open panel
   // scrolls as before. It calls preventDefault only when the value changed, so a disabled or
   // single-option field still lets the page scroll. It clamps at the ends like the arrow keys in
-  // settings.js moveSel and header.js ccTselMove, and it commits through the same path as an option
+  // settings.js moveSel and header.js ttTselMove, and it commits through the same path as an option
   // click (selectedIndex, a bubbling change event, then a resync), so the host page's inline
   // onchange handlers fire.
-  var CC_SEL_WHEEL = ".cc-tsel, .cc-dsel, .cc-sel";
+  var TT_SEL_WHEEL = ".tt-tsel, .tt-dsel, .tt-sel";
   var selSyncFns = [];
-  // Each family registers the sync its click handler calls, because they differ: .cc-tsel
+  // Each family registers the sync its click handler calls, because they differ: .tt-tsel
   // re-inserts a locale flag and rebuilds when the option count changes. A family that registers
-  // nothing falls back to ccSelMirror.
+  // nothing falls back to ttSelMirror.
   function registerSelectSync(fn) { if (typeof fn === "function" && selSyncFns.indexOf(fn) < 0) selSyncFns.push(fn); }
   // Repaints the trigger label and each chip's selected and disabled state. All three families
-  // share the .cc-X-trigger and .cc-X-opt[data-i] markup.
-  function ccSelMirror(wrap, sel) {
+  // share the .tt-X-trigger and .tt-X-opt[data-i] markup.
+  function ttSelMirror(wrap, sel) {
     try {
-      var t = wrap.querySelector(".cc-tsel-trigger, .cc-dsel-trigger, .cc-sel-trigger");
+      var t = wrap.querySelector(".tt-tsel-trigger, .tt-dsel-trigger, .tt-sel-trigger");
       var label = sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : "";
       if (t && t.textContent !== label) t.textContent = label;
-      var opts = wrap.querySelectorAll(".cc-tsel-opt, .cc-dsel-opt, .cc-sel-opt");
+      var opts = wrap.querySelectorAll(".tt-tsel-opt, .tt-dsel-opt, .tt-sel-opt");
       for (var i = 0; i < opts.length; i++) {
         var o = sel.options[+opts[i].getAttribute("data-i")]; if (!o) continue;
         opts[i].classList.toggle("is-selected", o.selected);
@@ -238,24 +238,24 @@
     sel.dispatchEvent(new Event("change", { bubbles: true }));   // the host's inline onchange chain
     var painted = false;
     for (var k = 0; k < selSyncFns.length; k++) { try { if (selSyncFns[k](sel, wrap) === true) painted = true; } catch (e) {} }
-    if (!painted) ccSelMirror(wrap, sel);
+    if (!painted) ttSelMirror(wrap, sel);
     // the freshly-selected chip has to wear the mode colour like every other one (rule 9)
     try { paintSelects(wrap); } catch (e2) {}
     return true;
   }
   function bindSelectWheel() {
-    if (window.__ccSelWheel || !document || typeof document.addEventListener !== "function") return;
-    window.__ccSelWheel = true;
+    if (window.__ttSelWheel || !document || typeof document.addEventListener !== "function") return;
+    window.__ttSelWheel = true;
     // Not passive, so a handled step can stop the page from scrolling underneath it.
     document.addEventListener("wheel", function (e) {
       try {
         if (e.ctrlKey || e.metaKey || e.altKey) return;               // browser zoom and OS gestures
         var t = e.target;
         if (!t || !t.closest) return;
-        if (t.closest(".cc-tsel-panel, .cc-dsel-panel, .cc-sel-panel, .cc-drop")) return;
-        var wrap = t.closest(CC_SEL_WHEEL);
-        if (!wrap || wrap.classList.contains("cc-open") || !wrap.contains(document.activeElement)) return;
-        if (wrap.classList.contains("cc-tsel-disabled") || wrap.classList.contains("cc-dsel-disabled") || wrap.classList.contains("cc-sel-disabled")) return;
+        if (t.closest(".tt-tsel-panel, .tt-dsel-panel, .tt-sel-panel, .tt-drop")) return;
+        var wrap = t.closest(TT_SEL_WHEEL);
+        if (!wrap || wrap.classList.contains("tt-open") || !wrap.contains(document.activeElement)) return;
+        if (wrap.classList.contains("tt-tsel-disabled") || wrap.classList.contains("tt-dsel-disabled") || wrap.classList.contains("tt-sel-disabled")) return;
         var dy = e.deltaY || 0, dx = e.deltaX || 0;
         var d = Math.abs(dy) >= Math.abs(dx) ? dy : dx;
         if (!d) return;
@@ -280,13 +280,13 @@
   function loadGFonts(fams) {
     try {
       if (!fams || !fams.length) return;
-      var link = document.getElementById("cc-gfonts");
+      var link = document.getElementById("tt-gfonts");
       var have = (link && link.dataset.fams) ? link.dataset.fams.split("|") : [];
       fams.forEach(function (f) { if (f && have.indexOf(f) < 0) have.push(f); });
       if (!have.length) return;
       have.sort();
       var href = "https://fonts.googleapis.com/css2?" + have.map(function (f) { return "family=" + f.replace(/ /g, "+") + ":wght@400;700"; }).join("&") + "&display=swap";
-      if (!link) { link = document.createElement("link"); link.id = "cc-gfonts"; link.rel = "stylesheet"; (document.head || document.documentElement).appendChild(link); }
+      if (!link) { link = document.createElement("link"); link.id = "tt-gfonts"; link.rel = "stylesheet"; (document.head || document.documentElement).appendChild(link); }
       if (link.getAttribute("href") !== href) link.setAttribute("href", href);
       link.dataset.fams = have.join("|");
     } catch (e) {}
@@ -300,12 +300,12 @@
   // InfoBubble.tsx: r=7, stroke-width 1.3, dot r=0.9, and a round-capped <path> for the stem, since
   // a <rect>'s rx rounds the ends differently. It is neutral, not accent: the sheets resolve
   // currentColor to var(--txt). The text goes into data-tip and is rendered by header.js's
-  // body-level #cc-tipfloat, because any overflow:hidden ancestor would clip a local child.
-  var CC_INFO_SVG = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3" /><circle cx="8" cy="4.6" r="0.9" fill="currentColor" /><path d="M8 7v4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" /></svg>';
+  // body-level #tt-tipfloat, because any overflow:hidden ancestor would clip a local child.
+  var TT_INFO_SVG = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3" /><circle cx="8" cy="4.6" r="0.9" fill="currentColor" /><path d="M8 7v4.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" /></svg>';
   function infoIcon(tip) {
     var s = document.createElement("span");
-    s.className = "cc-info";
-    s.innerHTML = CC_INFO_SVG;
+    s.className = "tt-info";
+    s.innerHTML = TT_INFO_SVG;
     if (tip) { s.setAttribute("data-tip", tip); s.setAttribute("aria-label", tip); }
     s.setAttribute("tabindex", "0");   // rule 8: reachable by keyboard, so focus opens it like hover does
     return s;
@@ -314,7 +314,7 @@
   // GlimStone's glyph set (reference/glyphs.json), for every glyph TowerTorch draws on its own
   // controls and on Unraid's buttons; Unraid's own icons keep their Font Awesome. Each entry is the
   // square viewBox cropped to the drawing's ink and the drawing, so every glyph fills its box alike.
-  // Sources: Streamline Core Solid, free set (CC BY 4.0), Tabler Icons (MIT), Material Design Icons
+  // Sources: Streamline Core Solid, free set (TowerTorch BY 4.0), Tabler Icons (MIT), Material Design Icons
   // (Apache 2.0) for Save, and drawings made for GlimStone, BombVault and KnightLoader. Shield, the
   // outline of IconShieldOn, is drawn for TowerTorch, and so are ShieldAlert, that outline with an
   // exclamation mark cut out where IconShieldOn has its check, Grip, the two columns of dots a
@@ -387,23 +387,23 @@
     "UpdateAvailable": ["0 0.096 14 14", '<path fill-rule="evenodd" d="M5.25 3.49994 11.9563 0.794702C12.9396 0.412306 14 1.13767 14 2.19271v8.22609c0 1.0238 -1.003 1.7468 -1.9743 1.423L5.25 9.49994v-6ZM3 3.5h1v7c0 0.5523 0.44772 1 1 1h0.5c0.55228 0 1 0.4477 1 1s-0.44772 1 -1 1H5c-1.65685 0 -3 -1.3431 -3 -3V9.32929C0.834808 8.91746 0 7.80622 0 6.5c0 -1.65685 1.34315 -3 3 -3Z" clip-rule="evenodd"/>'],
     "WhatsNew": ["0 0.255 14 14", '<path d="M4.657 0.626a0.75 0.75 0 1 0 -0.804 1.267l0.958 0.607H1.5C0.778 2.5 0 2.989 0 3.806v1.416c0 0.762 0.677 1.24 1.354 1.3a0.497 0.497 0 0 0 -0.017 0.005h5.038V3.884h1.25v2.643h5.038a0.493 0.493 0 0 0 -0.018 -0.006C13.324 6.461 14 5.984 14 5.222V3.806c0 -0.817 -0.778 -1.306 -1.5 -1.306H9.189l0.958 -0.607A0.75 0.75 0 0 0 9.344 0.626L7 2.112 4.657 0.626Z"/><path d="M13 7.777H7.625l0 6.223 3.875 0a1.5 1.5 0 0 0 1.5 -1.5V7.777Z"/><path d="M6.375 7.777H1V12.5A1.5 1.5 0 0 0 2.5 14l3.875 0 0 -6.223Z"/><path d="M4.697 2.755H9.197A0.625 0.625 0 0 1 9.197 4.005H4.697A0.625 0.625 0 0 1 4.697 2.755Z"/>']
   };
-  // The markup for one glyph, sized by the font size of whatever holds it (.cc-glyph in Tokens.css),
+  // The markup for one glyph, sized by the font size of whatever holds it (.tt-glyph in Tokens.css),
   // in the ink of its control.
   function glyph(name) {
     var d = GLYPHS[name];
-    return d ? '<svg class="cc-glyph" viewBox="' + d[0] + '" fill="currentColor" aria-hidden="true" focusable="false">' + d[1] + "</svg>" : "";
+    return d ? '<svg class="tt-glyph" viewBox="' + d[0] + '" fill="currentColor" aria-hidden="true" focusable="false">' + d[1] + "</svg>" : "";
   }
 
   // One trash can for every icon-only destructive control, GlimStone's Trash at the 15px these
   // controls were measured with.
-  var CC_TRASH_SVG = '<svg viewBox="' + GLYPHS.Trash[0] + '" width="15" height="15" fill="currentColor" aria-hidden="true">' + GLYPHS.Trash[1] + "</svg>";
+  var TT_TRASH_SVG = '<svg viewBox="' + GLYPHS.Trash[0] + '" width="15" height="15" fill="currentColor" aria-hidden="true">' + GLYPHS.Trash[1] + "</svg>";
 
   // The icon-only delete badge that stands in for a native remove control. A span rather than a
   // button, which Unraid's global CSS would bloat, so it carries the role and keys itself.
   function delIcon(label, run) {
     var b = document.createElement("span");
-    b.className = "cc-b-del cc-b-delicon";
-    b.innerHTML = CC_TRASH_SVG;
+    b.className = "tt-b-del tt-b-delicon";
+    b.innerHTML = TT_TRASH_SVG;
     b.setAttribute("role", "button"); b.tabIndex = 0;
     b.setAttribute("title", label); b.setAttribute("aria-label", label);
     b.addEventListener("click", function (ev) { ev.preventDefault(); ev.stopPropagation(); run(); });
@@ -423,17 +423,17 @@
   // The engine answers steps 2 and 3 from its cache and fetches only on its own workers (see
   // internal/iconsrc), so the browser never waits on a CDN.
   //
-  // cc.iconmode is the global default and cc.iconov holds per-item pins:
+  // tt.iconmode is the global default and tt.iconov holds per-item pins:
   //   auto    the chain above (default)
   //   native    no recolouring, but a curated colour icon still beats a poor shipped one
   //   flat      always flatten, whatever the heuristic says
   //   tint      always tint
   //   original  the item's own icon as it ships, never swapped and never recoloured; offered per
   //             item only
-  var ICON_PROXY = "/plugins/towertorch/server/ccapi.php";
+  var ICON_PROXY = "/plugins/towertorch/server/ttapi.php";
   var ICON_MODES = ["auto", "native", "flat", "tint", "original"];
   // Luminance spread on a 0-255 scale, measured over the 55 containers of a real box. The values
-  // are bimodal: flat glyphs land at 0.0-3.4 (Plex 0.53, Nginx 0.79, CCWB 3.4), anything with
+  // are bimodal: flat glyphs land at 0.0-3.4 (Plex 0.53, Nginx 0.79), anything with
   // internal structure at 17.3 and up (CrowdSec 17.3, Unraid's question.png 19.8, OpenCloud 39.0),
   // and 12 sits in the empty gap. Borderline icons get tinted, because flattening one that needed
   // a tint destroys it: at 32 question.png lost its "?" and became a white disc.
@@ -449,15 +449,15 @@
   function icoNorm(n) { return String(n == null ? "" : n).trim().toLowerCase(); }
   function icoValidMode(m) { return ICON_MODES.indexOf(m) >= 0 ? m : null; }
   // The global default. Anything unrecognised (or unset) is "auto".
-  function iconGlobalMode() { return icoValidMode(g("cc.iconmode", "auto")) || "auto"; }
-  // Per-item pins share one cc.* key, keyed "<scope>:<lowercased name>", so the settings sync
+  function iconGlobalMode() { return icoValidMode(g("tt.iconmode", "auto")) || "auto"; }
+  // Per-item pins share one tt.* key, keyed "<scope>:<lowercased name>", so the settings sync
   // carries them.
-  function iconOverrides() { try { var j = JSON.parse(g("cc.iconov", "null")); return (j && typeof j === "object") ? j : {}; } catch (e) { return {}; } }
+  function iconOverrides() { try { var j = JSON.parse(g("tt.iconov", "null")); return (j && typeof j === "object") ? j : {}; } catch (e) { return {}; } }
   function iconOverride(scope, name) { return icoValidMode(iconOverrides()[scope + ":" + icoNorm(name)]) || ""; }
   function setIconOverride(scope, name, mode) {
     var all = iconOverrides(), k = scope + ":" + icoNorm(name);
     if (icoValidMode(mode)) all[k] = mode; else delete all[k];
-    s("cc.iconov", JSON.stringify(all));
+    s("tt.iconov", JSON.stringify(all));
   }
   // The mode actually in force for one item: its own pin, else the global default.
   function iconMode(scope, name) { return iconOverride(scope, name) || iconGlobalMode(); }
@@ -566,13 +566,13 @@
   function icoMeasure(url) {
     if (!url) return null;
     if (icoSimple[url] != null) return icoSimple[url];
-    try { var c = sessionStorage.getItem("ccico2:" + url); if (c != null) { icoSimple[url] = JSON.parse(c); return icoSimple[url]; } } catch (e) {}
+    try { var c = sessionStorage.getItem("ttico2:" + url); if (c != null) { icoSimple[url] = JSON.parse(c); return icoSimple[url]; } } catch (e) {}
     if (icoMeasuring[url]) return null;
     icoMeasuring[url] = 1;
     var probe = new Image();
     var done = function (v) {
       icoSimple[url] = v; delete icoMeasuring[url];
-      try { sessionStorage.setItem("ccico2:" + url, JSON.stringify(v)); } catch (e2) {}
+      try { sessionStorage.setItem("ttico2:" + url, JSON.stringify(v)); } catch (e2) {}
       icoNotify();
     };
     probe.onerror = function () { done({ s: -1 }); };
@@ -672,10 +672,10 @@
     if (!m || !tile) return "";
     var q = function (v) { return Math.round(Math.max(0, Math.min(1, v)) * 16); };
     var bq = q(tile.bg), mq = q(tile.mk), sq = Math.round(Math.max(10, Math.min(100, strength || 100)) / 10);
-    var id = "cc-knock-" + bq + "-" + mq + "-" + (m[1] + m[2] + m[3]).toLowerCase() + (sq < 10 ? "-s" + sq : "");
-    var host = document.getElementById("cc-knock-svg");
+    var id = "tt-knock-" + bq + "-" + mq + "-" + (m[1] + m[2] + m[3]).toLowerCase() + (sq < 10 ? "-s" + sq : "");
+    var host = document.getElementById("tt-knock-svg");
     if (!host) {
-      host = document.createElement("div"); host.id = "cc-knock-svg"; host.setAttribute("aria-hidden", "true");
+      host = document.createElement("div"); host.id = "tt-knock-svg"; host.setAttribute("aria-hidden", "true");
       host.style.cssText = "position:absolute;width:0;height:0;overflow:hidden";
       document.body.appendChild(host);
       icoKnock = {};
@@ -696,7 +696,7 @@
   var icoKnock = {};
 
   // Unraid's stand-in for a container without an icon is a grey disc with a question mark, which
-  // reads as an error and flattens to a blank disc. CC shows GlimStone's container glyph instead,
+  // reads as an error and flattens to a blank disc. TowerTorch shows GlimStone's container glyph instead,
   // in a neutral grey that the tint and the flat filter recolour like any other one-tone icon.
   var ICON_PLACEHOLDER = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + GLYPHS.Containers[0] + '" width="96" height="96" fill="#8a8a8a">' + GLYPHS.Containers[1] + "</svg>");
   function iconPlaceholder(src) {
@@ -704,9 +704,9 @@
   }
 
   // The room every window, menu and bubble keeps from the viewport's edges, 16px and 24px on a wide
-  // screen. Tokens.css carries the same numbers as --cc-edge for the size caps.
+  // screen. Tokens.css carries the same numbers as --tt-edge for the size caps.
   function edge() {
-    return window.innerWidth >= 1440 ? 24 : 16;   // the viewport width, as in the min-width query beside --cc-edge
+    return window.innerWidth >= 1440 ? 24 : 16;   // the viewport width, as in the min-width query beside --tt-edge
   }
   // left and top for a box of w by h under the anchor rect r, or above it when the page ends first,
   // kept edge() inside the viewport. alignEnd lines its right edge up with the anchor's.
@@ -720,7 +720,7 @@
   // TowerTorch's colour picker, drawn in the page, so no colour field opens the system's
   // own picker window. Its presets are GlimStone's accent presets, the same eight in the same order
   // in every app of the family, so Blue here is the Blue of the next app. Only the offer changes: a
-  // saved cc.accent is never rewritten, whichever preset it came from.
+  // saved tt.accent is never rewritten, whichever preset it came from.
   var PRESETS = ["#FCC419", "#1D99F3", "#6FDC8C", "#FF8389", "#BE95FF", "#FF832B", "#3DDBD9", "#FF7EB6"];
   function hexToHsv(hex) {
     var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return null;
@@ -741,8 +741,8 @@
   function div(cls) { var n = document.createElement("div"); n.className = cls; return n; }
   // A saturation square and a hue bar; _set(hex) syncs it and _get() reads it back.
   function inlinePicker(hex, onChange) {
-    var box = div("cc-ip"), sv = div("cc-ip-sv"), dot = document.createElement("span"), hue = div("cc-ip-hue"), hdot = document.createElement("span");
-    dot.className = "cc-ip-dot"; hdot.className = "cc-ip-hdot";
+    var box = div("tt-ip"), sv = div("tt-ip-sv"), dot = document.createElement("span"), hue = div("tt-ip-hue"), hdot = document.createElement("span");
+    dot.className = "tt-ip-dot"; hdot.className = "tt-ip-hdot";
     sv.appendChild(dot); hue.appendChild(hdot); box.appendChild(sv); box.appendChild(hue);
     var st = hexToHsv(hex) || { h: 220, s: 0.8, v: 0.9 };
     function paint() {
@@ -775,16 +775,16 @@
   // swatch's own colour, so the class and the ink are always set together.
   function swMark(sw, on, colour) {
     if (!sw) return;
-    sw.classList.toggle("cc-set-sw-on", !!on);
-    if (on) sw.style.setProperty("--cc-sw-tick", swTick(idealText(colour || sw.dataset.c || "")));
-    else sw.style.removeProperty("--cc-sw-tick");
+    sw.classList.toggle("tt-set-sw-on", !!on);
+    if (on) sw.style.setProperty("--tt-sw-tick", swTick(idealText(colour || sw.dataset.c || "")));
+    else sw.style.removeProperty("--tt-sw-tick");
   }
   // Marks the swatch in `row` whose colour matches and unmarks the rest; dataset.c is the one
   // attribute every preset swatch carries.
   function swMarkRow(row, colour) {
     if (!row) return;
     var want = String(colour || "").toLowerCase();
-    Array.prototype.slice.call(row.querySelectorAll(".cc-set-sw")).forEach(function (sw) {
+    Array.prototype.slice.call(row.querySelectorAll(".tt-set-sw")).forEach(function (sw) {
       var c = (sw.dataset.c || "").toLowerCase();
       swMark(sw, !!c && c === want, sw.dataset.c);
     });
@@ -796,14 +796,14 @@
   function colorPicker(hex, onPick, opts) {
     opts = opts || {};
     var valid = function (v) { return /^#[0-9a-f]{6}$/i.test(v || ""); };
-    var box = div("cc-set-pickrow");
-    var hx = document.createElement("input"); hx.className = "cc-set-hexin"; hx.type = "text"; hx.value = hex || ""; hx.maxLength = 7; hx.spellcheck = false;
+    var box = div("tt-set-pickrow");
+    var hx = document.createElement("input"); hx.className = "tt-set-hexin"; hx.type = "text"; hx.value = hex || ""; hx.maxLength = 7; hx.spellcheck = false;
     hx.placeholder = opts.placeholder || "#FCC419"; hx.setAttribute("aria-label", german() ? "Farbe als Hex-Wert" : "Colour as a hex value");
-    var row = div("cc-set-swatches cc-fill" + (opts.rowClass ? " " + opts.rowClass : ""));
+    var row = div("tt-set-swatches tt-fill" + (opts.rowClass ? " " + opts.rowClass : ""));
     var pk = inlinePicker(valid(hex) ? hex : (opts.fallback || "#FCC419"), function (v) { hx.value = v; swMarkRow(row, v); onPick(v); });
     function pick(c) { pk._set(c); hx.value = c; swMarkRow(row, c); onPick(c); }
     PRESETS.forEach(function (c) {
-      var sw = pressable(document.createElement("span")); sw.className = "cc-set-sw";
+      var sw = pressable(document.createElement("span")); sw.className = "tt-set-sw";
       sw.addEventListener("click", function () { pick(c); });
       sw.setAttribute("data-tip", c); sw.setAttribute("aria-label", c); sw.style.background = c; sw.dataset.c = c;
       row.appendChild(sw);
@@ -831,11 +831,11 @@
     opts = opts || {};
     var native = inp.type === "color", hash = native || !!opts.hash;
     var sw = native ? inp : pressable(document.createElement("span"));
-    sw.classList.add("cc-colpick");
+    sw.classList.add("tt-colpick");
     if (opts.label) { sw.setAttribute("aria-label", opts.label); sw.setAttribute("data-tip", opts.label); }
     sw.setAttribute("aria-haspopup", "dialog"); sw.setAttribute("aria-expanded", "false");
     function current() { var v = String(inp.value || "").trim().replace(/^#/, ""); if (/^[0-9a-f]{3}$/i.test(v)) v = v.replace(/(.)/g, "$1$1"); return normHex(v); }
-    function paint() { var c = current(); if (c) sw.style.setProperty("--cc-cp", c); else sw.style.removeProperty("--cc-cp"); }
+    function paint() { var c = current(); if (c) sw.style.setProperty("--tt-cp", c); else sw.style.removeProperty("--tt-cp"); }
     function write(c) {
       c = c.toLowerCase();
       inp.value = hash ? c : c.slice(1);
@@ -848,7 +848,7 @@
       var again = cpOpen && cpOpen.anchor === sw;
       if (cpOpen) cpOpen.close(false);
       if (again) return;
-      var pop = div("cc-cpop"); pop.setAttribute("role", "dialog"); pop.setAttribute("data-cc-own-keys", "1");
+      var pop = div("tt-cpop"); pop.setAttribute("role", "dialog"); pop.setAttribute("data-tt-own-keys", "1");
       if (opts.label) pop.setAttribute("aria-label", opts.label);
       var field = colorPicker(current(), write, { fallback: opts.fallback });
       pop.appendChild(field);
@@ -893,20 +893,20 @@
   // tab in its limits editor.
   function iconPopover(anchor, scope, name, onChange) {
     var de = german();
-    var old = document.getElementById("cc-icm-pop"); if (old) old.remove();
-    var ov = document.createElement("div"); ov.id = "cc-icm-pop";
+    var old = document.getElementById("tt-icm-pop"); if (old) old.remove();
+    var ov = document.createElement("div"); ov.id = "tt-icm-pop";
     ov.style.cssText = "position:fixed;inset:0;z-index:99999";
     var card = document.createElement("div");
-    card.style.cssText = "position:absolute;background:var(--cc-bg,#161616);color:var(--cc-txt,#e6e6e6);border-radius:var(--cc-radius-card);padding:12px 14px;width:250px;max-width:92vw;box-shadow:0 2px 5px rgba(0,0,0,.38),0 14px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05);font-size:var(--cc-text-subline);line-height:1.5;font-family:inherit";
+    card.style.cssText = "position:absolute;background:var(--tt-bg,#161616);color:var(--tt-txt,#e6e6e6);border-radius:var(--tt-radius-card);padding:12px 14px;width:250px;max-width:92vw;box-shadow:0 2px 5px rgba(0,0,0,.38),0 14px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05);font-size:var(--tt-text-subline);line-height:1.5;font-family:inherit";
     var h = document.createElement("div");
     h.textContent = (de ? "Icon-Färbung" : "Icon colouring") + ": " + name;
-    h.style.cssText = "font-size:var(--cc-text-subline);font-weight:700;margin:0 0 8px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
+    h.style.cssText = "font-size:var(--tt-text-subline);font-weight:700;margin:0 0 8px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
     card.appendChild(h);
     var opts = de
       ? [["", "folgt globaler Einstellung"], ["auto", "Automatisch"], ["native", "Natives Icon"], ["flat", "Nachzeichnen"], ["tint", "Tönen"], ["original", "Original-Logo"]]
       : [["", "follows the global setting"], ["auto", "Automatic"], ["native", "Native icon"], ["flat", "Redraw"], ["tint", "Tone"], ["original", "Original logo"]];
     var sel = document.createElement("select");
-    sel.style.cssText = "width:100%;background:var(--cc-surface-3,#2e2e2e);color:var(--cc-txt,#e6e6e6);border:none;border-radius:var(--cc-radius-control);padding:6px 10px;font-size:var(--cc-text-subline);outline:none";
+    sel.style.cssText = "width:100%;background:var(--tt-surface-3,#2e2e2e);color:var(--tt-txt,#e6e6e6);border:none;border-radius:var(--tt-radius-control);padding:6px 10px;font-size:var(--tt-text-subline);outline:none";
     var cur = iconOverride(scope, name);
     opts.forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; if (o[0] === cur) op.selected = true; sel.appendChild(op); });
     sel.addEventListener("change", function () { setIconOverride(scope, name, sel.value); if (typeof onChange === "function") { try { onChange(); } catch (e2) {} } });
@@ -932,21 +932,21 @@
   var TOAST_MS = 4000;
   function toast(msg, kind) {
     if (!document.body || !msg) return null;
-    var stack = document.getElementById("cc-toasts");
+    var stack = document.getElementById("tt-toasts");
     if (!stack) {
-      stack = document.createElement("div"); stack.id = "cc-toasts";
+      stack = document.createElement("div"); stack.id = "tt-toasts";
       stack.setAttribute("role", "status"); stack.setAttribute("aria-live", "polite");
       document.body.appendChild(stack);
     }
     var el = document.createElement("div");
     var left = TOAST_MS, started = 0, timer = 0, hover = false, focus = false, closed = false;
-    function paint(m, k) { el.className = "cc-toast" + (k === "error" ? " cc-toast-err" : k === "ok" ? " cc-toast-ok" : ""); el.textContent = m; }
+    function paint(m, k) { el.className = "tt-toast" + (k === "error" ? " tt-toast-err" : k === "ok" ? " tt-toast-ok" : ""); el.textContent = m; }
     function run() { if (closed || timer || hover || focus) return; started = Date.now(); timer = setTimeout(close, left); }
     function pause() { if (!timer) return; clearTimeout(timer); timer = 0; left = Math.max(0, left - (Date.now() - started)); }
     function close() {
       if (closed) return;
       closed = true; clearTimeout(timer); timer = 0;
-      el.classList.add("cc-toast-out");
+      el.classList.add("tt-toast-out");
       // The fade-out reads its length from the motion level, none at "off".
       var d = parseFloat(getComputedStyle(el).animationDuration) || 0;
       setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, d * 1000);
@@ -967,7 +967,7 @@
     };
   }
 
-  // Makes a bar's fill slosh at its end (Tokens.css, .cc-slosh-edge), or takes the slosh off with
+  // Makes a bar's fill slosh at its end (Tokens.css, .tt-slosh-edge), or takes the slosh off with
   // on === false. The phase is the time since the page loaded, so a bar that is drawn again
   // swings on from where the one before it was. A fill that already sloshes is left untouched,
   // which keeps a MutationObserver that calls this from waking itself. An empty bar holds no
@@ -980,15 +980,15 @@
     if (!fill || !fill.classList) return fill;
     if (high == null) high = fill.getBoundingClientRect().height;
     if (!(parseFloat(fill.style.width) > 0) || (high > 0 && high < SLOSH_MIN)) on = false;
-    var sloshing = fill.classList.contains("cc-slosh-edge");
+    var sloshing = fill.classList.contains("tt-slosh-edge");
     if (on === false) {
       if (!sloshing) return fill;
-      fill.classList.remove("cc-slosh-edge"); fill.style.removeProperty("--cc-slosh-phase");
+      fill.classList.remove("tt-slosh-edge"); fill.style.removeProperty("--tt-slosh-phase");
       return fill;
     }
     if (sloshing) return fill;
-    fill.classList.add("cc-slosh-edge");
-    fill.style.setProperty("--cc-slosh-phase", (-performance.now() / 1000).toFixed(3) + "s");
+    fill.classList.add("tt-slosh-edge");
+    fill.style.setProperty("--tt-slosh-phase", (-performance.now() / 1000).toFixed(3) + "s");
     return fill;
   }
 
@@ -997,34 +997,34 @@
   // second refusal in a row shakes again. The timeout clears it where no animationend arrives.
   function shake(el) {
     if (!el || !el.classList) return;
-    el.classList.remove("cc-shake");
+    el.classList.remove("tt-shake");
     void el.offsetWidth;
-    el.classList.add("cc-shake");
+    el.classList.add("tt-shake");
     var done = function (e) {
-      if (e && e.animationName && e.animationName.indexOf("cc-shake") !== 0) return;   // a child's animation bubbling up
-      el.classList.remove("cc-shake"); el.removeEventListener("animationend", done);
+      if (e && e.animationName && e.animationName.indexOf("tt-shake") !== 0) return;   // a child's animation bubbling up
+      el.classList.remove("tt-shake"); el.removeEventListener("animationend", done);
     };
     el.addEventListener("animationend", done);
-    clearTimeout(el.ccShakeT); el.ccShakeT = setTimeout(done, 600);
+    clearTimeout(el.ttShakeT); el.ttShakeT = setTimeout(done, 600);
   }
   // Every failure reports through both channels at once: the message in a toast and a shake on the
   // control that was used, when there is one.
   function fail(el, msg) { shake(el); return toast(msg, "error"); }
   // A control that is off or locked shakes the same way when it is pressed anyway, with no toast:
-  // its (i) already says why. Where nothing may move, cc-deny swaps the opacity pulse for the
+  // its (i) already says why. Where nothing may move, tt-deny swaps the opacity pulse for the
   // accent halo a focus wears.
   function deny(el) {
     if (!el || !el.classList) return;
-    el.classList.add("cc-deny");
+    el.classList.add("tt-deny");
     shake(el);
-    clearTimeout(el.ccDenyT); el.ccDenyT = setTimeout(function () { el.classList.remove("cc-deny"); }, 600);
+    clearTimeout(el.ttDenyT); el.ttDenyT = setTimeout(function () { el.classList.remove("tt-deny"); }, 600);
   }
 
-  // A span that acts as a button: reachable with Tab, pressed with Enter or Space. CC draws its
+  // A span that acts as a button: reachable with Tab, pressed with Enter or Space. TowerTorch draws its
   // buttons as spans because Unraid's global button rules would restyle a real one.
   function pressable(el) {
-    if (!el || el.ccPressable) return el;
-    el.ccPressable = true;
+    if (!el || el.ttPressable) return el;
+    el.ttPressable = true;
     el.setAttribute("role", "button");
     if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
     el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); el.click(); } });
@@ -1035,22 +1035,22 @@
   // (sheets/TowerTorch.Labels.css). Called again, it changes both. The words stay the accessible
   // name in every mode, and in glyph mode they are the bubble unless the button has one of its own.
   function labelled(el, name, text) {
-    el.classList.add("cc-lb");
+    el.classList.add("tt-lb");
     el.textContent = "";
     var g = document.createElement("span"), l = document.createElement("span");
-    g.className = "cc-lb-g"; g.innerHTML = glyph(name);
-    l.className = "cc-lb-l"; l.textContent = text;
+    g.className = "tt-lb-g"; g.innerHTML = glyph(name);
+    l.className = "tt-lb-l"; l.textContent = text;
     el.appendChild(g); el.appendChild(l);
     labelTip(el);
     return el;
   }
   function labelTip(el) {
-    var l = el.querySelector(".cc-lb-l");
-    if (!l || (el.hasAttribute("data-tip") && !el.ccLbTip)) return;
-    if (document.documentElement.getAttribute("data-cc-labels-buttons") === "glyph") {
-      el.setAttribute("data-tip", l.textContent); el.ccLbTip = true;
-    } else if (el.ccLbTip) {
-      el.removeAttribute("data-tip"); el.ccLbTip = false;
+    var l = el.querySelector(".tt-lb-l");
+    if (!l || (el.hasAttribute("data-tip") && !el.ttLbTip)) return;
+    if (document.documentElement.getAttribute("data-tt-labels-buttons") === "glyph") {
+      el.setAttribute("data-tip", l.textContent); el.ttLbTip = true;
+    } else if (el.ttLbTip) {
+      el.removeAttribute("data-tip"); el.ttLbTip = false;
     }
   }
 
@@ -1061,12 +1061,12 @@
   var winStack = [], winSeq = 0;
   var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   // The control a window or menu hands the focus back to may have been drawn again while it was
-  // open, as the card view's gear is on every stats tick. One that carries data-cc-focus-key is
+  // open, as the card view's gear is on every stats tick. One that carries data-tt-focus-key is
   // found again by that key.
   function refind(node) {
     if (!node || document.contains(node)) return node;
-    var key = node.getAttribute && node.getAttribute("data-cc-focus-key");
-    return (key && document.querySelector('[data-cc-focus-key="' + key + '"]')) || null;
+    var key = node.getAttribute && node.getAttribute("data-tt-focus-key");
+    return (key && document.querySelector('[data-tt-focus-key="' + key + '"]')) || null;
   }
   function focusables(win) {
     return Array.prototype.filter.call(win.querySelectorAll(FOCUSABLE), function (n) { return n.getClientRects().length > 0; });
@@ -1075,7 +1075,7 @@
     var top = winStack[winStack.length - 1];
     if (!top) return;
     // A panel the window opened, such as the time picker, answers Escape and Tab itself.
-    if (e.target && e.target.closest && e.target.closest("[data-cc-own-keys]")) return;
+    if (e.target && e.target.closest && e.target.closest("[data-tt-own-keys]")) return;
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); top.dismiss(); return; }
     if (e.key !== "Tab") return;
     var f = focusables(top.win), a = document.activeElement;
@@ -1092,7 +1092,7 @@
   // bottom holds only the actions.
   function closeBadge(run) {
     var b = pressable(document.createElement("span"));
-    b.className = "cc-win-x";
+    b.className = "tt-win-x";
     b.innerHTML = glyph("Close");
     var label = german() ? "Schließen" : "Close";
     b.setAttribute("aria-label", label); b.setAttribute("data-tip", label);
@@ -1104,14 +1104,14 @@
   function modal(win, opts) {
     opts = opts || {};
     var opener = opts.opener || document.activeElement, closed = false;
-    var scrim = document.createElement("div"); scrim.className = "cc-scrim";
+    var scrim = document.createElement("div"); scrim.className = "tt-scrim";
     var z = parseInt(getComputedStyle(win).zIndex, 10);
     if (z > 0) scrim.style.zIndex = String(z - 1);
     win.parentNode.insertBefore(scrim, win);
     win.setAttribute("role", "dialog"); win.setAttribute("aria-modal", "true");
     if (!win.hasAttribute("tabindex")) win.setAttribute("tabindex", "-1");
-    var title = win.querySelector(".cc-win-title");
-    if (title) { if (!title.id) title.id = "cc-win-t" + (++winSeq); win.setAttribute("aria-labelledby", title.id); }
+    var title = win.querySelector(".tt-win-title");
+    if (title) { if (!title.id) title.id = "tt-win-t" + (++winSeq); win.setAttribute("aria-labelledby", title.id); }
     function close() {
       if (closed) return;
       closed = true;
@@ -1124,7 +1124,7 @@
     var entry = { win: win, dismiss: function () { if (opts.onDismiss) opts.onDismiss(); else close(); } };
     scrim.addEventListener("click", function (e) { e.stopPropagation(); entry.dismiss(); });
     win.appendChild(closeBadge(function () { entry.dismiss(); }));
-    if (win.classList.contains("cc-win")) paintWin(win);
+    if (win.classList.contains("tt-win")) paintWin(win);
     if (!winStack.length) document.addEventListener("keydown", onWinKey, true);
     winStack.push(entry);
     // The first field or switch in the content, else the first button in the bottom row; never
@@ -1132,8 +1132,8 @@
     // close badge.
     var into = opts.focus;
     if (!into) {
-      var f = focusables(win).filter(function (n) { return !n.classList.contains("cc-info") && !n.classList.contains("cc-win-x"); });
-      into = f.filter(function (n) { return n.closest(".cc-win-card, .cc-pop-mid"); })[0] || f[0] || win;
+      var f = focusables(win).filter(function (n) { return !n.classList.contains("tt-info") && !n.classList.contains("tt-win-x"); });
+      into = f.filter(function (n) { return n.closest(".tt-win-card, .tt-pop-mid"); })[0] || f[0] || win;
     }
     try { into.focus(); } catch (e) {}
     return { close: close };
@@ -1143,13 +1143,13 @@
   // rainbow, a delete keeping off the red slot as on the rows. Under the reactive mode the main
   // button rests grey; the title, a heading, keeps its colour.
   function paintWin(win) {
-    var rb = g("cc.theming", "1") !== "0" && g("cc.rainbow", "0") === "1";
-    win.classList.toggle("cc-win-reactive", g("cc.theming", "1") !== "0" && g("cc.rbmode", "all") === "active");
-    var p = surfacePalette(palette(), null), off = g("cc.rainbowrot", "1") === "0" ? 0 : rbSeed(p.length);
-    Array.prototype.forEach.call(win.querySelectorAll(".cc-win-title, .cc-win-btn, .cc-win-x"), function (el, i) {
-      if (!rb) { el.style.removeProperty("--cc-rb-c"); el.style.removeProperty("--cc-rb-ct"); return; }
-      var c = el.classList.contains("cc-win-del") ? deleteSlot(p, i + off) : p[(i + off) % p.length];
-      el.style.setProperty("--cc-rb-c", c); el.style.setProperty("--cc-rb-ct", idealText(c));
+    var rb = g("tt.theming", "1") !== "0" && g("tt.rainbow", "0") === "1";
+    win.classList.toggle("tt-win-reactive", g("tt.theming", "1") !== "0" && g("tt.rbmode", "all") === "active");
+    var p = surfacePalette(palette(), null), off = g("tt.rainbowrot", "1") === "0" ? 0 : rbSeed(p.length);
+    Array.prototype.forEach.call(win.querySelectorAll(".tt-win-title, .tt-win-btn, .tt-win-x"), function (el, i) {
+      if (!rb) { el.style.removeProperty("--tt-rb-c"); el.style.removeProperty("--tt-rb-ct"); return; }
+      var c = el.classList.contains("tt-win-del") ? deleteSlot(p, i + off) : p[(i + off) % p.length];
+      el.style.setProperty("--tt-rb-c", c); el.style.setProperty("--tt-rb-ct", idealText(c));
     });
   }
 
@@ -1158,22 +1158,22 @@
   // like Cancel rather than red and leaves the focus on Cancel, the safe choice. o.onOk gets the
   // trimmed name. o.glyph is the answer's glyph and o.cancelGlyph the other one's.
   function ask(o) {
-    var win = document.createElement("div"); win.className = "cc-win cc-dlg";
-    var title = document.createElement("div"); title.className = "cc-win-title"; title.textContent = o.title; win.appendChild(title);
-    var card = document.createElement("div"); card.className = "cc-win-card";
-    if (o.text) { var p = document.createElement("p"); p.className = "cc-win-text"; p.textContent = o.text; card.appendChild(p); }
+    var win = document.createElement("div"); win.className = "tt-win tt-dlg";
+    var title = document.createElement("div"); title.className = "tt-win-title"; title.textContent = o.title; win.appendChild(title);
+    var card = document.createElement("div"); card.className = "tt-win-card";
+    if (o.text) { var p = document.createElement("p"); p.className = "tt-win-text"; p.textContent = o.text; card.appendChild(p); }
     var input = null;
     if (o.input) {
-      input = document.createElement("input"); input.type = "text"; input.className = "cc-win-in";
+      input = document.createElement("input"); input.type = "text"; input.className = "tt-win-in";
       input.value = o.input.value || ""; input.setAttribute("aria-label", o.input.label || o.title);
       if (o.input.placeholder) input.placeholder = o.input.placeholder;
       input.setAttribute("autocomplete", "off");
       card.appendChild(input);
     }
     if (card.childNodes.length) win.appendChild(card);
-    var act = document.createElement("div"); act.className = "cc-win-act";
-    var no = pressable(document.createElement("span")); no.className = "cc-win-btn"; labelled(no, o.cancelGlyph || "Close", o.cancel);
-    var yes = pressable(document.createElement("span")); yes.className = "cc-win-btn " + (o.danger ? "cc-win-del" : "cc-win-go"); labelled(yes, o.glyph || (o.danger ? "Trash" : "Confirm"), o.ok);
+    var act = document.createElement("div"); act.className = "tt-win-act";
+    var no = pressable(document.createElement("span")); no.className = "tt-win-btn"; labelled(no, o.cancelGlyph || "Close", o.cancel);
+    var yes = pressable(document.createElement("span")); yes.className = "tt-win-btn " + (o.danger ? "tt-win-del" : "tt-win-go"); labelled(yes, o.glyph || (o.danger ? "Trash" : "Confirm"), o.ok);
     act.appendChild(no); act.appendChild(yes); win.appendChild(act);
     document.body.appendChild(win);
     paintWin(win);
@@ -1204,14 +1204,14 @@
   var rowMenu = null;
   function menu(anchor, items) {
     if (rowMenu) { var again = rowMenu.anchor === anchor; rowMenu.close(false); if (again) return null; }
-    var m = document.createElement("div"); m.className = "cc-rowmenu"; m.setAttribute("role", "menu");
-    var rb = g("cc.theming", "1") !== "0" && g("cc.rainbow", "0") === "1";
-    var p = surfacePalette(palette(), null), off = g("cc.rainbowrot", "1") === "0" ? 0 : rbSeed(p.length);
+    var m = document.createElement("div"); m.className = "tt-rowmenu"; m.setAttribute("role", "menu");
+    var rb = g("tt.theming", "1") !== "0" && g("tt.rainbow", "0") === "1";
+    var p = surfacePalette(palette(), null), off = g("tt.rainbowrot", "1") === "0" ? 0 : rbSeed(p.length);
     var nodes = items.map(function (it, i) {
-      var n = document.createElement("div"); n.className = "cc-rowmenu-it"; n.setAttribute("role", "menuitem"); n.tabIndex = -1;
+      var n = document.createElement("div"); n.className = "tt-rowmenu-it"; n.setAttribute("role", "menuitem"); n.tabIndex = -1;
       n.innerHTML = glyph(it.glyph);
       var l = document.createElement("span"); l.textContent = it.label; n.appendChild(l);
-      if (rb) { var c = it.del ? deleteSlot(p, i + off) : p[(i + off) % p.length]; n.style.setProperty("--cc-rb-c", c); n.style.setProperty("--cc-rb-ct", idealText(c)); }
+      if (rb) { var c = it.del ? deleteSlot(p, i + off) : p[(i + off) % p.length]; n.style.setProperty("--tt-rb-c", c); n.style.setProperty("--tt-rb-ct", idealText(c)); }
       n.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); close(true); it.run(); });
       m.appendChild(n);
       return n;
@@ -1254,54 +1254,54 @@
     move(0);
     return entry;
   }
-  // /Tools reads cc.styletools and cct.*. An install that only has the /Settings keys gets them
-  // copied once, the exception and every ccs.* value, so /Tools keeps its look; a set
-  // cc.styletools marks the copy as done. store.LoadConfig makes the same copy in the
+  // /Tools reads tt.styletools and ttt.*. An install that only has the /Settings keys gets them
+  // copied once, the exception and every tts.* value, so /Tools keeps its look; a set
+  // tt.styletools marks the copy as done. store.LoadConfig makes the same copy in the
   // engine's mirror, which a browser on another origin adopts.
   function splitToolsKeys(ls) {
-    if (ls.getItem("cc.styletools") != null) return;
+    if (ls.getItem("tt.styletools") != null) return;
     var keys = [];
-    for (var i = 0; i < ls.length; i++) { var k = ls.key(i); if (k && k.indexOf("ccs.") === 0) keys.push(k); }
-    keys.forEach(function (k) { var t = "cct." + k.slice(4); if (ls.getItem(t) == null) ls.setItem(t, ls.getItem(k)); });
-    ls.setItem("cc.styletools", ls.getItem("cc.stylesettings") || "1");
+    for (var i = 0; i < ls.length; i++) { var k = ls.key(i); if (k && k.indexOf("tts.") === 0) keys.push(k); }
+    keys.forEach(function (k) { var t = "ttt." + k.slice(4); if (ls.getItem(t) == null) ls.setItem(t, ls.getItem(k)); });
+    ls.setItem("tt.styletools", ls.getItem("tt.stylesettings") || "1");
   }
   try { splitToolsKeys(localStorage); } catch (e) {}
   // An install that adopts the badge colours gets the tile and tint switches turned on once,
   // globally and for every area with colours of its own, so its logos keep the tile and the ink
-  // adopting gave them. cc.iconadoptsplit marks it done and a switch turned off later stays off.
+  // adopting gave them. tt.iconadoptsplit marks it done and a switch turned off later stays off.
   // store.LoadConfig runs the same step on the engine's mirror.
   function keepAdoptedTiles(ls) {
-    var adopt = ls.getItem("cc.iconbgrainbow");
-    if (adopt == null || ls.getItem("cc.iconadoptsplit")) return;
+    var adopt = ls.getItem("tt.iconbgrainbow");
+    if (adopt == null || ls.getItem("tt.iconadoptsplit")) return;
     if (adopt === "1") {
-      ls.setItem("cc.iconbg", "1"); ls.setItem("cc.icontint", "1");
-      [["cc.styledocker", "ccd."], ["cc.stylevms", "ccv."], ["cc.styleplugin", "ccp."]].forEach(function (a) {
+      ls.setItem("tt.iconbg", "1"); ls.setItem("tt.icontint", "1");
+      [["tt.styledocker", "ttd."], ["tt.stylevms", "ttv."], ["tt.styleplugin", "ttp."]].forEach(function (a) {
         if (ls.getItem(a[0]) === "0") { ls.setItem(a[1] + "iconbg", "1"); ls.setItem(a[1] + "icontint", "1"); }
       });
     }
-    ls.setItem("cc.iconadoptsplit", "1");
+    ls.setItem("tt.iconadoptsplit", "1");
   }
   try { keepAdoptedTiles(localStorage); } catch (e) {}
   // The Settings and Tools grids take the same step under a marker of their own, so an install
   // that has already run the one above gets it for them as well. Without it a grid with colours
   // of its own shows neither tiles nor tint while the other areas show both.
   function keepAdoptedGridTiles(ls) {
-    var adopt = ls.getItem("cc.iconbgrainbow");
-    if (adopt == null || ls.getItem("cc.iconadoptgrid")) return;
+    var adopt = ls.getItem("tt.iconbgrainbow");
+    if (adopt == null || ls.getItem("tt.iconadoptgrid")) return;
     if (adopt === "1") {
-      [["cc.stylesettings", "ccs."], ["cc.styletools", "cct."]].forEach(function (a) {
+      [["tt.stylesettings", "tts."], ["tt.styletools", "ttt."]].forEach(function (a) {
         if (ls.getItem(a[0]) === "0") { ls.setItem(a[1] + "iconbg", "1"); ls.setItem(a[1] + "icontint", "1"); }
       });
     }
-    ls.setItem("cc.iconadoptgrid", "1");
+    ls.setItem("tt.iconadoptgrid", "1");
   }
   try { keepAdoptedGridTiles(localStorage); } catch (e) {}
 
-  window.CCTheme = {
+  window.TTTheme = {
     RB: RB, idealText: idealText, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,
-    CC_INFO_SVG: CC_INFO_SVG, infoIcon: infoIcon, CC_TRASH_SVG: CC_TRASH_SVG, delIcon: delIcon,
+    TT_INFO_SVG: TT_INFO_SVG, infoIcon: infoIcon, TT_TRASH_SVG: TT_TRASH_SVG, delIcon: delIcon,
     lumOf: lumOf, LUM_FLOOR: LUM_FLOOR, liftDark: liftDark, liftLight: liftLight, lightTheme: lightTheme,
     liftSurface: liftSurface, surfacePalette: surfacePalette, isRed: isRed, deleteSlot: deleteSlot, toast: toast, shake: shake, fail: fail, deny: deny,
     pressable: pressable, modal: modal, closeBadge: closeBadge,
@@ -1316,13 +1316,13 @@
     }
   };
 
-  // Syncs cc.* settings across browsers and origins, since localStorage is per origin and per
-  // browser. docker.js and settings.js mirror every cc.* write into the engine's
+  // Syncs tt.* settings across browsers and origins, since localStorage is per origin and per
+  // browser. docker.js and settings.js mirror every tt.* write into the engine's
   // config.ui_settings on their own pages and adopt it back on load; this covers every other page
   // and skips those two, so localStorage.setItem is not wrapped twice.
   (function () {
     if (/^\/Docker(\/|$)/.test(location.pathname) || /^\/Settings\/TowerTorch(\/|$)/.test(location.pathname)) return;
-    var PROXY = "/plugins/towertorch/server/ccapi.php";
+    var PROXY = "/plugins/towertorch/server/ttapi.php";
     function apiGet(path) {
       return fetch(PROXY + "?path=" + encodeURIComponent(path), { headers: { Accept: "application/json" } })
         .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
@@ -1344,10 +1344,10 @@
     }
     var pending = {}, syncT = null;
     try {
-      if (!window.__ccLS) {
-        var protoSet = window.__ccNativeSet || (window.__ccNativeSet = Storage.prototype.setItem);
+      if (!window.__ttLS) {
+        var protoSet = window.__ttNativeSet || (window.__ttNativeSet = Storage.prototype.setItem);
         var orig = function (k, v) { protoSet.call(localStorage, k, v); };
-        window.__ccLS = orig;
+        window.__ttLS = orig;
         // Firefox keeps an assignment to localStorage.setItem as an item named "setItem" and never
         // calls it, so the hook sits on the prototype and lets sessionStorage through.
         Storage.prototype.setItem = function (k, v) {
@@ -1356,32 +1356,32 @@
           // some keys unchanged on every render, the settings tab among them.
           var same = false; try { same = localStorage.getItem(k) === String(v); } catch (e) {}
           orig(k, v);
-          try { if (!same && /^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !(String(k) === "cc.theming" && localStorage.getItem("tt.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
+          try { if (!same && /^tt[a-z]*\./.test(String(k)) && k !== "tt.stateCache" && !(String(k) === "tt.theming" && localStorage.getItem("towertorch.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
         };
       }
     } catch (e) {}
     // A removed key is queued too, and push() deletes it on the server; otherwise the next
     // adopt() would bring the old value back.
     try {
-      if (!window.__ccLSRemove) {
-        var protoRm = window.__ccNativeRemove || (window.__ccNativeRemove = Storage.prototype.removeItem);
+      if (!window.__ttLSRemove) {
+        var protoRm = window.__ttNativeRemove || (window.__ttNativeRemove = Storage.prototype.removeItem);
         var origRm = function (k) { protoRm.call(localStorage, k); };
-        window.__ccLSRemove = origRm;
+        window.__ttLSRemove = origRm;
         Storage.prototype.removeItem = function (k) {
           if (this !== localStorage) return protoRm.call(this, k);
           origRm(k);
-          try { if (/^cc[a-z]*\./.test(String(k)) && k !== "cc.stateCache" && !(String(k) === "cc.theming" && localStorage.getItem("tt.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
+          try { if (/^tt[a-z]*\./.test(String(k)) && k !== "tt.stateCache" && !(String(k) === "tt.theming" && localStorage.getItem("towertorch.off") === "1")) { pending[k] = 1; clearTimeout(syncT); syncT = setTimeout(push, 800); } } catch (e) {}
         };
       }
     } catch (e) {}
     // In Firefox a function assigned to localStorage.setItem or removeItem lands as an item of that
     // name, and such an item is never a setting.
-    try { ["setItem", "removeItem"].forEach(function (k) { if (localStorage.getItem(k) !== null && window.__ccNativeRemove) window.__ccNativeRemove.call(localStorage, k); }); } catch (e) {}
+    try { ["setItem", "removeItem"].forEach(function (k) { if (localStorage.getItem(k) !== null && window.__ttNativeRemove) window.__ttNativeRemove.call(localStorage, k); }); } catch (e) {}
     // the writes header.js made before this wrapper existed, see syncedSet() there
-    var early = Object.keys(window.__ccLSEarly || {});
+    var early = Object.keys(window.__ttLSEarly || {});
     early.forEach(function (k) { pending[k] = 1; });
     if (early.length) syncT = setTimeout(push, 800);
-    delete window.__ccLSEarly;
+    delete window.__ttLSEarly;
     // One push at a time; a write landing while one is out queues another for when it returns. The
     // keys a push carries stay unsynced until its PUT has landed, so adopt() leaves them alone.
     var sending = {}, pushing = false, queued = false;
@@ -1418,15 +1418,15 @@
     function adopt(u, busy) {
       var changed = false, skip = unsynced();
       Object.keys(busy || {}).forEach(function (k) { skip[k] = 1; });
-      try { Object.keys(u || {}).forEach(function (k) { if (/^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !(k === "cc.theming" && localStorage.getItem("tt.off") === "1") && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ccLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
+      try { Object.keys(u || {}).forEach(function (k) { if (/^tt[a-z]*\./.test(k) && k !== "tt.stateCache" && !(k === "tt.theming" && localStorage.getItem("towertorch.off") === "1") && !skip[k] && localStorage.getItem(k) !== u[k]) { (window.__ttLS || localStorage.setItem.bind(localStorage))(k, u[k]); changed = true; } }); } catch (e) {}
       return changed;
     }
     // adopt() corrects localStorage from the server copy after the page has already drawn itself
     // with the old values, so call the repaint hooks the area scripts expose for live toggles and
     // the correction shows without another reload.
-    var CC_AREA_APPLY_HOOKS = ["ccHeaderApply", "ccSharesApply", "ccDisksApply", "ccVmsApply", "ccPluginsApply", "ccFavoritesApply", "ccSettingsGridApply"];
+    var TT_AREA_APPLY_HOOKS = ["ttHeaderApply", "ttSharesApply", "ttDisksApply", "ttVmsApply", "ttPluginsApply", "ttFavoritesApply", "ttSettingsGridApply"];
     function rerenderAdoptedAreas() {
-      CC_AREA_APPLY_HOOKS.forEach(function (fnName) {
+      TT_AREA_APPLY_HOOKS.forEach(function (fnName) {
         try { if (typeof window[fnName] === "function") window[fnName](); } catch (e) {}
       });
     }
@@ -1436,7 +1436,7 @@
       if (adopt(c.ui_settings, bootBusy)) rerenderAdoptedAreas();
       if (!c.ui_settings || !Object.keys(c.ui_settings).length) {
         var seed = {};
-        try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^cc[a-z]*\./.test(k) && k !== "cc.stateCache" && !(k === "cc.theming" && localStorage.getItem("tt.off") === "1")) seed[k] = localStorage.getItem(k); } } catch (e) {}
+        try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && /^tt[a-z]*\./.test(k) && k !== "tt.stateCache" && !(k === "tt.theming" && localStorage.getItem("towertorch.off") === "1")) seed[k] = localStorage.getItem(k); } } catch (e) {}
         if (Object.keys(seed).length) { Object.keys(seed).forEach(function (k) { pending[k] = 1; }); push(); }
       }
     });

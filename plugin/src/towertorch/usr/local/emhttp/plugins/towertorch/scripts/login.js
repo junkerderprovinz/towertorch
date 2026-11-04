@@ -1,5 +1,5 @@
 /* TowerTorch: the login page. include/login-head.php writes this into Unraid's login page next to
- * styles/login.css, together with the cc.* settings the engine keeps for every browser. Those come
+ * styles/login.css, together with the tt.* settings the engine keeps for every browser. Those come
  * first, since a browser that clears its storage would otherwise meet the defaults here; the
  * browser's own keys fill what the engine does not have. It puts the logo above the server name
  * and leaves the stock page alone when theming is switched off. */
@@ -11,7 +11,7 @@
     try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; }
   }
 
-  if (g("cc.theming", "1") === "0") {
+  if (g("tt.theming", "1") === "0") {
     var sheet = document.getElementById("towertorch-login");
     if (sheet) sheet.remove();
     return;
@@ -24,15 +24,15 @@
   }
 
   var root = document.documentElement;
-  var accent = g("cc.accent", "#FCC419");
+  var accent = g("tt.accent", "#FCC419");
   if (!/^#[0-9a-f]{6}$/i.test(accent)) accent = "#FCC419";
   root.style.setProperty("--tt-accent", accent);
   root.style.setProperty("--tt-accent-ink", idealText(accent));
-  var shape = g("cc.badgeshape", "round");
-  root.setAttribute("data-cc-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
+  var shape = g("tt.badgeshape", "round");
+  root.setAttribute("data-tt-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
   // The reactive colour mode (stored as "active") rests the button grey until it has the pointer.
-  root.classList.toggle("tt-reactive", g("cc.rbmode", "all") === "active");
-  var labels = g("cc.labels.buttons", "textGlyph");
+  root.classList.toggle("tt-reactive", g("tt.rbmode", "all") === "active");
+  var labels = g("tt.labels.buttons", "textGlyph");
   root.setAttribute("data-tt-labels", ["text", "textGlyph", "glyph", "reactive"].indexOf(labels) < 0 ? "textGlyph" : labels);
   // GlimStone's glyphs for the two submit buttons these pages have, signing in and setting the
   // password, by their captions in English and German. Another caption keeps its words alone.
@@ -50,19 +50,19 @@
       box.appendChild(img);
       content.insertBefore(box, content.firstChild);
     }
-    // The server name looks like the name in the header: the same cc.brand.* keys, with the same
+    // The server name looks like the name in the header: the same tt.brand.* keys, with the same
     // defaults, and a web font from Google where the header would load one.
     var title = document.querySelector("#login h1");
     if (title) {
-      var custom = g("cc.brand.name", "");
+      var custom = g("tt.brand.name", "");
       if (custom) title.textContent = custom;
-      var size = g("cc.brand.size", "30");
+      var size = g("tt.brand.size", "30");
       if (/^\d{1,3}$/.test(size)) title.style.fontSize = size + "px";
-      title.style.fontWeight = g("cc.brand.weight", "650");
-      title.style.fontStyle = g("cc.brand.italic", "0") === "1" ? "italic" : "normal";
-      var color = g("cc.brand.color", "");
+      title.style.fontWeight = g("tt.brand.weight", "650");
+      title.style.fontStyle = g("tt.brand.italic", "0") === "1" ? "italic" : "normal";
+      var color = g("tt.brand.color", "");
       if (/^#[0-9a-f]{6}$/i.test(color)) title.style.color = color;
-      var font = g("cc.brand.font", "");
+      var font = g("tt.brand.font", "");
       if (font) {
         title.style.fontFamily = font;
         var m = /^\s*(?:"([^"]+)"|'([^']+)'|([^,]+))/.exec(font), family = m ? (m[1] || m[2] || m[3] || "").trim() : "";

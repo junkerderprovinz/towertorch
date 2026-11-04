@@ -1,4 +1,4 @@
-// Pins the icon pipeline across cc-theme.js and docker.js.
+// Pins the icon pipeline across tt-theme.js and docker.js.
 //
 // Ink-flattening turns a full-colour icon, a coloured background under a mark of
 // another colour, into one illegible blob, while a flat glyph takes it perfectly.
@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch', 'scripts');
-const THEME = process.argv[2] || path.join(DIR, 'cc-theme.js');
+const THEME = process.argv[2] || path.join(DIR, 'tt-theme.js');
 const DOCKER = process.argv[3] || path.join(DIR, 'docker.js');
 
 class CL {
@@ -66,15 +66,15 @@ global.localStorage = {
 };
 global.sessionStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 global.window = { localStorage: global.localStorage, document, setTimeout, clearTimeout };
-// cc-theme.js's cross-origin settings sync skips the two pages that already sync; pretend to
+// tt-theme.js's cross-origin settings sync skips the two pages that already sync; pretend to
 // be /Docker so that block returns immediately and the test only exercises the icon pipeline.
 global.location = { pathname: '/Docker' };
 global.fetch = () => new Promise(() => {});   // the batch lookup never resolves in this test
 
-// Load cc-theme.js the way the browser does.
+// Load tt-theme.js the way the browser does.
 require(THEME);
-const CCTheme = global.window.CCTheme;
-if (!CCTheme || !CCTheme.icons) throw new Error('cc-theme.js did not export window.CCTheme.icons');
+const TTTheme = global.window.TTTheme;
+if (!TTTheme || !TTTheme.icons) throw new Error('tt-theme.js did not export window.TTTheme.icons');
 
 // Pull the filter builders and iconInk out of docker.js.
 const src = fs.readFileSync(DOCKER, 'utf8');
@@ -86,19 +86,19 @@ function grabFn(name) {
   throw new Error('unbalanced function: ' + name);
 }
 // RB_PAL and RB_OFFSET stand in for the module-level palette vars, normally
-// window.CCTheme.RB and a persisted seed, pinned to the shipped palette at offset 0
-// so ccRbColor(i) and iconAdoptTint() are deterministic.
+// window.TTTheme.RB and a persisted seed, pinned to the shipped palette at offset 0
+// so ttRbColor(i) and iconAdoptTint() are deterministic.
 const dockerApi = new Function('document', 'localStorage', 'window',
   'var RB_PAL = ["#d9433f","#f97316","#fcc419","#1f9d55","#0ea5a4","#2f6feb","#8b5cf6","#e05299"];\n' +
   'var RB_OFFSET = 0;\n' +
   grabFn('effc') + '\n' + grabFn('iconBgAdopts') + '\n' + grabFn('iconBgOn') + '\n' + grabFn('themingOn') + '\n' +
-  grabFn('idealText') + '\n' + grabFn('ccHex6') + '\n' + grabFn('tintOn') + '\n' + grabFn('ccPalStored') + '\n' + grabFn('ccPalActive') + '\n' + grabFn('ccRbColor') + '\n' + grabFn('iconAdoptTint') + '\n' + grabFn('bgColor') + '\n' + grabFn('iconInk') + '\n' + grabFn('itemAdoptInk') + '\n' + grabFn('ensureFlatFilter') + '\n' + grabFn('ensureMonoFilter') + '\n' + grabFn('ensureTintFilterAs') + '\n' + grabFn('ensureTintFilter') + '\n' + grabFn('ccLogoSizes') + '\n' + grabFn('glyphInkAndFilter') + '\n' +
-  'return { iconInk: iconInk, iconBgOn: iconBgOn, itemAdoptInk: itemAdoptInk, tintOn: tintOn, bgColor: bgColor, ensureFlatFilter: ensureFlatFilter, ensureMonoFilter: ensureMonoFilter, ensureTintFilter: ensureTintFilter, ensureTintFilterAs: ensureTintFilterAs, ccLogoSizes: ccLogoSizes, glyphInkAndFilter: glyphInkAndFilter, idealText: idealText, effc: effc, iconAdoptTint: iconAdoptTint, ccRbColor: ccRbColor };'
+  grabFn('idealText') + '\n' + grabFn('ttHex6') + '\n' + grabFn('tintOn') + '\n' + grabFn('ttPalStored') + '\n' + grabFn('ttPalActive') + '\n' + grabFn('ttRbColor') + '\n' + grabFn('iconAdoptTint') + '\n' + grabFn('bgColor') + '\n' + grabFn('iconInk') + '\n' + grabFn('itemAdoptInk') + '\n' + grabFn('ensureFlatFilter') + '\n' + grabFn('ensureMonoFilter') + '\n' + grabFn('ensureTintFilterAs') + '\n' + grabFn('ensureTintFilter') + '\n' + grabFn('ttLogoSizes') + '\n' + grabFn('glyphInkAndFilter') + '\n' +
+  'return { iconInk: iconInk, iconBgOn: iconBgOn, itemAdoptInk: itemAdoptInk, tintOn: tintOn, bgColor: bgColor, ensureFlatFilter: ensureFlatFilter, ensureMonoFilter: ensureMonoFilter, ensureTintFilter: ensureTintFilter, ensureTintFilterAs: ensureTintFilterAs, ttLogoSizes: ttLogoSizes, glyphInkAndFilter: glyphInkAndFilter, idealText: idealText, effc: effc, iconAdoptTint: iconAdoptTint, ttRbColor: ttRbColor };'
 )(document, global.localStorage, global.window);
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
-const CI = CCTheme.icons;
+const CI = TTTheme.icons;
 const reset = () => { Object.keys(store).forEach(k => delete store[k]); };
 
 console.log('\nThe resolution chain: cheapest local check first, every step degrades into the next');
@@ -129,7 +129,7 @@ console.log('\nThe threshold sits in the empty gap measured across a real 55-con
   // Spreads measured on a real box. Everything in `flatten` is a flat glyph, and
   // everything in `keep` has internal structure flattening would destroy, such as
   // question.png's "?" vanishing into a solid disc.
-  const flatten = { Plex: 0.53, FileBot: 0.47, Immich: 0.57, Nginx: 0.79, Nextcloud: 0.94, Ollama: 0.74, CCWB: 3.4 };
+  const flatten = { Plex: 0.53, FileBot: 0.47, Immich: 0.57, Nginx: 0.79, Nextcloud: 0.94, Ollama: 0.74, Caddy: 3.4 };
   const keep = { CrowdSec: 17.33, StirlingPDF: 18.07, 'question.png': 19.78, Palworld: 32.99, OpenCloud: 39.02, BombVault: 45.87, featherdrop: 60.82 };
   Object.keys(flatten).forEach(n => ok(n + ' (' + flatten[n] + ') flattens', CI.plan('auto', '', flatten[n]).treat === 'flat'));
   Object.keys(keep).forEach(n => ok(n + ' (' + keep[n] + ') is not flattened', CI.plan('auto', '', keep[n]).treat === 'tint'));
@@ -173,8 +173,8 @@ console.log('\nGlobal default + per-item pin');
   ok('the default with nothing configured is "auto"', CI.globalMode() === 'auto', CI.globalMode());
   ok('an item with no pin follows the global default', CI.mode('docker', 'Plex') === 'auto');
 
-  localStorage.setItem('cc.iconmode', 'tint');
-  ok('the global default is read from cc.iconmode', CI.globalMode() === 'tint');
+  localStorage.setItem('tt.iconmode', 'tint');
+  ok('the global default is read from tt.iconmode', CI.globalMode() === 'tint');
   ok('every item follows it', CI.mode('docker', 'Plex') === 'tint' && CI.mode('vm', 'Win11') === 'tint');
 
   CI.setOverride('docker', 'Plex', 'flat');
@@ -193,86 +193,86 @@ console.log('\nGlobal default + per-item pin');
   ok('the original logo is a pin like the others', CI.mode('docker', 'Plex') === 'original' && CI.overrides()['docker:plex'] === 'original');
   CI.setOverride('docker', 'Plex', '');
 
-  localStorage.setItem('cc.iconmode', 'nonsense');
+  localStorage.setItem('tt.iconmode', 'nonsense');
   ok('an unknown global mode falls back to auto', CI.globalMode() === 'auto');
 
-  localStorage.setItem('cc.iconov', '{ this is not json');
+  localStorage.setItem('tt.iconov', '{ this is not json');
   ok('a corrupt pin map degrades to "no pins", it never throws', CI.mode('docker', 'Plex') === 'auto');
   reset();
 }
 
-console.log('\nAll pins live in ONE cc.* key, so they ride the existing settings sync');
+console.log('\nAll pins live in ONE tt.* key, so they ride the existing settings sync');
 {
   reset();
   CI.setOverride('plugin', 'TowerTorch', 'native');
   const keys = Object.keys(store);
   ok('exactly one storage key is written', keys.length === 1, JSON.stringify(keys));
-  ok('and it carries the cc. prefix the sync mirrors', /^cc[a-z]*\./.test(keys[0]), keys[0]);
+  ok('and it carries the tt. prefix the sync mirrors', /^tt[a-z]*\./.test(keys[0]), keys[0]);
   reset();
 }
 
-console.log('\nThe darkness guard, CCTheme.liftDark, shared with popBadge');
+console.log('\nThe darkness guard, TTTheme.liftDark, shared with popBadge');
 {
-  ok('the floor is 28', CCTheme.LUM_FLOOR === 28, String(CCTheme.LUM_FLOOR));
-  ok('pure black is lifted off the dark surface', CCTheme.liftDark('#000000', '#2f6feb') !== '#000000');
-  ok('a bright colour is left as chosen', CCTheme.liftDark('#e5a00d', '#2f6feb') === '#e5a00d');
-  ok('a dark flag green survives the badge floor', CCTheme.liftDark('#006233', '#2f6feb') === '#006233');
-  ok('navy survives the badge floor too', CCTheme.liftDark('#002868', '#2f6feb') === '#002868');
+  ok('the floor is 28', TTTheme.LUM_FLOOR === 28, String(TTTheme.LUM_FLOOR));
+  ok('pure black is lifted off the dark surface', TTTheme.liftDark('#000000', '#2f6feb') !== '#000000');
+  ok('a bright colour is left as chosen', TTTheme.liftDark('#e5a00d', '#2f6feb') === '#e5a00d');
+  ok('a dark flag green survives the badge floor', TTTheme.liftDark('#006233', '#2f6feb') === '#006233');
+  ok('navy survives the badge floor too', TTTheme.liftDark('#002868', '#2f6feb') === '#002868');
   // A tint multiplies the pixel luminance by the target, landing near half the
   // target's luma, so it needs the doubled floor. #2a2a2a, at luma 42, clears the
   // badge floor and is still hard to make out on a card.
-  ok('#2a2a2a clears the badge floor', CCTheme.liftDark('#2a2a2a', '#2f6feb') === '#2a2a2a');
-  ok('#2a2a2a is lifted at the tint floor', CCTheme.liftDark('#2a2a2a', '#2f6feb', CCTheme.LUM_FLOOR * 2) !== '#2a2a2a');
+  ok('#2a2a2a clears the badge floor', TTTheme.liftDark('#2a2a2a', '#2f6feb') === '#2a2a2a');
+  ok('#2a2a2a is lifted at the tint floor', TTTheme.liftDark('#2a2a2a', '#2f6feb', TTTheme.LUM_FLOOR * 2) !== '#2a2a2a');
   ok('with an all-dark palette the guard falls back to the accent', (() => {
-    localStorage.setItem('cc.rbpal', JSON.stringify(['#000000', '#050505']));
-    const got = CCTheme.liftDark('#000000', '#2f6feb');
-    localStorage.removeItem('cc.rbpal');
+    localStorage.setItem('tt.rbpal', JSON.stringify(['#000000', '#050505']));
+    const got = TTTheme.liftDark('#000000', '#2f6feb');
+    localStorage.removeItem('tt.rbpal');
     return got === '#2f6feb';
   })());
   ok('a swapped slot comes from the active palette, so it stays on theme', (() => {
-    localStorage.setItem('cc.rbpal', JSON.stringify(['#000000', '#ffcc00']));
-    const got = CCTheme.liftDark('#000000', '#2f6feb');
-    localStorage.removeItem('cc.rbpal');
+    localStorage.setItem('tt.rbpal', JSON.stringify(['#000000', '#ffcc00']));
+    const got = TTTheme.liftDark('#000000', '#2f6feb');
+    localStorage.removeItem('tt.rbpal');
     return got === '#ffcc00';
   })());
 }
 
-console.log('\nThe lightness guard, CCTheme.liftLight, the mirror of liftDark for light themes');
+console.log('\nThe lightness guard, TTTheme.liftLight, the mirror of liftDark for light themes');
 {
   const html = document.documentElement.classList;
   const ALGERIA = ['#006233', '#FFFFFF', '#D21034'];
-  const withPal = (p, fn) => { localStorage.setItem('cc.rbpal', JSON.stringify(p)); try { return fn(); } finally { localStorage.removeItem('cc.rbpal'); } };
-  ok('pure white is lowered off the light surface', CCTheme.liftLight('#ffffff', '#2f6feb') !== '#ffffff');
-  ok('a dark colour is left as chosen', CCTheme.liftLight('#006233', '#2f6feb') === '#006233');
-  ok('a flag gold survives the badge ceiling', CCTheme.liftLight('#ffce00', '#2f6feb') === '#ffce00');
+  const withPal = (p, fn) => { localStorage.setItem('tt.rbpal', JSON.stringify(p)); try { return fn(); } finally { localStorage.removeItem('tt.rbpal'); } };
+  ok('pure white is lowered off the light surface', TTTheme.liftLight('#ffffff', '#2f6feb') !== '#ffffff');
+  ok('a dark colour is left as chosen', TTTheme.liftLight('#006233', '#2f6feb') === '#006233');
+  ok('a flag gold survives the badge ceiling', TTTheme.liftLight('#ffce00', '#2f6feb') === '#ffce00');
   // The ceiling is 255 minus liftDark's floor, 227: #e2e2e2 (luma 226) stays and
   // #e4e4e4 (228) does not, as #1c1c1c (28) stays and #1a1a1a (26) is lifted on the dark side.
-  ok('#e2e2e2 sits just under the badge ceiling', CCTheme.liftLight('#e2e2e2', '#2f6feb') === '#e2e2e2');
-  ok('#e4e4e4 is just over it', CCTheme.liftLight('#e4e4e4', '#2f6feb') !== '#e4e4e4');
-  ok('#d5d5d5 clears the badge ceiling', CCTheme.liftLight('#d5d5d5', '#2f6feb') === '#d5d5d5');
-  ok('#d5d5d5 is lowered at the tint ceiling', CCTheme.liftLight('#d5d5d5', '#2f6feb', CCTheme.LUM_FLOOR * 2) !== '#d5d5d5');
+  ok('#e2e2e2 sits just under the badge ceiling', TTTheme.liftLight('#e2e2e2', '#2f6feb') === '#e2e2e2');
+  ok('#e4e4e4 is just over it', TTTheme.liftLight('#e4e4e4', '#2f6feb') !== '#e4e4e4');
+  ok('#d5d5d5 clears the badge ceiling', TTTheme.liftLight('#d5d5d5', '#2f6feb') === '#d5d5d5');
+  ok('#d5d5d5 is lowered at the tint ceiling', TTTheme.liftLight('#d5d5d5', '#2f6feb', TTTheme.LUM_FLOOR * 2) !== '#d5d5d5');
   ok('with an all-light palette the guard falls back to the accent',
-    withPal(['#ffffff', '#fafafa'], () => CCTheme.liftLight('#ffffff', '#2f6feb')) === '#2f6feb');
+    withPal(['#ffffff', '#fafafa'], () => TTTheme.liftLight('#ffffff', '#2f6feb')) === '#2f6feb');
   ok('a swapped slot is the darkest of the active palette, so it stays on theme',
-    withPal(ALGERIA, () => CCTheme.liftLight('#FFFFFF', '#2f6feb')) === '#006233');
+    withPal(ALGERIA, () => TTTheme.liftLight('#FFFFFF', '#2f6feb')) === '#006233');
 
   html.remove('Theme--white'); html.remove('Theme--azure');
-  ok('a dark theme is not a light theme', CCTheme.lightTheme() === false);
-  ok('on a dark theme liftSurface is liftDark', CCTheme.liftSurface('#000000', '#2f6feb') === CCTheme.liftDark('#000000', '#2f6feb'));
-  ok('on a dark theme white keeps its slot', CCTheme.liftSurface('#ffffff', '#2f6feb') === '#ffffff');
-  ok('on a dark theme the palette comes back as stored', (() => { const p = ALGERIA.slice(); return CCTheme.surfacePalette(p, '#2f6feb') === p; })());
-  ok('on a dark theme ccRbColor paints the white stripe as stored',
-    withPal(ALGERIA, () => { localStorage.setItem('cc.rainbow', '1'); localStorage.setItem('cc.rainbowrot', '0'); const c = dockerApi.ccRbColor(1); localStorage.removeItem('cc.rainbow'); localStorage.removeItem('cc.rainbowrot'); return c; }) === '#FFFFFF');
+  ok('a dark theme is not a light theme', TTTheme.lightTheme() === false);
+  ok('on a dark theme liftSurface is liftDark', TTTheme.liftSurface('#000000', '#2f6feb') === TTTheme.liftDark('#000000', '#2f6feb'));
+  ok('on a dark theme white keeps its slot', TTTheme.liftSurface('#ffffff', '#2f6feb') === '#ffffff');
+  ok('on a dark theme the palette comes back as stored', (() => { const p = ALGERIA.slice(); return TTTheme.surfacePalette(p, '#2f6feb') === p; })());
+  ok('on a dark theme ttRbColor paints the white stripe as stored',
+    withPal(ALGERIA, () => { localStorage.setItem('tt.rainbow', '1'); localStorage.setItem('tt.rainbowrot', '0'); const c = dockerApi.ttRbColor(1); localStorage.removeItem('tt.rainbow'); localStorage.removeItem('tt.rainbowrot'); return c; }) === '#FFFFFF');
 
   for (const theme of ['Theme--white', 'Theme--azure']) {
     html.add(theme);
-    ok(theme + ' is a light theme', CCTheme.lightTheme() === true);
-    ok(theme + ': liftSurface is liftLight', CCTheme.liftSurface('#ffffff', '#2f6feb') === CCTheme.liftLight('#ffffff', '#2f6feb'));
-    ok(theme + ': black keeps its slot, as it reads on a light surface', CCTheme.liftSurface('#000000', '#2f6feb') === '#000000');
+    ok(theme + ' is a light theme', TTTheme.lightTheme() === true);
+    ok(theme + ': liftSurface is liftLight', TTTheme.liftSurface('#ffffff', '#2f6feb') === TTTheme.liftLight('#ffffff', '#2f6feb'));
+    ok(theme + ': black keeps its slot, as it reads on a light surface', TTTheme.liftSurface('#000000', '#2f6feb') === '#000000');
     ok(theme + ': the white stripe becomes the flag green, the other slots stay',
-      JSON.stringify(CCTheme.surfacePalette(ALGERIA, '#2f6feb')) === JSON.stringify(['#006233', '#006233', '#D21034']));
-    ok(theme + ': ccRbColor paints the white stripe in the flag green',
-      withPal(ALGERIA, () => { localStorage.setItem('cc.rainbow', '1'); localStorage.setItem('cc.rainbowrot', '0'); const c = dockerApi.ccRbColor(1); localStorage.removeItem('cc.rainbow'); localStorage.removeItem('cc.rainbowrot'); return c; }) === '#006233');
+      JSON.stringify(TTTheme.surfacePalette(ALGERIA, '#2f6feb')) === JSON.stringify(['#006233', '#006233', '#D21034']));
+    ok(theme + ': ttRbColor paints the white stripe in the flag green',
+      withPal(ALGERIA, () => { localStorage.setItem('tt.rainbow', '1'); localStorage.setItem('tt.rainbowrot', '0'); const c = dockerApi.ttRbColor(1); localStorage.removeItem('tt.rainbow'); localStorage.removeItem('tt.rainbowrot'); return c; }) === '#006233');
     html.remove(theme);
   }
 }
@@ -282,22 +282,22 @@ console.log('\ndocker.js iconInk(): the target colour both treatments paint with
   reset();
   ok('no icon colour and no Logo-Hintergrund: no ink at all, so icons stay native', dockerApi.iconInk(false) === '');
 
-  localStorage.setItem('cc.iconcolor', '#e5a00d');
+  localStorage.setItem('tt.iconcolor', '#e5a00d');
   ok('a bright picked colour is used verbatim', dockerApi.iconInk(false) === '#e5a00d');
 
-  localStorage.setItem('cc.iconcolor', '#2a2a2a');
+  localStorage.setItem('tt.iconcolor', '#2a2a2a');
   ok('a near-black pick survives the flat floor, a flat fill being its target luminance', dockerApi.iconInk(false) === '#2a2a2a');
   ok('but is lifted for the tint, which renders darker still', dockerApi.iconInk(true) !== '#2a2a2a');
 
   // Badge and tint are separate controls, so the badge box colour must not reach
   // the ink. The two colours differ here, so a swap cannot hide.
-  localStorage.setItem('cc.iconbg', '1');
-  localStorage.setItem('cc.iconbgcolor', '#1030a0'); // badge box: dark blue
-  localStorage.setItem('cc.iconcolor', '#e5a00d');   // tint pick: bright orange
+  localStorage.setItem('tt.iconbg', '1');
+  localStorage.setItem('tt.iconbgcolor', '#1030a0'); // badge box: dark blue
+  localStorage.setItem('tt.iconcolor', '#e5a00d');   // tint pick: bright orange
   ok('Hintergrund on: the ink is the picked tint colour', dockerApi.iconInk(false) === '#e5a00d', dockerApi.iconInk(false));
   ok('and it is the six-digit hex every filter regex expects', /^#[0-9a-f]{6}$/i.test(dockerApi.iconInk(false)), dockerApi.iconInk(false));
   ok('the badge box keeps its own colour', dockerApi.bgColor() === '#1030a0', dockerApi.bgColor());
-  localStorage.setItem('cc.iconbg', '0');
+  localStorage.setItem('tt.iconbg', '0');
   ok('turning the badge off leaves the ink where it was', dockerApi.iconInk(false) === '#e5a00d', dockerApi.iconInk(false));
   reset();
 }
@@ -307,51 +307,51 @@ console.log('\nHintergrund and Einfärben stay independent: the badge alone does
   reset();
   ok('nothing configured at all: no ink', dockerApi.iconInk(false) === '');
 
-  localStorage.setItem('cc.iconbg', '1');
+  localStorage.setItem('tt.iconbg', '1');
   ok('background on, Einfärben untouched, no colour picked: no ink', dockerApi.iconInk(false) === '');
 
-  localStorage.setItem('cc.icontint', '0');
+  localStorage.setItem('tt.icontint', '0');
   ok('background on, Einfärben off: no ink even with the badge showing', dockerApi.iconInk(false) === '');
 
-  localStorage.setItem('cc.icontint', '1');
+  localStorage.setItem('tt.icontint', '1');
   ok('background on, Einfärben on, no colour picked: no ink to lift', dockerApi.iconInk(false) === '');
-  localStorage.setItem('cc.iconcolor', '#e5a00d');
+  localStorage.setItem('tt.iconcolor', '#e5a00d');
   ok('background on, Einfärben on, colour picked: inked in that colour', dockerApi.iconInk(false) === '#e5a00d', dockerApi.iconInk(false));
   reset();
 
-  // On an install with cc.iconbg and cc.iconcolor and no cc.icontint, the colour's
+  // On an install with tt.iconbg and tt.iconcolor and no tt.icontint, the colour's
   // presence is the tint signal, which tintOn()'s fallback keeps reading.
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconcolor', '#1f9d55');
-  ok('no cc.icontint key at all: the icon is inked', dockerApi.tintOn() === true && dockerApi.iconInk(false) !== '');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconcolor', '#1f9d55');
+  ok('no tt.icontint key at all: the icon is inked', dockerApi.tintOn() === true && dockerApi.iconInk(false) !== '');
   reset();
 
   // With both controls on and two different colours, the ink is the tint's own,
   // never a contrast colour derived from the badge box.
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconbgcolor', '#161616'); localStorage.setItem('cc.icontint', '0');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconbgcolor', '#161616'); localStorage.setItem('tt.icontint', '0');
   ok('the background colour applies with Einfärben off', dockerApi.bgColor() === '#161616');
-  localStorage.setItem('cc.icontint', '1'); localStorage.setItem('cc.iconcolor', '#e5a00d');
+  localStorage.setItem('tt.icontint', '1'); localStorage.setItem('tt.iconcolor', '#e5a00d');
   ok('with both on, the ink is the tint colour', dockerApi.iconInk(false) === '#e5a00d', dockerApi.iconInk(false));
   ok('and the badge box keeps its own colour', dockerApi.bgColor() === '#161616', dockerApi.bgColor());
   reset();
 }
 
-console.log('\ndocker.js honours cc.styledocker for iconcolor, iconbg and iconstrength');
+console.log('\ndocker.js honours tt.styledocker for iconcolor, iconbg and iconstrength');
 {
-  // Reading cc.iconcolor and its siblings directly would bypass effc(), leaving
+  // Reading tt.iconcolor and its siblings directly would bypass effc(), leaving
   // Docker's own "Adopt the global icon style" toggle without visible effect and
-  // the ccd.* values the Stil card writes unread.
+  // the ttd.* values the Stil card writes unread.
   reset();
-  localStorage.setItem('cc.iconcolor', '#e5a00d'); localStorage.setItem('cc.iconbg', '0'); localStorage.setItem('cc.iconstrength', '100');
-  localStorage.setItem('ccd.iconcolor', '#00aa00'); localStorage.setItem('ccd.iconbg', '1'); localStorage.setItem('ccd.iconstrength', '40');
+  localStorage.setItem('tt.iconcolor', '#e5a00d'); localStorage.setItem('tt.iconbg', '0'); localStorage.setItem('tt.iconstrength', '100');
+  localStorage.setItem('ttd.iconcolor', '#00aa00'); localStorage.setItem('ttd.iconbg', '1'); localStorage.setItem('ttd.iconstrength', '40');
 
-  ok('adopt on, cc.styledocker unset: iconInk() follows the global colour', dockerApi.iconInk(false) === '#e5a00d', dockerApi.iconInk(false));
+  ok('adopt on, tt.styledocker unset: iconInk() follows the global colour', dockerApi.iconInk(false) === '#e5a00d', dockerApi.iconInk(false));
   dockerApi.ensureTintFilter();
-  var sigAdoptOn = document.getElementById('cc-tint-svg').dataset.sig;
+  var sigAdoptOn = document.getElementById('tt-tint-svg').dataset.sig;
 
-  localStorage.setItem('cc.styledocker', '0');
-  ok('adopt off: iconInk() follows the Docker-local ccd.iconbg instead', dockerApi.iconInk(false) !== '#e5a00d', dockerApi.iconInk(false));
+  localStorage.setItem('tt.styledocker', '0');
+  ok('adopt off: iconInk() follows the Docker-local ttd.iconbg instead', dockerApi.iconInk(false) !== '#e5a00d', dockerApi.iconInk(false));
   dockerApi.ensureTintFilter();
-  var sigAdoptOff = document.getElementById('cc-tint-svg').dataset.sig;
+  var sigAdoptOff = document.getElementById('tt-tint-svg').dataset.sig;
   ok('the tint strength differs between the two states as well, 40 against 100', sigAdoptOff !== sigAdoptOn, sigAdoptOn + ' vs ' + sigAdoptOff);
   reset();
 }
@@ -364,35 +364,35 @@ console.log('\ncc.iconbgrainbow: "Badge-Farben übernehmen" as one master toggle
   // that can only hold one hue. It takes over colours only, so the Logo tiles and
   // Tint icons switches still decide whether there is a tile and a tint at all.
   reset();
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.iconbgcolor', '#e5a00d');
-  localStorage.setItem('cc.icontint', '1'); localStorage.setItem('cc.iconcolor', '#00aa00');
-  localStorage.setItem('cc.accent', '#2f6feb');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.iconbgcolor', '#e5a00d');
+  localStorage.setItem('tt.icontint', '1'); localStorage.setItem('tt.iconcolor', '#00aa00');
+  localStorage.setItem('tt.accent', '#2f6feb');
 
   ok('adopt OFF (default): bgColor() is the independently picked background colour', dockerApi.bgColor() === '#e5a00d', dockerApi.bgColor());
   ok('adopt OFF (default): iconInk() is the independently picked tint colour', dockerApi.iconInk(false) === '#00aa00', dockerApi.iconInk(false));
 
-  localStorage.setItem('cc.iconbgrainbow', '1');
-  ok('adopting: bgColor() answers "", so no --cc-iconbg-color is stamped and the var chain falls through to the source every generic badge uses', dockerApi.bgColor() === '', JSON.stringify(dockerApi.bgColor()));
+  localStorage.setItem('tt.iconbgrainbow', '1');
+  ok('adopting: bgColor() answers "", so no --tt-iconbg-color is stamped and the var chain falls through to the source every generic badge uses', dockerApi.bgColor() === '', JSON.stringify(dockerApi.bgColor()));
 
-  localStorage.setItem('cc.rainbow', '0');
+  localStorage.setItem('tt.rainbow', '0');
   ok('adopting with rainbow off: the ink is the contrast colour for the plain accent', dockerApi.iconInk(false) === dockerApi.idealText(dockerApi.iconAdoptTint()), dockerApi.iconInk(false));
   ok('and that accent is dark enough for white ink', dockerApi.iconInk(false) === '#fff', dockerApi.iconInk(false));
 
-  localStorage.setItem('cc.rainbow', '1');
-  ok('adopting with rainbow on: the ink is the contrast colour for the ccRbColor(5) a generic badge resolves to', dockerApi.iconInk(false) === dockerApi.idealText(dockerApi.ccRbColor(5)), dockerApi.iconInk(false) + ' vs idealText(' + dockerApi.ccRbColor(5) + ')');
+  localStorage.setItem('tt.rainbow', '1');
+  ok('adopting with rainbow on: the ink is the contrast colour for the ttRbColor(5) a generic badge resolves to', dockerApi.iconInk(false) === dockerApi.idealText(dockerApi.ttRbColor(5)), dockerApi.iconInk(false) + ' vs idealText(' + dockerApi.ttRbColor(5) + ')');
   ok('and not the picked colour', dockerApi.iconInk(false) !== '#00aa00');
 
-  localStorage.setItem('cc.icontint', '0');
+  localStorage.setItem('tt.icontint', '0');
   ok('adopting with Tint icons off: no ink, the icons keep their own colours', dockerApi.iconInk(false) === '', dockerApi.iconInk(false));
-  localStorage.setItem('cc.icontint', '1');
+  localStorage.setItem('tt.icontint', '1');
 
-  localStorage.setItem('cc.iconbg', '0');
+  localStorage.setItem('tt.iconbg', '0');
   ok('adopting with Logo tiles off: no tile, whatever the adopt toggle says', dockerApi.iconBgOn() === false);
   ok('and the ink is the badge colour itself rather than a contrast for a tile that is not there', dockerApi.iconInk(false) !== '#fff' && dockerApi.iconInk(false) !== '#161616' && dockerApi.iconInk(false) !== '', dockerApi.iconInk(false));
-  localStorage.setItem('cc.iconbg', '1');
+  localStorage.setItem('tt.iconbg', '1');
   ok('adopting with Logo tiles on: the tile shows', dockerApi.iconBgOn() === true);
 
-  localStorage.setItem('cc.iconbgrainbow', '0');
+  localStorage.setItem('tt.iconbgrainbow', '0');
   ok('turning the master toggle off brings the picked colour back', dockerApi.iconInk(false) === '#00aa00', dockerApi.iconInk(false));
   reset();
 }
@@ -401,15 +401,15 @@ console.log('\nitemAdoptInk(): the contrast ink per item, rather than one for th
 {
   // While adopting, iconInk() answers one colour for the whole page, taken from
   // palette slot 5, but with rainbow on each item's badge rotates: stampCardRainbow()
-  // and applyRainbowPalette() stamp a --cc-rb-c and --cc-rb-ct per item. Slot 5, the
+  // and applyRainbowPalette() stamp a --tt-rb-c and --tt-rb-ct per item. Slot 5, the
   // blue, takes white ink; slot 2, the yellow, is the one that takes black, so an
   // item landing there would read white on yellow, against the tooltip's promise of
   // "automatisch schwarz oder weiß". itemAdoptInk() takes that item's own stamp.
   reset();
-  localStorage.setItem('cc.iconbgrainbow', '1');
-  localStorage.setItem('cc.iconbg', '1'); localStorage.setItem('cc.icontint', '1');
-  localStorage.setItem('cc.rainbow', '1');
-  localStorage.setItem('cc.accent', '#2f6feb');
+  localStorage.setItem('tt.iconbgrainbow', '1');
+  localStorage.setItem('tt.iconbg', '1'); localStorage.setItem('tt.icontint', '1');
+  localStorage.setItem('tt.rainbow', '1');
+  localStorage.setItem('tt.accent', '#2f6feb');
 
   // A stand-in card or row carrying what itemAdoptInk() reads, which is what the
   // two stamping functions write on the real node.
@@ -418,50 +418,50 @@ console.log('\nitemAdoptInk(): the contrast ink per item, rather than one for th
     return { style: { setProperty: function (k, v) { s[k] = v; }, getPropertyValue: function (k) { return s[k] || ''; } } };
   }
 
-  ok('slot 5, the one iconInk() is fixed to, is #2f6feb', dockerApi.ccRbColor(5) === '#2f6feb', dockerApi.ccRbColor(5));
-  ok('and it takes white ink', dockerApi.idealText(dockerApi.ccRbColor(5)) === '#fff');
-  ok('slot 2 is the yellow #fcc419', dockerApi.ccRbColor(2) === '#fcc419', dockerApi.ccRbColor(2));
-  ok('and it is the slot that takes black ink', dockerApi.idealText(dockerApi.ccRbColor(2)) === '#161616', dockerApi.idealText(dockerApi.ccRbColor(2)));
+  ok('slot 5, the one iconInk() is fixed to, is #2f6feb', dockerApi.ttRbColor(5) === '#2f6feb', dockerApi.ttRbColor(5));
+  ok('and it takes white ink', dockerApi.idealText(dockerApi.ttRbColor(5)) === '#fff');
+  ok('slot 2 is the yellow #fcc419', dockerApi.ttRbColor(2) === '#fcc419', dockerApi.ttRbColor(2));
+  ok('and it is the slot that takes black ink', dockerApi.idealText(dockerApi.ttRbColor(2)) === '#161616', dockerApi.idealText(dockerApi.ttRbColor(2)));
 
   var yellowOwner = fakeOwner();
-  yellowOwner.style.setProperty('--cc-rb-c', dockerApi.ccRbColor(2));
-  yellowOwner.style.setProperty('--cc-rb-ct', dockerApi.idealText(dockerApi.ccRbColor(2)));
+  yellowOwner.style.setProperty('--tt-rb-c', dockerApi.ttRbColor(2));
+  yellowOwner.style.setProperty('--tt-rb-ct', dockerApi.idealText(dockerApi.ttRbColor(2)));
 
   ok('a card on the yellow slot gets black ink from itemAdoptInk()', dockerApi.itemAdoptInk(yellowOwner) === '#161616', dockerApi.itemAdoptInk(yellowOwner));
   ok('...which differs from the page-wide iconInk() answer for the same settings', dockerApi.itemAdoptInk(yellowOwner) !== dockerApi.iconInk(false), dockerApi.itemAdoptInk(yellowOwner) + ' vs ' + dockerApi.iconInk(false));
 
   var blueOwner = fakeOwner();
-  blueOwner.style.setProperty('--cc-rb-c', dockerApi.ccRbColor(5));
-  blueOwner.style.setProperty('--cc-rb-ct', dockerApi.idealText(dockerApi.ccRbColor(5)));
+  blueOwner.style.setProperty('--tt-rb-c', dockerApi.ttRbColor(5));
+  blueOwner.style.setProperty('--tt-rb-ct', dockerApi.idealText(dockerApi.ttRbColor(5)));
   ok('a card on slot 5 gets white ink', dockerApi.itemAdoptInk(blueOwner) === '#fff', dockerApi.itemAdoptInk(blueOwner));
 
   // With rainbow off every badge is the one flat accent, so the uniform ink is the
   // right answer there.
-  localStorage.setItem('cc.rainbow', '0');
-  ok('rainbow off: a stale --cc-rb-ct stamp is ignored for the uniform ink', dockerApi.itemAdoptInk(yellowOwner) === dockerApi.iconInk(false), dockerApi.itemAdoptInk(yellowOwner));
-  localStorage.setItem('cc.rainbow', '1');
+  localStorage.setItem('tt.rainbow', '0');
+  ok('rainbow off: a stale --tt-rb-ct stamp is ignored for the uniform ink', dockerApi.itemAdoptInk(yellowOwner) === dockerApi.iconInk(false), dockerApi.itemAdoptInk(yellowOwner));
+  localStorage.setItem('tt.rainbow', '1');
 
   // A repaint that outran the last rainbow pass finds no stamp, and the next pass
   // puts it right.
   ok('no owner element: the uniform fallback, without throwing', dockerApi.itemAdoptInk(null) === dockerApi.iconInk(false));
-  ok('an owner with no --cc-rb-ct stamp yet: the same fallback', dockerApi.itemAdoptInk(fakeOwner()) === dockerApi.iconInk(false));
+  ok('an owner with no --tt-rb-ct stamp yet: the same fallback', dockerApi.itemAdoptInk(fakeOwner()) === dockerApi.iconInk(false));
   reset();
 }
 
-console.log('\nccLogoSizes(): the cc.sgsize map to [--cc-logo-img, --cc-logo-box]');
+console.log('\nttLogoSizes(): the tt.sgsize map to [--tt-logo-img, --tt-logo-box]');
 {
   reset();
-  localStorage.setItem('cc.sgsize', 's'); ok('s -> [48px, 62px]', JSON.stringify(dockerApi.ccLogoSizes()) === JSON.stringify(['48px', '62px']), JSON.stringify(dockerApi.ccLogoSizes()));
-  localStorage.setItem('cc.sgsize', 'm'); ok('m -> [62px, 78px]', JSON.stringify(dockerApi.ccLogoSizes()) === JSON.stringify(['62px', '78px']), JSON.stringify(dockerApi.ccLogoSizes()));
-  localStorage.setItem('cc.sgsize', 'l'); ok('l -> [76px, 94px]', JSON.stringify(dockerApi.ccLogoSizes()) === JSON.stringify(['76px', '94px']), JSON.stringify(dockerApi.ccLogoSizes()));
-  localStorage.removeItem('cc.sgsize'); ok('unset defaults to m -> [62px, 78px]', JSON.stringify(dockerApi.ccLogoSizes()) === JSON.stringify(['62px', '78px']));
-  localStorage.setItem('cc.sgsize', 'nonsense'); ok('a garbage value falls back to [62px, 78px]', JSON.stringify(dockerApi.ccLogoSizes()) === JSON.stringify(['62px', '78px']));
+  localStorage.setItem('tt.sgsize', 's'); ok('s -> [48px, 62px]', JSON.stringify(dockerApi.ttLogoSizes()) === JSON.stringify(['48px', '62px']), JSON.stringify(dockerApi.ttLogoSizes()));
+  localStorage.setItem('tt.sgsize', 'm'); ok('m -> [62px, 78px]', JSON.stringify(dockerApi.ttLogoSizes()) === JSON.stringify(['62px', '78px']), JSON.stringify(dockerApi.ttLogoSizes()));
+  localStorage.setItem('tt.sgsize', 'l'); ok('l -> [76px, 94px]', JSON.stringify(dockerApi.ttLogoSizes()) === JSON.stringify(['76px', '94px']), JSON.stringify(dockerApi.ttLogoSizes()));
+  localStorage.removeItem('tt.sgsize'); ok('unset defaults to m -> [62px, 78px]', JSON.stringify(dockerApi.ttLogoSizes()) === JSON.stringify(['62px', '78px']));
+  localStorage.setItem('tt.sgsize', 'nonsense'); ok('a garbage value falls back to [62px, 78px]', JSON.stringify(dockerApi.ttLogoSizes()) === JSON.stringify(['62px', '78px']));
   reset();
 }
 
 console.log('\nA glyph never carries both a direct colour and the luminance-tint filter');
 {
-  var w = 'url(#cc-icon-tint)';
+  var w = 'url(#tt-icon-tint)';
   ok('native treat: neither a colour nor a filter', (function () { var r = dockerApi.glyphInkAndFilter({ treat: 'native' }, false, '#2f6feb', '#e5a00d', w); return !r.color && !r.filter; })());
   ok('Hintergrund on: the colour is set and the filter cleared, even with treat "tint"', (function () { var r = dockerApi.glyphInkAndFilter({ treat: 'tint' }, true, '#2f6feb', '#e5a00d', w); return !!r.color && !r.filter; })());
   ok('an ink colour: the colour is set and the filter cleared, even with treat "tint"', (function () { var r = dockerApi.glyphInkAndFilter({ treat: 'tint' }, false, '#2f6feb', '#e5a00d', w); return !!r.color && !r.filter; })());
@@ -473,9 +473,9 @@ console.log('\nA glyph never carries both a direct colour and the luminance-tint
 
 console.log('\nThe flat filter flattens to one colour and keeps alpha');
 {
-  const url = dockerApi.ensureFlatFilter('cc-test-flat', 'cc-test-flat-f', '#ff8800');
-  ok('returns a url(#id) reference', url === 'url(#cc-test-flat-f)', url);
-  const host = document.getElementById('cc-test-flat');
+  const url = dockerApi.ensureFlatFilter('tt-test-flat', 'tt-test-flat-f', '#ff8800');
+  ok('returns a url(#id) reference', url === 'url(#tt-test-flat-f)', url);
+  const host = document.getElementById('tt-test-flat');
   ok('the filter host exists', !!host);
   const svg = host.innerHTML || '';
   ok('the matrix zeroes every input channel, giving a flat fill rather than a tint', /values="0 0 0 0 [\d.]+ 0 0 0 0 [\d.]+ 0 0 0 0 [\d.]+ 0 0 0 1 0"/.test(svg), svg);
@@ -483,31 +483,31 @@ console.log('\nThe flat filter flattens to one colour and keeps alpha');
   ok('the offsets are the requested colour', svg.indexOf('1.0000') >= 0 && svg.indexOf('0.5333') >= 0 && svg.indexOf('0.0000') >= 0, svg);
 
   const sig = host.dataset.sig;
-  dockerApi.ensureFlatFilter('cc-test-flat', 'cc-test-flat-f', '#ff8800');
+  dockerApi.ensureFlatFilter('tt-test-flat', 'tt-test-flat-f', '#ff8800');
   ok('rebuilding with the same colour changes nothing, so no observer loop starts', host.dataset.sig === sig);
-  dockerApi.ensureFlatFilter('cc-test-flat', 'cc-test-flat-f', '#00ff00');
+  dockerApi.ensureFlatFilter('tt-test-flat', 'tt-test-flat-f', '#00ff00');
   ok('a colour change does rebuild', host.dataset.sig !== sig);
-  dockerApi.ensureFlatFilter('cc-test-flat', 'cc-test-flat-f', '#ff8800', 30);
+  dockerApi.ensureFlatFilter('tt-test-flat', 'tt-test-flat-f', '#ff8800', 30);
   ok('a strength of 30 keeps 70 % of the original pixel and adds 30 % of the ink', /values="0\.7000 0 0 0 0\.3000 0 0\.7000 0 0 0\.1600 0 0 0\.7000 0 0\.0000 0 0 0 1 0"/.test(host.innerHTML), host.innerHTML);
 
-  ok('no colour removes the filter host entirely', dockerApi.ensureFlatFilter('cc-test-flat', 'cc-test-flat-f', '') === '');
+  ok('no colour removes the filter host entirely', dockerApi.ensureFlatFilter('tt-test-flat', 'tt-test-flat-f', '') === '');
 }
 
 console.log('\nensureMonoFilter stays the Logo-Hintergrund spelling of the same filter');
 {
-  const dark = dockerApi.ensureMonoFilter('cc-test-mono', 'cc-test-mono-f', '#161616');
-  ok('a dark box yields a filter', dark === 'url(#cc-test-mono-f)');
-  let svg = document.getElementById('cc-test-mono').innerHTML;
+  const dark = dockerApi.ensureMonoFilter('tt-test-mono', 'tt-test-mono-f', '#161616');
+  ok('a dark box yields a filter', dark === 'url(#tt-test-mono-f)');
+  let svg = document.getElementById('tt-test-mono').innerHTML;
   ok('and inks WHITE on it', svg.indexOf('1.0000 0 0 0 0 1.0000 0 0 0 0 1.0000') > 0 || /0 0 0 0 1\.0000 0 0 0 0 1\.0000 0 0 0 0 1\.0000/.test(svg), svg);
-  dockerApi.ensureMonoFilter('cc-test-mono', 'cc-test-mono-f', '#ffcc00');
-  svg = document.getElementById('cc-test-mono').innerHTML;
+  dockerApi.ensureMonoFilter('tt-test-mono', 'tt-test-mono-f', '#ffcc00');
+  svg = document.getElementById('tt-test-mono').innerHTML;
   ok('a light box inks DARK instead', /0 0 0 0 0\.0863 0 0 0 0 0\.0863 0 0 0 0 0\.0863/.test(svg), svg);
 }
 
 console.log('\nThe engine URL the frontend points an <img> at');
 {
   const u = CI.svgUrl('Stirling-PDF');
-  ok('goes through the same-origin PHP proxy (so the canvas read is not tainted)', u.indexOf('/plugins/towertorch/server/ccapi.php') === 0, u);
+  ok('goes through the same-origin PHP proxy (so the canvas read is not tainted)', u.indexOf('/plugins/towertorch/server/ttapi.php') === 0, u);
   ok('asks the iconsvg path', u.indexOf('path=iconsvg') > 0, u);
   ok('carries the name, url-encoded and lowercased', u.indexOf('name=stirling-pdf') > 0, u);
 }
@@ -547,8 +547,8 @@ console.log('\nA tile keeps its mark: flattening the plate whole would leave a b
   ok('tint and native ignore the tile', CI.plan('tint', '', 57, tile).treat === 'tint' && CI.plan('native', '', 57, tile).treat === 'native');
 
   const f = CI.knock('#fff', tile);
-  ok('the knock filter is referenced by id', /^url\(#cc-knock-\d+-\d+-ffffff\)$/.test(f), f);
-  const host = document.getElementById('cc-knock-svg');
+  ok('the knock filter is referenced by id', /^url\(#tt-knock-\d+-\d+-ffffff\)$/.test(f), f);
+  const host = document.getElementById('tt-knock-svg');
   ok('and lives in one shared host', host && host.innerHTML.indexOf(f.slice(5, -1)) > 0);
   ok('its colour is the ink and its alpha comes from the luminance', /values="0 0 0 0 1\.0000 0 0 0 0 1\.0000 0 0 0 0 1\.0000 [\d.]+ [\d.]+ [\d.]+ 0 -[\d.]+"/.test(host.innerHTML), host.innerHTML.slice(0, 300));
   ok('masked by the picture\'s own alpha, so the transparent corners stay transparent', /<feComposite in="k" in2="SourceGraphic" operator="in"\/>/.test(host.innerHTML));
@@ -561,7 +561,7 @@ console.log('\nA tile keeps its mark: flattening the plate whole would leave a b
   ok('full strength is the plain knock', CI.knock('#fff', tile, 100) === f);
   const weak = CI.knock('#fff', tile, 34);
   const weakDef = new RegExp('<filter id="' + weak.slice(5, -1) + '"[^]*?</filter>').exec(host.innerHTML)[0];
-  ok('a lower strength is a filter of its own, in tenths', weak === 'url(#cc-knock-2-15-ffffff-s3)' && CI.knock('#fff', tile, 29) === weak, weak);
+  ok('a lower strength is a filter of its own, in tenths', weak === 'url(#tt-knock-2-15-ffffff-s3)' && CI.knock('#fff', tile, 29) === weak, weak);
   ok('it lays the knocked mark over the faded original', /result="kk"/.test(weakDef) && /<feComponentTransfer in="kk" result="top"><feFuncA type="linear" slope="0\.3"\/>/.test(weakDef) && /<feComponentTransfer in="SourceGraphic" result="under"><feFuncA type="linear" slope="0\.7"\/>/.test(weakDef) && /<feMergeNode in="under"\/><feMergeNode in="top"\/>/.test(weakDef), weakDef);
 }
 

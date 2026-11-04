@@ -1,18 +1,18 @@
 Menu="Buttons:94"
 Title="TowerTorch"
 Icon="towertorch.png"
-Link="cc-tokens-hook"
+Link="tt-tokens-hook"
 ---
 <?php
 /* Menu="Buttons" makes Unraid auto-inject sheets/TowerTorch.Tokens.css into the <head> of
    every page. It defines the semantic colour tokens and the size canon once on <html>, so every
-   CC sheet inherits them and follows all Unraid themes (the light override keys on
+   TowerTorch sheet inherits them and follows all Unraid themes (the light override keys on
    Theme--white/azure) and the accent/rainbow modes. Loaded at :94, before the area sheets at
-   :95+, so the tokens exist first. Link="cc-tokens-hook" renders a bare <div>, no icon.
+   :95+, so the tokens exist first. Link="tt-tokens-hook" renders a bare <div>, no icon.
 
-   cc-theme.js loads synchronously rather than deferred, so window.CCTheme (idealText, the
+   tt-theme.js loads synchronously rather than deferred, so window.TTTheme (idealText, the
    persisted rainbow seed, palette/rbColor) exists before the deferred area scripts run.
-   sortreset.js turns Unraid's "Reset sorting" icon on the Docker and VM lists into a CC badge. */
+   sortreset.js turns Unraid's "Reset sorting" icon on the Docker and VM lists into a TowerTorch badge. */
 ?>
-<script src="<?autov('/plugins/towertorch/scripts/cc-theme.js')?>"></script>
+<script src="<?autov('/plugins/towertorch/scripts/tt-theme.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/sortreset.js')?>"></script>

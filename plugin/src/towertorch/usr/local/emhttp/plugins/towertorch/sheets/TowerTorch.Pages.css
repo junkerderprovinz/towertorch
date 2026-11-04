@@ -1,390 +1,390 @@
 /* TowerTorch: single pages the area sheets do not reach. pages.js names the page in
-   html[data-cc-page] while master theming and the page's area are on, and every rule here keys on
-   that name. Where a page already carries an area class (cc-tools-on on /Settings and /Tools, the
+   html[data-tt-page] while master theming and the page's area are on, and every rule here keys on
+   that name. Where a page already carries an area class (tt-tools-on on /Settings and /Tools, the
    Shares area on /Stats and /Main), the rule keys on both, so the shared form and button rules of
    that area stay the base and this sheet only adds what the page needs on top. */
 
 /* The user editor (/Users/UserEdit) is a native settings form like any /Settings page, so its
-   fields, buttons and switches come from the shared form rules once cc-tools-on reaches /Users.
+   fields, buttons and switches come from the shared form rules once tt-tools-on reaches /Users.
    What is particular to it: the picture sits on a native framed box, and the drop hint under it
    moves into an (i) bubble on the label (pages.js). */
-html.cc-tools-on[data-cc-page="useredit"] #displaybox #dropbox { border: none !important; box-shadow: none !important; }
-html.cc-tools-on[data-cc-page="useredit"] #displaybox #dropbox img {
+html.tt-tools-on[data-tt-page="useredit"] #displaybox #dropbox { border: none !important; box-shadow: none !important; }
+html.tt-tools-on[data-tt-page="useredit"] #displaybox #dropbox img {
   border: none !important; outline: none !important; box-shadow: none !important; padding: 6px;
-  background: var(--cc-chip); border-radius: var(--cc-radius-control);
+  background: var(--tt-chip); border-radius: var(--tt-radius-control);
 }
-html.cc-tools-on[data-cc-page="useredit"] #displaybox #dropbox img:hover { background: var(--cc-chip-hover); }
-html.cc-tools-on[data-cc-page="useredit"] #displaybox em.cc-hint-moved { display: none; }
+html.tt-tools-on[data-tt-page="useredit"] #displaybox #dropbox img:hover { background: var(--tt-chip-hover); }
+html.tt-tools-on[data-tt-page="useredit"] #displaybox em.tt-hint-moved { display: none; }
 
 /* The VM editor (/VMs/UpdateVM, /VMs/AddVM) is a stack of two- and three-column tables rather
    than a dl, so it is styled here in the VM area instead of through the settings form rules. */
-html[data-cc-page="vmform"] #displaybox div.title {
+html[data-tt-page="vmform"] #displaybox div.title {
   display: inline-flex !important; align-items: center; gap: 8px; width: fit-content !important; box-sizing: border-box;
-  min-height: var(--cc-sec-h); padding: var(--cc-sec-pad) !important; margin: 4px 0 16px !important;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; box-shadow: none !important;
-  font-size: var(--cc-sec-fs) !important; font-weight: var(--cc-sec-fw); letter-spacing: var(--cc-sec-ls); text-transform: uppercase;
+  min-height: var(--tt-sec-h); padding: var(--tt-sec-pad) !important; margin: 4px 0 16px !important;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; box-shadow: none !important;
+  font-size: var(--tt-sec-fs) !important; font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); text-transform: uppercase;
 }
-html[data-cc-page="vmform"] #displaybox div.title i { color: inherit !important; }
-html[data-cc-page="vmform"] #displaybox .domain {
-  background: var(--cc-surface-2, #222222); border-radius: var(--cc-radius-card); box-shadow: var(--cc-elev-1); padding: 14px 18px;
+html[data-tt-page="vmform"] #displaybox div.title i { color: inherit !important; }
+html[data-tt-page="vmform"] #displaybox .domain {
+  background: var(--tt-surface-2, #222222); border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-1); padding: 14px 18px;
 }
 /* The labels keep Unraid's own arrangement, right-aligned in the first column beside their
    fields; they only take the secondary text colour. */
-html[data-cc-page="vmform"] #vmform table td:first-child { color: var(--cc-text-chip, #cfcfcf); }
+html[data-tt-page="vmform"] #vmform table td:first-child { color: var(--tt-text-chip, #cfcfcf); }
 /* A repeatable section (a vDisk, a share, a graphics card, a network card) is marked by a bar at
    its left edge. Unraid draws it light grey, close enough to a scroll bar to be taken for one; it
    is a thin pill in the chip tone that takes the colour mode while its rows are pointed at, and
    the add and remove glyphs drop Unraid's green and red. */
-html[data-cc-page="vmform"] #vmform .sectiontab { width: 4px !important; background: var(--cc-chip) !important; border-radius: var(--cc-radius-pill) !important; }
-html[data-cc-page="vmform"] #vmform .multiple:hover .sectiontab { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; }
-html[data-cc-page="vmform"] #vmform .sectionbutton { left: 12px !important; opacity: 1 !important; }
-html[data-cc-page="vmform"] #vmform .sectionbutton i { color: var(--cc-text-dim, #8a8a8a) !important; }
-html[data-cc-page="vmform"] #vmform .sectionbutton:hover i { color: var(--cc-text, #e6e6e6) !important; }
+html[data-tt-page="vmform"] #vmform .sectiontab { width: 4px !important; background: var(--tt-chip) !important; border-radius: var(--tt-radius-pill) !important; }
+html[data-tt-page="vmform"] #vmform .multiple:hover .sectiontab { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; }
+html[data-tt-page="vmform"] #vmform .sectionbutton { left: 12px !important; opacity: 1 !important; }
+html[data-tt-page="vmform"] #vmform .sectionbutton i { color: var(--tt-text-dim, #8a8a8a) !important; }
+html[data-tt-page="vmform"] #vmform .sectionbutton:hover i { color: var(--tt-text, #e6e6e6) !important; }
 /* Unraid fills the tables of the repeatable sections a shade darker than the card, which bands
    it; the card stays the one surface. */
-html[data-cc-page="vmform"] #vmform table { background: none !important; }
+html[data-tt-page="vmform"] #vmform table { background: none !important; }
 /* The USB and PCI lists: Unraid's 60px columns are narrower than their headings ("Auswählen"),
    and boot order fields as tall as the other fields would merge into one grey block down the
    list. */
-html[data-cc-page="vmform"] #vmform span.space { width: 96px; }
-html[data-cc-page="vmform"] #vmform input.bootorder { width: 64px !important; min-height: 0 !important; height: 24px; margin: 3px 10px 3px 0; }
+html[data-tt-page="vmform"] #vmform span.space { width: 96px; }
+html[data-tt-page="vmform"] #vmform input.bootorder { width: 64px !important; min-height: 0 !important; height: 24px; margin: 3px 10px 3px 0; }
 /* A timer row's "Present" dropdown is wider than the fixed column Unraid gives it, so the column
    grows with it and the "Tick policy" label after it stays clear. */
-html[data-cc-page="vmform"] #vmform span.column2 { width: auto !important; margin-inline-end: 16px; }
+html[data-tt-page="vmform"] #vmform span.column2 { width: auto !important; margin-inline-end: 16px; }
 /* A select wider than its fixed 280px slot ran under the label of the second column ("ig:" for
    "Migrationsfähig:"), so the slot grows with its control and the label keeps its full width. */
-html[data-cc-page="vmform"] #vmform span.width { width: auto !important; min-width: 280px; }
-html[data-cc-page="vmform"] #vmform span.label {
+html[data-tt-page="vmform"] #vmform span.width { width: auto !important; min-width: 280px; }
+html[data-tt-page="vmform"] #vmform span.label {
   width: auto !important; min-width: 110px; overflow: visible !important; text-overflow: clip; white-space: nowrap;
-  text-align: end; margin-inline: 16px 8px; color: var(--cc-text-chip, #cfcfcf);
+  text-align: end; margin-inline: 16px 8px; color: var(--tt-text-chip, #cfcfcf);
 }
-html[data-cc-page="vmform"] #vmform :is(input[type="text"], input[type="url"], input[type="number"], input[type="password"], input:not([type]), textarea:not(.xml)) {
-  background: var(--cc-surface-3, #2e2e2e) !important; color: var(--cc-text, #e6e6e6) !important;
-  border: none !important; outline: none !important; box-shadow: none !important; border-radius: var(--cc-radius-control) !important;
-  padding: 0 10px; min-height: var(--cc-md-h); box-sizing: border-box;
+html[data-tt-page="vmform"] #vmform :is(input[type="text"], input[type="url"], input[type="number"], input[type="password"], input:not([type]), textarea:not(.xml)) {
+  background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text, #e6e6e6) !important;
+  border: none !important; outline: none !important; box-shadow: none !important; border-radius: var(--tt-radius-control) !important;
+  padding: 0 10px; min-height: var(--tt-md-h); box-sizing: border-box;
 }
-html[data-cc-page="vmform"] #vmform textarea:not(.xml) { padding: 8px 10px; }
-html[data-cc-page="vmform"] #vmform :is(input, textarea):focus { background: color-mix(in srgb, var(--cc-surface-3, #2e2e2e) 85%, var(--cc-text, #e6e6e6)) !important; }
-html[data-cc-page="vmform"] #vmform input::placeholder { color: var(--cc-text-hint, #a3a3a3); }
+html[data-tt-page="vmform"] #vmform textarea:not(.xml) { padding: 8px 10px; }
+html[data-tt-page="vmform"] #vmform :is(input, textarea):focus { background: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)) !important; }
+html[data-tt-page="vmform"] #vmform input::placeholder { color: var(--tt-text-hint, #a3a3a3); }
 /* The CPU pinning grid: filled tiles without frames, and the pick a round selection mark that
    fills with the colour mode. */
-html[data-cc-page="vmform"] #vmform .cpu-box {
-  border: none !important; box-shadow: none !important; background: var(--cc-surface-3, #2e2e2e) !important; border-radius: var(--cc-radius-control) !important;
+html[data-tt-page="vmform"] #vmform .cpu-box {
+  border: none !important; box-shadow: none !important; background: var(--tt-surface-3, #2e2e2e) !important; border-radius: var(--tt-radius-control) !important;
 }
-html[data-cc-page="vmform"] #vmform label.checkbox .checkmark {
-  border: none !important; box-shadow: none !important; background: var(--cc-toggle-track-off, #3a3a3a) !important; border-radius: var(--cc-radius-pill) !important;
+html[data-tt-page="vmform"] #vmform label.checkbox .checkmark {
+  border: none !important; box-shadow: none !important; background: var(--tt-toggle-track-off, #3a3a3a) !important; border-radius: var(--tt-radius-pill) !important;
 }
-html[data-cc-page="vmform"] #vmform label.checkbox input:checked ~ .checkmark { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; }
-html[data-cc-page="vmform"] #vmform label.checkbox .checkmark::after { border-color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important; }
+html[data-tt-page="vmform"] #vmform label.checkbox input:checked ~ .checkmark { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; }
+html[data-tt-page="vmform"] #vmform label.checkbox .checkmark::after { border-color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
 /* Buttons are badges as on every native form: neutral at rest, the colour mode under the pointer,
    and the forward action (Create, Update) filled. Unraid makes all of them type=button, so the
    forward one is found by its id. */
-html[data-cc-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]) {
-  background: var(--cc-chip) !important; color: var(--cc-text, #e6e6e6) !important;
-  border: none !important; outline: none !important; box-shadow: none !important; border-radius: var(--cc-radius-pill) !important;
-  height: var(--cc-md-h); padding: var(--cc-md-btnpad) !important; min-width: 0 !important; margin: 0 8px 0 0 !important;
-  font-size: var(--cc-md-fs) !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important;
+html[data-tt-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]) {
+  background: var(--tt-chip) !important; color: var(--tt-text, #e6e6e6) !important;
+  border: none !important; outline: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important;
+  height: var(--tt-md-h); padding: var(--tt-md-btnpad) !important; min-width: 0 !important; margin: 0 8px 0 0 !important;
+  font-size: var(--tt-md-fs) !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important;
   background-image: none !important; cursor: pointer; transition: background-color .12s, color .12s;
 }
-html[data-cc-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]):hover:not(:disabled),
-html[data-cc-page="vmform"] #displaybox #btnSubmit:not(:disabled) {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
+html[data-tt-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]):hover:not(:disabled),
+html[data-tt-page="vmform"] #displaybox #btnSubmit:not(:disabled) {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
 }
-html[data-cc-page="vmform"] #displaybox #btnSubmit:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--cc-rbaccent, var(--cc-accent, #FCC419)) 85%, var(--cc-text, #e6e6e6)) !important;
+html[data-tt-page="vmform"] #displaybox #btnSubmit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) 85%, var(--tt-text, #e6e6e6)) !important;
 }
-html[data-cc-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent) !important; }
-/* Unraid's tiny switch track becomes the CC toggle. */
-html[data-cc-page="vmform"] #displaybox .switch-button-background {
+html[data-tt-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+/* Unraid's tiny switch track becomes the TowerTorch toggle. */
+html[data-tt-page="vmform"] #displaybox .switch-button-background {
   width: 36px !important; height: 20px !important; border: none !important; box-shadow: none !important;
-  background: var(--cc-toggle-track-off, #3a3a3a) !important; border-radius: var(--cc-radius-pill) !important; vertical-align: middle;
+  background: var(--tt-toggle-track-off, #3a3a3a) !important; border-radius: var(--tt-radius-pill) !important; vertical-align: middle;
 }
-html[data-cc-page="vmform"] #displaybox .switch-button-background.checked { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; }
-html[data-cc-page="vmform"] #displaybox .switch-button-button {
+html[data-tt-page="vmform"] #displaybox .switch-button-background.checked { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; }
+html[data-tt-page="vmform"] #displaybox .switch-button-button {
   width: 14px !important; height: 14px !important; top: 3px !important; border: none !important; box-shadow: none !important;
-  background: var(--cc-toggle-knob, #fff) !important; border-radius: var(--cc-radius-pill) !important;
+  background: var(--tt-toggle-knob, #fff) !important; border-radius: var(--tt-radius-pill) !important;
 }
-html[data-cc-page="vmform"] #displaybox .switch-button-label { text-transform: none !important; letter-spacing: normal !important; font-size: var(--cc-text-subline); }
+html[data-tt-page="vmform"] #displaybox .switch-button-label { text-transform: none !important; letter-spacing: normal !important; font-size: var(--tt-text-subline); }
 /* The native checkboxes (USB and PCI devices) are switches, drawn on the input so the form still
    reads it. */
-html[data-cc-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]) {
+html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]) {
   -webkit-appearance: none; appearance: none; position: relative; flex: none; box-sizing: border-box;
   width: 36px; height: 20px; margin: 0 8px 0 0; vertical-align: middle; cursor: pointer;
-  background: var(--cc-toggle-track-off, #3a3a3a); border: none !important; outline: none; border-radius: var(--cc-radius-pill);
-  transition: background var(--cc-motion-control-dur, 0s);
+  background: var(--tt-toggle-track-off, #3a3a3a); border: none !important; outline: none; border-radius: var(--tt-radius-pill);
+  transition: background var(--tt-motion-control-dur, 0s);
 }
-html[data-cc-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"])::before {
+html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"])::before {
   content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px;
-  background: var(--cc-toggle-knob, #fff); border-radius: var(--cc-radius-pill); transition: left var(--cc-motion-control-dur, 0s);
+  background: var(--tt-toggle-knob, #fff); border-radius: var(--tt-radius-pill); transition: left var(--tt-motion-control-dur, 0s);
 }
-html[data-cc-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); }
-html[data-cc-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked::before { left: 19px; background: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
-html[data-cc-page="vmform"] #vmform :is(input, textarea, .cc-tsel-trigger):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 55%, transparent) !important; }
-html[data-cc-page="vmform"] #displaybox blockquote.inline_help {
-  border: none !important; background: var(--cc-surface-3, #2e2e2e) !important; border-radius: var(--cc-radius-control) !important; color: var(--cc-text-chip, #cfcfcf) !important;
+html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
+html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked::before { left: 19px; background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
+html[data-tt-page="vmform"] #vmform :is(input, textarea, .tt-tsel-trigger):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 55%, transparent) !important; }
+html[data-tt-page="vmform"] #displaybox blockquote.inline_help {
+  border: none !important; background: var(--tt-surface-3, #2e2e2e) !important; border-radius: var(--tt-radius-control) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }
 /* At phone width the fixed table columns do not fit, so each label stands over its field,
    both at the start, and a field takes the width that is left. */
 @media (max-width: 600px) {
-  html[data-cc-page="vmform"] #displaybox .domain { padding: 12px 14px; }
-  html[data-cc-page="vmform"] #vmform :is(table, tbody, tr, td) { display: block; width: auto !important; height: auto; line-height: 1.4; }
-  html[data-cc-page="vmform"] #vmform table td:first-child { text-align: start; padding: 10px 0 4px 14px; }
-  html[data-cc-page="vmform"] #vmform table td + td { padding-left: 14px; }
-  html[data-cc-page="vmform"] #vmform :is(span.width, span.column1, span.column2) { min-width: 0; max-width: 100%; }
-  html[data-cc-page="vmform"] #vmform span.label { text-align: start; margin-inline: 0 8px; min-width: 0; }
-  html[data-cc-page="vmform"] #vmform :is(input[type="text"], input:not([type]), textarea, .cc-tsel-trigger) { max-width: 100%; }
+  html[data-tt-page="vmform"] #displaybox .domain { padding: 12px 14px; }
+  html[data-tt-page="vmform"] #vmform :is(table, tbody, tr, td) { display: block; width: auto !important; height: auto; line-height: 1.4; }
+  html[data-tt-page="vmform"] #vmform table td:first-child { text-align: start; padding: 10px 0 4px 14px; }
+  html[data-tt-page="vmform"] #vmform table td + td { padding-left: 14px; }
+  html[data-tt-page="vmform"] #vmform :is(span.width, span.column1, span.column2) { min-width: 0; max-width: 100%; }
+  html[data-tt-page="vmform"] #vmform span.label { text-align: start; margin-inline: 0 8px; min-width: 0; }
+  html[data-tt-page="vmform"] #vmform :is(input[type="text"], input:not([type]), textarea, .tt-tsel-trigger) { max-width: 100%; }
 }
 
 /* The VM template picker (/VMs/VMTemplates): every group is a card with its name as the badge on
    the top edge (pages.js wraps them), and every template a tile without a frame. A tile's logo sits
    in the logo box the VM list uses, quiet at rest and in the colour mode while the tile is pointed
    at or focused. */
-html[data-cc-page="vmtemplates"] #displaybox div.title {
+html[data-tt-page="vmtemplates"] #displaybox div.title {
   display: inline-flex !important; align-items: center; gap: 8px; width: fit-content !important; box-sizing: border-box;
-  min-height: var(--cc-sec-h); padding: var(--cc-sec-pad) !important; margin: 4px 0 26px !important;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; box-shadow: none !important;
-  font-size: var(--cc-sec-fs) !important; font-weight: var(--cc-sec-fw); letter-spacing: var(--cc-sec-ls); text-transform: uppercase;
+  min-height: var(--tt-sec-h); padding: var(--tt-sec-pad) !important; margin: 4px 0 26px !important;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; box-shadow: none !important;
+  font-size: var(--tt-sec-fs) !important; font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); text-transform: uppercase;
 }
-html[data-cc-page="vmtemplates"] #displaybox div.title i { color: inherit !important; }
-html[data-cc-page="vmtemplates"] #displaybox .cc-vmt-group {
+html[data-tt-page="vmtemplates"] #displaybox div.title i { color: inherit !important; }
+html[data-tt-page="vmtemplates"] #displaybox .tt-vmt-group {
   position: relative; display: flex; flex-wrap: wrap; gap: 6px; box-sizing: border-box; margin: 0 0 40px; padding: 24px 12px 12px;
-  background: var(--cc-surface-2, #222222); border-radius: var(--cc-radius-card); box-shadow: var(--cc-elev-1);
+  background: var(--tt-surface-2, #222222); border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-1);
 }
-html[data-cc-page="vmtemplates"] #displaybox .cc-vmt-bare { padding-top: 12px; }
-html[data-cc-page="vmtemplates"] #displaybox .cc-vmt-group > .vmheader {
+html[data-tt-page="vmtemplates"] #displaybox .tt-vmt-bare { padding-top: 12px; }
+html[data-tt-page="vmtemplates"] #displaybox .tt-vmt-group > .vmheader {
   position: absolute; top: -11px; left: 18px; display: inline-flex; align-items: center; box-sizing: border-box;
-  min-height: var(--cc-sec-h); padding: var(--cc-sec-pad); border-radius: var(--cc-radius-pill);
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616));
-  font-size: var(--cc-sec-fs); font-weight: var(--cc-sec-fw); letter-spacing: var(--cc-sec-ls); text-transform: uppercase; line-height: 1;
+  min-height: var(--tt-sec-h); padding: var(--tt-sec-pad); border-radius: var(--tt-radius-pill);
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616));
+  font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); text-transform: uppercase; line-height: 1;
 }
-html[data-cc-page="vmtemplates"] #displaybox .cc-vmt-bare > .vmheader { display: none; }
-html[data-cc-page="vmtemplates"] #displaybox .cc-vmt-group > .vmtemplate { width: auto; height: auto; margin: 0; }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate > a {
+html[data-tt-page="vmtemplates"] #displaybox .tt-vmt-bare > .vmheader { display: none; }
+html[data-tt-page="vmtemplates"] #displaybox .tt-vmt-group > .vmtemplate { width: auto; height: auto; margin: 0; }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a {
   display: flex; flex-direction: column; align-items: center; gap: 8px; box-sizing: border-box; width: 112px; height: 100%; padding: 10px 6px;
-  border-radius: var(--cc-radius-card); color: var(--cc-text, #e6e6e6) !important; text-decoration: none !important; outline: none;
+  border-radius: var(--tt-radius-card); color: var(--tt-text, #e6e6e6) !important; text-decoration: none !important; outline: none;
   transition: background-color .12s;
 }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate > a > span {
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a > span {
   display: flex; align-items: center; justify-content: center; box-sizing: border-box;
-  width: var(--cc-logo-box, 78px); height: var(--cc-logo-box, 78px); border-radius: var(--cc-radius-control);
-  background: var(--cc-chip); transition: background-color .12s;
+  width: var(--tt-logo-box, 78px); height: var(--tt-logo-box, 78px); border-radius: var(--tt-radius-control);
+  background: var(--tt-chip); transition: background-color .12s;
 }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate img { width: 48px; height: 48px; object-fit: contain; }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate p { margin: 0; font-size: var(--cc-text-subline); line-height: 1.3; text-align: center; color: inherit; }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) { background: var(--cc-chip); }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) > span { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); }
-html[data-cc-page="vmtemplates"] #displaybox .vmtemplate > a:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent); }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate img { width: 48px; height: 48px; object-fit: contain; }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate p { margin: 0; font-size: var(--tt-text-subline); line-height: 1.3; text-align: center; color: inherit; }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) { background: var(--tt-chip); }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) > span { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
 /* three tiles to a row on a phone */
-@media (max-width: 600px) { html[data-cc-page="vmtemplates"] #displaybox .vmtemplate > a { width: 96px; } }
+@media (max-width: 600px) { html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a { width: 96px; } }
 /* The three actions under the cards are badges, neutral at rest and the colour mode under the
    pointer, instead of Unraid's framed capitals. */
-html[data-cc-page="vmtemplates"] #displaybox center { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-html[data-cc-page="vmtemplates"] #displaybox center > button {
-  display: inline-flex; align-items: center; box-sizing: border-box; height: var(--cc-md-h); padding: var(--cc-md-btnpad) !important; margin: 0 !important; min-width: 0 !important;
-  background: var(--cc-chip) !important; color: var(--cc-text, #e6e6e6) !important; background-image: none !important;
-  border: none !important; outline: none !important; box-shadow: none !important; border-radius: var(--cc-radius-pill) !important;
-  font-size: var(--cc-md-fs) !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important;
+html[data-tt-page="vmtemplates"] #displaybox center { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+html[data-tt-page="vmtemplates"] #displaybox center > button {
+  display: inline-flex; align-items: center; box-sizing: border-box; height: var(--tt-md-h); padding: var(--tt-md-btnpad) !important; margin: 0 !important; min-width: 0 !important;
+  background: var(--tt-chip) !important; color: var(--tt-text, #e6e6e6) !important; background-image: none !important;
+  border: none !important; outline: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important;
+  font-size: var(--tt-md-fs) !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important;
   cursor: pointer; transition: background-color .12s, color .12s;
 }
-html[data-cc-page="vmtemplates"] #displaybox center > button:hover { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important; }
-html[data-cc-page="vmtemplates"] #displaybox center > button:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent, #FCC419) 45%, transparent) !important; }
+html[data-tt-page="vmtemplates"] #displaybox center > button:hover { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
+html[data-tt-page="vmtemplates"] #displaybox center > button:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
 
 /* Disk Stats (/Stats). The Shares area already restyles its tab bar and control strip; this adds
    the bars, the legend and the chart. The bar colours keep their meaning: the normal share is the
    accent, high use the warning tone, low space the fault tone, parity and free space neutral. */
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox .mybar {
-  border: none !important; box-shadow: none !important; background-image: none !important; border-radius: var(--cc-radius-pill) !important;
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox .mybar {
+  border: none !important; box-shadow: none !important; background-image: none !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox .mybar.whitebar { background-color: var(--cc-chip) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox .mybar.graybar { background-color: var(--cc-chip-hover) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox .mybar.greenbar { background-color: var(--cc-accent, #FCC419) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox .mybar.orangebar { background-color: var(--cc-warn, #ff832b) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox .mybar.redbar { background-color: var(--cc-err, #ff8389) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox section .leftbar img,
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox section strong img { display: none; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox small { color: var(--cc-text-dim, #8a8a8a); font-size: var(--cc-text-meta); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox .mybar.whitebar { background-color: var(--tt-chip) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox .mybar.graybar { background-color: var(--tt-chip-hover) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox .mybar.greenbar { background-color: var(--tt-accent, #FCC419) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox .mybar.orangebar { background-color: var(--tt-warn, #ff832b) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox .mybar.redbar { background-color: var(--tt-err, #ff8389) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox section .leftbar img,
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox section strong img { display: none; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox small { color: var(--tt-text-dim, #8a8a8a); font-size: var(--tt-text-meta); }
 /* The chart loses its light gradient plate and its grid, and its series take the bar tones. */
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-container > svg > rect:first-of-type { fill: var(--cc-surface-2, #222222); }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-container > svg > image { display: none; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-grid path { stroke: transparent; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-series-group .highcharts-series:nth-of-type(1) rect { fill: var(--cc-err, #ff8389); }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-series-group .highcharts-series:nth-of-type(3) rect { fill: var(--cc-warn, #ff832b); }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-series-group .highcharts-series:nth-of-type(5) rect { fill: var(--cc-accent, #FCC419); }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys text { fill: var(--cc-text-dim, #8a8a8a) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-title,
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-title tspan { fill: var(--cc-text, #e6e6e6) !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-data-labels text { fill: #161616 !important; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys path[stroke-dasharray] { stroke: transparent; }
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys path[stroke-dasharray][stroke="#ff6600"] { stroke: var(--cc-text-dim, #8a8a8a); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-container > svg > rect:first-of-type { fill: var(--tt-surface-2, #222222); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-container > svg > image { display: none; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-grid path { stroke: transparent; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-series-group .highcharts-series:nth-of-type(1) rect { fill: var(--tt-err, #ff8389); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-series-group .highcharts-series:nth-of-type(3) rect { fill: var(--tt-warn, #ff832b); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-series-group .highcharts-series:nth-of-type(5) rect { fill: var(--tt-accent, #FCC419); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys text { fill: var(--tt-text-dim, #8a8a8a) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-title,
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-title tspan { fill: var(--tt-text, #e6e6e6) !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-data-labels text { fill: #161616 !important; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys path[stroke-dasharray] { stroke: transparent; }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys path[stroke-dasharray][stroke="#ff6600"] { stroke: var(--tt-text-dim, #8a8a8a); }
 /* The device names right-align to the plot and the tab panel clipped their first letters
    ("atenträger 1"), so the label column moves in by the clipped width. */
-html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #sys .highcharts-data-labels + .highcharts-axis-labels { transform: translateX(6px); font-size: var(--cc-text-meta); }
+html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #sys .highcharts-data-labels + .highcharts-axis-labels { transform: translateX(6px); font-size: var(--tt-text-meta); }
 /* At phone width the legend entries stack instead of running into each other. */
 @media (max-width: 760px) {
-  html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox section > :is(.leftbar, .rightbar):not(.mybar) {
+  html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox section > :is(.leftbar, .rightbar):not(.mybar) {
     float: none !important; clear: both; width: auto !important; display: flex; align-items: center; gap: 8px; margin: 0 0 8px !important;
   }
-  html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox section .mybar.inside { flex: none; }
-  html.cc-shares-on.cc-on-stats[data-cc-page="stats"] #displaybox { overflow-x: clip; }
+  html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox section .mybar.inside { flex: none; }
+  html.tt-shares-on.tt-on-stats[data-tt-page="stats"] #displaybox { overflow-x: clip; }
 }
 
-/* Start (/Main): paintMain stamps the Unassigned Devices buttons .cc-xbtn and colours them, but
+/* Start (/Main): paintMain stamps the Unassigned Devices buttons .tt-xbtn and colours them, but
    their caption still came in Unraid's capitals. */
-html.cc-shares-on.cc-on-main[data-cc-page="main"] #displaybox .cc-xbtn {
-  text-transform: none !important; letter-spacing: normal !important; font-weight: 600 !important; font-size: var(--cc-md-fs) !important;
-  height: var(--cc-md-h); padding: var(--cc-md-btnpad) !important; min-width: 0 !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; box-shadow: none !important; background-image: none !important;
+html.tt-shares-on.tt-on-main[data-tt-page="main"] #displaybox .tt-xbtn {
+  text-transform: none !important; letter-spacing: normal !important; font-weight: 600 !important; font-size: var(--tt-md-fs) !important;
+  height: var(--tt-md-h); padding: var(--tt-md-btnpad) !important; min-width: 0 !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; box-shadow: none !important; background-image: none !important;
 }
 
 /* User Scripts (/Settings/Userscripts): the category bar becomes a section badge, the list a card
    without rule lines, and a script's two run buttons come in while its row is pointed at (rule 6). */
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-header {
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-header {
   display: inline-flex !important; align-items: center; gap: 8px; width: fit-content; box-sizing: border-box;
-  min-height: var(--cc-sec-h); padding: var(--cc-sec-pad) !important; margin: 0 0 -11px 18px; position: relative; z-index: 1;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; box-shadow: none !important;
-  font-size: var(--cc-sec-fs); font-weight: var(--cc-sec-fw); letter-spacing: var(--cc-sec-ls); text-transform: uppercase; cursor: pointer;
+  min-height: var(--tt-sec-h); padding: var(--tt-sec-pad) !important; margin: 0 0 -11px 18px; position: relative; z-index: 1;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; box-shadow: none !important;
+  font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); text-transform: uppercase; cursor: pointer;
 }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-header * { color: inherit !important; font: inherit; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox :is(.category, .category-content) { border: none !important; box-shadow: none !important; background: none !important; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts {
-  background: var(--cc-surface-2, #222222) !important; border: none !important; border-radius: var(--cc-radius-card); padding: 18px 12px 8px; box-shadow: var(--cc-elev-1);
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-header * { color: inherit !important; font: inherit; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox :is(.category, .category-content) { border: none !important; box-shadow: none !important; background: none !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts {
+  background: var(--tt-surface-2, #222222) !important; border: none !important; border-radius: var(--tt-radius-card); padding: 18px 12px 8px; box-shadow: var(--tt-elev-1);
 }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts :is(tr, td) {
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts :is(tr, td) {
   border: none !important; box-shadow: none !important; background: none !important; background-image: none !important;
 }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts tr:hover { background: none !important; background-image: none !important; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts tr:hover > td { background: var(--cc-hover-wash) !important; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts tr > td:first-child { border-start-start-radius: var(--cc-radius-control); border-end-start-radius: var(--cc-radius-control); }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts tr > td:last-child { border-start-end-radius: var(--cc-radius-control); border-end-end-radius: var(--cc-radius-control); }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts b > span[style*="color"] { color: var(--cc-text, #e6e6e6) !important; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts :is(i.warning, .ca_nameEdit) { color: var(--cc-text-dim, #8a8a8a) !important; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .ca_descEdit { color: var(--cc-text-dim, #8a8a8a); font-size: var(--cc-text-subline); }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts input:is([onclick^="runScript"], [onclick^="backgroundScript"]) {
-  opacity: 0; transition: opacity var(--cc-motion-control-dur, 0s);
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:hover { background: none !important; background-image: none !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:hover > td { background: var(--tt-hover-wash) !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr > td:first-child { border-start-start-radius: var(--tt-radius-control); border-end-start-radius: var(--tt-radius-control); }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr > td:last-child { border-start-end-radius: var(--tt-radius-control); border-end-end-radius: var(--tt-radius-control); }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts b > span[style*="color"] { color: var(--tt-text, #e6e6e6) !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts :is(i.warning, .ca_nameEdit) { color: var(--tt-text-dim, #8a8a8a) !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .ca_descEdit { color: var(--tt-text-dim, #8a8a8a); font-size: var(--tt-text-subline); }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts input:is([onclick^="runScript"], [onclick^="backgroundScript"]) {
+  opacity: 0; transition: opacity var(--tt-motion-control-dur, 0s);
 }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts tr:is(:hover, :focus-within) input:is([onclick^="runScript"], [onclick^="backgroundScript"]) { opacity: 1; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:is(:hover, :focus-within) input:is([onclick^="runScript"], [onclick^="backgroundScript"]) { opacity: 1; }
 @media (hover: none) {
-  html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-scripts input:is([onclick^="runScript"], [onclick^="backgroundScript"]) { opacity: 1; }
+  html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts input:is([onclick^="runScript"], [onclick^="backgroundScript"]) { opacity: 1; }
 }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox :is(input[type="button"], input[type="submit"]) { text-transform: none !important; letter-spacing: normal !important; }
-html.cc-tools-on[data-cc-page="userscripts"] #displaybox .category-search-input {
-  background: var(--cc-surface-3, #2e2e2e) !important; border: none !important; border-radius: var(--cc-radius-control) !important; color: var(--cc-text, #e6e6e6) !important;
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox :is(input[type="button"], input[type="submit"]) { text-transform: none !important; letter-spacing: normal !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-search-input {
+  background: var(--tt-surface-3, #2e2e2e) !important; border: none !important; border-radius: var(--tt-radius-control) !important; color: var(--tt-text, #e6e6e6) !important;
 }
 
 /* Appdata Cleanup Plus (/Settings/AppdataCleanupPlus): the plugin's own cards drop their frames
-   and its own blue, and take the CC surfaces and the colour mode. */
-html.cc-tools-on[data-cc-page="acp"] #displaybox [class^="acp-"]:is([class*="card"], [class*="panel"], [class*="toolbar"], [class*="state"]) {
+   and its own blue, and take the TowerTorch surfaces and the colour mode. */
+html.tt-tools-on[data-tt-page="acp"] #displaybox [class^="acp-"]:is([class*="card"], [class*="panel"], [class*="toolbar"], [class*="state"]) {
   border: none !important; outline: none !important; box-shadow: none !important;
 }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-summary-card { background: var(--cc-surface-2, #222222) !important; border-radius: var(--cc-radius-card) !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-summary-card.is-selected { background: var(--cc-surface-3, #2e2e2e) !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-summary-icon { background: var(--cc-chip) !important; color: var(--cc-text-chip, #cfcfcf) !important; border: none !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-summary-label { color: var(--cc-text-dim, #8a8a8a) !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-button {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; box-shadow: none !important; text-transform: none !important; letter-spacing: normal !important;
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-summary-card { background: var(--tt-surface-2, #222222) !important; border-radius: var(--tt-radius-card) !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-summary-card.is-selected { background: var(--tt-surface-3, #2e2e2e) !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-summary-icon { background: var(--tt-chip) !important; color: var(--tt-text-chip, #cfcfcf) !important; border: none !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-summary-label { color: var(--tt-text-dim, #8a8a8a) !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-button {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; box-shadow: none !important; text-transform: none !important; letter-spacing: normal !important;
 }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-button * { color: inherit !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-title {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important;
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-button * { color: inherit !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-title {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-tools-on[data-cc-page="acp"] #displaybox :is(.acp-shell, .acp-hero, .acp-bottom-bar) { border: none !important; box-shadow: none !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-shell { background: none !important; padding-inline: 0 !important; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox .acp-mode-link { text-transform: none !important; letter-spacing: normal !important; height: auto !important; min-height: var(--cc-md-h); white-space: normal; }
-html.cc-tools-on[data-cc-page="acp"] #displaybox hr { display: none; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox :is(.acp-shell, .acp-hero, .acp-bottom-bar) { border: none !important; box-shadow: none !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-shell { background: none !important; padding-inline: 0 !important; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox .acp-mode-link { text-transform: none !important; letter-spacing: normal !important; height: auto !important; min-height: var(--tt-md-h); white-space: normal; }
+html.tt-tools-on[data-tt-page="acp"] #displaybox hr { display: none; }
 
 /* Nvidia Driver (/Settings/nvidia-driver) is free-form HTML: green, tomato and blue text become
    the text colour, the page heading goes (the title badge above already names the page), each
    column becomes a card with section badges for headings, and the long explanations step down to
    the secondary text. */
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox :is(b[style*="color"], font[color], span[style*="color"]) { color: inherit !important; }
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox h1:has(span) { display: none; }
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox div[style*="width: 47%"] {
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox :is(b[style*="color"], font[color], span[style*="color"]) { color: inherit !important; }
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox h1:has(span) { display: none; }
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox div[style*="width: 47%"] {
   min-width: 0 !important; flex: 1 1 460px; box-sizing: border-box;
-  background: var(--cc-surface-2, #222222); border-radius: var(--cc-radius-card); box-shadow: var(--cc-elev-1); padding: 18px 20px;
+  background: var(--tt-surface-2, #222222); border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-1); padding: 18px 20px;
 }
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox font[size="+1"] {
-  display: inline-flex; align-items: center; min-height: var(--cc-sec-h); padding: var(--cc-sec-pad); box-sizing: border-box;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
-  border-radius: var(--cc-radius-pill); font-size: var(--cc-sec-fs); font-weight: var(--cc-sec-fw); letter-spacing: var(--cc-sec-ls); text-transform: uppercase;
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox font[size="+1"] {
+  display: inline-flex; align-items: center; min-height: var(--tt-sec-h); padding: var(--tt-sec-pad); box-sizing: border-box;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
+  border-radius: var(--tt-radius-pill); font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); text-transform: uppercase;
 }
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox :is(div[style*="width: 47%"] > p:not(:has(input, b, font)), div[style*="width: 47%"] li) {
-  color: var(--cc-text-dim, #8a8a8a); font-size: var(--cc-text-subline);
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox :is(div[style*="width: 47%"] > p:not(:has(input, b, font)), div[style*="width: 47%"] li) {
+  color: var(--tt-text-dim, #8a8a8a); font-size: var(--tt-text-subline);
 }
 /* the card sits on the surface the radio buttons use, so they step up one */
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox input[type="radio"]:not(:checked) { background: var(--cc-surface-3, #2e2e2e); }
-html.cc-tools-on[data-cc-page="nvidia"] #displaybox code { background: var(--cc-chip); border-radius: calc(var(--cc-radius-control) / 2); padding: 0 4px; }
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox input[type="radio"]:not(:checked) { background: var(--tt-surface-3, #2e2e2e); }
+html.tt-tools-on[data-tt-page="nvidia"] #displaybox code { background: var(--tt-chip); border-radius: calc(var(--tt-radius-control) / 2); padding: 0 4px; }
 
 /* System log (/Tools/Syslog): the filter chips and the marked lines kept light pastel fills on the
    dark page. The chips turn neutral with a dot in their line's tone; a fault line reads in the
    fault tone, a warning in the warning tone, and system, array and login lines in a quiet tint. */
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls .label {
-  display: inline-flex; align-items: center; background: var(--cc-chip) !important; color: var(--cc-text-chip, #cfcfcf) !important;
-  border: none !important; border-radius: var(--cc-radius-pill) !important; padding: 2px 12px !important; box-shadow: none !important;
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls .label {
+  display: inline-flex; align-items: center; background: var(--tt-chip) !important; color: var(--tt-text-chip, #cfcfcf) !important;
+  border: none !important; border-radius: var(--tt-radius-pill) !important; padding: 2px 12px !important; box-shadow: none !important;
 }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls .label.lite { background: none !important; padding: 0 !important; }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls .label:is(.error, .warn) label::before {
-  content: ""; width: 8px; height: 8px; border-radius: var(--cc-radius-pill); order: 2; background: var(--cc-dot);
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls .label.lite { background: none !important; padding: 0 !important; }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls .label:is(.error, .warn) label::before {
+  content: ""; width: 8px; height: 8px; border-radius: var(--tt-radius-pill); order: 2; background: var(--tt-dot);
 }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls .label.error { --cc-dot: var(--cc-err, #ff8389); }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls .label.warn { --cc-dot: var(--cc-warn, #ff832b); }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox pre span:is(.error, .warn, .system, .array, .login) { background: none !important; }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox pre span.error { color: var(--cc-err-ink, #ff8389) !important; }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox pre span.warn { color: var(--cc-warn-ink, #ff832b) !important; }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox pre span:is(.system, .array, .login) { color: var(--cc-text-chip, #cfcfcf) !important; background: var(--cc-chip) !important; }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls .label.error { --tt-dot: var(--tt-err, #ff8389); }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls .label.warn { --tt-dot: var(--tt-warn, #ff832b); }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox pre span:is(.error, .warn, .system, .array, .login) { background: none !important; }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox pre span.error { color: var(--tt-err-ink, #ff8389) !important; }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox pre span.warn { color: var(--tt-warn-ink, #ff832b) !important; }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox pre span:is(.system, .array, .login) { color: var(--tt-text-chip, #cfcfcf) !important; background: var(--tt-chip) !important; }
 /* The filter boxes are switches, drawn on the input. */
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls input[type="checkbox"] {
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls input[type="checkbox"] {
   -webkit-appearance: none; appearance: none; position: relative; flex: none; box-sizing: border-box;
   width: 30px; height: 16px; margin: 0; vertical-align: middle; cursor: pointer;
-  background: var(--cc-toggle-track-off, #3a3a3a) !important; border: none !important; border-radius: var(--cc-radius-pill) !important;
+  background: var(--tt-toggle-track-off, #3a3a3a) !important; border: none !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls input[type="checkbox"]::after {
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls input[type="checkbox"]::after {
   content: "" !important; position: absolute; top: 2px !important; left: 2px !important; width: 12px !important; height: 12px !important;
-  border: none !important; transform: none !important; background: var(--cc-toggle-knob, #fff); border-radius: var(--cc-radius-pill);
+  border: none !important; transform: none !important; background: var(--tt-toggle-knob, #fff); border-radius: var(--tt-radius-pill);
 }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls input[type="checkbox"]:checked { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; }
-html.cc-tools-on[data-cc-page="syslog"] #displaybox .syslog-controls input[type="checkbox"]:checked::after { left: 16px !important; background: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls input[type="checkbox"]:checked { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; }
+html.tt-tools-on[data-tt-page="syslog"] #displaybox .syslog-controls input[type="checkbox"]:checked::after { left: 16px !important; background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
 
 /* The Vue tool pages (OS downgrade, licence, OS update): Unraid's Tailwind cards carry a brown
    frame and an orange hover glow, a light grey button, an orange-ringed link button, a green
-   heading and a button the width of the card. They become CC cards and buttons. */
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is([class*="group/card"], [class*="rounded-lg"][class*="border"]) {
+   heading and a button the width of the card. They become TowerTorch cards and buttons. */
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi :is([class*="group/card"], [class*="rounded-lg"][class*="border"]) {
   border: none !important; box-shadow: none !important; outline: none !important;
-  background: var(--cc-surface-2, #222222) !important; border-radius: var(--cc-radius-card) !important;
+  background: var(--tt-surface-2, #222222) !important; border-radius: var(--tt-radius-card) !important;
 }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi [class*="rounded-lg"][class*="border"] { background: var(--cc-surface-3, #2e2e2e) !important; }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi [class*="from-unraid-red"] { display: none !important; }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi [class*="rounded-lg"][class*="border"] { background: var(--tt-surface-3, #2e2e2e) !important; }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi [class*="from-unraid-red"] { display: none !important; }
 /* Unraid's button component draws as a span, a or button with a 2px frame. The one with the
    gradient layer is the page's main action and takes the colour mode; the rest are neutral. */
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"] {
-  border: none !important; box-shadow: none !important; border-radius: var(--cc-radius-pill) !important; text-decoration: none !important;
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"] {
+  border: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important; text-decoration: none !important;
   width: auto !important; max-width: max-content !important; opacity: 1 !important;
-  background: var(--cc-chip) !important; color: var(--cc-text-chip, #cfcfcf) !important;
+  background: var(--tt-chip) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"]:has(> .from-unraid-red) {
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"]:has(> .from-unraid-red) {
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
 }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"] * { color: inherit !important; }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"]:hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi [class*="text-green-"] { color: var(--cc-text, #e6e6e6) !important; }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi [class*="text-green-"] svg { color: var(--cc-ok-ink, #6fdc8c); }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi :is([class*="bg-gray-200"], [class*="bg-grey"]):not([class*="border-2"]) {
-  background: var(--cc-chip) !important; color: var(--cc-text-chip, #cfcfcf) !important; border: none !important;
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"] * { color: inherit !important; }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi :is(button, a, span)[class*="border-2"]:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi [class*="text-green-"] { color: var(--tt-text, #e6e6e6) !important; }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi [class*="text-green-"] svg { color: var(--tt-ok-ink, #6fdc8c); }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi :is([class*="bg-gray-200"], [class*="bg-grey"]):not([class*="border-2"]) {
+  background: var(--tt-chip) !important; color: var(--tt-text-chip, #cfcfcf) !important; border: none !important;
 }
-html.cc-tools-on[data-cc-page="vue"] #displaybox .unapi [class*="bg-green-200"] { background: var(--cc-chip) !important; color: var(--cc-text-chip, #cfcfcf) !important; }
+html.tt-tools-on[data-tt-page="vue"] #displaybox .unapi [class*="bg-green-200"] { background: var(--tt-chip) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
 
 /* Community Applications (/Apps) announces "Action Centre Enabled" through Unraid's top banner. On
-   /Apps an informational banner reads as a CC toast in the corner instead of an orange bar over
+   /Apps an informational banner reads as a TowerTorch toast in the corner instead of an orange bar over
    the header; a fault banner keeps its tone. */
-html.cc-popups-on[data-cc-page="apps"] .upgrade_notice:not(.alert) {
+html.tt-popups-on[data-tt-page="apps"] .upgrade_notice:not(.alert) {
   position: fixed !important; inset: auto 18px 18px auto !important; transform: none !important; z-index: 100000;
   width: auto !important; max-width: min(88vw, 460px) !important; height: auto !important; box-sizing: border-box;
   padding: 10px 16px !important; margin: 0 !important; text-align: start !important;
-  background: #0f0f0f !important; color: #e8e8e8 !important; font-size: var(--cc-text-subline) !important; line-height: 1.35;
-  border: none !important; border-radius: var(--cc-radius-card) !important; box-shadow: var(--cc-elev-2) !important;
+  background: #0f0f0f !important; color: #e8e8e8 !important; font-size: var(--tt-text-subline) !important; line-height: 1.35;
+  border: none !important; border-radius: var(--tt-radius-card) !important; box-shadow: var(--tt-elev-2) !important;
 }
-html.cc-popups-on[data-cc-page="apps"] .upgrade_notice:not(.alert) :is(i.fa-warning, i.fa-exclamation-triangle) { display: none; }
+html.tt-popups-on[data-tt-page="apps"] .upgrade_notice:not(.alert) :is(i.fa-warning, i.fa-exclamation-triangle) { display: none; }

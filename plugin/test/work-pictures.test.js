@@ -1,4 +1,4 @@
-// The mover and a parity check as pictures on /Main (disks.js, shares.js, CCPictures). Both show
+// The mover and a parity check as pictures on /Main (disks.js, shares.js, TTPictures). Both show
 // only while the work runs. What can quietly break them:
 //   · reading the mover from the button texts, which change with the language
 //   · a picture left standing after the work ended
@@ -32,7 +32,7 @@ console.log('\nThe mover');
   const node = (html) => { const svg = { tag: 'svg' }, dest = { kids: [], insertBefore(n) { dest.kids.unshift(n); } }; return { html, querySelector: (s) => (s === 'svg' ? svg : dest) }; };
   const host = { kids: [], querySelector() { return this.kids[0] || null; }, appendChild(n) { this.kids.push(n); }, removeChild(n) { this.kids.splice(this.kids.indexOf(n), 1); } };
   const listeners = [];
-  const win = { CCPictures: pictures, mymonitor: { on(ev, fn) { listeners.push([ev, fn]); } } };
+  const win = { TTPictures: pictures, mymonitor: { on(ev, fn) { listeners.push([ev, fn]); } } };
   let soons = 0;
   const src = ['var TXT = ' + /var TXT = (\{[\s\S]*?\n  \});/.exec(disks)[1] + ';', grabFn(disks, 't'), grabFn(disks, 'esc'), grabFn(disks, 'fillTone'),
     'var moving = false, arrayUse = { pct: 84 }; var MOVE_W = 220, MOVE_PITCH = 34;', grabFn(disks, 'watchMover'), grabFn(disks, 'moverFlow'),
@@ -61,7 +61,7 @@ console.log('\nThe mover');
   listeners[0][1]('1');
   ok('a parity check (state 1) is not the mover', M.moving() === false);
   ok('the pools draw it after their cards, and boot starts listening', /order\(wrap, boxes\);\s*moverFlow\(host, pools\);/.test(disks) && /watch\(\);\s*watchMover\(\);/.test(disks));
-  ok('the strip does not widen the pools card', /\.cc-dk-move \{[^}]*contain: inline-size;/.test(dcss));
+  ok('the strip does not widen the pools card', /\.tt-dk-move \{[^}]*contain: inline-size;/.test(dcss));
 }
 
 console.log('\nA running parity check turns its chip into a progress ring');
@@ -69,7 +69,7 @@ console.log('\nA running parity check turns its chip into a progress ring');
   const rings = [];
   const pictures = { ring(label) { const r = { label, el: { parentNode: null }, share: null, set(s) { r.share = s; return r; } }; rings.push(r); return r; } };
   const chip = (ref) => {
-    const c = { ref, cls: new Set(['cc-aop-status']), kids: [], textContent: ' Paritätsprüfung läuft. ' };
+    const c = { ref, cls: new Set(['tt-aop-status']), kids: [], textContent: ' Paritätsprüfung läuft. ' };
     c.classList = { add: (x) => c.cls.add(x), remove: (x) => c.cls.delete(x), contains: (x) => c.cls.has(x) };
     c.insertBefore = (n) => { n.parentNode = c; c.kids.unshift(n); };
     c.removeChild = (n) => { n.parentNode = null; c.kids.splice(c.kids.indexOf(n), 1); };
@@ -78,31 +78,31 @@ console.log('\nA running parity check turns its chip into a progress ring');
   };
   const array = chip('1'), check = chip('2');
   let running = true;
-  const home = { getAttribute: (k) => (k === 'data-cc-aop-pillhome' ? '2' : null) };
+  const home = { getAttribute: (k) => (k === 'data-tt-aop-pillhome' ? '2' : null) };
   const box = {
     querySelector(sel) {
       if (sel === 'table.array_status #pauseButton') return running ? { closest: () => ({ children: [home] }) } : null;
-      const m = /data-cc-aop-pillref="(\d)"/.exec(sel);
+      const m = /data-tt-aop-pillref="(\d)"/.exec(sel);
       return m ? [array, check].find((c) => c.ref === m[1]) : null;
     },
-    querySelectorAll() { return [array, check].filter((c) => c.cls.has('cc-aop-ringed')); }
+    querySelectorAll() { return [array, check].filter((c) => c.cls.has('tt-aop-ringed')); }
   };
-  const ring = new Function('window', grabFn(shares, 'ccAopParityRing') + '\nreturn ccAopParityRing;')({ CCPictures: pictures });
+  const ring = new Function('window', grabFn(shares, 'ttAopParityRing') + '\nreturn ttAopParityRing;')({ TTPictures: pictures });
   ring(box, 33.3);
-  ok('the chip of the row with the pause button gets the ring, the array chip none', check.cls.has('cc-aop-ringed') && check.kids[0] === rings[0].el && !array.cls.has('cc-aop-ringed'));
+  ok('the chip of the row with the pause button gets the ring, the array chip none', check.cls.has('tt-aop-ringed') && check.kids[0] === rings[0].el && !array.cls.has('tt-aop-ringed'));
   ok('the ring shows the share done and is named after the chip', Math.abs(rings[0].share - 0.333) < 1e-9 && rings[0].label === 'Paritätsprüfung läuft.');
   ring(box, 34.1);
   ok('each tick moves the same ring', rings.length === 1 && Math.abs(rings[0].share - 0.341) < 1e-9);
   ring(box, null);
-  ok('without a percentage the ring goes', !check.cls.has('cc-aop-ringed') && check.kids.length === 0);
+  ok('without a percentage the ring goes', !check.cls.has('tt-aop-ringed') && check.kids.length === 0);
   ring(box, 40);
   running = false;
   ring(box, 40);
-  ok('when the check ends its chip loses the ring', !check.cls.has('cc-aop-ringed') && check.kids.length === 0);
-  const card = grabFn(shares, 'ccAopParityCard');
-  ok('the parity card feeds it the percentage it parses, and clears it with the card', /ccAopParityRing\(box, pct\);/.test(card) && /if \(card\) card\.parentNode\.removeChild\(card\); ccAopParityRing\(box, null\); return;/.test(card));
-  ok('switching the area off takes the ring out before the chips unwrap', /ccAopParityRing\(dsp, null\);/.test(grabFn(shares, 'aopTeardown')));
-  ok('the chip grows around the ring in the tiles as in the list', /\.cc-b\.cc-aop-status\.cc-aop-ringed \{ height: auto;/.test(dcss) && /\.cc-b\.cc-aop-status\.cc-aop-ringed \{ height: auto;/.test(read('sheets/TowerTorch.Shares.css')));
+  ok('when the check ends its chip loses the ring', !check.cls.has('tt-aop-ringed') && check.kids.length === 0);
+  const card = grabFn(shares, 'ttAopParityCard');
+  ok('the parity card feeds it the percentage it parses, and clears it with the card', /ttAopParityRing\(box, pct\);/.test(card) && /if \(card\) card\.parentNode\.removeChild\(card\); ttAopParityRing\(box, null\); return;/.test(card));
+  ok('switching the area off takes the ring out before the chips unwrap', /ttAopParityRing\(dsp, null\);/.test(grabFn(shares, 'aopTeardown')));
+  ok('the chip grows around the ring in the tiles as in the list', /\.tt-b\.tt-aop-status\.tt-aop-ringed \{ height: auto;/.test(dcss) && /\.tt-b\.tt-aop-status\.tt-aop-ringed \{ height: auto;/.test(read('sheets/TowerTorch.Shares.css')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

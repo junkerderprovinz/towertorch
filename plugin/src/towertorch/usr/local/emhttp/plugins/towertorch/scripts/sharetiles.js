@@ -7,7 +7,7 @@
 // the control the row itself carries.
 (function () {
   "use strict";
-  var KEY = "cc.shareview";
+  var KEY = "tt.shareview";
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function s(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
@@ -25,7 +25,7 @@
   function pn() { try { return location.pathname.replace(/\/+$/, ""); } catch (e) { return ""; } }
   // The same gate as the Freigaben styling in shares.js, which needs Unraid's tabbed mode.
   function live() {
-    return g("cc.theming", "1") !== "0" && g("cc.enable.shares", "0") !== "0" && pn() === "/Shares" && !!document.querySelector("#displaybox nav.tabs");
+    return g("tt.theming", "1") !== "0" && g("tt.enable.shares", "0") !== "0" && pn() === "/Shares" && !!document.querySelector("#displaybox nav.tabs");
   }
   // One key for both tables, written by the switch and by the settings page.
   function view() { return g(KEY, "tiles") === "list" ? "list" : "tiles"; }
@@ -62,7 +62,7 @@
   }
 
   // The cells Unraid wrote, without the Browse column shares.js inserts.
-  function cells(tr) { return kids(tr).filter(function (c) { return tag(c) === "TD" && !hasCls(c, "cc-browse-col"); }); }
+  function cells(tr) { return kids(tr).filter(function (c) { return tag(c) === "TD" && !hasCls(c, "tt-browse-col"); }); }
   function computeLink(td) { return find(td, function (n) { return tag(n) === "A" && /compute(Share|Disk)\(/.test(attr(n, "onclick")); }); }
   // While Compute runs, Unraid writes a spinner and "Please wait" into the cell it was started from.
   function waiting(td) {
@@ -139,39 +139,39 @@
     return (total - free) / total * 100;
   }
 
-  function glyph(n) { return window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph(n) : ""; }
-  function labelled(b, name, text) { if (window.CCTheme && window.CCTheme.labelled) window.CCTheme.labelled(b, name, text); else b.textContent = text; return b; }
+  function glyph(n) { return window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph(n) : ""; }
+  function labelled(b, name, text) { if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(b, name, text); else b.textContent = text; return b; }
   function accent() {
-    var a = g("cc.styleshares", "1") !== "0" ? g("cc.accent", "#FCC419") : g("ccsh.accent", "#FCC419");
+    var a = g("tt.styleshares", "1") !== "0" ? g("tt.accent", "#FCC419") : g("ttsh.accent", "#FCC419");
     return /^#[0-9a-f]{6}$/i.test(a) ? a : "#FCC419";
   }
   // One rainbow colour per card, in the order the list rows take them.
   function colourAt(n) {
-    if (g("cc.rainbow", "0") !== "1" || !window.CCTheme || !window.CCTheme.rbColor) return "";
-    return window.CCTheme.rbColor(n, accent());
+    if (g("tt.rainbow", "0") !== "1" || !window.TTTheme || !window.TTTheme.rbColor) return "";
+    return window.TTTheme.rbColor(n, accent());
   }
-  function ink(c) { return c && window.CCTheme && window.CCTheme.idealText ? window.CCTheme.idealText(c) : "#161616"; }
-  function lvl(p) { return p >= 90 ? "cc-sht-err" : p >= 70 ? "cc-sht-warn" : "cc-sht-ok"; }
+  function ink(c) { return c && window.TTTheme && window.TTTheme.idealText ? window.TTTheme.idealText(c) : "#161616"; }
+  function lvl(p) { return p >= 90 ? "tt-sht-err" : p >= 70 ? "tt-sht-warn" : "tt-sht-ok"; }
 
-  function act(kind, label, icon) { return '<span class="cc-sht-ib" role="button" tabindex="0" data-act="' + kind + '" data-tip="' + esc(label) + '" aria-label="' + esc(label) + '">' + glyph(icon) + "</span>"; }
+  function act(kind, label, icon) { return '<span class="tt-sht-ib" role="button" tabindex="0" data-act="' + kind + '" data-tip="' + esc(label) + '" aria-label="' + esc(label) + '">' + glyph(icon) + "</span>"; }
   function exportChip(proto, v) {
     var off = !v || v === "-";
-    return '<span class="cc-sht-chip' + (off ? " cc-sht-off" : "") + '">' + proto + " <b>" + esc(off ? t("off") : v) + "</b></span>";
+    return '<span class="tt-sht-chip' + (off ? " tt-sht-off" : "") + '">' + proto + " <b>" + esc(off ? t("off") : v) + "</b></span>";
   }
   // Unraid's protection orb becomes a shield badge before the name, with the orb's own words as its bubble.
   function shield(sh) {
     if (!sh.prot) return "";
     var tip = sh.protTip || t({ ok: "protected", warn: "partly", idle: "unknown" }[sh.prot]);
-    return '<span class="cc-shield cc-shield-' + sh.prot + '" role="img" tabindex="0" data-tip="' + esc(tip) + '" aria-label="' + esc(tip) + '">' +
+    return '<span class="tt-shield tt-shield-' + sh.prot + '" role="img" tabindex="0" data-tip="' + esc(tip) + '" aria-label="' + esc(tip) + '">' +
       glyph({ ok: "ShieldOn", warn: "ShieldAlert", idle: "Shield" }[sh.prot]) + "</span>";
   }
-  function cornerBtn(kind, label) { return '<span class="cc-sht-cb" role="button" tabindex="0" data-act="' + kind + '">' + esc(label) + "</span>"; }
+  function cornerBtn(kind, label) { return '<span class="tt-sht-cb" role="button" tabindex="0" data-act="' + kind + '">' + esc(label) + "</span>"; }
   // The folder in the hand of the picture kit: filled shapes whose corners follow the shape
   // setting through the sheet's rx. The back with its tab, a sheet of paper, the front, which
   // covers the paper until hovering the card lowers it.
-  var FOLDER = '<svg class="cc-sht-folder" viewBox="3 2 58 58" aria-hidden="true">' +
-    '<rect class="cc-sht-fback" x="6" y="10" width="24" height="10"/><rect class="cc-sht-fback" x="6" y="14" width="52" height="38"/>' +
-    '<rect class="cc-sht-fsheet" x="11" y="18" width="42" height="24"/><rect class="cc-sht-ffront" x="6" y="14" width="52" height="38"/></svg>';
+  var FOLDER = '<svg class="tt-sht-folder" viewBox="3 2 58 58" aria-hidden="true">' +
+    '<rect class="tt-sht-fback" x="6" y="10" width="24" height="10"/><rect class="tt-sht-fback" x="6" y="14" width="52" height="38"/>' +
+    '<rect class="tt-sht-fsheet" x="11" y="18" width="42" height="24"/><rect class="tt-sht-ffront" x="6" y="14" width="52" height="38"/></svg>';
   // Laid out like a plugin card. The head holds the folder in the logo tile of the Docker and Plugins
   // cards, the shield, the name with its size and the comment beside it, all on its top edge, and
   // the actions in the top corner; below come the bar and the per-disk split, and
@@ -184,38 +184,38 @@
       : sh.size ? "<span><b>" + esc(sh.size) + "</b> " + esc(t("used")) + "</span>" : "";
     var free = sh.free ? "<span><b>" + esc(sh.free) + "</b> " + esc(t("free")) + "</span>" : "";
     var corner = sh.compute ? cornerBtn("compute", t("compute"))
-      : sh.busy ? '<span class="cc-sht-busy">' + esc(sh.busy) + "</span>"
+      : sh.busy ? '<span class="tt-sht-busy">' + esc(sh.busy) + "</span>"
       : sh.parts.length ? cornerBtn("again", t("recompute")) : "";
     var parts = sh.parts.map(function (p) {
-      return '<span class="cc-sht-part' + (p.outside ? " cc-sht-warn" : "") + '"' + (p.outside ? ' data-tip="' + esc(t("outside")) + '"' : "") + ">" + esc(p.name) + " <b>" + esc(p.size) + "</b></span>";
+      return '<span class="tt-sht-part' + (p.outside ? " tt-sht-warn" : "") + '"' + (p.outside ? ' data-tip="' + esc(t("outside")) + '"' : "") + ">" + esc(p.name) + " <b>" + esc(p.size) + "</b></span>";
     }).join("");
-    return '<div class="cc-sht-head"><span class="cc-sht-pic">' + FOLDER + '</span><div class="cc-sht-id"><span class="cc-sht-title">' + shield(sh) + '<span class="cc-sht-nb">' + esc(sh.name) + "</span>" +
-      (used || free ? '<span class="cc-sht-size">' + used + free + "</span>" : "") + "</span>" +
-      (sh.comment ? '<span class="cc-sht-cmt">' + esc(sh.comment) + "</span>" : "") + '</div><span class="cc-sht-acts">' + acts + "</span></div>" +
-      (pct != null ? '<div class="cc-sht-track"><div class="cc-sht-fill ' + lvl(pct) + '" style="width:' + Math.max(pct, 1.5).toFixed(1) + '%"></div></div>' : "") +
-      (parts ? '<div class="cc-sht-parts">' + parts + "</div>" : "") +
-      '<div class="cc-sht-foot"><span class="cc-sht-chips">' +
-      (sh.store ? '<span class="cc-sht-chip cc-sht-store"' + (sh.store.tip ? ' data-tip="' + esc(sh.store.tip) + '"' : "") + ">" + sh.store.html + "</span>" : "") +
+    return '<div class="tt-sht-head"><span class="tt-sht-pic">' + FOLDER + '</span><div class="tt-sht-id"><span class="tt-sht-title">' + shield(sh) + '<span class="tt-sht-nb">' + esc(sh.name) + "</span>" +
+      (used || free ? '<span class="tt-sht-size">' + used + free + "</span>" : "") + "</span>" +
+      (sh.comment ? '<span class="tt-sht-cmt">' + esc(sh.comment) + "</span>" : "") + '</div><span class="tt-sht-acts">' + acts + "</span></div>" +
+      (pct != null ? '<div class="tt-sht-track"><div class="tt-sht-fill ' + lvl(pct) + '" style="width:' + Math.max(pct, 1.5).toFixed(1) + '%"></div></div>' : "") +
+      (parts ? '<div class="tt-sht-parts">' + parts + "</div>" : "") +
+      '<div class="tt-sht-foot"><span class="tt-sht-chips">' +
+      (sh.store ? '<span class="tt-sht-chip tt-sht-store"' + (sh.store.tip ? ' data-tip="' + esc(sh.store.tip) + '"' : "") + ">" + sh.store.html + "</span>" : "") +
       exportChip("SMB", sh.smb) + exportChip("NFS", sh.nfs) + "</span>" + corner + "</div>";
   }
   function el(tagName, cls) { var n = document.createElement(tagName); if (cls) n.className = cls; return n; }
-  function setHtml(n, v) { if (n && n.__ccHtml !== v) { n.innerHTML = v; n.__ccHtml = v; } }
+  function setHtml(n, v) { if (n && n.__ttHtml !== v) { n.innerHTML = v; n.__ttHtml = v; } }
   function fillGrid(grid, list, disk) {
     var old = {};
     kids(grid).forEach(function (c) { old[attr(c, "data-key")] = c; });
     list.forEach(function (sh, i) {
       var c = old[sh.name];
       if (!c) {
-        c = el("div", "cc-sht-card");
+        c = el("div", "tt-sht-card");
         c.setAttribute("data-key", sh.name); c.setAttribute("tabindex", "0"); c.setAttribute("role", "link");
       }
       delete old[sh.name];
       if (grid.children[i] !== c) grid.insertBefore(c, grid.children[i] || null);
-      c.__ccShare = sh;
+      c.__ttShare = sh;
       if (c.getAttribute("aria-label") !== sh.name) c.setAttribute("aria-label", sh.name);
       var col = colourAt(i);
-      if (col) { c.style.setProperty("--cc-sht-c", col); c.style.setProperty("--cc-sht-ct", ink(col)); }
-      else { c.style.removeProperty("--cc-sht-c"); c.style.removeProperty("--cc-sht-ct"); }
+      if (col) { c.style.setProperty("--tt-sht-c", col); c.style.setProperty("--tt-sht-ct", ink(col)); }
+      else { c.style.removeProperty("--tt-sht-c"); c.style.removeProperty("--tt-sht-ct"); }
       setHtml(c, cardHtml(sh, disk));
     });
     Object.keys(old).forEach(function (k) { if (old[k].parentNode === grid) grid.removeChild(old[k]); });
@@ -228,49 +228,49 @@
       return tb && box ? { tb: tb, box: box, disk: p[1] } : null;
     }).filter(Boolean);
   }
-  // cc.sgsize to [--cc-logo-img, --cc-logo-box], the copy docker.js, vms.js and plugins.js keep as
+  // tt.sgsize to [--tt-logo-img, --tt-logo-box], the copy docker.js, vms.js and plugins.js keep as
   // well, so the folder tile is as large as their logo tiles.
-  function logoSizes() { return ({ s: ["48px", "62px"], m: ["62px", "78px"], l: ["76px", "94px"] })[g("cc.sgsize", "m")] || ["62px", "78px"]; }
+  function logoSizes() { return ({ s: ["48px", "62px"], m: ["62px", "78px"], l: ["76px", "94px"] })[g("tt.sgsize", "m")] || ["62px", "78px"]; }
   function hostFor(L) {
     var h = L.box.nextElementSibling;
-    if (!h || !hasCls(h, "cc-sht-host")) {
-      h = el("div", "cc-sht-host");
+    if (!h || !hasCls(h, "tt-sht-host")) {
+      h = el("div", "tt-sht-host");
       L.box.parentNode.insertBefore(h, L.box.nextSibling);
       h.addEventListener("click", onClick);
       h.addEventListener("keydown", onKey);
     }
     var ls = logoSizes();
-    if (h.style.getPropertyValue("--cc-logo-box") !== ls[1]) { h.style.setProperty("--cc-logo-img", ls[0]); h.style.setProperty("--cc-logo-box", ls[1]); }
+    if (h.style.getPropertyValue("--tt-logo-box") !== ls[1]) { h.style.setProperty("--tt-logo-img", ls[0]); h.style.setProperty("--tt-logo-box", ls[1]); }
     return h;
   }
   function drop(L) {
     var h = L.box.nextElementSibling;
-    if (h && hasCls(h, "cc-sht-host")) h.parentNode.removeChild(h);
-    L.box.classList.remove("cc-sht-hidden");
+    if (h && hasCls(h, "tt-sht-host")) h.parentNode.removeChild(h);
+    L.box.classList.remove("tt-sht-hidden");
   }
   // The switch sits at the right end of the tab bar, as on /Main, ahead of the column reset.
   function pageSwitch() {
     var nav = document.querySelector("#displaybox nav.tabs");
-    var sw = nav.querySelector(":scope > .cc-sht-vsw");
+    var sw = nav.querySelector(":scope > .tt-sht-vsw");
     if (sw) return sw;
-    sw = el("div", "cc-sht-vsw");
-    var seg = el("span", "cc-sht-seg");
+    sw = el("div", "tt-sht-vsw");
+    var seg = el("span", "tt-sht-seg");
     seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("view"));
     [["list", "ViewList"], ["tiles", "ViewGrid"]].forEach(function (o) {
       // A span, since shares.js paints every button on /Shares in the rainbow.
-      var b = el("span", "cc-seg-btn");
+      var b = el("span", "tt-seg-btn");
       labelled(b, o[1], t(o[0]));
       b.setAttribute("data-v", o[0]);
-      if (window.CCTheme && window.CCTheme.pressable) window.CCTheme.pressable(b); else { b.setAttribute("role", "button"); b.setAttribute("tabindex", "0"); }
+      if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(b); else { b.setAttribute("role", "button"); b.setAttribute("tabindex", "0"); }
       b.addEventListener("click", function () { s(KEY, o[0]); render(); });
       seg.appendChild(b);
     });
     sw.appendChild(seg);
-    nav.insertBefore(sw, nav.querySelector(":scope > .cc-colreset"));
+    nav.insertBefore(sw, nav.querySelector(":scope > .tt-colreset"));
     return sw;
   }
 
-  function cardOf(e) { return e.target && e.target.closest ? e.target.closest(".cc-sht-card") : null; }
+  function cardOf(e) { return e.target && e.target.closest ? e.target.closest(".tt-sht-card") : null; }
   // Clicks the row's own control, whose inline handler does the work. Compute and Recompute are
   // links to "#", so the jump to the top of the page is held back.
   function press(a) {
@@ -280,7 +280,7 @@
     a.click();
   }
   function run(kind, c) {
-    var sh = c.__ccShare; if (!sh) return;
+    var sh = c.__ttShare; if (!sh) return;
     if (kind === "browse" && sh.browse) location.href = attr(sh.browse, "href");
     else if (kind === "compute") press(sh.compute);
     else if (kind === "again" && sh.parts.length) press(sh.parts[0].again);
@@ -302,34 +302,34 @@
   }
 
   function teardown() {
-    document.documentElement.classList.remove("cc-sht-on", "cc-sht-tiled");
-    Array.prototype.forEach.call(document.querySelectorAll("#displaybox .cc-sht-host, #displaybox .cc-sht-vsw"), function (n) { n.parentNode.removeChild(n); });
-    Array.prototype.forEach.call(document.querySelectorAll("#displaybox .cc-sht-hidden"), function (n) { n.classList.remove("cc-sht-hidden"); });
+    document.documentElement.classList.remove("tt-sht-on", "tt-sht-tiled");
+    Array.prototype.forEach.call(document.querySelectorAll("#displaybox .tt-sht-host, #displaybox .tt-sht-vsw"), function (n) { n.parentNode.removeChild(n); });
+    Array.prototype.forEach.call(document.querySelectorAll("#displaybox .tt-sht-hidden"), function (n) { n.classList.remove("tt-sht-hidden"); });
   }
   function render() {
     if (!live()) { teardown(); return; }
     var root = document.documentElement, tiles = view() === "tiles";
-    root.classList.add("cc-sht-on");
-    root.classList.toggle("cc-sht-tiled", tiles);
-    Array.prototype.forEach.call(pageSwitch().querySelectorAll(".cc-seg-btn"), function (b) {
+    root.classList.add("tt-sht-on");
+    root.classList.toggle("tt-sht-tiled", tiles);
+    Array.prototype.forEach.call(pageSwitch().querySelectorAll(".tt-seg-btn"), function (b) {
       var on = attr(b, "data-v") === (tiles ? "tiles" : "list");
-      b.setAttribute("aria-pressed", on ? "true" : "false"); b.classList.toggle("cc-seg-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false"); b.classList.toggle("tt-seg-on", on);
     });
     lists().forEach(function (L) {
       if (!tiles) { drop(L); return; }
       var data = readList(L.tb);
-      L.box.classList.add("cc-sht-hidden");
+      L.box.classList.add("tt-sht-hidden");
       var host = hostFor(L);
-      var empty = host.querySelector(":scope > .cc-sht-empty");
+      var empty = host.querySelector(":scope > .tt-sht-empty");
       if (!data.shares.length && !data.notice) return;   // Unraid has not listed them yet
       if (!data.shares.length) {
-        var grid0 = host.querySelector(":scope > .cc-sht-grid"); if (grid0) host.removeChild(grid0);
-        if (!empty) empty = host.appendChild(el("div", "cc-sht-empty"));
+        var grid0 = host.querySelector(":scope > .tt-sht-grid"); if (grid0) host.removeChild(grid0);
+        if (!empty) empty = host.appendChild(el("div", "tt-sht-empty"));
         setHtml(empty, "<b>" + esc(data.notice) + "</b>");
         return;
       }
       if (empty) host.removeChild(empty);
-      var grid = host.querySelector(":scope > .cc-sht-grid") || host.appendChild(el("div", "cc-sht-grid"));
+      var grid = host.querySelector(":scope > .tt-sht-grid") || host.appendChild(el("div", "tt-sht-grid"));
       fillGrid(grid, data.shares, L.disk);
     });
   }
@@ -343,17 +343,17 @@
     new MutationObserver(function (recs) {
       for (var i = 0; i < recs.length; i++) {
         var tg = recs[i].target;
-        if (!tg || !tg.closest || tg.closest(".cc-sht-host, .cc-sht-vsw")) continue;
+        if (!tg || !tg.closest || tg.closest(".tt-sht-host, .tt-sht-vsw")) continue;
         if (tg.closest("table.share_status")) { soon(); return; }
       }
     }).observe(host, { childList: true, subtree: true });
   }
   function boot() {
-    window.ccShareTilesApply = render;
+    window.ttShareTilesApply = render;
     if (pn() !== "/Shares") return;
     render();
     watch();
-    window.addEventListener("storage", function (e) { if (e && e.key && /^cc[a-z]*\./.test(e.key) && e.key !== "cc.stateCache") soon(); });
+    window.addEventListener("storage", function (e) { if (e && e.key && /^tt[a-z]*\./.test(e.key) && e.key !== "tt.stateCache") soon(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

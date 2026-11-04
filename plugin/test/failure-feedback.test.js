@@ -1,6 +1,6 @@
 // A failed action reports through two channels at once (GlimStone, "Failure feedback"): the
-// message in a toast and a 360ms shake on the control that was used. CCTheme.shake() and
-// CCTheme.fail() in cc-theme.js are the mechanism; this pins it and the failure paths
+// message in a toast and a 360ms shake on the control that was used. TTTheme.shake() and
+// TTTheme.fail() in tt-theme.js are the mechanism; this pins it and the failure paths
 // that use it: limits, bandwidth, plan and editor saves, the settings saves, VM limits.
 const fs = require('fs');
 const path = require('path');
@@ -17,7 +17,7 @@ function grabFn(src, name) {
   throw new Error('unbalanced function: ' + name);
 }
 
-const theme = read('scripts/cc-theme.js');
+const theme = read('scripts/tt-theme.js');
 class El {
   constructor() { this.cls = new Set(); this.listeners = {}; this.log = []; this.reflows = 0; }
   get classList() { const s = this; return { add: (c) => { s.cls.add(c); s.log.push('+' + c); }, remove: (c) => { if (s.cls.has(c)) s.log.push('-' + c); s.cls.delete(c); }, contains: (c) => s.cls.has(c) }; }
@@ -36,18 +36,18 @@ console.log('\nThe shake');
 {
   const el = new El();
   api.shake(el);
-  ok('it puts .cc-shake on the control', el.cls.has('cc-shake'));
-  el.fire('animationend', { animationName: 'cc-load-cw' });
-  ok("a child's animation ending does not end the shake", el.cls.has('cc-shake'));
-  el.fire('animationend', { animationName: 'cc-shake' });
-  ok('its own animationend takes the class off', !el.cls.has('cc-shake'));
+  ok('it puts .tt-shake on the control', el.cls.has('tt-shake'));
+  el.fire('animationend', { animationName: 'tt-load-cw' });
+  ok("a child's animation ending does not end the shake", el.cls.has('tt-shake'));
+  el.fire('animationend', { animationName: 'tt-shake' });
+  ok('its own animationend takes the class off', !el.cls.has('tt-shake'));
   el.log = [];
   api.shake(el); api.shake(el);
-  ok('a second refusal in a row takes the class off and forces a layout before adding it again', el.log.join(' ') === 'reflow +cc-shake -cc-shake reflow +cc-shake', el.log.join(' '));
+  ok('a second refusal in a row takes the class off and forces a layout before adding it again', el.log.join(' ') === 'reflow +tt-shake -tt-shake reflow +tt-shake', el.log.join(' '));
   const el2 = new El(); timers = [];
   api.shake(el2);
   timers[timers.length - 1].fn();
-  ok('the timeout clears it where no animationend arrives', !el2.cls.has('cc-shake'));
+  ok('the timeout clears it where no animationend arrives', !el2.cls.has('tt-shake'));
   ok('the shake without a control is a no-op', (() => { try { api.shake(null); return true; } catch (e) { return false; } })());
 }
 
@@ -55,7 +55,7 @@ console.log('\nfail() is shake plus an error toast');
 {
   const el = new El(); toasts.length = 0;
   api.fail(el, 'Not saved');
-  ok('the control shakes', el.cls.has('cc-shake'));
+  ok('the control shakes', el.cls.has('tt-shake'));
   ok('the message goes into an error toast', toasts.length === 1 && toasts[0][0] === 'Not saved' && toasts[0][1] === 'error');
   api.fail(null, 'Engine unreachable');
   ok('with no control the toast still comes', toasts.length === 2);
@@ -64,10 +64,10 @@ console.log('\nfail() is shake plus an error toast');
 console.log('\nThe sheet: 360ms, through translate, a pulse when still');
 {
   const css = read('sheets/TowerTorch.Header.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  const kf = (/@keyframes cc-shake \{([\s\S]*?)\n\}/.exec(css) || [])[1] || '';
+  const kf = (/@keyframes tt-shake \{([\s\S]*?)\n\}/.exec(css) || [])[1] || '';
   ok('the keyframe moves through translate, not transform', /translate:/.test(kf) && !/transform/.test(kf));
   ok('it ends where it started', /0%, 100% \{ translate: none; \}/.test(kf));
-  ok('the moving shake reads the level duration, 360ms by default', /cc-shake var\(--cc-motion-shake-dur, 360ms\) ease-in-out/.test(css));
+  ok('the moving shake reads the level duration, 360ms by default', /tt-shake var\(--tt-motion-shake-dur, 360ms\) ease-in-out/.test(css));
 }
 
 console.log('\ndocker.js: flash() shakes the control it is given');
@@ -75,7 +75,7 @@ console.log('\ndocker.js: flash() shakes the control it is given');
   const docker = read('scripts/docker.js');
   const shaken = [];
   const flash = new Function('window', 'menuStatusEl', 'flashToast',
-    grabFn(docker, 'flash') + '\nreturn flash;')({ CCTheme: { shake: (el) => shaken.push(el), toast: () => ({ update: () => false }) } }, null, null);
+    grabFn(docker, 'flash') + '\nreturn flash;')({ TTTheme: { shake: (el) => shaken.push(el), toast: () => ({ update: () => false }) } }, null, null);
   flash('Error: x', true, 'BTN');
   ok('a failure with a control shakes it', shaken.length === 1 && shaken[0] === 'BTN');
   flash('saved', false, 'BTN');
@@ -103,18 +103,18 @@ console.log('\ndocker.js: flash() shakes the control it is given');
 console.log('\nsettings.js and vms.js');
 {
   const settings = read('scripts/settings.js');
-  ok('settings.js routes through CCTheme.fail', /function failed\(ctl, msg\) \{ if \(window\.CCTheme\) window\.CCTheme\.fail\(ctl, msg\); \}/.test(settings));
+  ok('settings.js routes through TTTheme.fail', /function failed\(ctl, msg\) \{ if \(window\.TTTheme\) window\.TTTheme\.fail\(ctl, msg\); \}/.test(settings));
   for (const fn of ['saveNotify', 'saveShape']) {
     const src = grabFn(settings, fn);
     ok(fn + ' shakes its control and toasts on failure', /\.catch\(function \(e?\) \{[^}]*failed\(ctl, /.test(src));
     ok(fn + ' leaves no failure sentence on the page', !/textContent/.test(src));
   }
   ok('export, import and reset fail on their own buttons', /failed\(ex, /.test(settings) && (settings.match(/failed\(im, /g) || []).length === 3 && /failed\(rs, /.test(settings));
-  ok('the inline notice under them is gone', !/cc-set-xnote/.test(settings));
+  ok('the inline notice under them is gone', !/tt-set-xnote/.test(settings));
   const vms = read('scripts/vms.js');
-  ok('vms.js routes through CCTheme.fail', /function ccvFail\(ctl, msg\) \{ if \(window\.CCTheme\) window\.CCTheme\.fail\(ctl, msg\); \}/.test(vms));
-  ok('a failed VM limit apply shakes Apply', /ccvFail\(apply, String\(e\.message \|\| e\)\)/.test(vms));
-  ok('a failed or refused disk grow shakes Grow', (vms.match(/ccvFail\(btn, /g) || []).length === 2);
+  ok('vms.js routes through TTTheme.fail', /function ttvFail\(ctl, msg\) \{ if \(window\.TTTheme\) window\.TTTheme\.fail\(ctl, msg\); \}/.test(vms));
+  ok('a failed VM limit apply shakes Apply', /ttvFail\(apply, String\(e\.message \|\| e\)\)/.test(vms));
+  ok('a failed or refused disk grow shakes Grow', (vms.match(/ttvFail\(btn, /g) || []).length === 2);
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

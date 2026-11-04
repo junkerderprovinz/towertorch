@@ -36,16 +36,16 @@ console.log('\nThe overlays\' inline display reaches the sheet as a class');
 {
   const js = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
   const tokens = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8');
-  const fn = new Function(/function ccMirrorShut\(el\) \{[^\n]*\}/.exec(js)[0] + '\nreturn ccMirrorShut;')();
+  const fn = new Function(/function ttMirrorShut\(el\) \{[^\n]*\}/.exec(js)[0] + '\nreturn ttMirrorShut;')();
   const node = (display) => { const c = new Set(); return { style: { display }, classList: { toggle: (t, on) => (on ? c.add(t) : c.delete(t)), contains: (t) => c.has(t) } }; };
   const shut = node('none'); fn(shut);
   const shown = node('flex'); fn(shown);
   const bare = node(''); fn(bare);
-  ok('a node hidden by an inline display is shut', shut.classList.contains('cc-shut'));
-  ok('one shown inline, or with no inline display at all, is not', !shown.classList.contains('cc-shut') && !bare.classList.contains('cc-shut'));
+  ok('a node hidden by an inline display is shut', shut.classList.contains('tt-shut'));
+  ok('one shown inline, or with no inline display at all, is not', !shown.classList.contains('tt-shut') && !bare.classList.contains('tt-shut'));
   ok('the overlay and the SweetAlert shell are watched on their style attribute', /querySelectorAll\("div\.spinner\.fixed, \.sweet-alert"\)/.test(js) && /attributeFilter: \["style"\]/.test(js));
-  ok('the in-page spinner yields to the overlay while it is not shut', /body:has\(div\.spinner\.fixed:not\(\.cc-shut\)\) div\.spinner:not\(\.fixed\)/.test(tokens));
-  ok('the overlay yields to a SweetAlert that is not shut', /:has\(\.sweet-alert\.showSweetAlert:not\(\.cc-shut\),/.test(tokens));
+  ok('the in-page spinner yields to the overlay while it is not shut', /body:has\(div\.spinner\.fixed:not\(\.tt-shut\)\) div\.spinner:not\(\.fixed\)/.test(tokens));
+  ok('the overlay yields to a SweetAlert that is not shut', /:has\(\.sweet-alert\.showSweetAlert:not\(\.tt-shut\),/.test(tokens));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

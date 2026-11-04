@@ -16,7 +16,7 @@ const bars = rules.filter(([s]) => /\.usage-disk\s*$/.test(s.split(',').pop()));
 
 console.log('\nEvery load bar on the Dashboard is its own layout root');
 {
-  const root = rules.find(([s]) => s === 'html.cc-dash-on table.dashboard .usage-disk');
+  const root = rules.find(([s]) => s === 'html.tt-dash-on table.dashboard .usage-disk');
   const contain = root && (/contain:\s*([^;]+)/.exec(root[1]) || [])[1];
   ok('the bars are contained in size and layout', !!contain && /\bsize\b/.test(contain) && /\blayout\b/.test(contain), contain);
   ok('without paint containment, which would clip the label Unraid sets above the bar', !!contain && !/\b(paint|strict|content)\b/.test(contain), contain);
@@ -35,10 +35,10 @@ console.log('\nA contained bar takes no height from its content, so none is left
 console.log('\nTowerTorch\'s own live bars carry the meter class');
 {
   const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
-  ok('.cc-meter contains size and layout, without paint', /\.cc-meter \{ contain: size layout; \}/.test(read('sheets/TowerTorch.Tokens.css')));
-  ok('the Docker CPU and RAM gauges wear it', /el\("div", "cc-gauge cc-meter"\)/.test(read('scripts/docker.js')));
-  ok('so do the header\'s usage bars', /ubar\.className = "cc-isl-bar cc-meter"/.test(read('scripts/header.js')));
-  ok('both have a height of their own', /\.cc-gauge \{[^}]*height: 6px/.test(read('styles/docker.css')) && /\.cc-isl-bar \{\s*width: 46px; height: 8px/.test(read('sheets/TowerTorch.Header.css')));
+  ok('.tt-meter contains size and layout, without paint', /\.tt-meter \{ contain: size layout; \}/.test(read('sheets/TowerTorch.Tokens.css')));
+  ok('the Docker CPU and RAM gauges wear it', /el\("div", "tt-gauge tt-meter"\)/.test(read('scripts/docker.js')));
+  ok('so do the header\'s usage bars', /ubar\.className = "tt-isl-bar tt-meter"/.test(read('scripts/header.js')));
+  ok('both have a height of their own', /\.tt-gauge \{[^}]*height: 6px/.test(read('styles/docker.css')) && /\.tt-isl-bar \{\s*width: 46px; height: 8px/.test(read('sheets/TowerTorch.Header.css')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

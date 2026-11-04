@@ -17,7 +17,7 @@ const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Dashboard.css'), '
 const js = fs.readFileSync(path.join(DIR, 'scripts/dashboard.js'), 'utf8');
 const rules = [];
 for (const m of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) rules.push([m[1].replace(/^@media[^{]*\{/, '').trim(), m[2]]);
-const LIST = 'html.cc-dash-on table.dashboard :is(#docker_view, #vm_view)';
+const LIST = 'html.tt-dash-on table.dashboard :is(#docker_view, #vm_view)';
 const rule = (tail) => rules.find(([s]) => s === LIST + ' ' + tail);
 const decl = (r, p) => r && ((new RegExp('(?:^|;)\\s*' + p + ':\\s*([^;]+)').exec(r[1]) || [])[1] || '').trim();
 
@@ -28,8 +28,8 @@ console.log('\nThe items are tiles in a grid');
   const item = rule('span.outer');
   ok('an item is a tile without Unraid\'s float', decl(item, 'display') === 'flex' && decl(item, 'float') === 'none');
   ok('its display never outranks the inline one "Started only" sets', !/display:[^;]*!important/.test(item[1]));
-  ok('it rests on the chip and lightens under the pointer', /var\(--cc-chip\)/.test(decl(item, 'background')) && /var\(--cc-chip-hover\)/.test(decl(rule('span.outer:hover'), 'background')));
-  ok('the corner reads the control radius', decl(item, 'border-radius') === 'var(--cc-radius-control)');
+  ok('it rests on the chip and lightens under the pointer', /var\(--tt-chip\)/.test(decl(item, 'background')) && /var\(--tt-chip-hover\)/.test(decl(rule('span.outer:hover'), 'background')));
+  ok('the corner reads the control radius', decl(item, 'border-radius') === 'var(--tt-radius-control)');
 }
 
 console.log('\nRunning ones lead and stay quiet');
@@ -39,7 +39,7 @@ console.log('\nRunning ones lead and stay quiet');
   ok('a running item shows no state', decl(rule('span.outer.started .inner > :is(br, i.started, .state)'), 'display') === 'none');
   const dot = rule('span.outer .inner > i:is(.stopped, .paused)');
   ok('a stopped or paused item shows a round dot instead of Unraid\'s glyph', decl(dot, 'border-radius') === '50%' && decl(dot, 'font-size') === '0');
-  ok('paused takes the warning colour', /--cc-warn/.test(decl(rule('span.outer .inner > i.paused'), 'background')));
+  ok('paused takes the warning colour', /--tt-warn/.test(decl(rule('span.outer .inner > i.paused'), 'background')));
   ok('a stopped item\'s icon rests grey', /grayscale\(1\)/.test(decl(rule('span.outer.stopped > span.hand > *'), 'filter')));
 }
 
@@ -63,7 +63,7 @@ function run(store) {
     document: {
       readyState: 'complete',
       documentElement: { lang: 'de', classList: { toggle() {}, contains: () => false } },
-      querySelectorAll: (s) => (/cc-dash-noicon-g/.test(s) ? glyphs : []), querySelector: () => null, getElementById: () => null,
+      querySelectorAll: (s) => (/tt-dash-noicon-g/.test(s) ? glyphs : []), querySelector: () => null, getElementById: () => null,
       addEventListener: (t, f, cap) => listeners.push({ t, f, cap }),
     },
   };
@@ -84,12 +84,12 @@ function picture(src, inDash) {
 
 console.log('\nA container without an icon asks once');
 {
-  const r = run({ 'cc.enable.header': '1' });
+  const r = run({ 'tt.enable.header': '1' });
   ok('the failure is caught on the way down, before the picture\'s own onerror', r.listeners.some((l) => l.t === 'error' && l.cap === true));
   const q = picture('https://tower/plugins/dynamix.docker.manager/images/question.png?1712345678', true);
   r.fire({ target: q });
   ok('the failed fallback loses its onerror, so it is not set again', q.onerror === null && !q.hasAttribute('onerror'));
-  ok('the tile shows the Docker glyph in its place', q.cls.has('cc-dash-noicon') && /cc-dash-noicon-g/.test(q.parentNode.html) && /fill="currentColor"/.test(q.parentNode.html));
+  ok('the tile shows the Docker glyph in its place', q.cls.has('tt-dash-noicon') && /tt-dash-noicon-g/.test(q.parentNode.html) && /fill="currentColor"/.test(q.parentNode.html));
   r.fire({ target: q });
   ok('a second failure adds no second glyph', (q.parentNode.html.match(/<svg/g) || []).length === 1);
   const own = picture('https://tower/state/plugins/dynamix.docker.manager/images/Claper-icon.png?1712345678', true);
@@ -98,7 +98,7 @@ console.log('\nA container without an icon asks once');
   const away = picture('https://tower/plugins/dynamix.docker.manager/images/question.png', false);
   r.fire({ target: away });
   ok('a picture outside the Dashboard cards is left alone', typeof away.onerror === 'function');
-  const off = run({ 'cc.enable.header': '0' });
+  const off = run({ 'tt.enable.header': '0' });
   const native = picture('https://tower/plugins/dynamix.docker.manager/images/question.png', true);
   off.fire({ target: native });
   ok('with the area off the Dashboard stays Unraid\'s own', typeof native.onerror === 'function');

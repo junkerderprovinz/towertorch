@@ -50,13 +50,13 @@
 
   function badge(native) {
     var b = native.previousElementSibling;
-    if (b && b.classList.contains("cc-sortreset")) return b;
+    if (b && b.classList.contains("tt-sortreset")) return b;
     var tip = T("Sortierung zurücksetzen", "Reset sorting");
     b = document.createElement("span");
-    b.className = "cc-sortreset";
+    b.className = "tt-sortreset";
     b.setAttribute("role", "button"); b.setAttribute("tabindex", "0");
     b.setAttribute("data-tip", tip); b.setAttribute("aria-label", tip);
-    b.innerHTML = window.CCTheme && window.CCTheme.glyph ? window.CCTheme.glyph("Refresh") : "";
+    b.innerHTML = window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph("Refresh") : "";
     // The head cell may sort its column on a click, so the press stays with the badge.
     b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); reset(); });
     b.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); reset(); } });
@@ -71,13 +71,13 @@
   function update() {
     var native = document.getElementById("resetsort"), tb = body();
     if (!tb) return;
-    if (g("cc.theming", "1") === "0") {
+    if (g("tt.theming", "1") === "0") {
       var old = native.previousElementSibling;
-      if (old && old.classList.contains("cc-sortreset")) old.parentNode.removeChild(old);
-      native.classList.remove("cc-sortreset-native");
+      if (old && old.classList.contains("tt-sortreset")) old.parentNode.removeChild(old);
+      native.classList.remove("tt-sortreset-native");
       return;
     }
-    native.classList.add("cc-sortreset-native");
+    native.classList.add("tt-sortreset-native");
     badge(native).hidden = !arranged(names(tb));
   }
 
@@ -89,7 +89,7 @@
     update();
     // Unraid refills the body on every listing and moves rows while they are dragged.
     new MutationObserver(soon).observe(tb, { childList: true });
-    window.addEventListener("storage", function (e) { if (e.key === "cc.theming") soon(); });
+    window.addEventListener("storage", function (e) { if (e.key === "tt.theming") soon(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

@@ -3,7 +3,7 @@
 // Shares, Docker, Plugins and VMs read alike. What can quietly break it:
 //   · one table keeping its own shade, weight or tracking
 //   · Unraid's tablesorter fill or its rule line under the head row coming back through a rule
-//     that outweighs CC's
+//     that outweighs TowerTorch's
 //   · a head that the light themes leave too faint to read on white
 //   · Unraid's 2.8rem line on a head td making the Main and Shares heads taller than the rest
 const { candidates, tokens, resolve, cmp, PAGES } = require('./cascade');
@@ -29,13 +29,13 @@ const winner = (pg, el, props) => {
 };
 
 const HEADS = [
-  ['Docker', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.cc-enh', '.tablesorter'], html: ['cc-docker-on', 'cc-header-on', 'cc-popups-on'] }, ['.cc-enh', '.tablesorter']],
-  ['Plugins', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.cc-plug', '#plugin_table', '.tablesorter'], html: ['cc-on-plugins', 'cc-header-on', 'cc-popups-on'] }, ['.cc-plug', '#plugin_table', '.tablesorter']],
-  ['Plugins, the other tables', 'docker', { tag: 'th', classes: [], inside: ['.cc-plug-lite', '.tablesorter'], html: ['cc-on-plugins', 'cc-header-on', 'cc-popups-on'] }, ['.cc-plug-lite', '.tablesorter']],
-  ['VMs', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['#displaybox', '#kvm_table', '.tablesorter'], html: ['cc-vms-on', 'cc-header-on', 'cc-popups-on'] }, ['#displaybox', '#kvm_table', '.tablesorter']],
-  ['Shares', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.share_status', '.unraid'], html: ['cc-shares-on', 'cc-on-shares', 'cc-header-on', 'cc-popups-on'] }, ['#displaybox', '.share_status', '.unraid']],
-  ['Main', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.disk_status', '.unraid'], outside: ['.tr_last', '.cc-tr-void', '.array_status'], html: ['cc-shares-on', 'cc-on-main', 'cc-header-on', 'cc-popups-on'] }, ['#displaybox', '.disk_status', '.unraid']],
-  ['any other sortable table', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tablesorter'], html: ['cc-header-on', 'cc-popups-on'] }, ['.tablesorter']],
+  ['Docker', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tt-enh', '.tablesorter'], html: ['tt-docker-on', 'tt-header-on', 'tt-popups-on'] }, ['.tt-enh', '.tablesorter']],
+  ['Plugins', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tt-plug', '#plugin_table', '.tablesorter'], html: ['tt-on-plugins', 'tt-header-on', 'tt-popups-on'] }, ['.tt-plug', '#plugin_table', '.tablesorter']],
+  ['Plugins, the other tables', 'docker', { tag: 'th', classes: [], inside: ['.tt-plug-lite', '.tablesorter'], html: ['tt-on-plugins', 'tt-header-on', 'tt-popups-on'] }, ['.tt-plug-lite', '.tablesorter']],
+  ['VMs', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['#displaybox', '#kvm_table', '.tablesorter'], html: ['tt-vms-on', 'tt-header-on', 'tt-popups-on'] }, ['#displaybox', '#kvm_table', '.tablesorter']],
+  ['Shares', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.share_status', '.unraid'], html: ['tt-shares-on', 'tt-on-shares', 'tt-header-on', 'tt-popups-on'] }, ['#displaybox', '.share_status', '.unraid']],
+  ['Main', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.disk_status', '.unraid'], outside: ['.tr_last', '.tt-tr-void', '.array_status'], html: ['tt-shares-on', 'tt-on-main', 'tt-header-on', 'tt-popups-on'] }, ['#displaybox', '.disk_status', '.unraid']],
+  ['any other sortable table', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tablesorter'], html: ['tt-header-on', 'tt-popups-on'] }, ['.tablesorter']],
 ];
 
 const hex = (c) => { const m = /^#([0-9a-f]{6})$/i.exec(c); return m ? [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255) : null; };
@@ -49,7 +49,7 @@ for (const [name, pg, el, ctx] of HEADS) {
   const bg = winner(sheets, el, ['background', 'background-color']);
   ok('no fill', !!bg && /^transparent$/.test(bg.value), bg && bg.sheet + ': ' + bg.selector + ' => ' + bg.value);
   const col = winner(sheets, el, ['color']);
-  ok('the muted ink', !!col && col.value === 'var(--cc-text-dim, #8a8a8a)', col && col.sheet + ': ' + col.selector + ' => ' + col.value);
+  ok('the muted ink', !!col && col.value === 'var(--tt-text-dim, #8a8a8a)', col && col.sheet + ': ' + col.selector + ' => ' + col.value);
   const fs = winner(sheets, el, ['font-size']);
   ok('the meta size, 12px', !!fs && resolve(fs.value, dark) === '12px', fs && fs.selector + ' => ' + fs.value);
   const tt = winner(sheets, el, ['text-transform']), ls = winner(sheets, el, ['letter-spacing']);

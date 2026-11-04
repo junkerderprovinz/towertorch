@@ -488,16 +488,16 @@ func TestPutUISettingsMergesAndDeletes(t *testing.T) {
 	s, h := newServer()
 	s.Store.(*memStore).cfg = model.Config{
 		Schedules:  []model.Schedule{{Name: "db", Action: "start", Time: "06:00"}},
-		UISettings: map[string]string{"cc.accent": "#FCC419", "cc.rainbow": "1", "cc.view": "grid"},
+		UISettings: map[string]string{"tt.accent": "#FCC419", "tt.rainbow": "1", "tt.view": "grid"},
 	}
-	req := httptest.NewRequest("PUT", "/api/uisettings", strings.NewReader(`{"cc.accent":"#1D99F3","cc.rainbow":null,"ccp.badges":"0"}`))
+	req := httptest.NewRequest("PUT", "/api/uisettings", strings.NewReader(`{"tt.accent":"#1D99F3","tt.rainbow":null,"ttp.badges":"0"}`))
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 	if rec.Code != 200 {
 		t.Fatalf("merge code = %d: %s", rec.Code, rec.Body)
 	}
 	cfg := s.Store.(*memStore).cfg
-	want := map[string]string{"cc.accent": "#1D99F3", "cc.view": "grid", "ccp.badges": "0"}
+	want := map[string]string{"tt.accent": "#1D99F3", "tt.view": "grid", "ttp.badges": "0"}
 	if len(cfg.UISettings) != len(want) {
 		t.Fatalf("ui settings = %v, want %v", cfg.UISettings, want)
 	}
@@ -513,7 +513,7 @@ func TestPutUISettingsMergesAndDeletes(t *testing.T) {
 
 func TestPutUISettingsRejectsForeignKeys(t *testing.T) {
 	_, h := newServer()
-	for _, body := range []string{`{"schedules":"x"}`, `{"cc.x":"` + strings.Repeat("a", 4097) + `"}`, `not json`} {
+	for _, body := range []string{`{"schedules":"x"}`, `{"tt.x":"` + strings.Repeat("a", 4097) + `"}`, `not json`} {
 		req := httptest.NewRequest("PUT", "/api/uisettings", strings.NewReader(body))
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
@@ -526,7 +526,7 @@ func TestPutUISettingsRejectsForeignKeys(t *testing.T) {
 func TestBugReportIsARedactedDownload(t *testing.T) {
 	s, h := newServer()
 	dir := t.TempDir()
-	logFile := filepath.Join(dir, "cc.log")
+	logFile := filepath.Join(dir, "tt.log")
 	if err := os.WriteFile(logFile, []byte("webhook https://hooks.example/abc/SECRETPATH failed\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}

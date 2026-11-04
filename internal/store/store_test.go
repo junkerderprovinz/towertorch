@@ -46,18 +46,18 @@ func TestSaveLoadRoundTrip(t *testing.T) {
 func TestLoadConfigNamesTheOldMotionDigits(t *testing.T) {
 	for digit, name := range map[string]string{"0": "off", "1": "subtle", "2": "wild", "wild": "wild"} {
 		s := New(filepath.Join(t.TempDir(), "plan.json"))
-		if err := s.SaveConfig(model.Config{UISettings: map[string]string{"cc.anim": digit, "cc.accent": "#123456"}}); err != nil {
+		if err := s.SaveConfig(model.Config{UISettings: map[string]string{"tt.anim": digit, "tt.accent": "#123456"}}); err != nil {
 			t.Fatalf("save: %v", err)
 		}
 		c, err := s.LoadConfig()
 		if err != nil {
 			t.Fatalf("load: %v", err)
 		}
-		if c.UISettings["cc.anim"] != name {
-			t.Errorf("cc.anim %q loaded as %q, want %q", digit, c.UISettings["cc.anim"], name)
+		if c.UISettings["tt.anim"] != name {
+			t.Errorf("tt.anim %q loaded as %q, want %q", digit, c.UISettings["tt.anim"], name)
 		}
-		if c.UISettings["cc.accent"] != "#123456" {
-			t.Errorf("an unrelated setting changed: %q", c.UISettings["cc.accent"])
+		if c.UISettings["tt.accent"] != "#123456" {
+			t.Errorf("an unrelated setting changed: %q", c.UISettings["tt.accent"])
 		}
 	}
 }
@@ -75,15 +75,15 @@ func TestLoadConfigWithoutUISettings(t *testing.T) {
 func TestLoadConfigNamesTheOldShapes(t *testing.T) {
 	for old, name := range map[string]string{"pill": "round", "rounded": "soft", "square": "square", "circle": "round", "soft": "soft"} {
 		s := New(filepath.Join(t.TempDir(), "plan.json"))
-		if err := s.SaveConfig(model.Config{UISettings: map[string]string{"cc.badgeshape": old}}); err != nil {
+		if err := s.SaveConfig(model.Config{UISettings: map[string]string{"tt.badgeshape": old}}); err != nil {
 			t.Fatalf("save: %v", err)
 		}
 		c, err := s.LoadConfig()
 		if err != nil {
 			t.Fatalf("load: %v", err)
 		}
-		if c.UISettings["cc.badgeshape"] != name {
-			t.Errorf("cc.badgeshape %q loaded as %q, want %q", old, c.UISettings["cc.badgeshape"], name)
+		if c.UISettings["tt.badgeshape"] != name {
+			t.Errorf("tt.badgeshape %q loaded as %q, want %q", old, c.UISettings["tt.badgeshape"], name)
 		}
 	}
 }
@@ -98,7 +98,7 @@ func TestConcurrentConfigSavesAllSucceed(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			errs <- s.SaveConfig(model.Config{UISettings: map[string]string{"cc.accent": fmt.Sprintf("#%06d", i)}})
+			errs <- s.SaveConfig(model.Config{UISettings: map[string]string{"tt.accent": fmt.Sprintf("#%06d", i)}})
 		}()
 	}
 	wg.Wait()
@@ -112,7 +112,7 @@ func TestConcurrentConfigSavesAllSucceed(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load: %v", err)
 	}
-	if !strings.HasPrefix(c.UISettings["cc.accent"], "#") {
+	if !strings.HasPrefix(c.UISettings["tt.accent"], "#") {
 		t.Errorf("config.json holds no whole write: %+v", c.UISettings)
 	}
 	left, _ := filepath.Glob(filepath.Join(dir, "*.tmp"))
@@ -123,18 +123,18 @@ func TestConcurrentConfigSavesAllSucceed(t *testing.T) {
 
 func TestMergeUISettingsKeepsTheRestOfTheConfig(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
-	if err := s.SaveConfig(model.Config{ShapeIface: "br0", UISettings: map[string]string{"cc.accent": "#FCC419", "cc.rainbow": "1"}}); err != nil {
+	if err := s.SaveConfig(model.Config{ShapeIface: "br0", UISettings: map[string]string{"tt.accent": "#FCC419", "tt.rainbow": "1"}}); err != nil {
 		t.Fatal(err)
 	}
 	blue := "#1D99F3"
-	if err := s.MergeUISettings(map[string]*string{"cc.accent": &blue, "cc.rainbow": nil}); err != nil {
+	if err := s.MergeUISettings(map[string]*string{"tt.accent": &blue, "tt.rainbow": nil}); err != nil {
 		t.Fatal(err)
 	}
 	c, err := s.LoadConfig()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.ShapeIface != "br0" || c.UISettings["cc.accent"] != blue || len(c.UISettings) != 1 {
+	if c.ShapeIface != "br0" || c.UISettings["tt.accent"] != blue || len(c.UISettings) != 1 {
 		t.Errorf("config after merge = %+v", c)
 	}
 }
@@ -142,11 +142,11 @@ func TestMergeUISettingsKeepsTheRestOfTheConfig(t *testing.T) {
 func TestMergeUISettingsIntoAFreshConfig(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
 	v := "1"
-	if err := s.MergeUISettings(map[string]*string{"cc.rainbow": &v}); err != nil {
+	if err := s.MergeUISettings(map[string]*string{"tt.rainbow": &v}); err != nil {
 		t.Fatal(err)
 	}
 	c, _ := s.LoadConfig()
-	if c.UISettings["cc.rainbow"] != "1" {
+	if c.UISettings["tt.rainbow"] != "1" {
 		t.Errorf("ui settings = %v", c.UISettings)
 	}
 }
@@ -156,7 +156,7 @@ func TestMergeUISettingsCapsTheCount(t *testing.T) {
 	ch := map[string]*string{}
 	v := "x"
 	for i := range MaxUISettings + 1 {
-		ch[fmt.Sprintf("cc.k%d", i)] = &v
+		ch[fmt.Sprintf("tt.k%d", i)] = &v
 	}
 	if err := s.MergeUISettings(ch); !errors.Is(err, ErrTooManyUISettings) {
 		t.Errorf("err = %v, want ErrTooManyUISettings", err)
@@ -172,7 +172,7 @@ func TestConcurrentMergesKeepEveryKey(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			v := fmt.Sprint(i)
-			if err := s.MergeUISettings(map[string]*string{fmt.Sprintf("cc.k%d", i): &v}); err != nil {
+			if err := s.MergeUISettings(map[string]*string{fmt.Sprintf("tt.k%d", i): &v}); err != nil {
 				t.Errorf("merge: %v", err)
 			}
 		}()
@@ -186,7 +186,7 @@ func TestConcurrentMergesKeepEveryKey(t *testing.T) {
 
 func TestLoadConfigGivesToolsTheSettingsKeysOnce(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
-	ui := map[string]string{"cc.stylesettings": "0", "ccs.accent": "#ff8389", "ccs.iconbg": "0", "cc.accent": "#fcc419"}
+	ui := map[string]string{"tt.stylesettings": "0", "tts.accent": "#ff8389", "tts.iconbg": "0", "tt.accent": "#fcc419"}
 	if err := s.SaveConfig(model.Config{UISettings: ui}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
@@ -195,28 +195,28 @@ func TestLoadConfigGivesToolsTheSettingsKeysOnce(t *testing.T) {
 		t.Fatalf("load: %v", err)
 	}
 	got := c.UISettings
-	if got["cc.styletools"] != "0" || got["cct.accent"] != "#ff8389" || got["cct.iconbg"] != "0" {
+	if got["tt.styletools"] != "0" || got["ttt.accent"] != "#ff8389" || got["ttt.iconbg"] != "0" {
 		t.Errorf("tools keys = %v", got)
 	}
-	if got["ccs.accent"] != "#ff8389" || got["cc.stylesettings"] != "0" {
+	if got["tts.accent"] != "#ff8389" || got["tt.stylesettings"] != "0" {
 		t.Errorf("the settings keys changed: %v", got)
 	}
 
 	// Once Tools has a colour of its own, a later load leaves it alone.
-	ui = map[string]string{"cc.styletools": "0", "cct.accent": "#1d99f3", "ccs.accent": "#ff8389"}
+	ui = map[string]string{"tt.styletools": "0", "ttt.accent": "#1d99f3", "tts.accent": "#ff8389"}
 	if err := s.SaveConfig(model.Config{UISettings: ui}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
-	if c, _ = s.LoadConfig(); c.UISettings["cct.accent"] != "#1d99f3" {
-		t.Errorf("cct.accent overwritten: %v", c.UISettings)
+	if c, _ = s.LoadConfig(); c.UISettings["ttt.accent"] != "#1d99f3" {
+		t.Errorf("ttt.accent overwritten: %v", c.UISettings)
 	}
 }
 
 func TestLoadConfigKeepsTheTilesOfAnAdoptingConfigOnce(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
 	ui := map[string]string{
-		"cc.iconbgrainbow": "1", "cc.iconbg": "0", "cc.icontint": "0",
-		"cc.styledocker": "0", "ccd.iconbg": "0", "cc.stylevms": "1", "ccv.iconbg": "0",
+		"tt.iconbgrainbow": "1", "tt.iconbg": "0", "tt.icontint": "0",
+		"tt.styledocker": "0", "ttd.iconbg": "0", "tt.stylevms": "1", "ttv.iconbg": "0",
 	}
 	if err := s.SaveConfig(model.Config{UISettings: ui}); err != nil {
 		t.Fatalf("save: %v", err)
@@ -226,22 +226,22 @@ func TestLoadConfigKeepsTheTilesOfAnAdoptingConfigOnce(t *testing.T) {
 		t.Fatalf("load: %v", err)
 	}
 	got := c.UISettings
-	if got["cc.iconbg"] != "1" || got["cc.icontint"] != "1" || got["cc.iconadoptsplit"] != "1" {
+	if got["tt.iconbg"] != "1" || got["tt.icontint"] != "1" || got["tt.iconadoptsplit"] != "1" {
 		t.Errorf("global switches = %v", got)
 	}
-	if got["ccd.iconbg"] != "1" || got["ccd.icontint"] != "1" {
+	if got["ttd.iconbg"] != "1" || got["ttd.icontint"] != "1" {
 		t.Errorf("Docker has its own colours and keeps its tiles: %v", got)
 	}
-	if got["ccv.iconbg"] != "0" {
+	if got["ttv.iconbg"] != "0" {
 		t.Errorf("the VMs follow the global keys, so their own stay: %v", got)
 	}
 
 	// Saved with the marker and a switch turned off since, the next load leaves it off.
-	got["cc.iconbg"] = "0"
+	got["tt.iconbg"] = "0"
 	if err := s.SaveConfig(model.Config{UISettings: got}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
-	if c, _ = s.LoadConfig(); c.UISettings["cc.iconbg"] != "0" {
+	if c, _ = s.LoadConfig(); c.UISettings["tt.iconbg"] != "0" {
 		t.Errorf("a switch turned off after the step came back on: %v", c.UISettings)
 	}
 }
@@ -249,44 +249,44 @@ func TestLoadConfigKeepsTheTilesOfAnAdoptingConfigOnce(t *testing.T) {
 func TestLoadConfigGivesTheSettingsAndToolsGridsTheirTilesOnce(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
 	ui := map[string]string{
-		"cc.iconbgrainbow": "1", "cc.iconadoptsplit": "1", "cc.iconbg": "0",
-		"cc.stylesettings": "0", "ccs.iconbg": "0", "cc.styletools": "1", "cct.iconbg": "0",
+		"tt.iconbgrainbow": "1", "tt.iconadoptsplit": "1", "tt.iconbg": "0",
+		"tt.stylesettings": "0", "tts.iconbg": "0", "tt.styletools": "1", "ttt.iconbg": "0",
 	}
 	if err := s.SaveConfig(model.Config{UISettings: ui}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
 	c, _ := s.LoadConfig()
 	got := c.UISettings
-	if got["ccs.iconbg"] != "1" || got["ccs.icontint"] != "1" || got["cc.iconadoptgrid"] != "1" {
+	if got["tts.iconbg"] != "1" || got["tts.icontint"] != "1" || got["tt.iconadoptgrid"] != "1" {
 		t.Errorf("Settings has its own colours and gets its tiles and tint: %v", got)
 	}
-	if got["cct.iconbg"] != "0" || got["cct.icontint"] != "" || got["cc.iconbg"] != "0" {
+	if got["ttt.iconbg"] != "0" || got["ttt.icontint"] != "" || got["tt.iconbg"] != "0" {
 		t.Errorf("Tools follows the global keys, so neither its own nor the global ones change: %v", got)
 	}
 
-	got["ccs.iconbg"] = "0"
+	got["tts.iconbg"] = "0"
 	if err := s.SaveConfig(model.Config{UISettings: got}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
-	if c, _ = s.LoadConfig(); c.UISettings["ccs.iconbg"] != "0" {
+	if c, _ = s.LoadConfig(); c.UISettings["tts.iconbg"] != "0" {
 		t.Errorf("a grid switch turned off after the step came back on: %v", c.UISettings)
 	}
 }
 
 func TestLoadConfigMarksANonAdoptingConfigWithoutTouchingIt(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
-	if err := s.SaveConfig(model.Config{UISettings: map[string]string{"cc.iconbgrainbow": "0", "cc.iconbg": "0"}}); err != nil {
+	if err := s.SaveConfig(model.Config{UISettings: map[string]string{"tt.iconbgrainbow": "0", "tt.iconbg": "0"}}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
 	c, _ := s.LoadConfig()
-	if c.UISettings["cc.iconbg"] != "0" || c.UISettings["cc.iconadoptsplit"] != "1" || c.UISettings["cc.iconadoptgrid"] != "1" {
+	if c.UISettings["tt.iconbg"] != "0" || c.UISettings["tt.iconadoptsplit"] != "1" || c.UISettings["tt.iconadoptgrid"] != "1" {
 		t.Errorf("ui settings = %v", c.UISettings)
 	}
 }
 
 func TestLoadConfigLeavesAFreshMirrorWithoutToolsKeys(t *testing.T) {
 	s := New(filepath.Join(t.TempDir(), "plan.json"))
-	if err := s.SaveConfig(model.Config{UISettings: map[string]string{"cc.accent": "#fcc419"}}); err != nil {
+	if err := s.SaveConfig(model.Config{UISettings: map[string]string{"tt.accent": "#fcc419"}}); err != nil {
 		t.Fatalf("save: %v", err)
 	}
 	c, _ := s.LoadConfig()

@@ -1,7 +1,7 @@
 Menu="Buttons:98"
 Title="TowerTorch"
 Icon="towertorch.png"
-Link="cc-dockerform-hook"
+Link="tt-dockerform-hook"
 ---
 <?php
 /* Loads the Docker-tab enhancer on the container add/edit form and its run output. Community
@@ -10,8 +10,8 @@ Link="cc-dockerform-hook"
    merges Menu hooks only for Type=xmenu parents. This Buttons hook runs on every page but emits
    its assets only on the form URLs; docker.js detects the form (onCtForm) and boots its light
    form mode without polling. Link="..." keeps the nav bar free of an icon. */
-$ccReq = strtok($_SERVER['REQUEST_URI'] ?? '', '?');
-if (preg_match('#^/(Docker|Apps)/(AddContainer|UpdateContainer)/?$#', $ccReq)):
+$ttReq = strtok($_SERVER['REQUEST_URI'] ?? '', '?');
+if (preg_match('#^/(Docker|Apps)/(AddContainer|UpdateContainer)/?$#', $ttReq)):
 ?>
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
 <script defer src="<?autov('/plugins/towertorch/scripts/docker.js')?>"></script>

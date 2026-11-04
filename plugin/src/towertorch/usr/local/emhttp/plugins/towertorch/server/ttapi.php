@@ -5,7 +5,7 @@
  * forwarded; nothing else reaches the engine, and the engine itself never
  * exposes Docker create/exec/build. The browser never touches the Docker socket.
  */
-$sock  = getenv('CC_SOCK') ?: '/var/run/towertorch.sock';
+$sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // state/stats: read-only; action: start|stop|restart|pause|unpause (the engine
 // validates the container name against the live list and never exposes
 // create/exec/build); plan/apply: the start-order plan. Nothing else is forwarded.
@@ -16,7 +16,7 @@ $sock  = getenv('CC_SOCK') ?: '/var/run/towertorch.sock';
 // icons: batch name -> icon-source lookup, answered from the engine's cache only
 // (it never fetches on the request path); iconsvg: the cached SVG itself, served
 // as real image/svg+xml so an <img> can point straight at it, same-origin.
-// uisettings: merges a few cc.* UI settings into the config, for a page that is closing.
+// uisettings: merges a few tt.* UI settings into the config, for a page that is closing.
 // bugreport: the diagnostics file for a bug report, with its secrets already taken out
 // by the engine, passed on as a download.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'hostcpu' => ['GET'], 'hostnet' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'],

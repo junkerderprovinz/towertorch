@@ -35,10 +35,10 @@ console.log('\napplyFilter() carries an explicit "folder" branch');
   ok('that branch re-renders through renderFolderView()', /mode === "folder"[\s\S]*?renderFolderView\(\)/.test(applyFilterSrc));
 
   console.log('\napplyFilter(): which path fires per mode');
-  function run(mode, ccOrgView, gh, findRowsCb, renderFolderViewCb) {
-    const fn = new Function('mode', 'filterText', 'gridHolder', 'ccOrgView', 'norm', 'renderFolderView', 'findRows',
+  function run(mode, ttOrgView, gh, findRowsCb, renderFolderViewCb) {
+    const fn = new Function('mode', 'filterText', 'gridHolder', 'ttOrgView', 'norm', 'renderFolderView', 'findRows',
       applyFilterSrc + '\nreturn applyFilter;'
-    )(mode, 'sonarr', gh, ccOrgView, s => s, renderFolderViewCb, findRowsCb);
+    )(mode, 'sonarr', gh, ttOrgView, s => s, renderFolderViewCb, findRowsCb);
     fn();
   }
   {
@@ -57,7 +57,7 @@ console.log('\napplyFilter() carries an explicit "folder" branch');
   {
     let folderViewCalled = false, threw = false;
     try { run('folder', null, null, () => [], () => { folderViewCalled = true; }); } catch (e) { threw = true; }
-    ok('folder mode with ccOrgView still null does not throw', !threw);
+    ok('folder mode with ttOrgView still null does not throw', !threw);
     ok('...and does not call renderFolderView() against missing data', !folderViewCalled);
   }
   {

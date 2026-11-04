@@ -1,381 +1,381 @@
-/* The disk tiles on /Main (scripts/disks.js). Every rule waits for html.cc-dk-on, which disks.js
-   sets only while the Start area styles /Main. A card takes its colour from --cc-dk-c, stamped per
+/* The disk tiles on /Main (scripts/disks.js). Every rule waits for html.tt-dk-on, which disks.js
+   sets only while the Start area styles /Main. A card takes its colour from --tt-dk-c, stamped per
    card in the rainbow and flag modes, and otherwise the Start accent. In section view each section
    is a card, and its disk cards, the summary strip and the notices sit on it one step up the
    surface ramp. */
-html.cc-dk-on {
-  --cc-dk-sec: var(--cc-surface-4);
-  --cc-dk-card: var(--cc-surface-3);
-  --cc-dk-card-hover: color-mix(in srgb, var(--cc-surface-3) 88%, var(--cc-text));
-  --cc-dk-inset: var(--cc-surface-base);
-  --cc-dk-metal-a: #5c5c5c; --cc-dk-metal-b: #2c2c2c; --cc-dk-well: #1e1e1e; --cc-dk-plat-a: #c4c4c4; --cc-dk-plat-b: #3a3a3a; --cc-dk-hub: #8e8e8e;
-  --cc-dk-pcb: #1a1a1a; --cc-dk-nand: #0b0b0b; --cc-dk-gold: #c9a24a; --cc-dk-plastic: #2b2b2b; --cc-dk-plastic-b: #1c1c1c;
-  --cc-dk-led-off: #3a3a3a; --cc-dk-sheen: rgba(255, 255, 255, .22); --cc-dk-arm: #b8b8b8; --cc-dk-arm-hi: #d8d8d8;
-  --cc-dk-rest: #4a4a4a; --cc-dk-rest-ink: #e6e6e6; --cc-dk-bar-off: #333;
+html.tt-dk-on {
+  --tt-dk-sec: var(--tt-surface-4);
+  --tt-dk-card: var(--tt-surface-3);
+  --tt-dk-card-hover: color-mix(in srgb, var(--tt-surface-3) 88%, var(--tt-text));
+  --tt-dk-inset: var(--tt-surface-base);
+  --tt-dk-metal-a: #5c5c5c; --tt-dk-metal-b: #2c2c2c; --tt-dk-well: #1e1e1e; --tt-dk-plat-a: #c4c4c4; --tt-dk-plat-b: #3a3a3a; --tt-dk-hub: #8e8e8e;
+  --tt-dk-pcb: #1a1a1a; --tt-dk-nand: #0b0b0b; --tt-dk-gold: #c9a24a; --tt-dk-plastic: #2b2b2b; --tt-dk-plastic-b: #1c1c1c;
+  --tt-dk-led-off: #3a3a3a; --tt-dk-sheen: rgba(255, 255, 255, .22); --tt-dk-arm: #b8b8b8; --tt-dk-arm-hi: #d8d8d8;
+  --tt-dk-rest: #4a4a4a; --tt-dk-rest-ink: #e6e6e6; --tt-dk-bar-off: #333;
 }
-html.cc-dk-on:is(.Theme--white, .Theme--azure) {
-  --cc-dk-sec: var(--cc-surface-1);
-  --cc-dk-card: var(--cc-surface-2);
-  --cc-dk-card-hover: var(--cc-surface-3);
-  --cc-dk-inset: var(--cc-surface-4);
-  --cc-dk-metal-a: #d9d9d9; --cc-dk-metal-b: #a9a9a9; --cc-dk-well: #bdbdbd; --cc-dk-plat-a: #f4f4f4; --cc-dk-plat-b: #9c9c9c; --cc-dk-hub: #7a7a7a;
-  --cc-dk-pcb: #2a2a2a; --cc-dk-nand: #151515; --cc-dk-gold: #c79b34; --cc-dk-plastic: #3a3a3a; --cc-dk-plastic-b: #262626;
-  --cc-dk-led-off: #9a9a9a; --cc-dk-sheen: rgba(255, 255, 255, .5); --cc-dk-arm: #7a7a7a; --cc-dk-arm-hi: #9a9a9a;
-  --cc-dk-rest: #8d8d8d; --cc-dk-rest-ink: #ffffff; --cc-dk-bar-off: #4a4a4a;
+html.tt-dk-on:is(.Theme--white, .Theme--azure) {
+  --tt-dk-sec: var(--tt-surface-1);
+  --tt-dk-card: var(--tt-surface-2);
+  --tt-dk-card-hover: var(--tt-surface-3);
+  --tt-dk-inset: var(--tt-surface-4);
+  --tt-dk-metal-a: #d9d9d9; --tt-dk-metal-b: #a9a9a9; --tt-dk-well: #bdbdbd; --tt-dk-plat-a: #f4f4f4; --tt-dk-plat-b: #9c9c9c; --tt-dk-hub: #7a7a7a;
+  --tt-dk-pcb: #2a2a2a; --tt-dk-nand: #151515; --tt-dk-gold: #c79b34; --tt-dk-plastic: #3a3a3a; --tt-dk-plastic-b: #262626;
+  --tt-dk-led-off: #9a9a9a; --tt-dk-sheen: rgba(255, 255, 255, .5); --tt-dk-arm: #7a7a7a; --tt-dk-arm-hi: #9a9a9a;
+  --tt-dk-rest: #8d8d8d; --tt-dk-rest-ink: #ffffff; --tt-dk-bar-off: #4a4a4a;
 }
-html.cc-dk-on #displaybox .cc-dk-hidden { display: none !important; }
+html.tt-dk-on #displaybox .tt-dk-hidden { display: none !important; }
 /* In section view every section the tiles draw is a card, its badge straddling the top edge on
    the content edge, as the Dashboard tiles and the settings cards carry theirs (GlimStone rules 11
    and 20). The badge reaches half its height above the card, so the cards keep 40px between them. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox section[role="tabpanel"].cc-dk-box {
-  position: relative; box-sizing: border-box; margin-bottom: 40px; padding: 24px 16px 16px; background: var(--cc-dk-sec); border-radius: var(--cc-radius-card);
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox section[role="tabpanel"].tt-dk-box {
+  position: relative; box-sizing: border-box; margin-bottom: 40px; padding: 24px 16px 16px; background: var(--tt-dk-sec); border-radius: var(--tt-radius-card);
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox section.cc-dk-box > .cc-card-head {
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox section.tt-dk-box > .tt-card-head {
   position: absolute; top: 0; left: 16px; z-index: 1; transform: translateY(-50%); max-width: calc(100% - 32px); margin: 0;
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox nav.tabs > .cc-dk-vsw { margin-bottom: 28px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox nav.tabs > .tt-dk-vsw { margin-bottom: 28px; }
 /* The array card is as wide as its row of disks. The section keeps the whole row, so no pool moves
    up beside it, and the card is drawn on the tile host inside it instead. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox section.cc-dk-box:has(> .cc-dk-host[data-cc-dk="array"]) { padding: 0; background: none; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-host[data-cc-dk="array"] {
-  box-sizing: border-box; width: fit-content; max-width: 100%; margin: 0; padding: 24px 16px 16px; background: var(--cc-dk-sec); border-radius: var(--cc-radius-card);
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox section.tt-dk-box:has(> .tt-dk-host[data-tt-dk="array"]) { padding: 0; background: none; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-host[data-tt-dk="array"] {
+  box-sizing: border-box; width: fit-content; max-width: 100%; margin: 0; padding: 24px 16px 16px; background: var(--tt-dk-sec); border-radius: var(--tt-radius-card);
 }
 /* While the mover runs, a strip under the pools shows its picture: the pools as badges, a line
    from each to the array's vessel, packets on the lines. */
-html.cc-dk-on #displaybox .cc-dk-move {
-  --cc-pic-c: var(--cc-dk-c, var(--cc-shr-accent, #FCC419));
+html.tt-dk-on #displaybox .tt-dk-move {
+  --tt-pic-c: var(--tt-dk-c, var(--tt-shr-accent, #FCC419));
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; margin-top: 12px; padding: 10px 14px; contain: inline-size;
-  background: var(--cc-dk-card); border-radius: var(--cc-radius-card); font-size: var(--cc-text-subline); color: var(--cc-text-hint);
+  background: var(--tt-dk-card); border-radius: var(--tt-radius-card); font-size: var(--tt-text-subline); color: var(--tt-text-hint);
 }
-html.cc-dk-on #displaybox .cc-dk-movetxt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-html.cc-dk-on #displaybox .cc-dk-movetxt b { color: var(--cc-text); font-weight: 600; }
-html.cc-dk-on #displaybox .cc-dk-movepic { display: flex; align-items: center; max-width: 100%; margin-left: auto; }
-html.cc-dk-on #displaybox .cc-dk-movepic > svg { flex: 0 1 auto; min-width: 0; max-width: calc(100% - 52px); height: auto; overflow: visible; }
-html.cc-dk-on #displaybox .cc-dk-movepool { fill: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); rx: min(12px, var(--cc-radius-pill)); }
-html.cc-dk-on #displaybox .cc-dk-movename { fill: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616)); font-size: var(--cc-text-meta); font-weight: 600; }
-html.cc-dk-on #displaybox .cc-dk-movedest { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: var(--cc-text-meta); }
+html.tt-dk-on #displaybox .tt-dk-movetxt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+html.tt-dk-on #displaybox .tt-dk-movetxt b { color: var(--tt-text); font-weight: 600; }
+html.tt-dk-on #displaybox .tt-dk-movepic { display: flex; align-items: center; max-width: 100%; margin-left: auto; }
+html.tt-dk-on #displaybox .tt-dk-movepic > svg { flex: 0 1 auto; min-width: 0; max-width: calc(100% - 52px); height: auto; overflow: visible; }
+html.tt-dk-on #displaybox .tt-dk-movepool { fill: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); rx: min(12px, var(--tt-radius-pill)); }
+html.tt-dk-on #displaybox .tt-dk-movename { fill: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616)); font-size: var(--tt-text-meta); font-weight: 600; }
+html.tt-dk-on #displaybox .tt-dk-movedest { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: var(--tt-text-meta); }
 /* Unassigned Devices' disks, network shares and past devices are three cards of their own, each
    under its own badge, and its controls are a fourth, so the section itself draws no card and its
    head goes with the badge it would show. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox section.cc-dk-box:has(> .cc-dk-udrow) { padding: 0; background: none; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox section.cc-dk-box:has(> .cc-dk-udrow) > .cc-card-head { display: none; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox section.tt-dk-box:has(> .tt-dk-udrow) { padding: 0; background: none; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox section.tt-dk-box:has(> .tt-dk-udrow) > .tt-card-head { display: none; }
 /* In section view the pools and the boot device stand side by side while the page has room, each
    section under its own badge, as wide as its cards and as tall as the row; every other section
    keeps the whole row. */
-html.cc-dk-on.cc-dk-sides.cc-on-main.cc-sections-main #displaybox { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 24px; }
-html.cc-dk-on.cc-dk-sides.cc-on-main.cc-sections-main #displaybox > * { flex: 1 1 100%; min-width: 0; }
-html.cc-dk-on.cc-dk-sides.cc-on-main.cc-sections-main #displaybox > section.cc-dk-side { flex: 0 1 auto; align-self: stretch; width: auto; }
+html.tt-dk-on.tt-dk-sides.tt-on-main.tt-sections-main #displaybox { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 24px; }
+html.tt-dk-on.tt-dk-sides.tt-on-main.tt-sections-main #displaybox > * { flex: 1 1 100%; min-width: 0; }
+html.tt-dk-on.tt-dk-sides.tt-on-main.tt-sections-main #displaybox > section.tt-dk-side { flex: 0 1 auto; align-self: stretch; width: auto; }
 @media (max-width: 600px) {
-  html.cc-dk-on.cc-dk-sides.cc-on-main.cc-sections-main #displaybox > section.cc-dk-side { flex: 1 1 100%; }
-  html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-host[data-cc-dk="array"] { width: auto; }
+  html.tt-dk-on.tt-dk-sides.tt-on-main.tt-sections-main #displaybox > section.tt-dk-side { flex: 1 1 100%; }
+  html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-host[data-tt-dk="array"] { width: auto; }
 }
 /* Unassigned Devices' disks, network shares and past devices, side by side where they fit. */
-html.cc-dk-on #displaybox .cc-dk-udrow { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 24px; }
-html.cc-dk-on #displaybox .cc-dk-udrow > * { flex: 1 1 auto; min-width: 0; }
+html.tt-dk-on #displaybox .tt-dk-udrow { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 24px; }
+html.tt-dk-on #displaybox .tt-dk-udrow > * { flex: 1 1 auto; min-width: 0; }
 /* In the tiles every part is a card. On a wide screen the three stand in one row: the tables as
    wide as their columns, the disks one card wide with their cards under each other, taking what is
    left of the row; alone on a row they spread up to the width of their cards. A table scrolls in
    its own box on a narrow screen, since a scrolling card would clip its badge. The tables leave out
    the columns UD always keeps empty and keep their cells and bars tight, so all three fit at 1917
    px, and the line breaks UD puts between its parts would only push them out of line. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow { gap: 40px 24px; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > * {
-  box-sizing: border-box; padding: 0 16px 16px; background: var(--cc-dk-sec); border-radius: var(--cc-radius-card);
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow { gap: 40px 24px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > * {
+  box-sizing: border-box; padding: 0 16px 16px; background: var(--tt-dk-sec); border-radius: var(--tt-radius-card);
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > .show-disks:not(:has(> .show-historical)) { flex: 1 1 292px; max-width: max-content; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > :is(.show-shares, .show-disks:has(> .show-historical)) { flex: none; max-width: 100%; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > .show-disks:not(:has(> .show-historical)) { flex: 1 1 292px; max-width: max-content; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > :is(.show-shares, .show-disks:has(> .show-historical)) { flex: none; max-width: 100%; }
 /* A part's badges stay in the flow, half above the card's edge, so the three badges of the shares
    wrap onto a second line on a phone and push the table down instead of running over it. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > * > div.title,
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow .show-historical > div.title {
-  position: relative; z-index: 1; height: auto; margin: calc(var(--cc-sec-h, 22px) / -2) 0 13px !important; padding: 0;   /* Shares.css sets the top margin with !important */
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > * > div.title,
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow .show-historical > div.title {
+  position: relative; z-index: 1; height: auto; margin: calc(var(--tt-sec-h, 22px) / -2) 0 13px !important; padding: 0;   /* Shares.css sets the top margin with !important */
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow div.title > span.left { flex-wrap: wrap; row-gap: 6px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow div.title > span.left { flex-wrap: wrap; row-gap: 6px; }
 /* The controls' card (shares.js) holds one line per control, its name and (i) at the start and
    the control at the end, as on the settings page. Shares.css lines the controls up in a row for
    the card head of the list view, so their boxes are reset here. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > .cc-ud-panel { flex: none; max-width: 100%; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-ud-panel .cc-ud-ctrls,
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-ud-panel .cc-ud-ctrls > * { display: flex !important; flex-direction: column; align-items: stretch; gap: 8px; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-ud-panel .cc-ud-unit { display: flex !important; flex-direction: row; align-items: center; gap: 0; min-height: 30px; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-ud-panel .cc-ud-lbl {
-  display: inline-flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; margin-right: 16px; color: var(--cc-text); font-size: var(--cc-text-body);
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > .tt-ud-panel { flex: none; max-width: 100%; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-ud-panel .tt-ud-ctrls,
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-ud-panel .tt-ud-ctrls > * { display: flex !important; flex-direction: column; align-items: stretch; gap: 8px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-ud-panel .tt-ud-unit { display: flex !important; flex-direction: row; align-items: center; gap: 0; min-height: 30px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-ud-panel .tt-ud-lbl {
+  display: inline-flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; margin-right: 16px; color: var(--tt-text); font-size: var(--tt-text-body);
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-ud-panel .cc-ud-lbl .cc-info { margin-left: 0; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-ud-panel .tt-ud-lbl .tt-info { margin-left: 0; }
 @media (max-width: 600px) {
-  html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > *,
-  html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > .cc-ud-panel { flex: 1 1 100%; }
-  html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-box .cc-dk-udrow > .show-disks:not(:has(> .show-historical)) { max-width: none; }
+  html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > *,
+  html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > .tt-ud-panel { flex: 1 1 100%; }
+  html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > .show-disks:not(:has(> .show-historical)) { max-width: none; }
 }
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow :is(table.samba_mounts, table.usb_absent) { display: block; max-width: 100%; overflow-x: auto; }
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow table.usb_absent tbody td:nth-child(2) { white-space: normal; }
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow :is(.show-disks > .show-shares, .show-historical > br) { display: none !important; }
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow table.samba_mounts tr > td:is(:nth-child(6), :nth-child(8)):not([colspan]),
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow table.usb_absent tr > td:is(:nth-child(3), :nth-child(4), :nth-child(n+7)):not([colspan]) { display: none; }
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow :is(table.samba_mounts, table.usb_absent) :is(thead, tbody) td { padding-left: 6px; padding-right: 6px; }
-html.cc-dk-on #displaybox .cc-dk-box .cc-dk-udrow :is(table.samba_mounts, table.usb_absent) .usage-disk:not(.sys):not(.mm) { min-width: 72px; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.samba_mounts, table.usb_absent) { display: block; max-width: 100%; overflow-x: auto; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.usb_absent tbody td:nth-child(2) { white-space: normal; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(.show-disks > .show-shares, .show-historical > br) { display: none !important; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.samba_mounts tr > td:is(:nth-child(6), :nth-child(8)):not([colspan]),
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.usb_absent tr > td:is(:nth-child(3), :nth-child(4), :nth-child(n+7)):not([colspan]) { display: none; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.samba_mounts, table.usb_absent) :is(thead, tbody) td { padding-left: 6px; padding-right: 6px; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.samba_mounts, table.usb_absent) .usage-disk:not(.sys):not(.mm) { min-width: 72px; }
 /* Array-Vorgang as a card: the state badges, then the array, disk and system controls, each group a
    sub-card with its badge on the top edge. Inside a group every row is its button, its bubble and
    what rides with it, wrapping where the group is narrow; the status and description tracks of
    Shares.css's grid shrink to nothing, since the badges and the bubbles carry them. The parity
    check card follows in the flow instead of standing beside the table. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 32px 24px; margin-top: 16px; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills { position: static; flex: none; gap: 8px; padding-top: 49px; }   /* the first chip level with the first button row */
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 32px 24px; margin-top: 16px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills { position: static; flex: none; gap: 8px; padding-top: 49px; }   /* the first chip level with the first button row */
 /* The array state and the parity state are chips like a disk's SMART chip, filled in the state's
    colour with its ink: green while all is well, orange for a check that runs or a warning, red for
    the rest. The fill carries the state, so the dot Shares.css sets before a green one stays off. */
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills > .cc-b.cc-aop-status {
-  gap: 6px; height: 22px; min-height: 0; padding: 0 9px !important; border-radius: var(--cc-radius-pill);
-  background: var(--cc-err); color: var(--cc-err-fg); font-size: var(--cc-text-meta); font-weight: 400; line-height: 1;
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills > .tt-b.tt-aop-status {
+  gap: 6px; height: 22px; min-height: 0; padding: 0 9px !important; border-radius: var(--tt-radius-pill);
+  background: var(--tt-err); color: var(--tt-err-fg); font-size: var(--tt-text-meta); font-weight: 400; line-height: 1;
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills > .cc-aop-status strong { font-weight: inherit; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills > .cc-aop-status::before { content: none; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills > .cc-aop-status.cc-aop-ok { background: var(--cc-ok); color: var(--cc-ok-fg); }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills > .cc-aop-status.cc-aop-warn { background: var(--cc-warn); color: var(--cc-warn-fg); }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills > .cc-b.cc-aop-status.cc-aop-ringed { height: auto; gap: 8px; padding: 4px 12px 4px 4px !important; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg {
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills > .tt-aop-status strong { font-weight: inherit; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills > .tt-aop-status::before { content: none; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills > .tt-aop-status.tt-aop-ok { background: var(--tt-ok); color: var(--tt-ok-fg); }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills > .tt-aop-status.tt-aop-warn { background: var(--tt-warn); color: var(--tt-warn-fg); }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills > .tt-b.tt-aop-status.tt-aop-ringed { height: auto; gap: 8px; padding: 4px 12px 4px 4px !important; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg {
   position: relative; flex: 1 1 300px; min-width: min(100%, 300px); box-sizing: border-box; padding: 24px 16px 12px !important;   /* Shares.css strips the left padding of anything holding an array_status table */
-  background: var(--cc-dk-card); border-radius: var(--cc-radius-card);
+  background: var(--tt-dk-card); border-radius: var(--tt-radius-card);
 }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopt { position: absolute; top: 0; left: 16px; z-index: 1; display: flex; margin: 0; transform: translateY(-50%); }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg p { margin: 0; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg table.array_status { background: none; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg table.array_status tr { grid-template-columns: auto minmax(0, 1fr) auto; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg table.array_status td { width: auto; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg table.array_status tr > td:is(:first-child, :nth-child(3)) { padding: 0 !important; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg table.array_status tr > td:nth-child(2) { flex-wrap: wrap; row-gap: 8px; white-space: normal; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aopg table.array_status .cc-aop-brow { flex-wrap: wrap; row-gap: 8px; }
-html.cc-dk-on.cc-on-main.cc-sections-main #displaybox section.cc-dk-box > .cc-aop-pcard {
-  position: static; width: auto; max-width: none; margin-top: 16px; background: var(--cc-dk-card);
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopt { position: absolute; top: 0; left: 16px; z-index: 1; display: flex; margin: 0; transform: translateY(-50%); }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg p { margin: 0; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status { background: none; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr { grid-template-columns: auto minmax(0, 1fr) auto; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status td { width: auto; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr > td:is(:first-child, :nth-child(3)) { padding: 0 !important; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr > td:nth-child(2) { flex-wrap: wrap; row-gap: 8px; white-space: normal; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status .tt-aop-brow { flex-wrap: wrap; row-gap: 8px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox section.tt-dk-box > .tt-aop-pcard {
+  position: static; width: auto; max-width: none; margin-top: 16px; background: var(--tt-dk-card);
 }
 @media (max-width: 600px) {
-  html.cc-dk-on.cc-on-main.cc-sections-main #displaybox .cc-dk-aop > .cc-aop-pills { flex-direction: row; flex-wrap: wrap; gap: 8px; padding-top: 0; }
+  html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aop > .tt-aop-pills { flex-direction: row; flex-wrap: wrap; gap: 8px; padding-top: 0; }
 }
 /* The column reset and the reads/writes toggle act on the tables only. */
-html.cc-dk-on.cc-dk-tiled #displaybox nav.tabs > span.status,
-html.cc-dk-on.cc-dk-tiled.cc-on-main.cc-sections-main #displaybox .cc-card-head > span.status { display: none !important; }
+html.tt-dk-on.tt-dk-tiled #displaybox nav.tabs > span.status,
+html.tt-dk-on.tt-dk-tiled.tt-on-main.tt-sections-main #displaybox .tt-card-head > span.status { display: none !important; }
 
 /* The page's view switch, at the right end of the tab bar, left of Unraid's own controls there. */
-html.cc-dk-on #displaybox nav.tabs > .cc-dk-vsw { display: flex; align-self: center; margin-left: auto; }
-html.cc-dk-on.cc-on-main:not(.cc-sections-main) #displaybox nav.tabs > .cc-dk-vsw + span.status { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; }
-html.cc-dk-on.cc-sections-main #displaybox nav.tabs > .cc-dk-vsw { margin-bottom: 4px; }
-html.cc-dk-on #displaybox .cc-dk-seg { display: inline-flex; gap: 3px; padding: 3px; background: var(--cc-dk-inset); border-radius: var(--cc-radius-pill); }
-html.cc-dk-on #displaybox .cc-dk-seg .cc-seg-btn {
-  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border: 0; border-radius: var(--cc-radius-pill);
-  background: transparent; color: var(--cc-text-hint); font-size: var(--cc-text-subline); line-height: 1; box-shadow: none; cursor: pointer; user-select: none;
-  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+html.tt-dk-on #displaybox nav.tabs > .tt-dk-vsw { display: flex; align-self: center; margin-left: auto; }
+html.tt-dk-on.tt-on-main:not(.tt-sections-main) #displaybox nav.tabs > .tt-dk-vsw + span.status { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; }
+html.tt-dk-on.tt-sections-main #displaybox nav.tabs > .tt-dk-vsw { margin-bottom: 4px; }
+html.tt-dk-on #displaybox .tt-dk-seg { display: inline-flex; gap: 3px; padding: 3px; background: var(--tt-dk-inset); border-radius: var(--tt-radius-pill); }
+html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border: 0; border-radius: var(--tt-radius-pill);
+  background: transparent; color: var(--tt-text-hint); font-size: var(--tt-text-subline); line-height: 1; box-shadow: none; cursor: pointer; user-select: none;
+  transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
-html.cc-dk-on #displaybox .cc-dk-seg .cc-seg-btn .cc-glyph { width: 1em; height: 1em; flex: none; }
-html.cc-dk-on #displaybox .cc-dk-seg .cc-seg-btn:hover { background: var(--cc-chip); color: var(--cc-text); }
-html.cc-dk-on #displaybox .cc-dk-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616)); }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-surface-3); color: var(--cc-text); }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-vsw:hover .cc-dk-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616)); }
+html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
+html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616)); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-vsw:hover .tt-dk-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616)); }
 
-html.cc-dk-on #displaybox .cc-dk-host { margin: 0 0 4px; }
+html.tt-dk-on #displaybox .tt-dk-host { margin: 0 0 4px; }
 /* A grid is as wide as its cards, so its card hugs them, and wraps them once it is squeezed, the
    columns then sharing the width. */
-html.cc-dk-on #displaybox .cc-dk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; width: calc(var(--cc-dk-n, 1) * 272px - 12px); max-width: 100%; }
+html.tt-dk-on #displaybox .tt-dk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; width: calc(var(--tt-dk-n, 1) * 272px - 12px); max-width: 100%; }
 /* The pools stand side by side and wrap when the row is full. The summary strips and the boot hint
    take the width the cards give them instead of widening their card. */
-html.cc-dk-on #displaybox .cc-dk-pools { display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: flex-start; }
-html.cc-dk-on #displaybox .cc-dk-pool { flex: 0 1 auto; min-width: 0; }
-html.cc-dk-on #displaybox :is(.cc-dk-pool, .cc-dk-host) > :is(.cc-dk-sum, .cc-dk-notes) { contain: inline-size; }
+html.tt-dk-on #displaybox .tt-dk-pools { display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: flex-start; }
+html.tt-dk-on #displaybox .tt-dk-pool { flex: 0 1 auto; min-width: 0; }
+html.tt-dk-on #displaybox :is(.tt-dk-pool, .tt-dk-host) > :is(.tt-dk-sum, .tt-dk-notes) { contain: inline-size; }
 /* The boot hint is a quiet column beside the boot card and as tall as it, so the boot section is
    no taller than the pools beside it. On a phone it goes back under the card. */
-html.cc-dk-on #displaybox .cc-dk-host[data-cc-dk="boot"]:has(> .cc-dk-notes) { display: flex; align-items: stretch; gap: 12px; }
-html.cc-dk-on #displaybox .cc-dk-host[data-cc-dk="boot"] > .cc-dk-grid { flex: none; }
-html.cc-dk-on #displaybox .cc-dk-host[data-cc-dk="boot"] > .cc-dk-notes {
+html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"]:has(> .tt-dk-notes) { display: flex; align-items: stretch; gap: 12px; }
+html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-grid { flex: none; }
+html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-notes {
   flex: 0 0 168px; flex-direction: column; justify-content: center; margin-top: 0; padding: 12px 14px;
-  background: color-mix(in srgb, var(--cc-dk-card) 50%, transparent); color: var(--cc-text-dim); font-size: var(--cc-text-meta); line-height: 1.5;
+  background: color-mix(in srgb, var(--tt-dk-card) 50%, transparent); color: var(--tt-text-dim); font-size: var(--tt-text-meta); line-height: 1.5;
 }
 @media (max-width: 600px) {
-  html.cc-dk-on #displaybox .cc-dk-host[data-cc-dk="boot"]:has(> .cc-dk-notes) { display: block; }
-  html.cc-dk-on #displaybox .cc-dk-host[data-cc-dk="boot"] > .cc-dk-notes { margin-top: 12px; }
+  html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"]:has(> .tt-dk-notes) { display: block; }
+  html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-notes { margin-top: 12px; }
 }
 /* A pool's heading is a section badge above its cards. */
-html.cc-dk-on #displaybox .cc-dk-phead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px; font-size: var(--cc-text-meta); color: var(--cc-text-dim); }
-html.cc-dk-on #displaybox .cc-dk-pb {
-  display: inline-flex; align-items: center; min-height: var(--cc-sec-h, 22px); box-sizing: border-box; padding: var(--cc-sec-pad, 0 12px);
-  border-radius: var(--cc-radius-pill); background: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616));
-  font-size: var(--cc-sec-fs); font-weight: var(--cc-sec-fw, 500); letter-spacing: var(--cc-sec-ls, 1.2px); text-transform: uppercase; line-height: 1; white-space: nowrap;
+html.tt-dk-on #displaybox .tt-dk-phead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px; font-size: var(--tt-text-meta); color: var(--tt-text-dim); }
+html.tt-dk-on #displaybox .tt-dk-pb {
+  display: inline-flex; align-items: center; min-height: var(--tt-sec-h, 22px); box-sizing: border-box; padding: var(--tt-sec-pad, 0 12px);
+  border-radius: var(--tt-radius-pill); background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616));
+  font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw, 500); letter-spacing: var(--tt-sec-ls, 1.2px); text-transform: uppercase; line-height: 1; white-space: nowrap;
 }
 @media (max-width: 600px) {
-  html.cc-dk-on #displaybox .cc-dk-grid { grid-template-columns: minmax(0, 1fr); width: auto; }
-  html.cc-dk-on #displaybox .cc-dk-pool { flex: 1 1 100%; }
+  html.tt-dk-on #displaybox .tt-dk-grid { grid-template-columns: minmax(0, 1fr); width: auto; }
+  html.tt-dk-on #displaybox .tt-dk-pool { flex: 1 1 100%; }
 }
 
-html.cc-dk-on #displaybox .cc-dk-card {
+html.tt-dk-on #displaybox .tt-dk-card {
   position: relative; display: flex; flex-direction: column; gap: 9px; min-width: 0; padding: 12px;
-  background: var(--cc-dk-card); color: var(--cc-text); border-radius: var(--cc-radius-card); cursor: pointer;
-  font-size: var(--cc-text-body); line-height: 1.4; text-align: left;
-  transition: background-color var(--cc-motion-control-dur, 0s);
+  background: var(--tt-dk-card); color: var(--tt-text); border-radius: var(--tt-radius-card); cursor: pointer;
+  font-size: var(--tt-text-body); line-height: 1.4; text-align: left;
+  transition: background-color var(--tt-motion-control-dur, 0s);
 }
-html.cc-dk-on #displaybox .cc-dk-card:hover,
-html.cc-dk-on #displaybox .cc-dk-card:focus-within { background: var(--cc-dk-card-hover); }
-html.cc-dk-on #displaybox .cc-dk-card:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); }
+html.tt-dk-on #displaybox .tt-dk-card:hover,
+html.tt-dk-on #displaybox .tt-dk-card:focus-within { background: var(--tt-dk-card-hover); }
+html.tt-dk-on #displaybox .tt-dk-card:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); }
 /* Every drawing keeps a margin to the edge of its well, the same on every card. */
-html.cc-dk-on #displaybox .cc-dk-art { position: relative; height: 140px; background: var(--cc-dk-inset); border-radius: var(--cc-radius-control); overflow: hidden; }
-html.cc-dk-on #displaybox .cc-dk-art .cc-dk-drive { position: absolute; inset: 14px 12px; width: calc(100% - 24px); height: calc(100% - 28px); }
+html.tt-dk-on #displaybox .tt-dk-art { position: relative; height: 140px; background: var(--tt-dk-inset); border-radius: var(--tt-radius-control); overflow: hidden; }
+html.tt-dk-on #displaybox .tt-dk-art .tt-dk-drive { position: absolute; inset: 14px 12px; width: calc(100% - 24px); height: calc(100% - 28px); }
 /* A hard disk stacks its case, platter and arm. The platter takes the place and scale the case's
    viewBox gives it, so the layers line up at any card width. */
-html.cc-dk-on #displaybox .cc-dk-hdd { container-type: size; }
-html.cc-dk-on #displaybox .cc-dk-hdd > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-html.cc-dk-on #displaybox .cc-dk-plat { --cc-dk-u: min(100cqw / 194, 100cqh / 130); position: absolute; left: calc(50% - 75 * var(--cc-dk-u)); top: calc(50% - 53 * var(--cc-dk-u)); width: calc(106 * var(--cc-dk-u)); height: calc(106 * var(--cc-dk-u)); }
-html.cc-dk-on #displaybox .cc-dk-plat > svg { display: block; width: 100%; height: 100%; }
-html.cc-dk-on #displaybox .cc-dk-art text { font-family: inherit; }
-html.cc-dk-on #displaybox .cc-dk-card.cc-dk-down .cc-dk-drive { opacity: .62; }
+html.tt-dk-on #displaybox .tt-dk-hdd { container-type: size; }
+html.tt-dk-on #displaybox .tt-dk-hdd > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+html.tt-dk-on #displaybox .tt-dk-plat { --tt-dk-u: min(100cqw / 194, 100cqh / 130); position: absolute; left: calc(50% - 75 * var(--tt-dk-u)); top: calc(50% - 53 * var(--tt-dk-u)); width: calc(106 * var(--tt-dk-u)); height: calc(106 * var(--tt-dk-u)); }
+html.tt-dk-on #displaybox .tt-dk-plat > svg { display: block; width: 100%; height: 100%; }
+html.tt-dk-on #displaybox .tt-dk-art text { font-family: inherit; }
+html.tt-dk-on #displaybox .tt-dk-card.tt-dk-down .tt-dk-drive { opacity: .62; }
 /* The array's own card stands first among its disks, its vessel where a disk has its drawing. It
    opens nothing, so it keeps the plain cursor and its surface under the pointer. */
-html.cc-dk-on #displaybox .cc-dk-total { cursor: default; }
-html.cc-dk-on #displaybox .cc-dk-total:is(:hover, :focus-within) { background: var(--cc-dk-card); }
-html.cc-dk-on #displaybox .cc-dk-total .cc-vessel {
-  --cc-pic-c: var(--cc-dk-c, var(--cc-shr-accent, #FCC419));
+html.tt-dk-on #displaybox .tt-dk-total { cursor: default; }
+html.tt-dk-on #displaybox .tt-dk-total:is(:hover, :focus-within) { background: var(--tt-dk-card); }
+html.tt-dk-on #displaybox .tt-dk-total .tt-vessel {
+  --tt-pic-c: var(--tt-dk-c, var(--tt-shr-accent, #FCC419));
   position: absolute; inset: 0; width: 88px; height: 104px; margin: auto;
 }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-total:not(:hover):not(:focus-within) .cc-vessel { --cc-pic-c: var(--cc-text-dim); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-total:not(:hover):not(:focus-within) .tt-vessel { --tt-pic-c: var(--tt-text-dim); }
 
 /* The action badges show on hover and keyboard focus, and always on a touch screen. */
-html.cc-dk-on #displaybox .cc-dk-acts {
+html.tt-dk-on #displaybox .tt-dk-acts {
   position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; padding: 3px;
-  border-radius: var(--cc-radius-pill); background: var(--cc-dk-inset); opacity: 0;
-  transition: opacity var(--cc-motion-fade-dur, 0s);
+  border-radius: var(--tt-radius-pill); background: var(--tt-dk-inset); opacity: 0;
+  transition: opacity var(--tt-motion-fade-dur, 0s);
 }
-html.cc-dk-on #displaybox .cc-dk-acts:empty { display: none; }
-html.cc-dk-on #displaybox .cc-dk-card:hover .cc-dk-acts,
-html.cc-dk-on #displaybox .cc-dk-card:focus-within .cc-dk-acts { opacity: 1; }
+html.tt-dk-on #displaybox .tt-dk-acts:empty { display: none; }
+html.tt-dk-on #displaybox .tt-dk-card:hover .tt-dk-acts,
+html.tt-dk-on #displaybox .tt-dk-card:focus-within .tt-dk-acts { opacity: 1; }
 @media (hover: none) {
-  html.cc-dk-on #displaybox .cc-dk-acts { opacity: 1; }
+  html.tt-dk-on #displaybox .tt-dk-acts { opacity: 1; }
 }
-html.cc-dk-on #displaybox .cc-dk-ib {
-  display: inline-flex; align-items: center; justify-content: center; width: var(--cc-icon-badge); height: var(--cc-icon-badge);
-  border-radius: var(--cc-radius-pill); background: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616));
-  font-size: var(--cc-text-subline); cursor: pointer;
+html.tt-dk-on #displaybox .tt-dk-ib {
+  display: inline-flex; align-items: center; justify-content: center; width: var(--tt-icon-badge); height: var(--tt-icon-badge);
+  border-radius: var(--tt-radius-pill); background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616));
+  font-size: var(--tt-text-subline); cursor: pointer;
 }
-html.cc-dk-on #displaybox .cc-dk-ib .cc-glyph { width: 1em; height: 1em; }
-html.cc-dk-on #displaybox .cc-dk-ib:hover { box-shadow: inset 0 0 0 99px var(--cc-hover-wash); }
-html.cc-dk-on #displaybox .cc-dk-ib:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); }
-html.cc-dk-on #displaybox .cc-dk-wait .cc-dk-ib[data-act="spin"] { opacity: .5; pointer-events: none; }
+html.tt-dk-on #displaybox .tt-dk-ib .tt-glyph { width: 1em; height: 1em; }
+html.tt-dk-on #displaybox .tt-dk-ib:hover { box-shadow: inset 0 0 0 99px var(--tt-hover-wash); }
+html.tt-dk-on #displaybox .tt-dk-ib:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); }
+html.tt-dk-on #displaybox .tt-dk-wait .tt-dk-ib[data-act="spin"] { opacity: .5; pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
-  html.cc-dk-on #displaybox .cc-dk-ib:active { scale: var(--cc-motion-press-scale, 1); }
+  html.tt-dk-on #displaybox .tt-dk-ib:active { scale: var(--tt-motion-press-scale, 1); }
 }
 
-html.cc-dk-on #displaybox .cc-dk-namerow { display: flex; align-items: center; gap: 8px; min-width: 0; }
-html.cc-dk-on #displaybox .cc-dk-nb {
+html.tt-dk-on #displaybox .tt-dk-namerow { display: flex; align-items: center; gap: 8px; min-width: 0; }
+html.tt-dk-on #displaybox .tt-dk-nb {
   display: inline-flex; align-items: center; height: 28px; padding: 0 12px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  border-radius: var(--cc-radius-pill); background: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); color: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616));
-  font-size: var(--cc-text-body); font-weight: 700;
-  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+  border-radius: var(--tt-radius-pill); background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616));
+  font-size: var(--tt-text-body); font-weight: 700;
+  transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
 /* The whole capacity of the disk, beside its name. */
-html.cc-dk-on #displaybox .cc-dk-cap {
+html.tt-dk-on #displaybox .tt-dk-cap {
   display: inline-flex; align-items: center; flex: none; height: 28px; padding: 0 10px; white-space: nowrap;
-  border-radius: var(--cc-radius-pill); background: var(--cc-chip); color: var(--cc-text);
-  font-size: var(--cc-text-subline); font-weight: 600; font-variant-numeric: tabular-nums;
+  border-radius: var(--tt-radius-pill); background: var(--tt-chip); color: var(--tt-text);
+  font-size: var(--tt-text-subline); font-weight: 600; font-variant-numeric: tabular-nums;
 }
-html.cc-dk-on #displaybox .cc-dk-info { flex: none; color: var(--cc-text-dim); cursor: help; }
-html.cc-dk-on #displaybox .cc-dk-info:hover,
-html.cc-dk-on #displaybox .cc-dk-info:focus-visible { color: var(--cc-text); }
-html.cc-dk-on #displaybox .cc-dk-dev { margin-left: auto; font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: var(--cc-text-meta); color: var(--cc-text-dim); }
-html.cc-dk-on #displaybox .cc-dk-model { margin-top: -3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cc-text-subline); color: var(--cc-text-dim); }
+html.tt-dk-on #displaybox .tt-dk-info { flex: none; color: var(--tt-text-dim); cursor: help; }
+html.tt-dk-on #displaybox .tt-dk-info:hover,
+html.tt-dk-on #displaybox .tt-dk-info:focus-visible { color: var(--tt-text); }
+html.tt-dk-on #displaybox .tt-dk-dev { margin-left: auto; font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: var(--tt-text-meta); color: var(--tt-text-dim); }
+html.tt-dk-on #displaybox .tt-dk-model { margin-top: -3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--tt-text-subline); color: var(--tt-text-dim); }
 
-html.cc-dk-on #displaybox .cc-dk-use { display: flex; flex-direction: column; justify-content: center; gap: 5px; min-height: 34px; }
-html.cc-dk-on #displaybox .cc-dk-uselbl { display: flex; justify-content: space-between; gap: 8px; font-size: var(--cc-text-meta); color: var(--cc-text-hint); font-variant-numeric: tabular-nums; }
-html.cc-dk-on #displaybox .cc-dk-uselbl b { color: var(--cc-text); font-weight: 600; }
-html.cc-dk-on #displaybox .cc-dk-track { position: relative; display: block; height: 8px; border-radius: var(--cc-radius-pill); background: var(--cc-chip); overflow: hidden; }
-html.cc-dk-on #displaybox .cc-dk-fill { position: absolute; inset: 0 auto 0 0; display: block; border-radius: var(--cc-radius-pill); background: var(--cc-ok); }
-html.cc-dk-on #displaybox .cc-dk-fill.cc-dk-warn { background: var(--cc-warn); }
-html.cc-dk-on #displaybox .cc-dk-fill.cc-dk-err { background: var(--cc-err); }
-html.cc-dk-on #displaybox .cc-dk-parity { display: flex; align-items: center; gap: 7px; font-size: var(--cc-text-subline); color: var(--cc-text-hint); }
-html.cc-dk-on #displaybox .cc-dk-dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--cc-ok); }
-html.cc-dk-on #displaybox .cc-dk-dot.cc-dk-idle { background: var(--cc-text-dim2); }
-html.cc-dk-on #displaybox .cc-dk-dot.cc-dk-warn { background: var(--cc-warn); }
-html.cc-dk-on #displaybox .cc-dk-dot.cc-dk-err { background: var(--cc-err); }
+html.tt-dk-on #displaybox .tt-dk-use { display: flex; flex-direction: column; justify-content: center; gap: 5px; min-height: 34px; }
+html.tt-dk-on #displaybox .tt-dk-uselbl { display: flex; justify-content: space-between; gap: 8px; font-size: var(--tt-text-meta); color: var(--tt-text-hint); font-variant-numeric: tabular-nums; }
+html.tt-dk-on #displaybox .tt-dk-uselbl b { color: var(--tt-text); font-weight: 600; }
+html.tt-dk-on #displaybox .tt-dk-track { position: relative; display: block; height: 8px; border-radius: var(--tt-radius-pill); background: var(--tt-chip); overflow: hidden; }
+html.tt-dk-on #displaybox .tt-dk-fill { position: absolute; inset: 0 auto 0 0; display: block; border-radius: var(--tt-radius-pill); background: var(--tt-ok); }
+html.tt-dk-on #displaybox .tt-dk-fill.tt-dk-warn { background: var(--tt-warn); }
+html.tt-dk-on #displaybox .tt-dk-fill.tt-dk-err { background: var(--tt-err); }
+html.tt-dk-on #displaybox .tt-dk-parity { display: flex; align-items: center; gap: 7px; font-size: var(--tt-text-subline); color: var(--tt-text-hint); }
+html.tt-dk-on #displaybox .tt-dk-dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--tt-ok); }
+html.tt-dk-on #displaybox .tt-dk-dot.tt-dk-idle { background: var(--tt-text-dim2); }
+html.tt-dk-on #displaybox .tt-dk-dot.tt-dk-warn { background: var(--tt-warn); }
+html.tt-dk-on #displaybox .tt-dk-dot.tt-dk-err { background: var(--tt-err); }
 
 /* A card shows only what deviates: no chip row while all is well, and the rates only while the
    disk reads or writes. The temperature always stays. */
-html.cc-dk-on #displaybox .cc-dk-chips { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 5px; }
-html.cc-dk-on #displaybox .cc-dk-chips:empty,
-html.cc-dk-on #displaybox .cc-dk-card:not(.cc-dk-busy) .cc-dk-rate { display: none; }
-html.cc-dk-on #displaybox .cc-dk-chip {
+html.tt-dk-on #displaybox .tt-dk-chips { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 5px; }
+html.tt-dk-on #displaybox .tt-dk-chips:empty,
+html.tt-dk-on #displaybox .tt-dk-card:not(.tt-dk-busy) .tt-dk-rate { display: none; }
+html.tt-dk-on #displaybox .tt-dk-chip {
   display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; white-space: nowrap;
-  border-radius: var(--cc-radius-pill); background: var(--cc-chip); color: var(--cc-text-chip); font-size: var(--cc-text-meta);
+  border-radius: var(--tt-radius-pill); background: var(--tt-chip); color: var(--tt-text-chip); font-size: var(--tt-text-meta);
 }
-html.cc-dk-on #displaybox .cc-dk-chip.cc-dk-warn { background: var(--cc-warn); color: var(--cc-warn-fg); }
-html.cc-dk-on #displaybox .cc-dk-chip.cc-dk-err { background: var(--cc-err); color: var(--cc-err-fg); }
-html.cc-dk-on #displaybox .cc-dk-chip:is(.cc-dk-warn, .cc-dk-err) .cc-dk-dot { background: currentColor; }
+html.tt-dk-on #displaybox .tt-dk-chip.tt-dk-warn { background: var(--tt-warn); color: var(--tt-warn-fg); }
+html.tt-dk-on #displaybox .tt-dk-chip.tt-dk-err { background: var(--tt-err); color: var(--tt-err-fg); }
+html.tt-dk-on #displaybox .tt-dk-chip:is(.tt-dk-warn, .tt-dk-err) .tt-dk-dot { background: currentColor; }
 
-html.cc-dk-on #displaybox .cc-dk-io { display: grid; grid-template-columns: .8fr 1fr 1fr; gap: 8px; font-size: var(--cc-text-meta); color: var(--cc-text-dim); font-variant-numeric: tabular-nums; }
-html.cc-dk-on #displaybox .cc-dk-io > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-html.cc-dk-on #displaybox .cc-dk-io b { display: inline-flex; align-items: center; gap: 6px; color: var(--cc-text); font-size: var(--cc-text-subline); font-weight: 600; white-space: nowrap; }
-html.cc-dk-on #displaybox .cc-dk-io b .cc-glyph { width: 1em; height: 1em; flex: none; }
-html.cc-dk-on #displaybox .cc-dk-io b.cc-dk-warn { color: var(--cc-warn-ink); }
-html.cc-dk-on #displaybox .cc-dk-io b.cc-dk-err { color: var(--cc-err-ink); }
-html.cc-dk-on #displaybox .cc-dk-io b.cc-dk-warn .cc-dk-dot { background: var(--cc-warn); }
-html.cc-dk-on #displaybox .cc-dk-io b.cc-dk-err .cc-dk-dot { background: var(--cc-err); }
+html.tt-dk-on #displaybox .tt-dk-io { display: grid; grid-template-columns: .8fr 1fr 1fr; gap: 8px; font-size: var(--tt-text-meta); color: var(--tt-text-dim); font-variant-numeric: tabular-nums; }
+html.tt-dk-on #displaybox .tt-dk-io > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+html.tt-dk-on #displaybox .tt-dk-io b { display: inline-flex; align-items: center; gap: 6px; color: var(--tt-text); font-size: var(--tt-text-subline); font-weight: 600; white-space: nowrap; }
+html.tt-dk-on #displaybox .tt-dk-io b .tt-glyph { width: 1em; height: 1em; flex: none; }
+html.tt-dk-on #displaybox .tt-dk-io b.tt-dk-warn { color: var(--tt-warn-ink); }
+html.tt-dk-on #displaybox .tt-dk-io b.tt-dk-err { color: var(--tt-err-ink); }
+html.tt-dk-on #displaybox .tt-dk-io b.tt-dk-warn .tt-dk-dot { background: var(--tt-warn); }
+html.tt-dk-on #displaybox .tt-dk-io b.tt-dk-err .tt-dk-dot { background: var(--tt-err); }
 
-html.cc-dk-on #displaybox .cc-dk-sum {
+html.tt-dk-on #displaybox .tt-dk-sum {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 12px; padding: 10px 14px;
-  background: var(--cc-dk-card); border-radius: var(--cc-radius-card); font-size: var(--cc-text-subline); color: var(--cc-text-hint); font-variant-numeric: tabular-nums;
+  background: var(--tt-dk-card); border-radius: var(--tt-radius-card); font-size: var(--tt-text-subline); color: var(--tt-text-hint); font-variant-numeric: tabular-nums;
 }
-html.cc-dk-on #displaybox .cc-dk-sum b { color: var(--cc-text); }
-html.cc-dk-on #displaybox .cc-dk-sumbar { width: 220px; max-width: 100%; }
-html.cc-dk-on #displaybox .cc-dk-empty {
+html.tt-dk-on #displaybox .tt-dk-sum b { color: var(--tt-text); }
+html.tt-dk-on #displaybox .tt-dk-sumbar { width: 220px; max-width: 100%; }
+html.tt-dk-on #displaybox .tt-dk-empty {
   display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 16px; text-align: center;
-  background: var(--cc-dk-card); border-radius: var(--cc-radius-card); color: var(--cc-text-dim); font-size: var(--cc-text-subline);
+  background: var(--tt-dk-card); border-radius: var(--tt-radius-card); color: var(--tt-text-dim); font-size: var(--tt-text-subline);
 }
-html.cc-dk-on #displaybox .cc-dk-empty b { color: var(--cc-text-hint); font-weight: 600; }
+html.tt-dk-on #displaybox .tt-dk-empty b { color: var(--tt-text-hint); font-weight: 600; }
 
 /* The drawings. The sticker carries the card colour, the LED and the label lines light up in it
    while the disk reads or writes. */
-html.cc-dk-on #displaybox .cc-dk-st { fill: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); }
-html.cc-dk-on #displaybox .cc-dk-ink { fill: var(--cc-dk-ct, var(--cc-shr-accent-text, #161616)); }
-html.cc-dk-on #displaybox :is(.cc-dk-arm, .cc-dk-seek) { transform-box: view-box; }
-html.cc-dk-on #displaybox .cc-dk-arm { rotate: 0deg; transition: rotate var(--cc-motion-disk-park, 0s) cubic-bezier(.4, 0, .2, 1); }
-html.cc-dk-on #displaybox .cc-dk-card.cc-dk-down .cc-dk-arm { rotate: 24deg; }
+html.tt-dk-on #displaybox .tt-dk-st { fill: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); }
+html.tt-dk-on #displaybox .tt-dk-ink { fill: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616)); }
+html.tt-dk-on #displaybox :is(.tt-dk-arm, .tt-dk-seek) { transform-box: view-box; }
+html.tt-dk-on #displaybox .tt-dk-arm { rotate: 0deg; transition: rotate var(--tt-motion-disk-park, 0s) cubic-bezier(.4, 0, .2, 1); }
+html.tt-dk-on #displaybox .tt-dk-card.tt-dk-down .tt-dk-arm { rotate: 24deg; }
 /* The LED glows faintly while the disk spins and waits, lights up and blinks with every second it
    reads or writes, and goes dark while it rests. Under reduced motion it stays lit without blinking. */
-html.cc-dk-on #displaybox .cc-dk-led { fill: var(--cc-dk-led-off); }
-html.cc-dk-on #displaybox .cc-dk-card:not(.cc-dk-down) .cc-dk-led { fill: color-mix(in srgb, var(--cc-dk-c, var(--cc-shr-accent, #FCC419)) 40%, var(--cc-dk-led-off)); }
-html.cc-dk-on #displaybox .cc-dk-card.cc-dk-access .cc-dk-led { fill: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); }
-html.cc-dk-on #displaybox .cc-dk-card.cc-dk-down .cc-dk-led { opacity: .45; }
+html.tt-dk-on #displaybox .tt-dk-led { fill: var(--tt-dk-led-off); }
+html.tt-dk-on #displaybox .tt-dk-card:not(.tt-dk-down) .tt-dk-led { fill: color-mix(in srgb, var(--tt-dk-c, var(--tt-shr-accent, #FCC419)) 40%, var(--tt-dk-led-off)); }
+html.tt-dk-on #displaybox .tt-dk-card.tt-dk-access .tt-dk-led { fill: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); }
+html.tt-dk-on #displaybox .tt-dk-card.tt-dk-down .tt-dk-led { opacity: .45; }
 /* The light over an SSD and the dots in an NVMe or USB stick show only while they travel, so a
    still frame has none of them. */
-html.cc-dk-on #displaybox :is(.cc-dk-sweep, .cc-dk-flow) { opacity: 0; }
-html.cc-dk-on #displaybox .cc-dk-bar { fill: var(--cc-dk-bar-off); transform-box: fill-box; transform-origin: left center; }
-html.cc-dk-on #displaybox .cc-dk-card.cc-dk-busy .cc-dk-bar { fill: var(--cc-dk-c, var(--cc-shr-accent, #FCC419)); }
+html.tt-dk-on #displaybox :is(.tt-dk-sweep, .tt-dk-flow) { opacity: 0; }
+html.tt-dk-on #displaybox .tt-dk-bar { fill: var(--tt-dk-bar-off); transform-box: fill-box; transform-origin: left center; }
+html.tt-dk-on #displaybox .tt-dk-card.tt-dk-busy .tt-dk-bar { fill: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); }
 
 /* Reactive mode: a card rests grey and takes its colour while it is hovered or focused. */
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-card:not(:hover):not(:focus-within) :is(.cc-dk-nb, .cc-dk-ib) { background: var(--cc-chip); color: var(--cc-text); }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-card:not(:hover):not(:focus-within) .cc-dk-st { fill: var(--cc-dk-rest); }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-card:not(:hover):not(:focus-within) .cc-dk-ink { fill: var(--cc-dk-rest-ink); }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-card:not(.cc-dk-down):not(:hover):not(:focus-within) .cc-dk-led { fill: color-mix(in srgb, var(--cc-text) 35%, var(--cc-dk-led-off)); }
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-card.cc-dk-access:not(:hover):not(:focus-within) .cc-dk-led,
-html.cc-dk-on.cc-shares-rbneutral #displaybox .cc-dk-card.cc-dk-busy:not(:hover):not(:focus-within) :is(.cc-dk-bar, .cc-dk-flow) { fill: var(--cc-text); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-card:not(:hover):not(:focus-within) :is(.tt-dk-nb, .tt-dk-ib) { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-card:not(:hover):not(:focus-within) .tt-dk-st { fill: var(--tt-dk-rest); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-card:not(:hover):not(:focus-within) .tt-dk-ink { fill: var(--tt-dk-rest-ink); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-card:not(.tt-dk-down):not(:hover):not(:focus-within) .tt-dk-led { fill: color-mix(in srgb, var(--tt-text) 35%, var(--tt-dk-led-off)); }
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-card.tt-dk-access:not(:hover):not(:focus-within) .tt-dk-led,
+html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-card.tt-dk-busy:not(:hover):not(:focus-within) :is(.tt-dk-bar, .tt-dk-flow) { fill: var(--tt-text); }
 
 /* The motion reads the disk dials in Tokens.css, inside the no-preference gate, and stops at "off".
    A flash drive shows its data flowing while it is busy, a light over an SSD's lines and dots
    running into an NVMe or USB stick, beside its blinking LED. disks.js turns the platter and sets
    the pace of the flow, so both can speed up and slow down without a jump. */
-@keyframes cc-dk-seek {
-  0%, 100% { rotate: calc(var(--cc-motion-disk-swing, 0deg) * -.6); }
-  30% { rotate: calc(var(--cc-motion-disk-swing, 0deg) * .7); }
-  55% { rotate: calc(var(--cc-motion-disk-swing, 0deg) * -.2); }
-  80% { rotate: calc(var(--cc-motion-disk-swing, 0deg) * .9); }
+@keyframes tt-dk-seek {
+  0%, 100% { rotate: calc(var(--tt-motion-disk-swing, 0deg) * -.6); }
+  30% { rotate: calc(var(--tt-motion-disk-swing, 0deg) * .7); }
+  55% { rotate: calc(var(--tt-motion-disk-swing, 0deg) * -.2); }
+  80% { rotate: calc(var(--tt-motion-disk-swing, 0deg) * .9); }
 }
-@keyframes cc-dk-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
-@keyframes cc-dk-sweep { from { transform: translateX(-60px); opacity: 0; } 15%, 85% { opacity: 1; } to { transform: translateX(130px); opacity: 0; } }
-@keyframes cc-dk-bars { 0%, 100% { scale: .25 1; opacity: .55; } 50% { scale: 1 1; opacity: 1; } }
-@keyframes cc-dk-flow { from { transform: translateX(0); opacity: 0; } 15%, 85% { opacity: 1; } to { transform: translateX(46px); opacity: 0; } }
-@keyframes cc-dk-in { from { transform: translateY(var(--cc-motion-disk-rise, 0px)); opacity: .001; } to { transform: none; opacity: 1; } }
+@keyframes tt-dk-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+@keyframes tt-dk-sweep { from { transform: translateX(-60px); opacity: 0; } 15%, 85% { opacity: 1; } to { transform: translateX(130px); opacity: 0; } }
+@keyframes tt-dk-bars { 0%, 100% { scale: .25 1; opacity: .55; } 50% { scale: 1 1; opacity: 1; } }
+@keyframes tt-dk-flow { from { transform: translateX(0); opacity: 0; } 15%, 85% { opacity: 1; } to { transform: translateX(46px); opacity: 0; } }
+@keyframes tt-dk-in { from { transform: translateY(var(--tt-motion-disk-rise, 0px)); opacity: .001; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: no-preference) {
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy:not(.cc-dk-down) .cc-dk-seek { animation: cc-dk-seek var(--cc-motion-disk-seek) ease-in-out infinite; }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-access .cc-dk-led { animation: cc-dk-blink calc(var(--cc-motion-disk-blink) * var(--cc-dk-k, 1)) var(--cc-motion-disk-blink-ease) infinite; }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-sweep { animation: cc-dk-sweep var(--cc-motion-disk-flow) ease-in-out infinite; }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-bar { animation: cc-dk-bars calc(var(--cc-motion-disk-flow) * .8) ease-in-out infinite; }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-bar.cc-dk-n2 { animation-delay: calc(var(--cc-motion-disk-flow) * -.27); }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-bar.cc-dk-n3 { animation-delay: calc(var(--cc-motion-disk-flow) * -.53); }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-flow { animation: cc-dk-flow var(--cc-motion-disk-flow) linear infinite; }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-flow.cc-dk-n2 { animation-delay: calc(var(--cc-motion-disk-flow) / -3); }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-busy .cc-dk-flow.cc-dk-n3 { animation-delay: calc(var(--cc-motion-disk-flow) / -1.5); }
-  html.cc-dk-on:not([data-cc-motion="off"]) #displaybox .cc-dk-card.cc-dk-enter { animation: cc-dk-in .42s var(--cc-motion-disk-ease) both; animation-delay: min(calc(var(--cc-dk-i, 0) * var(--cc-motion-disk-stagger)), 480ms); }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy:not(.tt-dk-down) .tt-dk-seek { animation: tt-dk-seek var(--tt-motion-disk-seek) ease-in-out infinite; }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-access .tt-dk-led { animation: tt-dk-blink calc(var(--tt-motion-disk-blink) * var(--tt-dk-k, 1)) var(--tt-motion-disk-blink-ease) infinite; }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-sweep { animation: tt-dk-sweep var(--tt-motion-disk-flow) ease-in-out infinite; }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-bar { animation: tt-dk-bars calc(var(--tt-motion-disk-flow) * .8) ease-in-out infinite; }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-bar.tt-dk-n2 { animation-delay: calc(var(--tt-motion-disk-flow) * -.27); }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-bar.tt-dk-n3 { animation-delay: calc(var(--tt-motion-disk-flow) * -.53); }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-flow { animation: tt-dk-flow var(--tt-motion-disk-flow) linear infinite; }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-flow.tt-dk-n2 { animation-delay: calc(var(--tt-motion-disk-flow) / -3); }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-busy .tt-dk-flow.tt-dk-n3 { animation-delay: calc(var(--tt-motion-disk-flow) / -1.5); }
+  html.tt-dk-on:not([data-tt-motion="off"]) #displaybox .tt-dk-card.tt-dk-enter { animation: tt-dk-in .42s var(--tt-motion-disk-ease) both; animation-delay: min(calc(var(--tt-dk-i, 0) * var(--tt-motion-disk-stagger)), 480ms); }
 }

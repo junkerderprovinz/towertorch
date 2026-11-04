@@ -23,7 +23,7 @@ func samplePlan() model.Plan {
 func sampleConfig() model.Config {
 	return model.Config{
 		Notify:     model.Notify{Unraid: true, Webhook: webhook},
-		UISettings: map[string]string{"cc.accent": "#fcc419"},
+		UISettings: map[string]string{"tt.accent": "#fcc419"},
 		Schedules:  []model.Schedule{{Name: "plex", Action: "restart", Time: "04:00", Enabled: true}},
 	}
 }
@@ -51,7 +51,7 @@ func TestConfigKeepsOnlyThatAWebhookIsSet(t *testing.T) {
 	if got.Notify.Webhook != Redacted {
 		t.Errorf("webhook = %q", got.Notify.Webhook)
 	}
-	if !got.Notify.Unraid || got.UISettings["cc.accent"] != "#fcc419" || len(got.Schedules) != 1 {
+	if !got.Notify.Unraid || got.UISettings["tt.accent"] != "#fcc419" || len(got.Schedules) != 1 {
 		t.Errorf("redaction dropped plain settings: %+v", got)
 	}
 	if c.Notify.Webhook != webhook {
@@ -122,9 +122,9 @@ func TestCollectReadsVersionsAndTheLogTail(t *testing.T) {
 	}
 	long := strings.Repeat("old line that scrolled away\n", 4000) + "the last line\n"
 	s := Sources{
-		LogFile:    write("cc.log", long),
+		LogFile:    write("tt.log", long),
 		UnraidFile: write("unraid-version", "version=\"7.1.4\"\n"),
-		PluginFile: write("cc.plg", "<!DOCTYPE PLUGIN [\n  <!ENTITY version   \"1.2.0\">\n]>"),
+		PluginFile: write("tt.plg", "<!DOCTYPE PLUGIN [\n  <!ENTITY version   \"1.2.0\">\n]>"),
 	}
 	var r Report
 	s.Collect(&r)

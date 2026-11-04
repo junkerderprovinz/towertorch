@@ -1,9 +1,9 @@
 /* TowerTorch: GlimStone's label engine for the Unraid buttons TowerTorch draws as badges.
  *
- * Loaded on every page through TowerTorch.Labels.page. cc.labels.buttons holds how much of a
+ * Loaded on every page through TowerTorch.Labels.page. tt.labels.buttons holds how much of a
  * button shows: its caption (text), glyph and caption (textGlyph, the default), the glyph alone
  * (glyph), or the glyph with the caption opening under the pointer and on keyboard focus
- * (reactive). The mode goes onto <html> as data-cc-labels-buttons, and
+ * (reactive). The mode goes onto <html> as data-tt-labels-buttons, and
  * sheets/TowerTorch.Labels.css draws it.
  *
  * A caption listed in GLYPHS gets that glyph; any other caption keeps its text in every mode. An
@@ -14,9 +14,9 @@
  */
 (function () {
   "use strict";
-  if (window.ccLabelsApply) return;
+  if (window.ttLabelsApply) return;
   var root = document.documentElement;
-  var KEY = "cc.labels.buttons", ATTR = "data-cc-labels-buttons";
+  var KEY = "tt.labels.buttons", ATTR = "data-tt-labels-buttons";
   var MODES = ["text", "textGlyph", "glyph", "reactive"];
   var GAP = 6;
 
@@ -77,36 +77,36 @@
 
   // The places TowerTorch draws Unraid's buttons as badges, the same gates its sheets key on.
   var SCOPE = [
-    "html.cc-forms-on #displaybox",
-    "html.cc-tools-on #displaybox",
-    "html.cc-shares-on:is(.cc-on-main, .cc-on-shares, .cc-on-browse, .cc-on-stats) #displaybox",
-    "html[data-cc-page=\"vmform\"] #displaybox",
-    "html.cc-vms-on #displaybox",
-    "html.cc-docker-on #displaybox div.js-actions",
-    "html.cc-docker-on.cc-on-addct #canvas",
-    "html.cc-ctout-on #displaybox .content",
-    "html.cc-popups-on .multi_installDiv",
-    "html.cc-on-plugins #cc-plugbtns"
+    "html.tt-forms-on #displaybox",
+    "html.tt-tools-on #displaybox",
+    "html.tt-shares-on:is(.tt-on-main, .tt-on-shares, .tt-on-browse, .tt-on-stats) #displaybox",
+    "html[data-tt-page=\"vmform\"] #displaybox",
+    "html.tt-vms-on #displaybox",
+    "html.tt-docker-on #displaybox div.js-actions",
+    "html.tt-docker-on.tt-on-addct #canvas",
+    "html.tt-ctout-on #displaybox .content",
+    "html.tt-popups-on .multi_installDiv",
+    "html.tt-on-plugins #tt-plugbtns"
   ];
   // The share page's Delete is Unraid's label, which shares.js draws as a badge in the button row.
-  var TEXTUAL = 'button:not([role="tab"]), a.button, label.cc-b-del';
+  var TEXTUAL = 'button:not([role="tab"]), a.button, label.tt-b-del';
   var CONTROL = 'input[type="button"], input[type="submit"], input[type="reset"], ' + TEXTUAL;
   var IN_SCOPE = SCOPE.map(function (s) { return s + " :is(" + CONTROL + ")"; }).join(", ");
   // Unraid's web components and the boot editor draw their own buttons, and so does TowerTorch in
   // its windows and its own badges.
-  var SKIP = ".unapi, .main-content, #cc-settings, .cc-pop, .cc-win, .sweet-alert, .ui-dialog";
-  var NATIVE = ["cc-xbtn", "cc-fm-primary", "cc-b-del"];
+  var SKIP = ".unapi, .main-content, #tt-settings, .tt-pop, .tt-win, .sweet-alert, .ui-dialog";
+  var NATIVE = ["tt-xbtn", "tt-fm-primary", "tt-b-del"];
   function managed(el) {
     if (el.closest(SKIP)) return false;
     if (el.tagName === "INPUT") return true;
-    var own = (el.className || "").split(/\s+/).filter(function (c) { return /^cc-/.test(c) && NATIVE.indexOf(c) < 0; });
+    var own = (el.className || "").split(/\s+/).filter(function (c) { return /^tt-/.test(c) && NATIVE.indexOf(c) < 0; });
     if (own.length) return false;
     // A button that brings its own icon keeps it.
     return !el.querySelector("*:not(br)");
   }
 
   function mode() { var v = get(KEY, "textGlyph"); return MODES.indexOf(v) < 0 ? "textGlyph" : v; }
-  function enabled() { return get("cc.theming", "1") !== "0" && !!(window.CCTheme && window.CCTheme.glyph); }
+  function enabled() { return get("tt.theming", "1") !== "0" && !!(window.TTTheme && window.TTTheme.glyph); }
   function caption(el) { return String(el.tagName === "INPUT" ? el.value : el.textContent).replace(/\s+/g, " ").trim(); }
   function glyphFor(text) { return GLYPHS[text.toLowerCase().replace(/[\s:.…]+$/, "")] || ""; }
 
@@ -115,15 +115,15 @@
   var VALUE = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
   var hooked = [];
   function hook(el) {
-    if (el.tagName !== "INPUT" || el.ccLblHook || !VALUE) return;
-    el.ccLblHook = true; hooked.push(el);
+    if (el.tagName !== "INPUT" || el.ttLblHook || !VALUE) return;
+    el.ttLblHook = true; hooked.push(el);
     Object.defineProperty(el, "value", {
       configurable: true,
       get: function () { return VALUE.get.call(this); },
-      set: function (v) { VALUE.set.call(this, v); if (caption(this) !== this.ccLblCap) later(); }
+      set: function (v) { VALUE.set.call(this, v); if (caption(this) !== this.ttLblCap) later(); }
     });
   }
-  function unhookAll() { hooked.forEach(function (el) { delete el.value; el.ccLblHook = false; }); hooked = []; }
+  function unhookAll() { hooked.forEach(function (el) { delete el.value; el.ttLblHook = false; }); hooked = []; }
 
   // What the button looks like without the engine, read with the engine's rules switched off for
   // it, so the glyph can sit where its own padding and caption leave room. Coming back, the button
@@ -138,33 +138,33 @@
   }
   function measure(el) {
     giveBack(el);
-    el.setAttribute("data-cc-lbl-off", "");
+    el.setAttribute("data-tt-lbl-off", "");
     var cs = getComputedStyle(el);
     var m = {
       pl: parseFloat(cs.paddingLeft) || 0, pr: parseFloat(cs.paddingRight) || 0,
       fs: parseFloat(cs.fontSize) || 13, h: el.offsetHeight, w: el.offsetWidth, tw: Math.ceil(textWidth(el, cs))
     };
-    el.setAttribute("data-cc-lbl-still", "");
-    el.removeAttribute("data-cc-lbl-off");
+    el.setAttribute("data-tt-lbl-still", "");
+    el.removeAttribute("data-tt-lbl-off");
     return {
-      "--cc-lbl-pl": m.pl + "px", "--cc-lbl-pr": m.pr + "px", "--cc-lbl-tw": m.tw + "px", "--cc-lbl-gs": m.fs + "px",
-      "--cc-lbl-h": m.h + "px", "--cc-lbl-w": (m.w + m.fs + GAP) + "px", "--cc-lbl-gap": GAP + "px"
+      "--tt-lbl-pl": m.pl + "px", "--tt-lbl-pr": m.pr + "px", "--tt-lbl-tw": m.tw + "px", "--tt-lbl-gs": m.fs + "px",
+      "--tt-lbl-h": m.h + "px", "--tt-lbl-w": (m.w + m.fs + GAP) + "px", "--tt-lbl-gap": GAP + "px"
     };
   }
-  function settle(el) { if (el.hasAttribute("data-cc-lbl-still")) { void getComputedStyle(el).width; el.removeAttribute("data-cc-lbl-still"); } }
+  function settle(el) { if (el.hasAttribute("data-tt-lbl-still")) { void getComputedStyle(el).width; el.removeAttribute("data-tt-lbl-still"); } }
 
   // The layer's place and size and the padding beside it come from the sheet, per mode and state.
   // They are set here inline because the area scripts paint some buttons with an inline
   // background shorthand, which would reset every layer the sheet adds, and give the plugin bar
   // its padding inline. That padding is kept, put back while measuring and when the engine lets go.
-  var LAYER = { "background-image": "var(--cc-lbl-img)", "background-repeat": "no-repeat", "background-origin": "border-box",
-    "background-size": "var(--cc-lbl-bs)", "background-position": "var(--cc-lbl-bp)",
-    "padding-left": "var(--cc-lbl-ps)", "padding-right": "var(--cc-lbl-pe)" };
-  var PROPS = Object.keys(LAYER).concat(["--cc-lbl-img", "--cc-lbl-pl", "--cc-lbl-pr", "--cc-lbl-tw", "--cc-lbl-gs", "--cc-lbl-h", "--cc-lbl-w", "--cc-lbl-gap"]);
+  var LAYER = { "background-image": "var(--tt-lbl-img)", "background-repeat": "no-repeat", "background-origin": "border-box",
+    "background-size": "var(--tt-lbl-bs)", "background-position": "var(--tt-lbl-bp)",
+    "padding-left": "var(--tt-lbl-ps)", "padding-right": "var(--tt-lbl-pe)" };
+  var PROPS = Object.keys(LAYER).concat(["--tt-lbl-img", "--tt-lbl-pl", "--tt-lbl-pr", "--tt-lbl-tw", "--tt-lbl-gs", "--tt-lbl-h", "--tt-lbl-w", "--tt-lbl-gap"]);
   function layer(el) {
     if (el.style.getPropertyValue("padding-left") !== LAYER["padding-left"]) {
       var s = el.style, sh = s.getPropertyValue("padding");
-      el.ccLblPad = sh ? [["padding", sh, s.getPropertyPriority("padding")]]
+      el.ttLblPad = sh ? [["padding", sh, s.getPropertyPriority("padding")]]
         : ["padding-left", "padding-right"].filter(function (p) { return s.getPropertyValue(p); }).map(function (p) { return [p, s.getPropertyValue(p), s.getPropertyPriority(p)]; });
       // A shorthand written with var() loses its other two sides once two are taken out of it.
       if (sh) { var cs = getComputedStyle(el); s.setProperty("padding-top", cs.paddingTop, s.getPropertyPriority("padding")); s.setProperty("padding-bottom", cs.paddingBottom, s.getPropertyPriority("padding")); }
@@ -174,51 +174,51 @@
   function giveBack(el) {
     if (el.style.getPropertyValue("padding-left") !== LAYER["padding-left"]) return;
     el.style.removeProperty("padding-left"); el.style.removeProperty("padding-right");
-    (el.ccLblPad || []).forEach(function (d) { el.style.setProperty(d[0], d[1], d[2]); });
+    (el.ttLblPad || []).forEach(function (d) { el.style.setProperty(d[0], d[1], d[2]); });
   }
 
   // The glyph is drawn in the button's ink, which changes with hover, focus, the disabled state and
   // the colour mode, so it is redrawn every frame while such a change may be under way.
   function paint(el) {
-    var name = el.getAttribute("data-cc-lbl"); if (!name) return;
+    var name = el.getAttribute("data-tt-lbl"); if (!name) return;
     var ink = getComputedStyle(el).color;
-    if (el.ccLblInk === ink + name) return;
-    el.ccLblInk = ink + name;
-    var svg = window.CCTheme.glyph(name).replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ').replace('fill="currentColor"', 'fill="' + ink + '"');
-    el.style.setProperty("--cc-lbl-img", 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
+    if (el.ttLblInk === ink + name) return;
+    el.ttLblInk = ink + name;
+    var svg = window.TTTheme.glyph(name).replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ').replace('fill="currentColor"', 'fill="' + ink + '"');
+    el.style.setProperty("--tt-lbl-img", 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
   }
   function follow(el) {
-    if (!el.hasAttribute("data-cc-lbl")) return;
-    el.ccLblUntil = performance.now() + 450;
-    if (el.ccLblRaf) return;
+    if (!el.hasAttribute("data-tt-lbl")) return;
+    el.ttLblUntil = performance.now() + 450;
+    if (el.ttLblRaf) return;
     (function step() {
       paint(el);
-      el.ccLblRaf = performance.now() < el.ccLblUntil ? requestAnimationFrame(step) : 0;
+      el.ttLblRaf = performance.now() < el.ttLblUntil ? requestAnimationFrame(step) : 0;
     })();
   }
 
   // In glyph mode the caption is the bubble, ahead of whatever the bubble said before, as
   // GlimStone's buttons do it; reactive shows the words themselves and keeps the bubble only on a
   // disabled button, which never opens. The bubble it replaced comes back, title included.
-  var TIP_FROM = ["data-cc-tip", "data-tip", "title"];
+  var TIP_FROM = ["data-tt-tip", "data-tip", "title"];
   function tip(el, m) {
     var want = m === "glyph" || (m === "reactive" && el.disabled);
     if (want) {
-      if (!el.ccLblTip) {
+      if (!el.ttLblTip) {
         var from = TIP_FROM.filter(function (a) { return el.getAttribute(a); })[0] || "";
-        el.ccLblTip = { from: from, text: from ? el.getAttribute(from) : "" };
+        el.ttLblTip = { from: from, text: from ? el.getAttribute(from) : "" };
         if (from === "title") el.removeAttribute("title");
       } else if (el.getAttribute("title")) {
         // Unraid writes some titles later, the share page's reason why Delete is not possible
-        el.ccLblTip.text = el.getAttribute("title"); el.ccLblTip.from = el.ccLblTip.from || "title";
+        el.ttLblTip.text = el.getAttribute("title"); el.ttLblTip.from = el.ttLblTip.from || "title";
         el.removeAttribute("title");
       }
-      var was = el.ccLblTip.text, cap = caption(el), t = was && was !== cap ? cap + ": " + was : cap;
-      if (el.getAttribute("data-cc-tip") !== t) el.setAttribute("data-cc-tip", t);
-    } else if (el.ccLblTip) {
-      var o = el.ccLblTip;
-      el.ccLblTip = null;
-      el.removeAttribute("data-cc-tip");
+      var was = el.ttLblTip.text, cap = caption(el), t = was && was !== cap ? cap + ": " + was : cap;
+      if (el.getAttribute("data-tt-tip") !== t) el.setAttribute("data-tt-tip", t);
+    } else if (el.ttLblTip) {
+      var o = el.ttLblTip;
+      el.ttLblTip = null;
+      el.removeAttribute("data-tt-tip");
       if (o.from) el.setAttribute(o.from, o.text);
     }
   }
@@ -228,11 +228,11 @@
   // rendered has nothing to measure; the resize observer brings it back when it shows.
   var epoch = 0;
   function stamp(el, name, m) {
-    if (el.getAttribute("data-cc-lbl") !== name) el.setAttribute("data-cc-lbl", name);
-    el.ccLblShown = el.getClientRects().length > 0;
-    var key = [el.ccLblCap, epoch, el.className, el.ccLblShown].join("\n");
-    if (el.ccLblShown && el.ccLblKey !== key) {
-      el.ccLblKey = key;
+    if (el.getAttribute("data-tt-lbl") !== name) el.setAttribute("data-tt-lbl", name);
+    el.ttLblShown = el.getClientRects().length > 0;
+    var key = [el.ttLblCap, epoch, el.className, el.ttLblShown].join("\n");
+    if (el.ttLblShown && el.ttLblKey !== key) {
+      el.ttLblKey = key;
       var v = measure(el);
       for (var k in v) if (el.style.getPropertyValue(k) !== v[k]) el.style.setProperty(k, v[k]);
     }
@@ -242,10 +242,10 @@
     settle(el);
   }
   function unstamp(el) {
-    el.removeAttribute("data-cc-lbl");
+    el.removeAttribute("data-tt-lbl");
     giveBack(el);
     PROPS.forEach(function (p) { if (!/^padding/.test(p)) el.style.removeProperty(p); });
-    el.ccLblKey = el.ccLblInk = "";
+    el.ttLblKey = el.ttLblInk = "";
     tip(el, "text");
   }
 
@@ -254,7 +254,7 @@
     var m = enabled() ? mode() : null;
     if (m) { if (root.getAttribute(ATTR) !== m) root.setAttribute(ATTR, m); } else root.removeAttribute(ATTR);
     // TowerTorch's own buttons draw their glyph themselves and only take the bubble from here.
-    if (window.CCTheme && window.CCTheme.labelTip) document.querySelectorAll(".cc-lb").forEach(window.CCTheme.labelTip);
+    if (window.TTTheme && window.TTTheme.labelTip) document.querySelectorAll(".tt-lb").forEach(window.TTTheme.labelTip);
     var keep = [];
     if (m) {
       var els = document.querySelectorAll(IN_SCOPE);
@@ -262,9 +262,9 @@
         var el = els[i];
         if (!managed(el)) continue;
         hook(el);
-        if (ro && !el.ccLblSeen) { el.ccLblSeen = true; ro.observe(el); }
-        el.ccLblCap = caption(el);
-        var name = m === "text" ? "" : glyphFor(el.ccLblCap);
+        if (ro && !el.ttLblSeen) { el.ttLblSeen = true; ro.observe(el); }
+        el.ttLblCap = caption(el);
+        var name = m === "text" ? "" : glyphFor(el.ttLblCap);
         if (!name) continue;
         stamp(el, name, m);
         keep.push(el);
@@ -292,7 +292,7 @@
     // script replaced the layer.
     if (r.type === "attributes") {
       if (!t.matches || !t.matches(CONTROL)) return false;
-      if (r.attributeName !== "style" || !t.hasAttribute("data-cc-lbl")) return true;
+      if (r.attributeName !== "style" || !t.hasAttribute("data-tt-lbl")) return true;
       for (var p in LAYER) if (t.style.getPropertyValue(p) !== LAYER[p]) return true;
       return false;
     }
@@ -312,7 +312,7 @@
     if (window.ResizeObserver) ro = new ResizeObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
         var el = entries[i].target, r = entries[i].contentRect;
-        if (el.hasAttribute("data-cc-lbl") && (r.width > 0 || r.height > 0) !== el.ccLblShown) { later(); return; }
+        if (el.hasAttribute("data-tt-lbl") && (r.width > 0 || r.height > 0) !== el.ttLblShown) { later(); return; }
       }
     });
     try { sweep(); } catch (e) {}
@@ -324,14 +324,14 @@
       }
       if (run) try { sweep(); } catch (e) {}
     });
-    mo.observe(root, { attributes: true, attributeFilter: ["class", "data-cc-page"] });
+    mo.observe(root, { attributes: true, attributeFilter: ["class", "data-tt-page"] });
     mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["value", "class", "style", "disabled", "hidden", "title"] });
     ["pointerover", "pointerout", "focusin", "focusout", "transitionrun", "transitionend"].forEach(function (ev) {
       document.addEventListener(ev, function (e) { if (e.target && e.target.nodeType === 1) follow(e.target); }, true);
     });
-    window.addEventListener("storage", function (e) { if (!e.key || e.key === KEY || e.key === "cc.theming") later(); });
+    window.addEventListener("storage", function (e) { if (!e.key || e.key === KEY || e.key === "tt.theming") later(); });
     if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone", function () { epoch++; later(); });
   }
-  window.ccLabelsApply = later;
+  window.ttLabelsApply = later;
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

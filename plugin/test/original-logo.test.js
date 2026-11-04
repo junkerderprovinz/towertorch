@@ -30,8 +30,8 @@ global.window = { localStorage: global.localStorage, document: global.document, 
 global.location = { pathname: '/Docker' };
 global.fetch = () => new Promise(() => {});
 global.Image = class { set src(v) { this.onerror && this.onerror(); } };
-require(path.join(DIR, 'cc-theme.js'));
-const CI = global.window.CCTheme.icons;
+require(path.join(DIR, 'tt-theme.js'));
+const CI = global.window.TTTheme.icons;
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
@@ -42,7 +42,7 @@ function grabFn(src, name) {
   for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } }
   throw new Error('unbalanced function: ' + name);
 }
-const docker = read('docker.js'), vms = read('vms.js'), theme = read('cc-theme.js'), settings = read('settings.js');
+const docker = read('docker.js'), vms = read('vms.js'), theme = read('tt-theme.js'), settings = read('settings.js');
 
 console.log('\nThe Docker tab keeps the shipped icon');
 {
@@ -82,17 +82,17 @@ const el = (tag, cls, txt) => new N(tag, cls, txt);
 // paintOriginals with its helpers, built from the settings page's own source, so the test runs
 // the shipped code against a stub DOM and stub Docker rows.
 function settingsList(cOrig, names, picks, removes, onRepaint, rowIcons) {
-  const areaPicker = (label, items, onPick) => { const n = el('span', 'cc-dsel', label); n.items = items; n.pick = (i) => onPick(items[i]); picks.push(n); return n; };
+  const areaPicker = (label, items, onPick) => { const n = el('span', 'tt-dsel', label); n.items = items; n.pick = (i) => onPick(items[i]); picks.push(n); return n; };
   const actionBtn = (text, cls, run) => { const n = el('span', cls, text); n.run = run; removes.push(n); return n; };
   return new Function('cOrig', 'el', 'infoIcon', 'actionBtn', 'areaPicker', 'T', 'window', 'tintPrev', 'names', 'rowIcons',
     'var origNames = names, origMissing = {}, origChecked = false;\n' + grabFn(settings, 'labelled') + '\n' + grabFn(settings, 'checkOriginals') + '\n' + grabFn(settings, 'paintOriginals') + '\nreturn paintOriginals;')(
     // The stub nodes have no classList, so the buttons keep their words without the glyph.
-    cOrig, el, () => el('span', 'cc-info'), actionBtn, areaPicker, (de, en) => en, Object.assign({}, global.window, { CCTheme: Object.assign({}, global.window.CCTheme, { labelled: null }) }), onRepaint, names, rowIcons);
+    cOrig, el, () => el('span', 'tt-info'), actionBtn, areaPicker, (de, en) => en, Object.assign({}, global.window, { TTTheme: Object.assign({}, global.window.TTTheme, { labelled: null }) }), onRepaint, names, rowIcons);
 }
 
 console.log('\nThe settings page lists the pinned containers');
 {
-  const cOrig = el('div', 'cc-set-card');
+  const cOrig = el('div', 'tt-set-card');
   const picks = [], removes = [];
   let repaints = 0;
   const paint = settingsList(cOrig, ['Plex', 'Sonarr', 'Nextcloud'], picks, removes, () => { repaints++; }, () => new Promise(() => {}));
@@ -100,22 +100,22 @@ console.log('\nThe settings page lists the pinned containers');
   CI.setOverride('docker', 'Plex', 'flat');
   CI.setOverride('vm', 'Plex', 'original');
   paint();
-  const rows = cOrig.querySelectorAll('.cc-set-origrow');
+  const rows = cOrig.querySelectorAll('.tt-set-origrow');
   ok('one row per container on its original logo, shown by its real name', rows.length === 1 && rows[0].text().includes('Sonarr'), rows.map(r => r.text()).join('|'));
   const picker = picks[picks.length - 1];
   ok('the picker offers every container not yet on it', JSON.stringify(picker.items.map(i => i[2])) === JSON.stringify(['Plex', 'Nextcloud']));
   picker.pick(1);
-  ok('a pick pins the container', CI.mode('docker', 'Nextcloud') === 'original' && cOrig.querySelectorAll('.cc-set-origrow').length === 2 && repaints === 1);
+  ok('a pick pins the container', CI.mode('docker', 'Nextcloud') === 'original' && cOrig.querySelectorAll('.tt-set-origrow').length === 2 && repaints === 1);
   ok('and leaves the other pins alone', CI.mode('docker', 'Plex') === 'flat' && CI.mode('vm', 'Plex') === 'original');
   removes[removes.length - 1].run();
-  ok('Remove sends the container back to the global setting', CI.override('docker', 'Sonarr') === '' && cOrig.querySelectorAll('.cc-set-origrow').length === 1 && repaints === 2);
-  ok('the rows are rebuilt, not stacked', cOrig.querySelectorAll('.cc-set-origadd').length === 1);
-  ok('the remove button is a plain secondary button, never red', removes.every(b => b.className === 'cc-btn'));
+  ok('Remove sends the container back to the global setting', CI.override('docker', 'Sonarr') === '' && cOrig.querySelectorAll('.tt-set-origrow').length === 1 && repaints === 2);
+  ok('the rows are rebuilt, not stacked', cOrig.querySelectorAll('.tt-set-origadd').length === 1);
+  ok('the remove button is a plain secondary button, never red', removes.every(b => b.className === 'tt-btn'));
 }
 
 (async () => {
   console.log('\nA pinned container without a logo of its own says so');
-  const cOrig = el('div', 'cc-set-card');
+  const cOrig = el('div', 'tt-set-card');
   let asked = 0;
   const paint = settingsList(cOrig, ['Plex', 'Cloudflared'], [], [], () => {}, (kind) => {
     asked++;
@@ -128,9 +128,9 @@ console.log('\nThe settings page lists the pinned containers');
   CI.setOverride('docker', 'Cloudflared', 'original');
   paint();
   await new Promise(r => setTimeout(r, 0));
-  const row = (n) => cOrig.querySelectorAll('.cc-set-origrow').filter(r => r.text().includes(n))[0];
-  ok('a container showing Unraid\'s stand-in carries the hint', row('Cloudflared') && row('Cloudflared').querySelectorAll('.cc-set-colstate').length === 1);
-  ok('one showing its own icon does not', row('Plex') && row('Plex').querySelectorAll('.cc-set-colstate').length === 0);
+  const row = (n) => cOrig.querySelectorAll('.tt-set-origrow').filter(r => r.text().includes(n))[0];
+  ok('a container showing Unraid\'s stand-in carries the hint', row('Cloudflared') && row('Cloudflared').querySelectorAll('.tt-set-colstate').length === 1);
+  ok('one showing its own icon does not', row('Plex') && row('Plex').querySelectorAll('.tt-set-colstate').length === 0);
   paint();
   ok('the Docker rows are read once, not per repaint', asked === 1, String(asked));
   CI.setOverride('docker', 'Plex', '');

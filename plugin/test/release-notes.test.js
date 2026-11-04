@@ -49,15 +49,15 @@ const consts = ['REPO', 'LATEST_API', 'RELEASES_API'].map((n) => {
 }).join('\n');
 const fns = ['el', 'labelled', 'notesSource', 'openReleaseNotes', 'notesInline', 'notesDom'].map((n) => grabFn(settings, n)).join('\n');
 function load(ver, fetch, theme) {
-  return new Function('document', 'window', 'fetch', 'CC_VER', 'T', consts + '\n' + fns + '\nreturn { notesSource: notesSource, open: openReleaseNotes, dom: notesDom };')(
-    document, { CCTheme: theme }, fetch, ver, (d) => d);
+  return new Function('document', 'window', 'fetch', 'TT_VER', 'T', consts + '\n' + fns + '\nreturn { notesSource: notesSource, open: openReleaseNotes, dom: notesDom };')(
+    document, { TTTheme: theme }, fetch, ver, (d) => d);
 }
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 console.log('\nThe Version card offers the notes before the update check');
 {
   const block = settings.slice(settings.indexOf('// The Info tab in GlimStone'), settings.indexOf('var cHelp ='));
-  ok('a "Versionshinweise" button with the What\'s new glyph opens the window', /labelled\(actionBtn\("", "cc-btn cc-set-xbtn cc-set-notes", function \(\) \{ openReleaseNotes\(notes\); \}\), "WhatsNew", T\("Versionshinweise", "Release notes"\)\)/.test(block));
+  ok('a "Versionshinweise" button with the What\'s new glyph opens the window', /labelled\(actionBtn\("", "tt-btn tt-set-xbtn tt-set-notes", function \(\) \{ openReleaseNotes\(notes\); \}\), "WhatsNew", T\("Versionshinweise", "Release notes"\)\)/.test(block));
   ok('it stands before "Nach Updates suchen", which stays last', /crow\.appendChild\(notes\); crow\.appendChild\(chk\); cVer\.appendChild\(crow\);/.test(block));
   ok('no "New" button, since TowerTorch marks no changes', !/Neu ·|New ·/.test(settings));
 }
@@ -96,8 +96,8 @@ console.log('\nA release body becomes elements, never markup');
     '```',
   ].join('\n'), card);
   const kids = card.childNodes.map((n) => n.tagName + (n.cls.size ? '.' + [...n.cls].join('.') : ''));
-  ok('paragraph, heading, list, numbered list, paragraphs and code in order', kids.join(' ') === 'P DIV.cc-notes-h UL OL P P PRE', kids.join(' '));
-  const h = card.byClass('cc-notes-h')[0];
+  ok('paragraph, heading, list, numbered list, paragraphs and code in order', kids.join(' ') === 'P DIV.tt-notes-h UL OL P P PRE', kids.join(' '));
+  const h = card.byClass('tt-notes-h')[0];
   ok('the heading is a heading for a screen reader', h && h.getAttribute('role') === 'heading' && h.textContent === '✨ Added');
   const lis = card.byTag('ul')[0].byTag('li');
   ok('a list item keeps its bold lead', lis[0].byTag('strong')[0].textContent === 'Info tab.');
@@ -123,62 +123,62 @@ console.log('\nThe window');
 
   const { open } = load('1.0.0', answer(200, { tag_name: 'v1.0.0', body: '## Added\n- **One.** thing' }), theme);
   open(opener);
-  const w = body.byClass('cc-win-notes')[0];
-  ok('one window, wide, centred like a question', !!w && w.cls.has('cc-win') && w.cls.has('cc-dlg'));
-  ok('titled after the running version', w.byClass('cc-win-title')[0].textContent === 'Neu in 1.0.0');
-  ok('it says it is loading until the answer lands', /Lade Versionshinweise/.test(w.byClass('cc-notes')[0].textContent));
-  const foot = w.byClass('cc-win-act')[0].childNodes;
-  ok('the release page link is the only action in the foot', foot[0].tagName === 'A' && foot[0].cls.has('cc-win-link') && foot[0].href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0' && foot[0].rel === 'noopener noreferrer');
+  const w = body.byClass('tt-win-notes')[0];
+  ok('one window, wide, centred like a question', !!w && w.cls.has('tt-win') && w.cls.has('tt-dlg'));
+  ok('titled after the running version', w.byClass('tt-win-title')[0].textContent === 'Neu in 1.0.0');
+  ok('it says it is loading until the answer lands', /Lade Versionshinweise/.test(w.byClass('tt-notes')[0].textContent));
+  const foot = w.byClass('tt-win-act')[0].childNodes;
+  ok('the release page link is the only action in the foot', foot[0].tagName === 'A' && foot[0].cls.has('tt-win-link') && foot[0].href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0' && foot[0].rel === 'noopener noreferrer');
   ok('the foot holds no Close, the modal puts its close badge in the corner', foot.length === 1 && !foot.some((n) => /Schließen/.test(n.textContent)));
-  ok('the window is modal, opened from the button, with the notes focused', modalOpts.opener === opener && active === w.byClass('cc-notes')[0]);
-  ok('the notes take focus from the keyboard, so long notes scroll without a mouse', w.byClass('cc-notes')[0].getAttribute('tabindex') === '0');
+  ok('the window is modal, opened from the button, with the notes focused', modalOpts.opener === opener && active === w.byClass('tt-notes')[0]);
+  ok('the notes take focus from the keyboard, so long notes scroll without a mouse', w.byClass('tt-notes')[0].getAttribute('tabindex') === '0');
   await tick(); await tick();
-  ok('the notes replace the loading line', w.byClass('cc-notes-h')[0].textContent === 'Added' && w.byTag('strong')[0].textContent === 'One.' && !/Lade/.test(w.byClass('cc-notes')[0].textContent));
+  ok('the notes replace the loading line', w.byClass('tt-notes-h')[0].textContent === 'Added' && w.byTag('strong')[0].textContent === 'One.' && !/Lade/.test(w.byClass('tt-notes')[0].textContent));
   w.remove();
 
   const missing = load('1.1.0-rc1', answer(404, {}), theme);
   missing.open(opener);
-  const w2 = body.byClass('cc-win-notes')[0];
+  const w2 = body.byClass('tt-win-notes')[0];
   await tick(); await tick();
-  ok('a version without a release on GitHub says so', w2.byClass('cc-notes')[0].textContent === 'Zu dieser Version gibt es auf GitHub noch keine Versionshinweise.', w2.byClass('cc-notes')[0].textContent);
+  ok('a version without a release on GitHub says so', w2.byClass('tt-notes')[0].textContent === 'Zu dieser Version gibt es auf GitHub noch keine Versionshinweise.', w2.byClass('tt-notes')[0].textContent);
   w2.remove();
 
   const dev = load('dev', answer(200, { tag_name: 'v1.0.0', body: 'Text' }), theme);
   dev.open(opener);
-  const w3 = body.byClass('cc-win-notes')[0];
-  ok('a dev build opens on a neutral title', w3.byClass('cc-win-title')[0].textContent === 'Versionshinweise');
+  const w3 = body.byClass('tt-win-notes')[0];
+  ok('a dev build opens on a neutral title', w3.byClass('tt-win-title')[0].textContent === 'Versionshinweise');
   await tick(); await tick();
-  ok('and takes the title and the link from the latest release', w3.byClass('cc-win-title')[0].textContent === 'Neu in 1.0.0' && w3.byClass('cc-win-link')[0].href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0');
+  ok('and takes the title and the link from the latest release', w3.byClass('tt-win-title')[0].textContent === 'Neu in 1.0.0' && w3.byClass('tt-win-link')[0].href === 'https://github.com/junkerderprovinz/towertorch/releases/tag/v1.0.0');
   w3.remove();
 
   const down = load('1.0.0', () => Promise.reject(new Error('offline')), theme);
   down.open(opener);
-  const w4 = body.byClass('cc-win-notes')[0];
+  const w4 = body.byClass('tt-win-notes')[0];
   await tick(); await tick();
-  ok('a failed fetch says so and points to GitHub', /ließen sich nicht laden/.test(w4.byClass('cc-notes')[0].textContent));
+  ok('a failed fetch says so and points to GitHub', /ließen sich nicht laden/.test(w4.byClass('tt-notes')[0].textContent));
   w4.remove();
 
   const empty = load('1.0.0', answer(200, { tag_name: 'v1.0.0', body: '  ' }), theme);
   empty.open(opener);
-  const w5 = body.byClass('cc-win-notes')[0];
+  const w5 = body.byClass('tt-win-notes')[0];
   await tick(); await tick();
-  ok('an empty body says there are no notes', w5.byClass('cc-notes')[0].textContent === 'Zu dieser Version gibt es keine Versionshinweise.');
+  ok('an empty body says there are no notes', w5.byClass('tt-notes')[0].textContent === 'Zu dieser Version gibt es keine Versionshinweise.');
 
   console.log('\nThe sheet');
   const style = settings.slice(settings.indexOf('st.textContent ='), settings.indexOf('document.head.appendChild(st);'));
-  ok('the window is wider than a question', /\.cc-dlg\.cc-win-notes\{width:min\(760px,calc\(100vw - 32px\)\)/.test(style));
-  ok('its links leave Unraid\'s underline and colour behind', /html \.cc-win-notes \.cc-notes a,html \.cc-win-notes \.cc-notes a:visited\{color:var\(--cc-accent-ink\);text-decoration:none/.test(style));
+  ok('the window is wider than a question', /\.tt-dlg\.tt-win-notes\{width:min\(760px,calc\(100vw - 32px\)\)/.test(style));
+  ok('its links leave Unraid\'s underline and colour behind', /html \.tt-win-notes \.tt-notes a,html \.tt-win-notes \.tt-notes a:visited\{color:var\(--tt-accent-ink\);text-decoration:none/.test(style));
   const { candidates, withUnraid } = require('./cascade');
   const page = withUnraid('settings').concat(['styles/docker.css']);
   const focused = [
-    ['the notes card', { tag: 'div', classes: ['cc-win-card', 'cc-notes'], attrs: { tabindex: '0' }, inside: ['.cc-win', '.cc-win-notes'], html: ['cc-shares-on'], states: { 'focus-visible': true, focus: true } }],
-    ['a link in the notes', { tag: 'a', classes: [], attrs: { href: 'https://example.org/' }, inside: ['.cc-win', '.cc-win-notes', '.cc-notes'], html: ['cc-shares-on'], states: { 'focus-visible': true, focus: true } }],
+    ['the notes card', { tag: 'div', classes: ['tt-win-card', 'tt-notes'], attrs: { tabindex: '0' }, inside: ['.tt-win', '.tt-win-notes'], html: ['tt-shares-on'], states: { 'focus-visible': true, focus: true } }],
+    ['a link in the notes', { tag: 'a', classes: [], attrs: { href: 'https://example.org/' }, inside: ['.tt-win', '.tt-win-notes', '.tt-notes'], html: ['tt-shares-on'], states: { 'focus-visible': true, focus: true } }],
   ];
   for (const [name, e] of focused) {
     const halo = candidates(page, e, 'box-shadow').pop();
-    ok(name + ' gets the focus halo past the blanket no-ring rules', halo && /^0 0 0 3px color-mix\(in srgb,var\(--cc-accent,#FCC419\) 45%,transparent\)$/.test(halo.value), halo && halo.selector + ' ' + halo.value);
+    ok(name + ' gets the focus halo past the blanket no-ring rules', halo && /^0 0 0 3px color-mix\(in srgb,var\(--tt-accent,#FCC419\) 45%,transparent\)$/.test(halo.value), halo && halo.selector + ' ' + halo.value);
   }
-  ok('the release page link, the one action, stands at the end like every forward action', !/\.cc-win-link\{margin-inline-end:auto\}/.test(style));
+  ok('the release page link, the one action, stands at the end like every forward action', !/\.tt-win-link\{margin-inline-end:auto\}/.test(style));
 
   console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
   process.exit(fail ? 1 : 0);

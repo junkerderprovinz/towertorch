@@ -1,502 +1,502 @@
 /* TowerTorch: the /VMs tab, styled to match the Docker tab.
  *
- * Loaded globally through the Buttons hook (TowerTorch.VmTab.page) and gated on html.cc-vms-on,
+ * Loaded globally through the Buttons hook (TowerTorch.VmTab.page) and gated on html.tt-vms-on,
  * which vms.js sets only on /VMs. It copies Docker's badge rules so vms.js can emit the same classes
- * (cc-b, cc-badge, cc-b-k, cc-b-v, cc-b-info) on #kvm_list. styles/docker.css is not loaded here
- * because its unscoped .cc-b rules and Docker-specific selectors would leak onto every page. Native
+ * (tt-b, tt-badge, tt-b-k, tt-b-v, tt-b-info) on #kvm_list. styles/docker.css is not loaded here
+ * because its unscoped .tt-b rules and Docker-specific selectors would leak onto every page. Native
  * VM row, from dynamix.vm.manager/include/VMMachines.php:
  *   tr.sortable > td.vm-name [span.outer>span.hand=logo + span.inner>a(name)+i.STATUS+span.state]
  *   td[desc], td[a.vcpu-*], td[mem], td[disks], td[span.vmgraphics=graphics], td[ip], td[autostart]
  */
 
 /* align the VM content with the main menu bar */
-html.cc-vms-on.cc-header-on { --cc-align-left: 15px; }
-html.cc-vms-on:not(.cc-header-on) { --cc-align-left: 10px; }
-html.cc-vms-on:not(.Theme--sidebar) #displaybox { padding-left: var(--cc-align-left, 10px); padding-right: var(--cc-edge-gutter, 8px); }  /* right content edge; --cc-edge-gutter comes from Tokens.css */
-html.cc-vms-on:not(.Theme--sidebar) #displaybox div.title { padding-left: 0; }
+html.tt-vms-on.tt-header-on { --tt-align-left: 15px; }
+html.tt-vms-on:not(.tt-header-on) { --tt-align-left: 10px; }
+html.tt-vms-on:not(.Theme--sidebar) #displaybox { padding-left: var(--tt-align-left, 10px); padding-right: var(--tt-edge-gutter, 8px); }  /* right content edge; --tt-edge-gutter comes from Tokens.css */
+html.tt-vms-on:not(.Theme--sidebar) #displaybox div.title { padding-left: 0; }
 
 /* The 12px gap between the main menu and the sub-tabs. The Shares.css rule is gated on
-   html.cc-shares-on, which is not set on /VMs. /VMs renders #displaybox > nav.tabs directly
+   html.tt-shares-on, which is not set on /VMs. /VMs renders #displaybox > nav.tabs directly
    (MainContentTabbed.php); the sidebar theme is left out. */
-html.cc-vms-on:not(.Theme--sidebar) #displaybox:has(> nav.tabs) { padding-top: 12px; }
-html.cc-vms-on:not(.Theme--sidebar) #displaybox > nav.tabs { margin-top: 0 !important; }
+html.tt-vms-on:not(.Theme--sidebar) #displaybox:has(> nav.tabs) { padding-top: 12px; }
+html.tt-vms-on:not(.Theme--sidebar) #displaybox > nav.tabs { margin-top: 0 !important; }
 
 /* table rows as on Docker: no border lines, the eyebrow header, every cell centred, density padding */
-html.cc-vms-on #displaybox table.tablesorter { background: none; }
-html.cc-vms-on #displaybox #kvm_list tr.sortable > td { border: none !important; vertical-align: middle !important; padding-top: var(--cc-density, 9px) !important; padding-bottom: var(--cc-density, 9px) !important; }
-html.cc-vms-on #displaybox table.tablesorter thead th {
-  background: transparent !important; color: var(--cc-text-dim, #8a8a8a) !important; font-size: var(--cc-text-meta) !important;
+html.tt-vms-on #displaybox table.tablesorter { background: none; }
+html.tt-vms-on #displaybox #kvm_list tr.sortable > td { border: none !important; vertical-align: middle !important; padding-top: var(--tt-density, 9px) !important; padding-bottom: var(--tt-density, 9px) !important; }
+html.tt-vms-on #displaybox table.tablesorter thead th {
+  background: transparent !important; color: var(--tt-text-dim, #8a8a8a) !important; font-size: var(--tt-text-meta) !important;
   font-weight: 500 !important; text-transform: uppercase !important; letter-spacing: 1.2px !important;
   border: none !important; box-shadow: none !important; padding-top: 8px !important; padding-bottom: 12px !important;
 }
-html.cc-vms-on #displaybox table.tablesorter thead tr { border: none !important; box-shadow: none !important; }
+html.tt-vms-on #displaybox table.tablesorter thead tr { border: none !important; box-shadow: none !important; }
 
-/* Docker's badge rules, copied so the VM badges look the same. One pill shape for .cc-b and
-   .cc-badge; the info badge is solid accent with light text. */
-html.cc-vms-on #kvm_list .cc-b,
-html.cc-vms-on #kvm_list .cc-badge {
+/* Docker's badge rules, copied so the VM badges look the same. One pill shape for .tt-b and
+   .tt-badge; the info badge is solid accent with light text. */
+html.tt-vms-on #kvm_list .tt-b,
+html.tt-vms-on #kvm_list .tt-badge {
   display: inline-flex; align-items: center; gap: 5px; border: none !important;
-  border-radius: var(--cc-radius-pill); padding: var(--cc-sm-pad, 3px 11px); margin: 2px 4px 2px 0;
-  font-size: var(--cc-sm-fs); font-weight: 600; line-height: 1.35; white-space: nowrap;
+  border-radius: var(--tt-radius-pill); padding: var(--tt-sm-pad, 3px 11px); margin: 2px 4px 2px 0;
+  font-size: var(--tt-sm-fs); font-weight: 600; line-height: 1.35; white-space: nowrap;
   text-decoration: none; vertical-align: middle;
 }
 /* Generic badges (Snapshots, Beschreibung, Grafik) take the rainbow or flag colour when that mode is
    on and the accent otherwise; the cpu, ram, ip and vol badges keep their own slots from the more
    specific rules below. */
-html.cc-vms-on #kvm_list .cc-b { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
+html.tt-vms-on #kvm_list .tt-b { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
 /* reactive rainbow: every row badge rests grey and takes the palette colour on row hover, as on
    Docker and Shares */
-html.cc-vms-on.cc-vm-rbneutral #kvm_list .cc-b,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list .cc-b-cpu,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list .cc-b-ram,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list .cc-b-bw,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list .cc-b-ip,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list .cc-b-vol { background: var(--cc-surface-3, #2e2e2e) !important; color: var(--cc-text-chip, #cfcfcf) !important; }
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b-cpu,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b-ram,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b-bw,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b-ip,
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b-vol { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list .tt-b,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list .tt-b-cpu,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list .tt-b-ram,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list .tt-b-bw,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list .tt-b-ip,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list .tt-b-vol { background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b-cpu,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b-ram,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b-bw,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b-ip,
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b-vol { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
 /* On row hover the cpu, ram, ip and vol badges take their own palette colour rather than the
-   generic --cc-rbaccent above, as in docker.css. .cc-b.cc-b-* outranks the generic tr:hover .cc-b. */
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b.cc-b-cpu { background: var(--cc-rb-cpu, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-cpu-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b.cc-b-ram { background: var(--cc-rb-ram, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-ram-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b.cc-b-bw  { background: var(--cc-rb-bw, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-bw-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b.cc-b-ip  { background: var(--cc-rb-ip, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-ip-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-b.cc-b-vol { background: var(--cc-rb-vol, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-vol-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on #kvm_list .cc-b-k { opacity: .72; font-weight: 500; }
-html.cc-vms-on #kvm_list .cc-b-v { font-family: Consolas, "SFMono-Regular", monospace; }
+   generic --tt-rbaccent above, as in docker.css. .tt-b.tt-b-* outranks the generic tr:hover .tt-b. */
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b.tt-b-cpu { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-cpu-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b.tt-b-ram { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ram-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b.tt-b-bw  { background: var(--tt-rb-bw, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-bw-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b.tt-b-ip  { background: var(--tt-rb-ip, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ip-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-b.tt-b-vol { background: var(--tt-rb-vol, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-vol-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on #kvm_list .tt-b-k { opacity: .72; font-weight: 500; }
+html.tt-vms-on #kvm_list .tt-b-v { font-family: Consolas, "SFMono-Regular", monospace; }
 /* a description is prose, not a value, so it keeps the page's font */
-html.cc-vms-on #kvm_list .cc-b-desc .cc-b-v { font-family: inherit; }
-/* The badge value, including the a.vcpu-* CPU link vms.js moves into .cc-b-v, inherits the badge
+html.tt-vms-on #kvm_list .tt-b-desc .tt-b-v { font-family: inherit; }
+/* The badge value, including the a.vcpu-* CPU link vms.js moves into .tt-b-v, inherits the badge
    text colour; otherwise Unraid's link colour wins and the CPU number is unreadable. */
-html.cc-vms-on #kvm_list .cc-b a,
-html.cc-vms-on #kvm_list .cc-b a:hover,
-html.cc-vms-on #kvm_list .cc-b .cc-b-v a { color: inherit !important; text-decoration: none !important; }
-html.cc-vms-on #kvm_list .cc-b-copy { cursor: pointer; transition: filter .12s, transform .12s; }
-html.cc-vms-on #kvm_list .cc-b-copy:hover { box-shadow: inset 0 0 0 100vmax var(--cc-hover-wash) !important; transform: translateY(-1px); }
+html.tt-vms-on #kvm_list .tt-b a,
+html.tt-vms-on #kvm_list .tt-b a:hover,
+html.tt-vms-on #kvm_list .tt-b .tt-b-v a { color: inherit !important; text-decoration: none !important; }
+html.tt-vms-on #kvm_list .tt-b-copy { cursor: pointer; transition: filter .12s, transform .12s; }
+html.tt-vms-on #kvm_list .tt-b-copy:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; transform: translateY(-1px); }
 /* state badge colours as in docker.css: started -> running, paused -> paused, stopped -> exited */
-html.cc-vms-on #kvm_list .cc-badge-running { background: var(--cc-ok, #6fdc8c); color: var(--cc-ok-fg, #161616); }
-html.cc-vms-on #kvm_list .cc-badge-paused  { background: var(--cc-warn, #ff832b); color: var(--cc-warn-fg, #161616); }
-html.cc-vms-on #kvm_list .cc-badge-exited,
-html.cc-vms-on #kvm_list .cc-badge-created { background: var(--cc-badge-neutral, #3c3c3c); color: var(--cc-text-chip, #cfcfcf); }
-html.cc-vms-on #kvm_list .cc-badge-dead    { background: var(--cc-err, #ff8389); color: var(--cc-err-fg, #161616); }
+html.tt-vms-on #kvm_list .tt-badge-running { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616); }
+html.tt-vms-on #kvm_list .tt-badge-paused  { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616); }
+html.tt-vms-on #kvm_list .tt-badge-exited,
+html.tt-vms-on #kvm_list .tt-badge-created { background: var(--tt-badge-neutral, #3c3c3c); color: var(--tt-text-chip, #cfcfcf); }
+html.tt-vms-on #kvm_list .tt-badge-dead    { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616); }
 /* IP pills and disk badges stacked one per line */
-html.cc-vms-on #kvm_list .cc-namemeta,
-html.cc-vms-on #kvm_list .cc-vmb-ips,
-html.cc-vms-on #kvm_list .cc-vmb-disks { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
-/* CPU and RAM share one stacked column, like docker.css .cc-resgroup/.cc-resline */
-html.cc-vms-on #kvm_list .cc-resgroup { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
-html.cc-vms-on #kvm_list .cc-resline { display: inline-flex; align-items: center; gap: 5px; }
+html.tt-vms-on #kvm_list .tt-namemeta,
+html.tt-vms-on #kvm_list .tt-vmb-ips,
+html.tt-vms-on #kvm_list .tt-vmb-disks { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+/* CPU and RAM share one stacked column, like docker.css .tt-resgroup/.tt-resline */
+html.tt-vms-on #kvm_list .tt-resgroup { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+html.tt-vms-on #kvm_list .tt-resline { display: inline-flex; align-items: center; gap: 5px; }
 /* The limit gear behind each resource badge, as on Docker. vms.js vmGearFill paints it inline in
-   accent and native mode and stamps --cc-rb-c (the kind colour) in rainbow mode; these rules give
+   accent and native mode and stamps --tt-rb-c (the kind colour) in rainbow mode; these rules give
    the idle, hover and set look underneath. */
-html.cc-vms-on #kvm_list .cc-limbtn { display: inline-flex; align-items: center; justify-content: center; width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); box-sizing: border-box; border-radius: var(--cc-radius-pill); background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text, #e6e6e6); cursor: pointer; font-size: var(--cc-text-meta); margin: 0; }   /* as on Docker */
-html.cc-vms-on #kvm_list .cc-limbtn:hover { background: var(--cc-rb-c, var(--cc-accent, #FCC419)); color: var(--cc-rb-ct, var(--cc-accent-text, #161616)); }
-html.cc-vms-on #kvm_list .cc-limbtn-set { color: var(--cc-ok-fg, #161616); background: var(--cc-ok, #6fdc8c); }   /* filled when a limit is configured */
-html.cc-vms-on.cc-vm-rainbow #kvm_list .cc-limbtn-set { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; }
-/* The CPU core picker in the VM limits editor, as on Docker. Scoped to the #cc-vmlim window
+html.tt-vms-on #kvm_list .tt-limbtn { display: inline-flex; align-items: center; justify-content: center; width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); box-sizing: border-box; border-radius: var(--tt-radius-pill); background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6); cursor: pointer; font-size: var(--tt-text-meta); margin: 0; }   /* as on Docker */
+html.tt-vms-on #kvm_list .tt-limbtn:hover { background: var(--tt-rb-c, var(--tt-accent, #FCC419)); color: var(--tt-rb-ct, var(--tt-accent-text, #161616)); }
+html.tt-vms-on #kvm_list .tt-limbtn-set { color: var(--tt-ok-fg, #161616); background: var(--tt-ok, #6fdc8c); }   /* filled when a limit is configured */
+html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-limbtn-set { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
+/* The CPU core picker in the VM limits editor, as on Docker. Scoped to the #tt-vmlim window
    because the modal lives on document.body, not in #kvm_list. */
-#cc-vmlim .cc-cores { display: flex; flex-wrap: wrap; gap: 5px; }
-#cc-vmlim .cc-corebox { display: inline-flex; flex-direction: column; gap: 3px; padding: 4px; background: var(--cc-surface-1, #1e1e1e); border: none; border-radius: var(--cc-radius-control); align-items: stretch; }
-#cc-vmlim .cc-corebox-tag { text-align: center; font-size: var(--cc-text-meta); line-height: 1; color: var(--cc-text-dim, #8a8a8a); letter-spacing: .5px; user-select: none; }
-#cc-vmlim .cc-corebox-p .cc-corebox-tag { color: var(--cc-accent-ink, #FCC419); }
-#cc-vmlim .cc-corebox-e .cc-corebox-tag { color: var(--cc-warn, #ff832b); }
-#cc-vmlim .cc-core { width: 34px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text-dim, #9a9a9a); border: none; border-radius: var(--cc-radius-pill); font-size: var(--cc-text-meta); cursor: pointer; user-select: none; box-sizing: border-box; transition: background .1s, color .1s; }
-#cc-vmlim .cc-core:hover { background: #3a3a3a; color: var(--cc-text, #e6e6e6); }
-#cc-vmlim .cc-core-on { background: var(--cc-accent, #FCC419); color: var(--cc-accent-text, #161616); }
+#tt-vmlim .tt-cores { display: flex; flex-wrap: wrap; gap: 5px; }
+#tt-vmlim .tt-corebox { display: inline-flex; flex-direction: column; gap: 3px; padding: 4px; background: var(--tt-surface-1, #1e1e1e); border: none; border-radius: var(--tt-radius-control); align-items: stretch; }
+#tt-vmlim .tt-corebox-tag { text-align: center; font-size: var(--tt-text-meta); line-height: 1; color: var(--tt-text-dim, #8a8a8a); letter-spacing: .5px; user-select: none; }
+#tt-vmlim .tt-corebox-p .tt-corebox-tag { color: var(--tt-accent-ink, #FCC419); }
+#tt-vmlim .tt-corebox-e .tt-corebox-tag { color: var(--tt-warn, #ff832b); }
+#tt-vmlim .tt-core { width: 34px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text-dim, #9a9a9a); border: none; border-radius: var(--tt-radius-pill); font-size: var(--tt-text-meta); cursor: pointer; user-select: none; box-sizing: border-box; transition: background .1s, color .1s; }
+#tt-vmlim .tt-core:hover { background: #3a3a3a; color: var(--tt-text, #e6e6e6); }
+#tt-vmlim .tt-core-on { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }
 /* rainbow: colour each selected core by its physical-core group, as in docker.css */
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-0 { background: #FF8389; color: #161616; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-1 { background: #FF832B; color: #161616; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-2 { background: #FCC419; color: #161616; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-3 { background: #6FDC8C; color: #161616; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-4 { background: #3DDBD9; color: #161616; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-5 { background: #1D99F3; color: #fff; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-6 { background: #BE95FF; color: #161616; }
-html.cc-vm-rainbow #cc-vmlim .cc-core-on.cc-rb-7 { background: #FF7EB6; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-0 { background: #FF8389; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-1 { background: #FF832B; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-2 { background: #FCC419; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-3 { background: #6FDC8C; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-4 { background: #3DDBD9; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-5 { background: #1D99F3; color: #fff; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-6 { background: #BE95FF; color: #161616; }
+html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-7 { background: #FF7EB6; color: #161616; }
 /* keep the cloned native ISO-picker link (a.hand) legible inside the CD badge */
-html.cc-vms-on #kvm_list .cc-vmb-disks .cc-b-v a.hand,
-html.cc-vms-on #kvm_list .cc-vmb-disks .cc-b-v a.hand i { color: inherit !important; text-decoration: none !important; }
+html.tt-vms-on #kvm_list .tt-vmb-disks .tt-b-v a.hand,
+html.tt-vms-on #kvm_list .tt-vmb-disks .tt-b-v a.hand i { color: inherit !important; text-decoration: none !important; }
 
 /* The logo box, matching Docker's with td.ct-name retargeted to td.vm-name. The native VM logo is
    span.outer > span.hand, so the selectors map one to one. The accent box is gated on
-   html.cc-vm-iconbg, which vms.js toggles like cc-docker-iconbg. */
-html.cc-vms-on #kvm_list td.vm-name { vertical-align: middle; }
-html.cc-vms-on #kvm_list td.vm-name .outer { display: flex; align-items: center; gap: 12px; margin: 0; }   /* without Unraid's 20px bottom margin, as on Docker */
-html.cc-vms-on #kvm_list td.vm-name .outer > span.hand { flex: none; display: flex; align-items: center; justify-content: center; }
+   html.tt-vm-iconbg, which vms.js toggles like tt-docker-iconbg. */
+html.tt-vms-on #kvm_list td.vm-name { vertical-align: middle; }
+html.tt-vms-on #kvm_list td.vm-name .outer { display: flex; align-items: center; gap: 12px; margin: 0; }   /* without Unraid's 20px bottom margin, as on Docker */
+html.tt-vms-on #kvm_list td.vm-name .outer > span.hand { flex: none; display: flex; align-items: center; justify-content: center; }
 /* In VMMachines.php span[id^="vm-"] is span.hand itself, and the icon is usually an inline
    <i class="fa fa-... img"> glyph rather than an <img>. The img is a 62px block; the glyph is a
-   centred flex box whose font-size follows --cc-logo-img, as docker.css's i.img rule and
+   centred flex box whose font-size follows --tt-logo-img, as docker.css's i.img rule and
    plugins.js logoSize() do, so the tile size setting scales the glyph too. */
-html.cc-vms-on #kvm_list td.vm-name .outer > span.hand img { display: block !important; width: var(--cc-logo-img, 62px) !important; height: var(--cc-logo-img, 62px) !important; object-fit: contain !important; margin: 0 !important; }
-html.cc-vms-on #kvm_list td.vm-name .outer > span.hand i.img {
+html.tt-vms-on #kvm_list td.vm-name .outer > span.hand img { display: block !important; width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; object-fit: contain !important; margin: 0 !important; }
+html.tt-vms-on #kvm_list td.vm-name .outer > span.hand i.img {
   display: flex !important; align-items: center !important; justify-content: center !important;
-  width: var(--cc-logo-img, 62px) !important; height: var(--cc-logo-img, 62px) !important; font-size: var(--cc-logo-img, 62px) !important; line-height: 1 !important; text-align: center !important; margin: 0 !important;
+  width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; font-size: var(--tt-logo-img, 62px) !important; line-height: 1 !important; text-align: center !important; margin: 0 !important;
 }
 /* The icon background box is a fixed square (62px icon plus 8px padding each side, border-box), so
-   it stays square whether the child is an <img> or a glyph. --cc-logo-box is shared with Docker and
+   it stays square whether the child is an <img> or a glyph. --tt-logo-box is shared with Docker and
    Plugins so the three tabs' tiles match. */
-html.cc-vms-on.cc-vm-iconbg #kvm_list td.vm-name .outer > span.hand {
+html.tt-vms-on.tt-vm-iconbg #kvm_list td.vm-name .outer > span.hand {
   flex: none !important;
-  width: var(--cc-logo-box, 78px) !important; height: var(--cc-logo-box, 78px) !important; min-width: var(--cc-logo-box, 78px) !important; max-width: var(--cc-logo-box, 78px) !important;
-  padding: calc((var(--cc-logo-box, 78px) - var(--cc-logo-img, 62px)) / 2) !important; box-sizing: border-box !important; overflow: hidden !important;
-  background: var(--cc-iconbg-color, var(--cc-accent, #FCC419)) !important;
-  border-radius: var(--cc-radius-control) !important;
+  width: var(--tt-logo-box, 78px) !important; height: var(--tt-logo-box, 78px) !important; min-width: var(--tt-logo-box, 78px) !important; max-width: var(--tt-logo-box, 78px) !important;
+  padding: calc((var(--tt-logo-box, 78px) - var(--tt-logo-img, 62px)) / 2) !important; box-sizing: border-box !important; overflow: hidden !important;
+  background: var(--tt-iconbg-color, var(--tt-accent, #FCC419)) !important;
+  border-radius: var(--tt-radius-control) !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
 }
 /* The logo box is the icon's own badge, not a rotating value indicator, so a configured logo
-   background colour wins over the rainbow palette in both sub-modes; --cc-rb-c is only the fallback
+   background colour wins over the rainbow palette in both sub-modes; --tt-rb-c is only the fallback
    for rows without one. The reactive sub-mode rests grey and shows the colour on row hover, like
    the value badges. */
-html.cc-vms-on.cc-vm-iconbg.cc-vm-rainbow:not(.cc-vm-rbneutral) #kvm_list td.vm-name .outer > span.hand {
-  background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)))) !important;
+html.tt-vms-on.tt-vm-iconbg.tt-vm-rainbow:not(.tt-vm-rbneutral) #kvm_list td.vm-name .outer > span.hand {
+  background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)))) !important;
 }
-html.cc-vms-on.cc-vm-iconbg.cc-vm-rbneutral #kvm_list td.vm-name .outer > span.hand { background: rgba(128, 128, 128, .18) !important; }
-html.cc-vms-on.cc-vm-iconbg.cc-vm-rbneutral #kvm_list tr:hover td.vm-name .outer > span.hand {
-  background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)))) !important;
+html.tt-vms-on.tt-vm-iconbg.tt-vm-rbneutral #kvm_list td.vm-name .outer > span.hand { background: rgba(128, 128, 128, .18) !important; }
+html.tt-vms-on.tt-vm-iconbg.tt-vm-rbneutral #kvm_list tr:hover td.vm-name .outer > span.hand {
+  background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)))) !important;
 }
 /* name column layout as in docker.css: stacked, native <br> and status glyph hidden */
-html.cc-vms-on #kvm_list td.vm-name .inner { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; line-height: 1.2; min-width: 0; }
-html.cc-vms-on #kvm_list td.vm-name .inner br { display: none !important; }
-html.cc-vms-on #kvm_list td.vm-name .inner > i.started,
-html.cc-vms-on #kvm_list td.vm-name .inner > i.paused,
-html.cc-vms-on #kvm_list td.vm-name .inner > i.stopped { display: none !important; }
+html.tt-vms-on #kvm_list td.vm-name .inner { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; line-height: 1.2; min-width: 0; }
+html.tt-vms-on #kvm_list td.vm-name .inner br { display: none !important; }
+html.tt-vms-on #kvm_list td.vm-name .inner > i.started,
+html.tt-vms-on #kvm_list td.vm-name .inner > i.paused,
+html.tt-vms-on #kvm_list td.vm-name .inner > i.stopped { display: none !important; }
 /* A running VM shows no state, the normal case (GlimStone rule 33); vms.js stamps the class from
    the native label on every pass. */
-html.cc-vms-on #kvm_list td.vm-name .inner > span.state.cc-badge-running { display: none !important; }
+html.tt-vms-on #kvm_list td.vm-name .inner > span.state.tt-badge-running { display: none !important; }
 /* A paused or stopped VM shows the Docker row's state dot under its name, the label in its tooltip. */
-html.cc-vms-on #kvm_list td.vm-name .inner > span.state.cc-badge {
+html.tt-vms-on #kvm_list td.vm-name .inner > span.state.tt-badge {
   width: 13px !important; height: 13px !important; min-width: 13px !important; padding: 0 !important; margin: 3px 0 0 !important;
   gap: 0 !important; border-radius: 50% !important; font-size: 0 !important; line-height: 0 !important;
   flex: 0 0 auto; box-shadow: 0 0 0 2px rgba(0, 0, 0, .25); overflow: hidden;
 }
 
 /* VM name: plain bold text like Docker's .appname (15px/600), not a filled pill */
-html.cc-vms-on #kvm_list td.vm-name .inner > a:first-child {
+html.tt-vms-on #kvm_list td.vm-name .inner > a:first-child {
   display: inline-block; background: none !important; color: inherit !important;
   padding: 0 !important; margin: 0 !important; border-radius: 0 !important;
-  font-size: var(--cc-text-title) !important; font-weight: 600 !important; letter-spacing: .1px;
+  font-size: var(--tt-text-title) !important; font-weight: 600 !important; letter-spacing: .1px;
   text-decoration: none !important; line-height: 1.2;
 }
-html.cc-vms-on #kvm_list td.vm-name .inner > a:first-child:hover { text-decoration: underline !important; }
+html.tt-vms-on #kvm_list td.vm-name .inner > a:first-child:hover { text-decoration: underline !important; }
 
-/* Autostart toggle in the CC accent. VMMachines.page turns input.autostart into a jQuery
+/* Autostart toggle in the TowerTorch accent. VMMachines.page turns input.autostart into a jQuery
    switchButton, which hides the checkbox and inserts .switch-button-background (the track, accent
    when .checked), .switch-button-button (the knob) and .switch-button-label. */
-html.cc-vms-on #kvm_list .switch-button-background {
-  width: 44px !important; height: 24px !important; border-radius: var(--cc-radius-pill) !important;   /* slim toggle; 30px high looked clumsy */
+html.tt-vms-on #kvm_list .switch-button-background {
+  width: 44px !important; height: 24px !important; border-radius: var(--tt-radius-pill) !important;   /* slim toggle; 30px high looked clumsy */
   border: none !important; outline: none !important; box-shadow: none !important;
-  background: var(--cc-toggle-track-off, #3a3a3a) !important; transform: none !important; position: relative !important;
+  background: var(--tt-toggle-track-off, #3a3a3a) !important; transform: none !important; position: relative !important;
   display: inline-block; vertical-align: middle; margin: 0 12px 0 3px; cursor: pointer;
   transition: background .15s; box-sizing: border-box;
 }
-html.cc-vms-on #kvm_list .switch-button-background.checked { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; }   /* follows the colour mode */
-html.cc-vms-on #kvm_list .switch-button-background .switch-button-button {
+html.tt-vms-on #kvm_list .switch-button-background.checked { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; }   /* follows the colour mode */
+html.tt-vms-on #kvm_list .switch-button-background .switch-button-button {
   width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important;
-  border-radius: var(--cc-radius-pill) !important; background: #fff !important; box-shadow: none !important;
+  border-radius: var(--tt-radius-pill) !important; background: #fff !important; box-shadow: none !important;
   border: none !important; transition: left .15s;
 }
-html.cc-vms-on #kvm_list .switch-button-background.checked .switch-button-button { left: 21px !important; }
-html.cc-vms-on #kvm_list .switch-button-label { display: none !important; }
+html.tt-vms-on #kvm_list .switch-button-background.checked .switch-button-button { left: 21px !important; }
+html.tt-vms-on #kvm_list .switch-button-label { display: none !important; }
 
 /* Actions column: Docker's action bar retargeted to #kvm_list. Grey icon buttons that vms.js
-   tintAct() colours inline; More opens the rarer VM actions as a menu (CCTheme.menu), and
-   cc-act-flash pulses the bar when the VM logo is clicked. */
-html.cc-vms-on #kvm_table thead tr .cc-act-th { font-size: var(--cc-text-meta); width: 122px; }
-html.cc-vms-on #kvm_list td.cc-actcell { white-space: nowrap; vertical-align: middle; }
-html.cc-vms-on .cc-actbar { display: flex; flex-direction: column; gap: 4px; }
+   tintAct() colours inline; More opens the rarer VM actions as a menu (TTTheme.menu), and
+   tt-act-flash pulses the bar when the VM logo is clicked. */
+html.tt-vms-on #kvm_table thead tr .tt-act-th { font-size: var(--tt-text-meta); width: 122px; }
+html.tt-vms-on #kvm_list td.tt-actcell { white-space: nowrap; vertical-align: middle; }
+html.tt-vms-on .tt-actbar { display: flex; flex-direction: column; gap: 4px; }
 /* The row's buttons come in on hover and on focus and stay on a touch screen, as on the Docker
    rows (GlimStone rule 6). */
-html.cc-vms-on .cc-actbar { opacity: 0; transition: opacity var(--cc-motion-fade-dur, 0s); }
-html.cc-vms-on #kvm_list tr:is(:hover, :focus-within) .cc-actbar,
-html.cc-vms-on .cc-actbar.cc-act-flash { opacity: 1; }
-@media (hover: none) { html.cc-vms-on .cc-actbar { opacity: 1; } }
-html.cc-vms-on .cc-actrow { display: flex; gap: 4px; }
-html.cc-vms-on .cc-actbtn { width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); box-sizing: border-box; border-radius: var(--cc-radius-pill); background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text-chip, #cfcfcf); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: var(--cc-text-subline); user-select: none; transition: background .12s, color .12s, box-shadow .12s; }
-html.cc-vms-on .cc-actoff { opacity: .35; cursor: default; }
-html.cc-vms-on .cc-actoff:hover { background: #2e2e2e; color: #c9c9c9; }
-html.cc-vms-on .cc-act-flash .cc-actbtn { animation: cc-actflash .5s ease 3; }
-@keyframes cc-actflash { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 0 3px var(--cc-accent, #FCC419); } }
+html.tt-vms-on .tt-actbar { opacity: 0; transition: opacity var(--tt-motion-fade-dur, 0s); }
+html.tt-vms-on #kvm_list tr:is(:hover, :focus-within) .tt-actbar,
+html.tt-vms-on .tt-actbar.tt-act-flash { opacity: 1; }
+@media (hover: none) { html.tt-vms-on .tt-actbar { opacity: 1; } }
+html.tt-vms-on .tt-actrow { display: flex; gap: 4px; }
+html.tt-vms-on .tt-actbtn { width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); box-sizing: border-box; border-radius: var(--tt-radius-pill); background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text-chip, #cfcfcf); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: var(--tt-text-subline); user-select: none; transition: background .12s, color .12s, box-shadow .12s; }
+html.tt-vms-on .tt-actoff { opacity: .35; cursor: default; }
+html.tt-vms-on .tt-actoff:hover { background: #2e2e2e; color: #c9c9c9; }
+html.tt-vms-on .tt-act-flash .tt-actbtn { animation: tt-actflash .5s ease 3; }
+@keyframes tt-actflash { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 0 3px var(--tt-accent, #FCC419); } }
 
 /* Reactive rainbow, as in docker.css: tintAct() skips its inline paint and stamps
-   --cc-rb-c/--cc-rb-ct per button, so enabled icons rest on the surface grey and take that colour on row
-   hover. Disabled .cc-actoff buttons keep their own grey. */
-html.cc-vms-on.cc-vm-rbneutral .cc-actbtn:not(.cc-actoff) { background: var(--cc-surface-3, #2e2e2e) !important; color: var(--cc-text, #e6e6e6) !important; }
-html.cc-vms-on.cc-vm-rbneutral #kvm_list tr:hover .cc-actbtn:not(.cc-actoff) { background: var(--cc-rb-c, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-ct, var(--cc-accent-text, #161616)) !important; }
+   --tt-rb-c/--tt-rb-ct per button, so enabled icons rest on the surface grey and take that colour on row
+   hover. Disabled .tt-actoff buttons keep their own grey. */
+html.tt-vms-on.tt-vm-rbneutral .tt-actbtn:not(.tt-actoff) { background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text, #e6e6e6) !important; }
+html.tt-vms-on.tt-vm-rbneutral #kvm_list tr:hover .tt-actbtn:not(.tt-actoff) { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 
-/* The buttons under the list are CC pills in sentence case. Only "VM hinzufügen", the action the
+/* The buttons under the list are TowerTorch pills in sentence case. Only "VM hinzufügen", the action the
    page exists for, is filled and stands at the right end of the row (GlimStone rule 3 and "Page
    actions"); Start all and Stop all rest grey and take their palette slot under the pointer. */
-html.cc-vms-on #displaybox input[type="button"]:not(.autostart) {
+html.tt-vms-on #displaybox input[type="button"]:not(.autostart) {
   border: none !important; box-shadow: none !important;
-  height: var(--cc-md-h, 30px) !important; padding: var(--cc-md-btnpad, 0 14px) !important; min-width: 0 !important; box-sizing: border-box !important;
-  border-radius: var(--cc-radius-pill) !important; cursor: pointer;
-  font-size: var(--cc-md-fs) !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important;
-  background: var(--cc-surface-3, #2e2e2e) !important; color: var(--cc-text-chip, #cfcfcf) !important; transition: background-color .12s, color .12s;
+  height: var(--tt-md-h, 30px) !important; padding: var(--tt-md-btnpad, 0 14px) !important; min-width: 0 !important; box-sizing: border-box !important;
+  border-radius: var(--tt-radius-pill) !important; cursor: pointer;
+  font-size: var(--tt-md-fs) !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important;
+  background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important; transition: background-color .12s, color .12s;
 }
-html.cc-vms-on #displaybox input[type="button"]:not(.autostart):hover:not(:disabled) { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; }
-html.cc-vms-on #displaybox input#btnAddVM { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; }
-html.cc-vms-on #displaybox input#btnAddVM:hover:not(:disabled) { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)) !important; }
-html.cc-vms-on #displaybox div.js-actions:has(> #btnAddVM) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-html.cc-vms-on #displaybox div.js-actions > #btnAddVM { order: 1; margin-left: auto !important; }
-html.cc-vms-on #displaybox input[type="button"]:not(.autostart):disabled { opacity: .45 !important; filter: grayscale(.4) !important; cursor: not-allowed !important; }
+html.tt-vms-on #displaybox input[type="button"]:not(.autostart):hover:not(:disabled) { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
+html.tt-vms-on #displaybox input#btnAddVM { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
+html.tt-vms-on #displaybox input#btnAddVM:hover:not(:disabled) { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)) !important; }
+html.tt-vms-on #displaybox div.js-actions:has(> #btnAddVM) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+html.tt-vms-on #displaybox div.js-actions > #btnAddVM { order: 1; margin-left: auto !important; }
+html.tt-vms-on #displaybox input[type="button"]:not(.autostart):disabled { opacity: .45 !important; filter: grayscale(.4) !important; cursor: not-allowed !important; }
 
 /* VM logo context menu (addVMContext appends ul.dropdown-menu.dropdown-context to <body>) */
-html.cc-vms-on ul.dropdown-menu.dropdown-context {
-  background: #303030 !important; border: none !important; border-radius: var(--cc-radius-card) !important;
-  box-shadow: var(--cc-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important; padding: 6px !important;
+html.tt-vms-on ul.dropdown-menu.dropdown-context {
+  background: #303030 !important; border: none !important; border-radius: var(--tt-radius-card) !important;
+  box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important; padding: 6px !important;
 }
-html.cc-vms-on ul.dropdown-menu.dropdown-context > li > a,
-html.cc-vms-on ul.dropdown-menu.dropdown-context > li > span {
-  color: #ececec !important; border-radius: var(--cc-radius-pill) !important; padding: 6px 12px !important; transition: background .12s, color .12s;
+html.tt-vms-on ul.dropdown-menu.dropdown-context > li > a,
+html.tt-vms-on ul.dropdown-menu.dropdown-context > li > span {
+  color: #ececec !important; border-radius: var(--tt-radius-pill) !important; padding: 6px 12px !important; transition: background .12s, color .12s;
 }
-html.cc-vms-on ul.dropdown-menu.dropdown-context > li > a:hover {
-  background: var(--cc-accent, #FCC419) !important; color: var(--cc-accent-text, #161616) !important;
+html.tt-vms-on ul.dropdown-menu.dropdown-context > li > a:hover {
+  background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important;
 }
-html.cc-vms-on ul.dropdown-menu.dropdown-context > li > a i,
-html.cc-vms-on ul.dropdown-menu.dropdown-context > li > a:hover i { color: inherit !important; }
-html.cc-vms-on ul.dropdown-menu.dropdown-context > li.divider { background: rgba(255, 255, 255, .1) !important; margin: 4px 0 !important; }
+html.tt-vms-on ul.dropdown-menu.dropdown-context > li > a i,
+html.tt-vms-on ul.dropdown-menu.dropdown-context > li > a:hover i { color: inherit !important; }
+html.tt-vms-on ul.dropdown-menu.dropdown-context > li.divider { background: rgba(255, 255, 255, .1) !important; margin: 4px 0 !important; }
 
 /* The VM usage statistics sub-tab (VMUsageStats.page, Menu="VMs:2"), the second tab panel under
    /VMs. Its table (#vmstats > tbody#vmstatsbody) is re-rendered from the /sub/vm_usage websocket
    every few seconds, so it is styled with CSS alone. Columns: name, guest CPU (td.advanced), host
    CPU (td.advanced), memory, disk IO, network IO. */
-html.cc-vms-on #displaybox #vmstats { background: none; }
-html.cc-vms-on #displaybox #vmstats tbody tr > td {
+html.tt-vms-on #displaybox #vmstats { background: none; }
+html.tt-vms-on #displaybox #vmstats tbody tr > td {
   border: none !important;
-  padding-top: var(--cc-density, 9px) !important; padding-bottom: var(--cc-density, 9px) !important;
+  padding-top: var(--tt-density, 9px) !important; padding-bottom: var(--tt-density, 9px) !important;
   vertical-align: middle;
 }
-html.cc-vms-on #vmstats tbody tr > td:first-child { letter-spacing: .1px; }
-/* the VM name as a badge (vms.js wraps it in .cc-vmstat-name) that follows the colour mode */
-html.cc-vms-on #vmstats .cc-vmstat-name {
+html.tt-vms-on #vmstats tbody tr > td:first-child { letter-spacing: .1px; }
+/* the VM name as a badge (vms.js wraps it in .tt-vmstat-name) that follows the colour mode */
+html.tt-vms-on #vmstats .tt-vmstat-name {
   display: inline-flex; align-items: center;
-  border-radius: var(--cc-radius-pill); padding: var(--cc-sm-pad, 4px 12px);
-  font-size: var(--cc-md-fs); font-weight: 600; line-height: 1.35; white-space: nowrap;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616));
+  border-radius: var(--tt-radius-pill); padding: var(--tt-sm-pad, 4px 12px);
+  font-size: var(--tt-md-fs); font-weight: 600; line-height: 1.35; white-space: nowrap;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616));
 }
 /* guest and host CPU % (the first span in td.advanced) as a value pill in the palette colour */
-html.cc-vms-on #vmstats tbody td.advanced > span:first-child {
+html.tt-vms-on #vmstats tbody td.advanced > span:first-child {
   display: inline-flex; align-items: center;
-  border-radius: var(--cc-radius-pill); padding: var(--cc-sm-pad, 3px 11px);
-  font-size: var(--cc-sm-fs); font-weight: 600; line-height: 1.35; white-space: nowrap;
+  border-radius: var(--tt-radius-pill); padding: var(--tt-sm-pad, 3px 11px);
+  font-size: var(--tt-sm-fs); font-weight: 600; line-height: 1.35; white-space: nowrap;
   font-family: Consolas, "SFMono-Regular", monospace;
-  background: var(--cc-rb-c, var(--cc-accent, #FCC419)); color: var(--cc-rb-ct, var(--cc-accent-text, #161616));
+  background: var(--tt-rb-c, var(--tt-accent, #FCC419)); color: var(--tt-rb-ct, var(--tt-accent-text, #161616));
 }
 /* memory, disk IO and network IO as neutral chips (vms.js wraps the bare text in
-   span.cc-vmstat-chip on every re-render), so every stat cell reads as a badge */
-html.cc-vms-on #vmstats .cc-vmstat-chip {
+   span.tt-vmstat-chip on every re-render), so every stat cell reads as a badge */
+html.tt-vms-on #vmstats .tt-vmstat-chip {
   display: inline-flex; flex-direction: column; align-items: flex-start;
-  background: rgba(255, 255, 255, .07); border-radius: var(--cc-radius-pill);
+  background: rgba(255, 255, 255, .07); border-radius: var(--tt-radius-pill);
   padding: 4px 11px; line-height: 1.4; color: #dcdcdc;
-  font-family: Consolas, "SFMono-Regular", monospace; font-size: var(--cc-md-fs);
+  font-family: Consolas, "SFMono-Regular", monospace; font-size: var(--tt-md-fs);
 }
 /* live usage bar (native .usage-disk.mm) -> accent fill on a subtle rounded track */
-html.cc-vms-on #vmstats td.advanced .usage-disk.mm { background: rgba(128, 128, 128, .20) !important; border-radius: var(--cc-radius-pill); }
-html.cc-vms-on #vmstats td.advanced .usage-disk.mm > span:first-child { background: var(--cc-accent, #FCC419) !important; border-radius: var(--cc-radius-pill); }
+html.tt-vms-on #vmstats td.advanced .usage-disk.mm { background: rgba(128, 128, 128, .20) !important; border-radius: var(--tt-radius-pill); }
+html.tt-vms-on #vmstats td.advanced .usage-disk.mm > span:first-child { background: var(--tt-accent, #FCC419) !important; border-radius: var(--tt-radius-pill); }
 /* memory / disk IO / network IO cells (cols 4-6) -> monospace numerics */
-html.cc-vms-on #vmstats tbody tr > td:nth-child(n+4) { font-family: Consolas, "SFMono-Regular", monospace; font-size: var(--cc-md-fs); }
+html.tt-vms-on #vmstats tbody tr > td:nth-child(n+4) { font-family: Consolas, "SFMono-Regular", monospace; font-size: var(--tt-md-fs); }
 
-/* Section view (cc.sections.vms) stacks the two /VMs sub-tabs, "Virtual Machines" (#kvm_list) and
-   "VM Usage Statistics" (#vmstats), as CC sections. Both panels are server-rendered siblings and
+/* Section view (tt.sections.vms) stacks the two /VMs sub-tabs, "Virtual Machines" (#kvm_list) and
+   "VM Usage Statistics" (#vmstats), as TowerTorch sections. Both panels are server-rendered siblings and
    Unraid's tab script only toggles inline display, so every panel is shown, the tab buttons are
-   hidden, and each section gets a .cc-card-head badge that vms.js clones from its tab button. */
-html.cc-vms-on.cc-sections-vms #displaybox section[role="tabpanel"] {
+   hidden, and each section gets a .tt-card-head badge that vms.js clones from its tab button. */
+html.tt-vms-on.tt-sections-vms #displaybox section[role="tabpanel"] {
   display: block !important;                 /* beats the inline display:none Unraid's tab JS sets */
   margin: 0 0 28px; background: none; border-radius: 0; padding: 0; box-shadow: none; overflow: visible !important;
 }
-html.cc-vms-on.cc-sections-vms #displaybox section[role="tabpanel"]:last-child { margin-bottom: 0; }
-html.cc-vms-on.cc-sections-vms #displaybox nav.tabs button[role="tab"] { display: none !important; }
-html.cc-vms-on.cc-sections-vms #displaybox nav.tabs { border: none; min-height: 0; }
-html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head {
+html.tt-vms-on.tt-sections-vms #displaybox section[role="tabpanel"]:last-child { margin-bottom: 0; }
+html.tt-vms-on.tt-sections-vms #displaybox nav.tabs button[role="tab"] { display: none !important; }
+html.tt-vms-on.tt-sections-vms #displaybox nav.tabs { border: none; min-height: 0; }
+html.tt-vms-on.tt-sections-vms #displaybox .tt-card-head {
   display: inline-flex; align-items: center; gap: 8px;
-  min-height: var(--cc-sec-h, 22px); box-sizing: border-box;   /* the section badge, as on every other page */
-  font-weight: var(--cc-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--cc-sec-ls, 1.2px); font-size: var(--cc-sec-fs); line-height: 1;
-  background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important;   /* rainbow-aware, so the head takes a palette colour instead of the plain accent */
-  border: none; border-radius: var(--cc-radius-pill); padding: var(--cc-sec-pad, 0 12px); margin: 0 0 16px;
+  min-height: var(--tt-sec-h, 22px); box-sizing: border-box;   /* the section badge, as on every other page */
+  font-weight: var(--tt-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px); font-size: var(--tt-sec-fs); line-height: 1;
+  background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;   /* rainbow-aware, so the head takes a palette colour instead of the plain accent */
+  border: none; border-radius: var(--tt-radius-pill); padding: var(--tt-sec-pad, 0 12px); margin: 0 0 16px;
 }
-html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head i,
-html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head i.title,
-html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head img.icon { color: inherit; margin: 0; }
+html.tt-vms-on.tt-sections-vms #displaybox .tt-card-head i,
+html.tt-vms-on.tt-sections-vms #displaybox .tt-card-head i.title,
+html.tt-vms-on.tt-sections-vms #displaybox .tt-card-head img.icon { color: inherit; margin: 0; }
 /* Unraid's gap-1 is 2.5px on its 10px root, so the glyph and the title take a card title's 6px. */
-html.cc-vms-on.cc-sections-vms #displaybox .cc-card-head > span.left { display: inline-flex; align-items: center; gap: 6px; }
+html.tt-vms-on.tt-sections-vms #displaybox .tt-card-head > span.left { display: inline-flex; align-items: center; gap: 6px; }
 
 /* The Liste/Kacheln switch at the right end of the sub-tab bar, the same one /Main and /Shares
    carry there. */
-html.cc-vms-on { --cc-vm-inset: var(--cc-surface-base); }
-html.cc-vms-on:is(.Theme--white, .Theme--azure) { --cc-vm-inset: var(--cc-surface-4); }
-html.cc-vms-on #displaybox > nav.tabs > .cc-vm-vsw { display: flex; align-self: center; margin-left: auto; }
-html.cc-vms-on.cc-sections-vms #displaybox > nav.tabs > .cc-vm-vsw { margin-bottom: 4px; }
-html.cc-vms-on #displaybox .cc-vm-seg { display: inline-flex; gap: 3px; padding: 3px; background: var(--cc-vm-inset); border-radius: var(--cc-radius-pill); }
-html.cc-vms-on #displaybox .cc-vm-seg .cc-seg-btn {
-  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border: 0; border-radius: var(--cc-radius-pill);
-  background: transparent; color: var(--cc-text-hint); font-size: var(--cc-text-subline); line-height: 1; box-shadow: none; cursor: pointer; user-select: none;
-  transition: background-color var(--cc-motion-control-dur, 0s), color var(--cc-motion-control-dur, 0s);
+html.tt-vms-on { --tt-vm-inset: var(--tt-surface-base); }
+html.tt-vms-on:is(.Theme--white, .Theme--azure) { --tt-vm-inset: var(--tt-surface-4); }
+html.tt-vms-on #displaybox > nav.tabs > .tt-vm-vsw { display: flex; align-self: center; margin-left: auto; }
+html.tt-vms-on.tt-sections-vms #displaybox > nav.tabs > .tt-vm-vsw { margin-bottom: 4px; }
+html.tt-vms-on #displaybox .tt-vm-seg { display: inline-flex; gap: 3px; padding: 3px; background: var(--tt-vm-inset); border-radius: var(--tt-radius-pill); }
+html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border: 0; border-radius: var(--tt-radius-pill);
+  background: transparent; color: var(--tt-text-hint); font-size: var(--tt-text-subline); line-height: 1; box-shadow: none; cursor: pointer; user-select: none;
+  transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
-html.cc-vms-on #displaybox .cc-vm-seg .cc-seg-btn .cc-glyph { width: 1em; height: 1em; flex: none; }
-html.cc-vms-on #displaybox .cc-vm-seg .cc-seg-btn:hover { background: var(--cc-chip); color: var(--cc-text); }
-html.cc-vms-on #displaybox .cc-vm-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rbneutral #displaybox .cc-vm-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-surface-3); color: var(--cc-text); }
-html.cc-vms-on.cc-vm-rbneutral #displaybox .cc-vm-vsw:hover .cc-vm-seg .cc-seg-btn[aria-pressed="true"] { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
+html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
+html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rbneutral #displaybox .tt-vm-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
+html.tt-vms-on.tt-vm-rbneutral #displaybox .tt-vm-vsw:hover .tt-vm-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
 /* A phone gives the switch a line of its own under the sub-tabs, flush right. */
 @media (max-width: 600px) {
-  html.cc-vms-on #displaybox > nav.tabs { flex-wrap: wrap; height: auto; row-gap: 6px; }
+  html.tt-vms-on #displaybox > nav.tabs { flex-wrap: wrap; height: auto; row-gap: 6px; }
 }
 
-/* The tiles (cc.vmview="grid", html.cc-vmgrid). vms.js draws them into .cc-vm-grid beside the
+/* The tiles (tt.vmview="grid", html.tt-vmgrid). vms.js draws them into .tt-vm-grid beside the
    table, which stays in the page as their source but out of sight. Laid out like the Docker grid
-   card: four to a row at 1917px, --cc-card-space between cards, around a card's content and
-   between its rows, --cc-badge-gap within a row. */
-html.cc-vms-on.cc-vmgrid #displaybox #kvm_table { display: none !important; }
-html.cc-vms-on .cc-vm-grid-holder { --cc-card-space: 12px; margin: 6px 0 14px; color: var(--cc-text, #e6e6e6); font-size: var(--cc-text-subline); line-height: 1.45; }
-html.cc-vms-on .cc-vm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); gap: var(--cc-card-space); }
-html.cc-vms-on .cc-vmc {
-  background: var(--cc-surface-1, #1e1e1e); border: none; border-radius: var(--cc-radius-card); padding: var(--cc-card-space);
-  display: flex; flex-direction: column; gap: var(--cc-card-space); min-width: 0; transition: transform .12s, box-shadow .12s;
+   card: four to a row at 1917px, --tt-card-space between cards, around a card's content and
+   between its rows, --tt-badge-gap within a row. */
+html.tt-vms-on.tt-vmgrid #displaybox #kvm_table { display: none !important; }
+html.tt-vms-on .tt-vm-grid-holder { --tt-card-space: 12px; margin: 6px 0 14px; color: var(--tt-text, #e6e6e6); font-size: var(--tt-text-subline); line-height: 1.45; }
+html.tt-vms-on .tt-vm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); gap: var(--tt-card-space); }
+html.tt-vms-on .tt-vmc {
+  background: var(--tt-surface-1, #1e1e1e); border: none; border-radius: var(--tt-radius-card); padding: var(--tt-card-space);
+  display: flex; flex-direction: column; gap: var(--tt-card-space); min-width: 0; transition: transform .12s, box-shadow .12s;
 }
-html.cc-vms-on .cc-vmc:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }   /* elevation, not a border tint */
+html.tt-vms-on .tt-vmc:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }   /* elevation, not a border tint */
 /* The head: the logo at the size the list uses, the name with its IP, and the corner on the right.
    A card too narrow for the corner beside the name puts it on a line of its own. */
-html.cc-vms-on .cc-vmc-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cc-card-space); }
-html.cc-vms-on .cc-vmc-icobox {
+html.tt-vms-on .tt-vmc-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--tt-card-space); }
+html.tt-vms-on .tt-vmc-icobox {
   flex: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; overflow: hidden;
-  width: var(--cc-logo-box, 78px); height: var(--cc-logo-box, 78px); border-radius: var(--cc-radius-control); background: var(--cc-surface-4, #262626);
+  width: var(--tt-logo-box, 78px); height: var(--tt-logo-box, 78px); border-radius: var(--tt-radius-control); background: var(--tt-surface-4, #262626);
 }
-html.cc-vms-on .cc-vmc-icobox > img.img { display: block; width: var(--cc-logo-img, 62px); height: var(--cc-logo-img, 62px); object-fit: contain; margin: 0; }
-html.cc-vms-on .cc-vmc-icobox > i.img {
+html.tt-vms-on .tt-vmc-icobox > img.img { display: block; width: var(--tt-logo-img, 62px); height: var(--tt-logo-img, 62px); object-fit: contain; margin: 0; }
+html.tt-vms-on .tt-vmc-icobox > i.img {
   display: flex; align-items: center; justify-content: center; margin: 0;
-  width: var(--cc-logo-img, 62px); height: var(--cc-logo-img, 62px); font-size: var(--cc-logo-img, 62px); line-height: 1;
+  width: var(--tt-logo-img, 62px); height: var(--tt-logo-img, 62px); font-size: var(--tt-logo-img, 62px); line-height: 1;
 }
 /* The logo tile takes the list's colour chain: the picked colour, then the row's rainbow slot. */
-html.cc-vms-on.cc-vm-iconbg .cc-vmc-icobox { background: var(--cc-iconbg-color, var(--cc-accent, #FCC419)); }
-html.cc-vms-on.cc-vm-iconbg.cc-vm-rainbow:not(.cc-vm-rbneutral) .cc-vmc-icobox { background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)))); }
-html.cc-vms-on.cc-vm-iconbg.cc-vm-rbneutral .cc-vmc-icobox { background: rgba(128, 128, 128, .18); }
-html.cc-vms-on.cc-vm-iconbg.cc-vm-rbneutral .cc-vmc:hover .cc-vmc-icobox { background: var(--cc-iconbg-color, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419)))); }
-html.cc-vms-on .cc-vmc-name { flex: 1 1 100px; min-width: 0; }
-html.cc-vms-on .cc-vmc-title { font-weight: 600; font-size: var(--cc-text-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-html.cc-vms-on .cc-vmc-title > i.fa-warning { margin-left: 6px; }
+html.tt-vms-on.tt-vm-iconbg .tt-vmc-icobox { background: var(--tt-iconbg-color, var(--tt-accent, #FCC419)); }
+html.tt-vms-on.tt-vm-iconbg.tt-vm-rainbow:not(.tt-vm-rbneutral) .tt-vmc-icobox { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)))); }
+html.tt-vms-on.tt-vm-iconbg.tt-vm-rbneutral .tt-vmc-icobox { background: rgba(128, 128, 128, .18); }
+html.tt-vms-on.tt-vm-iconbg.tt-vm-rbneutral .tt-vmc:hover .tt-vmc-icobox { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)))); }
+html.tt-vms-on .tt-vmc-name { flex: 1 1 100px; min-width: 0; }
+html.tt-vms-on .tt-vmc-title { font-weight: 600; font-size: var(--tt-text-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html.tt-vms-on .tt-vmc-title > i.fa-warning { margin-left: 6px; }
 /* Several addresses wrap, and a third line would push the name off the logo's middle. */
-html.cc-vms-on .cc-vmc-ip {
-  color: var(--cc-text-dim, #8a8a8a); font-size: var(--cc-text-meta); font-family: Consolas, "SFMono-Regular", monospace;
+html.tt-vms-on .tt-vmc-ip {
+  color: var(--tt-text-dim, #8a8a8a); font-size: var(--tt-text-meta); font-family: Consolas, "SFMono-Regular", monospace;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
 }
-html.cc-vms-on .cc-vmc-ip:has(> .cc-vmb-noip) { display: block; overflow: visible; }
-html.cc-vms-on .cc-vmc-corner { margin-left: auto; align-self: flex-start; display: flex; flex-direction: column; align-items: flex-end; gap: var(--cc-badge-gap, 5px); }
-html.cc-vms-on .cc-vmc-cornerrow { display: flex; align-items: center; gap: var(--cc-badge-gap, 5px); }
-@media (max-width: 540px) { html.cc-vms-on .cc-vmc-corner { flex: 1 0 100%; flex-direction: row-reverse; flex-wrap: wrap; align-items: center; } }
+html.tt-vms-on .tt-vmc-ip:has(> .tt-vmb-noip) { display: block; overflow: visible; }
+html.tt-vms-on .tt-vmc-corner { margin-left: auto; align-self: flex-start; display: flex; flex-direction: column; align-items: flex-end; gap: var(--tt-badge-gap, 5px); }
+html.tt-vms-on .tt-vmc-cornerrow { display: flex; align-items: center; gap: var(--tt-badge-gap, 5px); }
+@media (max-width: 540px) { html.tt-vms-on .tt-vmc-corner { flex: 1 0 100%; flex-direction: row-reverse; flex-wrap: wrap; align-items: center; } }
 /* the actions in one row; they come in on hover and focus and stay on a touch screen */
-html.cc-vms-on .cc-vmc-actbar .cc-actbar { flex-direction: row; flex-wrap: wrap; gap: var(--cc-badge-gap, 5px); }
-html.cc-vms-on .cc-vmc-actbar .cc-actrow { display: contents; }
-html.cc-vms-on .cc-vmc:is(:hover, :focus-within) .cc-actbar { opacity: 1; }
+html.tt-vms-on .tt-vmc-actbar .tt-actbar { flex-direction: row; flex-wrap: wrap; gap: var(--tt-badge-gap, 5px); }
+html.tt-vms-on .tt-vmc-actbar .tt-actrow { display: contents; }
+html.tt-vms-on .tt-vmc:is(:hover, :focus-within) .tt-actbar { opacity: 1; }
 /* The resource badges at the foot, each as tall as the gear beside it, so a row reads as one line. */
-html.cc-vms-on .cc-vmc-res.cc-resgroup { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--cc-badge-gap, 5px); width: 100%; }
-html.cc-vms-on .cc-vmc-res .cc-resline { display: inline-flex; align-items: center; gap: 3px; }
-html.cc-vms-on .cc-vmc :is(.cc-b, .cc-badge) { height: var(--cc-icon-badge, 26px); box-sizing: border-box; padding-block: 0; margin: 0; }
-html.cc-vms-on .cc-vmc-res .cc-b { padding-inline: 8px; gap: 4px; }
-/* The autostart switch, CC's toggle over Unraid's own checkbox. */
-html.cc-vms-on .cc-vmc .cc-set-toggle { width: 44px; height: 24px; border-radius: var(--cc-radius-pill); border: none; padding: 0; background: var(--cc-toggle-track-off, #3a3a3a); position: relative; cursor: pointer; transition: background .15s; flex: none; box-sizing: border-box; }
-html.cc-vms-on .cc-vmc .cc-set-toggle-on { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); }
-html.cc-vms-on .cc-vmc .cc-set-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--cc-radius-pill); background: #fff; transition: left .15s; }
-html.cc-vms-on .cc-vmc .cc-set-toggle-on .cc-set-knob { left: 21px; background: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
+html.tt-vms-on .tt-vmc-res.tt-resgroup { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--tt-badge-gap, 5px); width: 100%; }
+html.tt-vms-on .tt-vmc-res .tt-resline { display: inline-flex; align-items: center; gap: 3px; }
+html.tt-vms-on .tt-vmc :is(.tt-b, .tt-badge) { height: var(--tt-icon-badge, 26px); box-sizing: border-box; padding-block: 0; margin: 0; }
+html.tt-vms-on .tt-vmc-res .tt-b { padding-inline: 8px; gap: 4px; }
+/* The autostart switch, TowerTorch's toggle over Unraid's own checkbox. */
+html.tt-vms-on .tt-vmc .tt-set-toggle { width: 44px; height: 24px; border-radius: var(--tt-radius-pill); border: none; padding: 0; background: var(--tt-toggle-track-off, #3a3a3a); position: relative; cursor: pointer; transition: background .15s; flex: none; box-sizing: border-box; }
+html.tt-vms-on .tt-vmc .tt-set-toggle-on { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
+html.tt-vms-on .tt-vmc .tt-set-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--tt-radius-pill); background: #fff; transition: left .15s; }
+html.tt-vms-on .tt-vmc .tt-set-toggle-on .tt-set-knob { left: 21px; background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
 
 /* The tiles' badges and gears take the list's look and colours. */
-html.cc-vms-on .cc-vm-grid .cc-b,
-html.cc-vms-on .cc-vm-grid .cc-badge {
+html.tt-vms-on .tt-vm-grid .tt-b,
+html.tt-vms-on .tt-vm-grid .tt-badge {
   display: inline-flex; align-items: center; gap: 5px; border: none !important;
-  border-radius: var(--cc-radius-pill); font-size: var(--cc-sm-fs); font-weight: 600; line-height: 1.35; white-space: nowrap; text-decoration: none;
+  border-radius: var(--tt-radius-pill); font-size: var(--tt-sm-fs); font-weight: 600; line-height: 1.35; white-space: nowrap; text-decoration: none;
 }
-html.cc-vms-on .cc-vm-grid .cc-b { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)); color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)); }
-html.cc-vms-on .cc-vm-grid .cc-b-k { opacity: .72; font-weight: 500; }
-html.cc-vms-on .cc-vm-grid .cc-b-v { font-family: Consolas, "SFMono-Regular", monospace; }
-html.cc-vms-on .cc-vm-grid .cc-b a,
-html.cc-vms-on .cc-vm-grid .cc-b a i { color: inherit !important; text-decoration: none !important; }
-html.cc-vms-on .cc-vm-grid .cc-badge { padding-inline: 11px; }
-html.cc-vms-on .cc-vm-grid .cc-badge-paused { background: var(--cc-warn, #ff832b); color: var(--cc-warn-fg, #161616); }
-html.cc-vms-on .cc-vm-grid .cc-badge-exited { background: var(--cc-badge-neutral, #3c3c3c); color: var(--cc-text-chip, #cfcfcf); }
-html.cc-vms-on.cc-vm-rainbow .cc-vm-grid .cc-b-cpu { background: var(--cc-rb-cpu, var(--cc-accent, #FCC419)); color: var(--cc-rb-cpu-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow .cc-vm-grid .cc-b-ram { background: var(--cc-rb-ram, var(--cc-accent, #FCC419)); color: var(--cc-rb-ram-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow .cc-vm-grid .cc-b-bw { background: var(--cc-rb-bw, var(--cc-accent, #FCC419)); color: var(--cc-rb-bw-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow .cc-vm-grid .cc-b-vol { background: var(--cc-rb-vol, var(--cc-accent, #FCC419)); color: var(--cc-rb-vol-t, var(--cc-accent-text, #161616)); }
+html.tt-vms-on .tt-vm-grid .tt-b { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
+html.tt-vms-on .tt-vm-grid .tt-b-k { opacity: .72; font-weight: 500; }
+html.tt-vms-on .tt-vm-grid .tt-b-v { font-family: Consolas, "SFMono-Regular", monospace; }
+html.tt-vms-on .tt-vm-grid .tt-b a,
+html.tt-vms-on .tt-vm-grid .tt-b a i { color: inherit !important; text-decoration: none !important; }
+html.tt-vms-on .tt-vm-grid .tt-badge { padding-inline: 11px; }
+html.tt-vms-on .tt-vm-grid .tt-badge-paused { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616); }
+html.tt-vms-on .tt-vm-grid .tt-badge-exited { background: var(--tt-badge-neutral, #3c3c3c); color: var(--tt-text-chip, #cfcfcf); }
+html.tt-vms-on.tt-vm-rainbow .tt-vm-grid .tt-b-cpu { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)); color: var(--tt-rb-cpu-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow .tt-vm-grid .tt-b-ram { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)); color: var(--tt-rb-ram-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow .tt-vm-grid .tt-b-bw { background: var(--tt-rb-bw, var(--tt-accent, #FCC419)); color: var(--tt-rb-bw-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow .tt-vm-grid .tt-b-vol { background: var(--tt-rb-vol, var(--tt-accent, #FCC419)); color: var(--tt-rb-vol-t, var(--tt-accent-text, #161616)); }
 /* reactive: the badges rest grey and take their colour while the pointer is on the tile */
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-b { background: var(--cc-surface-3, #2e2e2e) !important; color: var(--cc-text-chip, #cfcfcf) !important; }
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-vmc:hover .cc-b { background: var(--cc-rbaccent, var(--cc-accent, #FCC419)) !important; color: var(--cc-rbaccent-text, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-vmc:hover .cc-b.cc-b-cpu { background: var(--cc-rb-cpu, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-cpu-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-vmc:hover .cc-b.cc-b-ram { background: var(--cc-rb-ram, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-ram-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-vmc:hover .cc-b.cc-b-bw { background: var(--cc-rb-bw, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-bw-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-vmc:hover .cc-b.cc-b-vol { background: var(--cc-rb-vol, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-vol-t, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on.cc-vm-rbneutral .cc-vm-grid .cc-vmc:hover .cc-actbtn:not(.cc-actoff) { background: var(--cc-rb-c, var(--cc-accent, #FCC419)) !important; color: var(--cc-rb-ct, var(--cc-accent-text, #161616)) !important; }
-html.cc-vms-on .cc-vm-grid .cc-limbtn { display: inline-flex; align-items: center; justify-content: center; width: var(--cc-icon-badge, 26px); height: var(--cc-icon-badge, 26px); box-sizing: border-box; border-radius: var(--cc-radius-pill); background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text, #e6e6e6); cursor: pointer; margin: 0; }
-html.cc-vms-on .cc-vm-grid .cc-limbtn:hover { background: var(--cc-rb-c, var(--cc-accent, #FCC419)); color: var(--cc-rb-ct, var(--cc-accent-text, #161616)); }
-html.cc-vms-on .cc-vm-grid .cc-limbtn-set { color: var(--cc-ok-fg, #161616); background: var(--cc-ok, #6fdc8c); }
-html.cc-vms-on.cc-vm-rainbow .cc-vm-grid .cc-limbtn-set { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) !important; color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-b { background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-vmc:hover .tt-b { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-vmc:hover .tt-b.tt-b-cpu { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-cpu-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-vmc:hover .tt-b.tt-b-ram { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ram-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-vmc:hover .tt-b.tt-b-bw { background: var(--tt-rb-bw, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-bw-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-vmc:hover .tt-b.tt-b-vol { background: var(--tt-rb-vol, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-vol-t, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on.tt-vm-rbneutral .tt-vm-grid .tt-vmc:hover .tt-actbtn:not(.tt-actoff) { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
+html.tt-vms-on .tt-vm-grid .tt-limbtn { display: inline-flex; align-items: center; justify-content: center; width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); box-sizing: border-box; border-radius: var(--tt-radius-pill); background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6); cursor: pointer; margin: 0; }
+html.tt-vms-on .tt-vm-grid .tt-limbtn:hover { background: var(--tt-rb-c, var(--tt-accent, #FCC419)); color: var(--tt-rb-ct, var(--tt-accent-text, #161616)); }
+html.tt-vms-on .tt-vm-grid .tt-limbtn-set { color: var(--tt-ok-fg, #161616); background: var(--tt-ok, #6fdc8c); }
+html.tt-vms-on.tt-vm-rainbow .tt-vm-grid .tt-limbtn-set { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important; color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
 
 /* No IP yet: a muted dash with the explanation in its (i), in the list and on the tile. docker.css,
    which styles the (i) elsewhere, is not loaded on /VMs. */
-html.cc-vms-on .cc-vmb-noip { display: inline-flex; align-items: center; gap: 6px; color: var(--cc-text-dim, #8a8a8a); font-family: inherit; }
-html.cc-vms-on .cc-vmb-noip .cc-info { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; color: var(--cc-text, #e6e6e6); opacity: .8; cursor: help; flex: 0 0 auto; }
-html.cc-vms-on .cc-vmb-noip .cc-info:hover { opacity: 1; }
-html.cc-vms-on .cc-vmb-noip .cc-info svg { width: 15px; height: 15px; display: block; }
+html.tt-vms-on .tt-vmb-noip { display: inline-flex; align-items: center; gap: 6px; color: var(--tt-text-dim, #8a8a8a); font-family: inherit; }
+html.tt-vms-on .tt-vmb-noip .tt-info { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; color: var(--tt-text, #e6e6e6); opacity: .8; cursor: help; flex: 0 0 auto; }
+html.tt-vms-on .tt-vmb-noip .tt-info:hover { opacity: 1; }
+html.tt-vms-on .tt-vmb-noip .tt-info svg { width: 15px; height: 15px; display: block; }
 
-/* Rainbow mode (html.cc-vm-rainbow) reads the global cc.rainbow and the --cc-rb-* palette vms.js
+/* Rainbow mode (html.tt-vm-rainbow) reads the global tt.rainbow and the --tt-rb-* palette vms.js
    stamps on <html>. Only the CPU, RAM and IP badges recolour; the state badge keeps its meaning
    colour, as on Docker. Applies in list and grid view. */
-html.cc-vms-on.cc-vm-rainbow #kvm_list .cc-b-cpu { background: var(--cc-rb-cpu, var(--cc-accent, #FCC419)); color: var(--cc-rb-cpu-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow #kvm_list .cc-b-ram { background: var(--cc-rb-ram, var(--cc-accent, #FCC419)); color: var(--cc-rb-ram-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow #kvm_list .cc-b-bw  { background: var(--cc-rb-bw, var(--cc-accent, #FCC419)); color: var(--cc-rb-bw-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow #kvm_list .cc-b-ip  { background: var(--cc-rb-ip, var(--cc-accent, #FCC419)); color: var(--cc-rb-ip-t, var(--cc-accent-text, #161616)); }
-html.cc-vms-on.cc-vm-rainbow #kvm_list .cc-b-vol { background: var(--cc-rb-vol, var(--cc-accent, #FCC419)); color: var(--cc-rb-vol-t, var(--cc-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-b-cpu { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)); color: var(--tt-rb-cpu-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-b-ram { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)); color: var(--tt-rb-ram-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-b-bw  { background: var(--tt-rb-bw, var(--tt-accent, #FCC419)); color: var(--tt-rb-bw-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-b-ip  { background: var(--tt-rb-ip, var(--tt-accent, #FCC419)); color: var(--tt-rb-ip-t, var(--tt-accent-text, #161616)); }
+html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-b-vol { background: var(--tt-rb-vol, var(--tt-accent, #FCC419)); color: var(--tt-rb-vol-t, var(--tt-accent-text, #161616)); }
 
 /* keyboard focus draws no outline, ring or shadow on Unraid's own controls; the feedback is
-   brightness only. CC's buttons, badges and fields keep the halo Tokens.css gives them. */
-html.cc-vms-on #displaybox :is(a, button, input, select, textarea):where(:not(.cc-b, .cc-badge, .cc-btn, .cc-abtn, .cc-actbtn, .cc-limbtn, .cc-bulkbtn, .cc-bulkmode-badge, .cc-b-copy, .cc-b-del, .cc-badge-toggle, .cc-plan, .cc-card-movebtn, .cc-folder-act, .cc-hgear, .cc-win-btn, .cc-win-x, .cc-seg-btn, .cc-set-tab, .cc-day, .cc-sched-x, .cc-plugsup, .cc-plugicm, .cc-in, .cc-set-toggle, .cc-set-sw, .cc-colpick, .cc-core, .cc-toast)):focus-visible,
-html.cc-vms-on #kvm_list .switch-button-background:focus-visible,
-html.cc-vms-on ul.dropdown-menu.dropdown-context a:focus-visible {
+   brightness only. TowerTorch's buttons, badges and fields keep the halo Tokens.css gives them. */
+html.tt-vms-on #displaybox :is(a, button, input, select, textarea):where(:not(.tt-b, .tt-badge, .tt-btn, .tt-abtn, .tt-actbtn, .tt-limbtn, .tt-bulkbtn, .tt-bulkmode-badge, .tt-b-copy, .tt-b-del, .tt-badge-toggle, .tt-plan, .tt-card-movebtn, .tt-folder-act, .tt-hgear, .tt-win-btn, .tt-win-x, .tt-seg-btn, .tt-set-tab, .tt-day, .tt-sched-x, .tt-plugsup, .tt-plugicm, .tt-in, .tt-set-toggle, .tt-set-sw, .tt-colpick, .tt-core, .tt-toast)):focus-visible,
+html.tt-vms-on #kvm_list .switch-button-background:focus-visible,
+html.tt-vms-on ul.dropdown-menu.dropdown-context a:focus-visible {
   outline: none !important; box-shadow: none !important; filter: brightness(1.18);
 }
 
-/* The pill radius, as in docker.css. These stay the last rules in the file so it wins for every CC
+/* The pill radius, as in docker.css. These stay the last rules in the file so it wins for every TowerTorch
    pill and for the native autostart switch's track and knob. */
-html.cc-vms-on #kvm_list .cc-b,
-html.cc-vms-on #kvm_list .cc-badge,
-html.cc-vms-on .cc-actbtn,
-html.cc-vms-on .cc-seg-btn,
-html.cc-vms-on #kvm_list .switch-button-background,
-html.cc-vms-on #kvm_list .switch-button-background .switch-button-button {
-  border-radius: var(--cc-radius-pill) !important;
+html.tt-vms-on #kvm_list .tt-b,
+html.tt-vms-on #kvm_list .tt-badge,
+html.tt-vms-on .tt-actbtn,
+html.tt-vms-on .tt-seg-btn,
+html.tt-vms-on #kvm_list .switch-button-background,
+html.tt-vms-on #kvm_list .switch-button-background .switch-button-button {
+  border-radius: var(--tt-radius-pill) !important;
 }
 
 /* The limits window's rows (GlimStone rule 35): a field or a dropdown stands at the end of its
    label's row with a width of its own; the core picker and the vDisk list keep their label above. */
-#cc-vmlim .cc-vm-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 10px; }
-#cc-vmlim .cc-vm-block { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
-#cc-vmlim .cc-vm-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: var(--cc-text-subline); color: var(--cc-text, #e6e6e6); }
-#cc-vmlim .cc-vm-row > input { width: 140px; box-sizing: border-box; flex: none; background: var(--cc-surface-3, #2e2e2e); color: var(--cc-text, #e6e6e6); border: none; border-radius: var(--cc-radius-control); padding: 6px 10px; font-size: var(--cc-text-subline); outline: none; }
-#cc-vmlim .cc-vm-row > input::placeholder { color: var(--cc-text-hint, #a3a3a3); opacity: 1; }   /* a hint, not Unraid's link blue */
+#tt-vmlim .tt-vm-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 10px; }
+#tt-vmlim .tt-vm-block { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
+#tt-vmlim .tt-vm-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: var(--tt-text-subline); color: var(--tt-text, #e6e6e6); }
+#tt-vmlim .tt-vm-row > input { width: 140px; box-sizing: border-box; flex: none; background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6); border: none; border-radius: var(--tt-radius-control); padding: 6px 10px; font-size: var(--tt-text-subline); outline: none; }
+#tt-vmlim .tt-vm-row > input::placeholder { color: var(--tt-text-hint, #a3a3a3); opacity: 1; }   /* a hint, not Unraid's link blue */
 /* vms.js vmDsel: the settings page's dropdown, on the window's field fill. */
-#cc-vmlim .cc-dsel { position: relative; display: inline-flex; flex: none; min-width: 200px; }
-#cc-vmlim .cc-dsel-trigger {
+#tt-vmlim .tt-dsel { position: relative; display: inline-flex; flex: none; min-width: 200px; }
+#tt-vmlim .tt-dsel-trigger {
   display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
   flex: 1; min-width: 0; height: 32px; box-sizing: border-box;
-  background-color: var(--cc-surface-3, #2e2e2e); color: var(--cc-text, #e6e6e6);
-  border: 0; border-radius: var(--cc-radius-control); padding: 0 12px; font-size: var(--cc-text-subline); font-weight: 600;
+  background-color: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6);
+  border: 0; border-radius: var(--tt-radius-control); padding: 0 12px; font-size: var(--tt-text-subline); font-weight: 600;
   cursor: pointer; transition: background-color .12s;
 }
-#cc-vmlim .cc-dsel-trigger:hover { background-color: color-mix(in srgb, var(--cc-surface-3, #2e2e2e) 85%, var(--cc-text, #e6e6e6)); }
-#cc-vmlim .cc-dsel-trigger::after {
+#tt-vmlim .tt-dsel-trigger:hover { background-color: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)); }
+#tt-vmlim .tt-dsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 8px;
-  border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--cc-text, #e6e6e6);
+  border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--tt-text, #e6e6e6);
 }
-#cc-vmlim .cc-dsel-panel {
+#tt-vmlim .tt-dsel-panel {
   display: none; position: fixed; z-index: 30; flex-direction: column; gap: 6px; padding: 8px;
   width: max-content; max-width: min(92vw, 420px); overflow-y: auto; overflow-x: hidden;
-  background: var(--cc-surface-window, #242424); border-radius: var(--cc-radius-card); box-shadow: var(--cc-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
+  background: var(--tt-surface-window, #242424); border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
 }
-#cc-vmlim .cc-dsel.cc-open .cc-dsel-panel { display: flex; }
-#cc-vmlim .cc-dsel-opt {
-  display: flex; align-items: center; padding: 6px 12px; cursor: pointer; border-radius: var(--cc-radius-pill); white-space: nowrap;
-  background: rgba(128, 128, 128, .16); color: var(--cc-text, #e6e6e6);
+#tt-vmlim .tt-dsel.tt-open .tt-dsel-panel { display: flex; }
+#tt-vmlim .tt-dsel-opt {
+  display: flex; align-items: center; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill); white-space: nowrap;
+  background: rgba(128, 128, 128, .16); color: var(--tt-text, #e6e6e6);
   transition: background .12s, color .12s;
 }
-#cc-vmlim .cc-dsel-opt:hover, #cc-vmlim .cc-dsel-opt.is-selected { background: var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))); color: var(--cc-rb-ct, var(--cc-rbaccent-text, var(--cc-accent-text, #161616))); }
-#cc-vmlim .cc-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--cc-rb-c, var(--cc-rbaccent, var(--cc-accent, #FCC419))) 85%, var(--cc-text, #e6e6e6)); }
+#tt-vmlim .tt-dsel-opt:hover, #tt-vmlim .tt-dsel-opt.is-selected { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
+#tt-vmlim .tt-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
