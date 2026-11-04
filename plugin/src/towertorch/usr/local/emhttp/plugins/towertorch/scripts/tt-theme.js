@@ -9,6 +9,28 @@
   "use strict";
   if (window.TTTheme) return;
 
+  // Older releases stored the settings under the cc prefixes, and tt.off and tt.charts, which stay
+  // in the browser, under a prefix the engine mirrors. Renaming them here, first thing on every
+  // page, keeps old names away from every other script. This block, the matching step in
+  // towertorch.plg and settings-survive-the-update.test.js go together once those releases are gone.
+  function currentKey(k) {
+    return k === "tt.off" || k === "tt.charts" ? "towertorch." + k.slice(3) : k.replace(/^cc([a-z]*\.)/, "tt$1");
+  }
+  function renameOldKeys(ls) {
+    var old = [];
+    for (var i = 0; i < ls.length; i++) { if (currentKey(ls.key(i)) !== ls.key(i)) old.push(ls.key(i)); }
+    old.forEach(function (k) {
+      if (ls.getItem(currentKey(k)) === null) ls.setItem(currentKey(k), ls.getItem(k));
+      ls.removeItem(k);
+    });
+  }
+  function backupWithCurrentKeys(o) {
+    var renamed = {};
+    Object.keys(o || {}).forEach(function (k) { renamed[currentKey(k)] = o[k]; });
+    return renamed;
+  }
+  try { renameOldKeys(localStorage); } catch (e) {}
+
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function s(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
@@ -1298,6 +1320,7 @@
   try { keepAdoptedGridTiles(localStorage); } catch (e) {}
 
   window.TTTheme = {
+    backupWithCurrentKeys: backupWithCurrentKeys,
     RB: RB, idealText: idealText, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,

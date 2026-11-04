@@ -500,6 +500,32 @@ rm -f $(ls &plgPath;/&slug;-*.txz 2>/dev/null | grep -v '&txz;')
 </INLINE>
 </FILE>
 
+<!-- Older releases wrote the cc names to the flash config and the kernel. The config gets
+     the tt keys before the daemon and the login page read it. A chain outlives the daemon
+     and would go on limiting beside the new one until the next reboot, so it goes here and
+     the daemon applies the limit again under the tt name. This block goes together with the
+     matching step in tt-theme.js. -->
+<FILE Run="/bin/bash">
+<INLINE>
+cfg=&plgPath;/config.json
+if grep -Eq '^ *"cc[a-z]*\.' "$cfg" 2>/dev/null; then
+  sed -E 's/^( *")cc([a-z]*\.)/\1tt\2/' "$cfg" > "$cfg.new" &amp;&amp; sync &amp;&amp; mv "$cfg.new" "$cfg"
+fi
+drop_old_chains() {
+  local chain rule
+  for chain in $("$@" -w -S 2>/dev/null | sed -nE 's/^-N (CC_DL|CC_UL|CC-VMBW-.*)$/\1/p'); do
+    "$@" -w -S 2>/dev/null | grep -- "-j $chain\$" | sed 's/^-A/-D/' | while read -r rule; do "$@" -w $rule; done
+    "$@" -w -F "$chain"
+    "$@" -w -X "$chain"
+  done
+}
+drop_old_chains iptables
+for id in $(docker ps -q 2>/dev/null); do
+  drop_old_chains nsenter -t "$(docker inspect -f '{{.State.Pid}}' "$id" 2>/dev/null)" -n iptables
+done
+</INLINE>
+</FILE>
+
 <!--
   The package (supervisor binary + plugin files) is built by plugin/pkg_build.sh and
   attached to the GitHub release "v&version;". Its SHA256 is declared here, so the plugin

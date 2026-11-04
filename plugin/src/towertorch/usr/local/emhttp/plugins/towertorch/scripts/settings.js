@@ -2288,6 +2288,7 @@
         rd.onload = function () {
           var o = null;
           try { o = JSON.parse(String(rd.result)); } catch (e) { failed(im, T("Keine gültige JSON-Datei.", "Not a valid JSON file.")); return; }
+          if (window.TTTheme) o = window.TTTheme.backupWithCurrentKeys(o);
           // it has to be a flat object of tt-family string keys, and never tt.stateCache
           var ks = o && typeof o === "object" && !Array.isArray(o) ? Object.keys(o) : [];
           var bad = ks.filter(function (k) { return !/^tt[a-z]*\./.test(k) || k === "tt.stateCache" || typeof o[k] !== "string"; });
