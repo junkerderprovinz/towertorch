@@ -70,5 +70,14 @@ console.log('\nThe flash config keeps its settings');
     plg.indexOf('rc.&slug; stop') < plg.indexOf('drop_old_chains()') && plg.indexOf('drop_old_chains()') < plg.indexOf('<FILE Name="&plgPath;/&txz;"'));
 }
 
+console.log('\nThe header keeps its order');
+{
+  const header = fs.readFileSync(path.join(DIR, 'scripts/header.js'), 'utf8');
+  const currentNavKey = new Function(grabFn(header, 'currentNavKey') + 'return currentNavKey;')();
+  ok('the bell and the menu button take the tt keys', currentNavKey('cc-bell') === 'tt-bell' && currentNavKey('cc-burger') === 'tt-burger');
+  ok('other keys stay', currentNavKey('/Docker') === '/Docker' && currentNavKey('tt-bell') === 'tt-bell' && currentNavKey('usage-bar') === 'usage-bar');
+  ok('the saved order goes through it', header.includes('(o.left || []).map(currentNavKey)') && header.includes('(o.right || []).map(currentNavKey)'));
+}
+
 console.log('\n' + (fail ? 'FAILED  ' : 'OK  ') + pass + ' passed' + (fail ? ', ' + fail + ' failed' : ''));
 process.exit(fail ? 1 : 0);

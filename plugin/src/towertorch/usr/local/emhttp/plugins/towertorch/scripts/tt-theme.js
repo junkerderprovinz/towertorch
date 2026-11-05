@@ -12,7 +12,8 @@
   // Older releases stored the settings under the cc prefixes, and tt.off and tt.charts, which stay
   // in the browser, under a prefix the engine mirrors. Renaming them here, first thing on every
   // page, keeps old names away from every other script. This block, the matching step in
-  // towertorch.plg and settings-survive-the-update.test.js go together once those releases are gone.
+  // towertorch.plg, currentNavKey in header.js and settings-survive-the-update.test.js go together
+  // once those releases are gone.
   function currentKey(k) {
     return k === "tt.off" || k === "tt.charts" ? "towertorch." + k.slice(3) : k.replace(/^cc([a-z]*\.)/, "tt$1");
   }

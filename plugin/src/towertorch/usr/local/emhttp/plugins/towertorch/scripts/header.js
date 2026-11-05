@@ -729,6 +729,11 @@
     if (href === "#") href = "";
     return ((href || a.getAttribute("onclick") || a.getAttribute("title") || "") + "").slice(0, 160) || null;
   }
+  // Older releases saved the two proxies under the cc names. This goes together with the matching
+  // step in tt-theme.js.
+  function currentNavKey(k) {
+    return k === "cc-bell" ? "tt-bell" : k === "cc-burger" ? "tt-burger" : k;
+  }
   // tt.navorder.all holds {left:[keys], right:[keys]}, each tile's own sequence including items
   // dragged over from the other side, with a one-time migration from the older per-zone keys.
   function navReadAll() {
@@ -741,6 +746,8 @@
       } catch (e2) {}
     }
     if (!o) return null;
+    o.left = (o.left || []).map(currentNavKey);
+    o.right = (o.right || []).map(currentNavKey);
     // The bell and burger proxies host a live adopted Vue trigger rather than a plain link and
     // render correctly only among the other utility icons, so a stray drag must not leave them
     // parked among the page tabs.
