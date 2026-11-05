@@ -496,9 +496,9 @@ console.log('\nA disk that reads in bursts keeps working, and its platter runs u
 
 console.log('\nThe boot hint stands beside the boot card');
 {
-  ok('a hint turns the boot section into a row, the hint a column as tall as the card', /\.tt-dk-host\[data-tt-dk="boot"\]:has\(> \.tt-dk-notes\) \{ display: flex; align-items: stretch; gap: 12px; \}/.test(css) && /\.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{\s*flex: 0 0 168px;[^}]*margin-top: 0;/.test(css));
-  ok('the hint reads quiet, in dimmed text on a faint surface', /\.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{[^}]*background: color-mix\(in srgb, var\(--tt-dk-card\) 50%, transparent\); color: var\(--tt-text-dim\);/.test(css));
-  ok('on a phone it goes back under the card', /@media \(max-width: 600px\) \{\s*html\.tt-dk-on #displaybox \.tt-dk-host\[data-tt-dk="boot"\]:has\(> \.tt-dk-notes\) \{ display: block; \}\s*html\.tt-dk-on #displaybox \.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{ margin-top: 12px; \}/.test(css));
+  ok('a hint turns the boot section into a row, the hint a column as tall as the card', /\.tt-dk-host\[data-tt-dk="boot"\]:has\(> \.tt-dk-notes\) \{ display: flex; align-items: stretch; gap: 12px; \}/.test(css) && /\.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{\s*flex: none; width: 168px;[^}]*margin-top: 0;/.test(css));
+  ok('the hint stands on the opaque card surface, in hint text', /\.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{[^}]*background: var\(--tt-dk-card\); color: var\(--tt-text-hint\);/.test(css));
+  ok('on a phone it goes back under the card', /@media \(max-width: 600px\) \{\s*html\.tt-dk-on #displaybox \.tt-dk-host\[data-tt-dk="boot"\]:has\(> \.tt-dk-notes\) \{ display: block; \}\s*html\.tt-dk-on #displaybox \.tt-dk-host\[data-tt-dk="boot"\] > \.tt-dk-notes \{ width: auto; margin-top: 12px; \}/.test(css));
   const kidsOf = [];
   const host = { children: kidsOf, querySelector: () => kidsOf.find((k) => k.className.includes('tt-dk-notes')) || null, appendChild: (n) => { kidsOf.push(n); return n; }, removeChild: (n) => { kidsOf.splice(kidsOf.indexOf(n), 1); } };
   const notesStrip = new Function('el', 'setHtml', grabFn(js, 'notesStrip') + '\nreturn notesStrip;')((t, c) => ({ tagName: t, className: c }), (n, h) => { n.html = h; });

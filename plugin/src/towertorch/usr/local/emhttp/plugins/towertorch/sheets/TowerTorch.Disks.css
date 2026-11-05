@@ -181,16 +181,18 @@ html.tt-dk-on #displaybox .tt-dk-pools { display: flex; flex-wrap: wrap; gap: 18
 html.tt-dk-on #displaybox .tt-dk-pool { flex: 0 1 auto; min-width: 0; }
 html.tt-dk-on #displaybox :is(.tt-dk-pool, .tt-dk-host) > :is(.tt-dk-sum, .tt-dk-notes) { contain: inline-size; }
 /* The boot hint is a quiet column beside the boot card and as tall as it, so the boot section is
-   no taller than the pools beside it. On a phone it goes back under the card. */
+   no taller than the pools beside it. On a phone it goes back under the card. Its width is set
+   rather than a flex-basis: the containment above counts it as empty, and Firefox then sizes the
+   section without it and lets it hang out over the edge. */
 html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"]:has(> .tt-dk-notes) { display: flex; align-items: stretch; gap: 12px; }
 html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-grid { flex: none; }
 html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-notes {
-  flex: 0 0 168px; flex-direction: column; justify-content: center; margin-top: 0; padding: 12px 14px;
-  background: color-mix(in srgb, var(--tt-dk-card) 50%, transparent); color: var(--tt-text-dim); font-size: var(--tt-text-meta); line-height: 1.5;
+  flex: none; width: 168px; flex-direction: column; justify-content: center; margin-top: 0; padding: 12px 14px;
+  background: var(--tt-dk-card); color: var(--tt-text-hint); font-size: var(--tt-text-meta); line-height: 1.5;
 }
 @media (max-width: 600px) {
   html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"]:has(> .tt-dk-notes) { display: block; }
-  html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-notes { margin-top: 12px; }
+  html.tt-dk-on #displaybox .tt-dk-host[data-tt-dk="boot"] > .tt-dk-notes { width: auto; margin-top: 12px; }
 }
 /* A pool's heading is a section badge above its cards. */
 html.tt-dk-on #displaybox .tt-dk-phead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px; font-size: var(--tt-text-meta); color: var(--tt-text-dim); }
