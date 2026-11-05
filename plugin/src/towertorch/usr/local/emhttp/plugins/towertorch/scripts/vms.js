@@ -339,6 +339,7 @@
   }
   // from docker.js, so the VM badges share Docker's classes and structure
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
+  function numField(inp) { return window.TTTheme && window.TTTheme.numberField ? window.TTTheme.numberField(inp) : inp; }
   function ttLabelled(b, name, text) { if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(b, name, text); else b.textContent = text; return b; }
 
   // VM limits: a gear per resource opens an editor for CPU pin/cap, RAM (balloon) and up/down
@@ -589,7 +590,7 @@
     lab.appendChild(tgt); lab.appendChild(cur);
     if (!known) { row.appendChild(lab); return row; }   // source missing -> no size to grow from; label only
     var inp = el("input"); inp.type = "number"; inp.min = String(curG); inp.step = "1"; inp.value = String(Math.max(1, Math.ceil(curG)));
-    inp.style.cssText = "width:74px;background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6);border:none;border-radius:var(--tt-radius-control);padding:6px 8px;font-size:var(--tt-text-subline);outline:none";
+    inp.style.cssText = "width:84px;background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6);border:none;border-radius:var(--tt-radius-control);padding:6px 8px;font-size:var(--tt-text-subline);outline:none";
     var unit = el("span", null, "GiB"); unit.style.cssText = "font-size:var(--tt-text-meta);color:var(--tt-text-dim,#8a8a8a)";
     var btn = el("button", "tt-vm-grow", VMDE ? "Vergrößern" : "Grow");
     ttLabelled(btn, "Expand", VMDE ? "Vergrößern" : "Grow");
@@ -613,7 +614,7 @@
         ok: VMDE ? "Vergrößern" : "Grow", glyph: "Expand", cancel: VMDE ? "Abbrechen" : "Cancel", opener: btn, onOk: doResize
       });
     };
-    row.appendChild(lab); row.appendChild(inp); row.appendChild(unit); row.appendChild(btn);
+    row.appendChild(lab); row.appendChild(numField(inp)); row.appendChild(unit); row.appendChild(btn);
     return row;
   }
   function loadDisks(name, host, statusEl) {

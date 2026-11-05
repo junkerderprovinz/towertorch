@@ -479,6 +479,20 @@ html .tt-win .tt-win-in:focus { background: #383838 !important; }
 /* Unraid paints every placeholder in the theme's link colour; a window's hint takes the muted ink
    instead, which reads at 4.5:1 on the field at rest and focused. */
 html .tt-win .tt-win-in::placeholder { color: var(--tt-text-hint, #a3a3a3) !important; opacity: 1 !important; }
+/* GlimStone's number field (TTTheme.numberField): the arrows sit inside the field's box with no
+   ground of their own, and the padding keeps the digits from running under them. Firefox draws its
+   spinner for any appearance but textfield, so this has to outweigh the appearance: none that
+   .tt-pop input carries; Chrome's goes through the pseudo-elements. */
+html input.tt-num-input[type="number"] {
+  -webkit-appearance: textfield; appearance: textfield; flex: 1 1 auto; box-sizing: border-box; width: 100%; min-width: 0; margin: 0 !important; padding-inline-end: 28px !important;
+}
+html input.tt-num-input[type="number"]::-webkit-outer-spin-button,
+html input.tt-num-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.tt-num-wrap { position: relative; display: inline-flex; min-width: 0; max-width: 100%; }
+.tt-num-steps { position: absolute; inset-block: 1px; inset-inline-end: 6px; display: flex; flex-direction: column; justify-content: center; gap: 1px; pointer-events: none; }
+.tt-num-step { display: flex; align-items: center; justify-content: center; width: 14px; height: 11px; color: var(--tt-text-dim, #8a8a8a); cursor: pointer; pointer-events: auto; }
+.tt-num-step:hover { color: var(--tt-text, #e6e6e6); }
+.tt-num-step.tt-num-off { color: var(--tt-text-dim, #8a8a8a); opacity: .35; cursor: default; }
 /* The actions stand at the end of the foot, the forward action last. */
 .tt-win-act { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; flex: none; padding: 10px 0 0; }
 .tt-win-btn {

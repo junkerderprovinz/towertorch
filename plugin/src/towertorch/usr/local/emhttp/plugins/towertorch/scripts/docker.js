@@ -33,6 +33,7 @@
   // The trash can and the other glyphs belong to tt-theme.js, which loads on every page before this
   // script; without it a control keeps its tooltip and its name and only loses the drawing.
   var TT_TRASH_SVG = (window.TTTheme && window.TTTheme.TT_TRASH_SVG) || "";
+  function numField(inp) { return window.TTTheme && window.TTTheme.numberField ? window.TTTheme.numberField(inp) : inp; }
   function ttGlyph(name) { return window.TTTheme && window.TTTheme.glyph ? window.TTTheme.glyph(name) : ""; }
   function ttLabelled(b, name, text) { if (window.TTTheme && window.TTTheme.labelled) window.TTTheme.labelled(b, name, text); else b.textContent = text; return b; }
   // A dropdown's trigger takes the focus on a click and from Tab, which is what lets the wheel step
@@ -3072,7 +3073,7 @@
         // The time field and the multi-select keep room on the right for the clock button and the
         // caret; docker.css asks for it, and this inline padding would otherwise win and run the
         // text under the icon.
-        i.style.setProperty("padding", (i.classList.contains("tt-sched-time") || i.classList.contains("tt-dropin")) ? "5px 24px 5px 8px" : "5px 8px", "important");
+        i.style.setProperty("padding", (i.classList.contains("tt-sched-time") || i.classList.contains("tt-dropin")) ? "5px 24px 5px 8px" : i.classList.contains("tt-num-input") ? "5px 28px 5px 8px" : "5px 8px", "important");
         i.style.setProperty("border-radius", "var(--tt-radius-control)", "important");
         i.style.setProperty("line-height", "1.35", "important");
       });
@@ -3658,22 +3659,23 @@
     var delay = el("input", "tt-in tt-port"); delay.type = "number"; delay.min = "0"; delay.placeholder = "sec"; delay.value = node.delay_seconds ? node.delay_seconds : "";
     // no trailing "sec to wait" span: the placeholder already says "sec", and the extra
     // flex child could wrap and double the row height (one source of the stubborn gap).
-    drow.appendChild(delay); body.appendChild(drow);
+    drow.appendChild(numField(delay)); body.appendChild(drow);
     // Per-container start order. A lower positive number starts earlier, empty or 0 means
     // unnumbered and therefore last, in list order. It is a priority, so duplicates are allowed
     // and ties break by list order; dependencies and health gates still bound it in the engine,
     // so a number never races a dependency.
     var sorow = el("div", "tt-pop-row"); sorow.appendChild(lblInfo(t("startOrder"), t("startOrderInfo")));   // the prose string goes in as a string; infoBubble wraps it, while an array of one string would take its first two characters as key and text
     var sorder = el("input", "tt-in tt-port"); sorder.type = "number"; sorder.min = "0"; sorder.step = "1"; sorder.placeholder = t("startOrderPh"); sorder.value = node.start_order ? node.start_order : "";
-    sorow.appendChild(sorder); body.appendChild(sorow);
+    sorow.appendChild(numField(sorder)); body.appendChild(sorow);
     var prow = el("div", "tt-pop-row"); prow.appendChild(lblInfo(t("readyWhen"), probeItems()));
     var probe = el("select", "tt-in"); PROBES.forEach(function (p) { var o = el("option", null, p); o.value = p; if (node.probe && node.probe.kind === p) o.selected = true; probe.appendChild(o); });
     var port = el("input", "tt-in tt-port"); port.type = "number"; port.placeholder = "port"; port.value = (node.probe && node.probe.port) ? node.probe.port : "";
+    var portField = numField(port);
     var pathIn = el("input", "tt-in tt-port"); pathIn.type = "text"; pathIn.placeholder = "/health"; pathIn.value = (node.probe && node.probe.path) ? node.probe.path : "";
     var cmdIn = el("input", "tt-in"); cmdIn.type = "text"; cmdIn.placeholder = t("execPh"); cmdIn.value = (node.probe && node.probe.command) ? node.probe.command : "";
     var matchIn = el("input", "tt-in"); matchIn.type = "text"; matchIn.placeholder = t("logPh"); matchIn.value = (node.probe && node.probe.match) ? node.probe.match : "";
-    var syncPort = function () { var k = probe.value; port.style.display = (k === "tcp" || k === "http") ? "" : "none"; pathIn.style.display = k === "http" ? "" : "none"; cmdIn.style.display = k === "exec" ? "" : "none"; matchIn.style.display = k === "log" ? "" : "none"; }; syncPort();
-    prow.appendChild(probe); prow.appendChild(port); prow.appendChild(pathIn); prow.appendChild(cmdIn); prow.appendChild(matchIn); body.appendChild(prow);
+    var syncPort = function () { var k = probe.value; portField.style.display = (k === "tcp" || k === "http") ? "" : "none"; pathIn.style.display = k === "http" ? "" : "none"; cmdIn.style.display = k === "exec" ? "" : "none"; matchIn.style.display = k === "log" ? "" : "none"; }; syncPort();
+    prow.appendChild(probe); prow.appendChild(portField); prow.appendChild(pathIn); prow.appendChild(cmdIn); prow.appendChild(matchIn); body.appendChild(prow);
     var polrow = el("div", "tt-pop-row"); polrow.appendChild(lblInfo(t("onFail"), policyItems().concat([["", t("failhint")]])));   // failhint rides in the bubble, no loose info text in the window
     var pol = el("select", "tt-in"); POLICIES.forEach(function (p) { var o = el("option", null, p); o.value = p; if (node.policy === p) o.selected = true; pol.appendChild(o); });
     polrow.appendChild(pol); body.appendChild(polrow); pop.appendChild(body);
@@ -3723,7 +3725,7 @@
     // is bounded and gives up once instead of restarting forever. An existing watchdog keeps
     // its saved value; blank is 0, which is unlimited.
     var wM = el("input", "tt-in tt-port"); wM.type = "number"; wM.min = "0"; wM.placeholder = "0 = ∞"; wM.value = wd ? (wd.max_restarts ? wd.max_restarts : "") : "6";
-    wMrow.appendChild(wM); wBody.appendChild(wMrow); wSec.appendChild(wBody);
+    wMrow.appendChild(numField(wM)); wBody.appendChild(wMrow); wSec.appendChild(wBody);
     wEn.addEventListener("change", function () { wBody.classList.toggle("tt-dis", !wEn.checked); });
     pop.appendChild(wSec);
     function readWatchdog() { if (!wEn.checked) return null; return { name: name, enabled: true, on_unhealthy: !!wU.checked, on_exit: !!wX.checked, max_restarts: parseInt(wM.value, 10) || 0 }; }
@@ -3737,10 +3739,10 @@
     var nBody = el("div", "tt-pop-sub" + (nEn.checked ? "" : " tt-dis"));
     var nMrow = el("div", "tt-pop-row"); nMrow.appendChild(el("label", "tt-pop-lbl", t("idleMin")));
     var nMin = el("input", "tt-in tt-port"); nMin.type = "number"; nMin.min = "1"; nMin.placeholder = "30"; nMin.value = (ni && ni.idle_minutes) ? ni.idle_minutes : "";
-    nMrow.appendChild(nMin); nBody.appendChild(nMrow);
+    nMrow.appendChild(numField(nMin)); nBody.appendChild(nMrow);
     var nCrow = el("div", "tt-pop-row"); nCrow.appendChild(el("label", "tt-pop-lbl", t("idleCpu")));
     var nCpu = el("input", "tt-in tt-port"); nCpu.type = "number"; nCpu.min = "0"; nCpu.max = "100"; nCpu.placeholder = "5"; nCpu.value = (ni && ni.cpu_threshold_pct) ? ni.cpu_threshold_pct : "";
-    nCrow.appendChild(nCpu); nBody.appendChild(nCrow); nSec.appendChild(nBody);
+    nCrow.appendChild(numField(nCpu)); nBody.appendChild(nCrow); nSec.appendChild(nBody);
     nEn.addEventListener("change", function () { nBody.classList.toggle("tt-dis", !nEn.checked); });
     pop.appendChild(nSec);
     // Enabled with blank or invalid minutes falls back to the placeholder of 30 rather than 0,
@@ -3917,7 +3919,7 @@
       var row = el("div", "tt-pop-row"); row.appendChild(el("label", "tt-pop-lbl", labelText));
       var inp = el("input", "tt-in"); inp.type = "number"; inp.min = "0"; inp.step = "0.1"; inp.placeholder = "0 = ∞";
       inp.value = (curKbit > 0) ? (Math.round(curKbit / 1000 * 100) / 100) : "";
-      row.appendChild(inp); row.appendChild(el("span", "tt-unit", "Mbit/s")); body.appendChild(row);
+      row.appendChild(numField(inp)); row.appendChild(el("span", "tt-unit", "Mbit/s")); body.appendChild(row);
       return inp;
     }
     // Upload is a tbf egress shaper. Download is netfilter policing, an iptables hashlimit on
@@ -4041,7 +4043,7 @@
       var mrow = el("div", "tt-pop-row"); mrow.appendChild(el("label", "tt-pop-lbl", t("ramLimit")));
       memNum = el("input", "tt-in"); memNum.type = "number"; memNum.min = "0"; memNum.step = "0.5"; memNum.placeholder = t("ramNum");
       memUnit = el("select", "tt-in tt-unit"); ["MB", "GB"].forEach(function (u) { var o = el("option", null, u); o.value = u; if (u === "GB") o.selected = true; memUnit.appendChild(o); });
-      mrow.appendChild(memNum); mrow.appendChild(memUnit); statSlot(mrow); body.appendChild(mrow);
+      mrow.appendChild(numField(memNum)); mrow.appendChild(memUnit); statSlot(mrow); body.appendChild(mrow);
     }
     if (showCpu) {
       var crow = el("div", "tt-pop-row"); crow.appendChild(el("label", "tt-pop-lbl", t("cpuLimit")));

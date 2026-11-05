@@ -853,6 +853,9 @@ html.tt-scrolllock body { padding-right: var(--tt-sbw, 0px); }   /* the width th
    whose padding sits on the trigger inside it, does not have. A basis only decides anything where
    a row has more than one control to split, so the other rows are unaffected. */
 .tt-pop.tt-pop-plan .tt-pop-row .tt-dsel { flex: 1 1 16px; }
+/* A number field's wrapper has no padding of its own either, and takes the field's place in the row. */
+.tt-pop.tt-pop-plan .tt-pop-row .tt-num-wrap { flex: 1 1 16px !important; }
+.tt-pop-row > .tt-num-wrap:not(.tt-port) { flex: 1 1 0%; }
 /* The start plan's scene: its stations in the order the engine starts them and an arrow from each
    dependency to the container that waits for it. A station rests grey and takes its colour in one
    step when its turn comes, and its check badge stays hidden until it is ready. The packets on an

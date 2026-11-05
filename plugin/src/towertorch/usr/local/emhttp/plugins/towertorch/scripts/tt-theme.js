@@ -1053,6 +1053,61 @@
     return el;
   }
 
+  function wouldStep(input, dir) {
+    var step = Number(input.step) || 1;
+    var raw = input.value === "" ? Number(input.min) || 0 : Number(input.value);
+    var next = raw + dir * step;
+    return dir > 0 ? (input.max === "" || next <= Number(input.max)) : (input.min === "" || next >= Number(input.min));
+  }
+  // GlimStone's number field: the browser's spinner goes, and two arrows of our own sit inside the
+  // box and call stepUp and stepDown, so min, max and step stay on the input. The wheel steps only
+  // while the field has focus, so scrolling past it changes nothing. Returns the wrapper to place
+  // in the row; a .tt-port width moves onto it, since it now holds the field's box.
+  function numberField(input) {
+    var wrap = document.createElement("span"), stack = document.createElement("span");
+    wrap.className = "tt-num-wrap";
+    if (input.classList.contains("tt-port")) { input.classList.remove("tt-port"); wrap.classList.add("tt-port"); }
+    input.classList.add("tt-num-input");
+    stack.className = "tt-num-steps";
+    // The input already carries the value and the arrow keys, so these stay out of the tab order
+    // and away from a screen reader.
+    stack.setAttribute("aria-hidden", "true");
+    function move(dir) {
+      if (!wouldStep(input, dir)) return;
+      if (dir > 0) input.stepUp(); else input.stepDown();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function arrow(dir, path) {
+      var b = document.createElement("span");
+      b.className = "tt-num-step";
+      b.innerHTML = '<svg viewBox="0 0 10 6" width="10" height="6"><path d="' + path + '" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+      b.addEventListener("mousedown", function (e) { e.preventDefault(); });   // the field keeps the focus
+      b.addEventListener("click", function () { move(dir); });
+      stack.appendChild(b);
+      return b;
+    }
+    var up = arrow(1, "M5 1.7 L8.6 4.6 L1.4 4.6 Z"), down = arrow(-1, "M5 4.3 L1.4 1.4 L8.6 1.4 Z");
+    function sync() {
+      up.classList.toggle("tt-num-off", !wouldStep(input, 1));
+      down.classList.toggle("tt-num-off", !wouldStep(input, -1));
+    }
+    input.addEventListener("input", sync);
+    input.addEventListener("change", sync);
+    // A window can fill a field after it opens, which fires no event.
+    wrap.addEventListener("mouseenter", sync);
+    // Non-passive, or the page scrolls along with the value.
+    input.addEventListener("wheel", function (e) {
+      if (document.activeElement !== input || !e.deltaY) return;
+      e.preventDefault();
+      move(e.deltaY < 0 ? 1 : -1);
+    }, { passive: false });
+    wrap.appendChild(input);
+    wrap.appendChild(stack);
+    sync();
+    return wrap;
+  }
+
   // One of TowerTorch's own buttons with its glyph before its words, shown as the label mode asks
   // (sheets/TowerTorch.Labels.css). Called again, it changes both. The words stay the accessible
   // name in every mode, and in glyph mode they are the bubble unless the button has one of its own.
@@ -1327,7 +1382,7 @@
     TT_INFO_SVG: TT_INFO_SVG, infoIcon: infoIcon, TT_TRASH_SVG: TT_TRASH_SVG, delIcon: delIcon,
     lumOf: lumOf, LUM_FLOOR: LUM_FLOOR, liftDark: liftDark, liftLight: liftLight, lightTheme: lightTheme,
     liftSurface: liftSurface, surfacePalette: surfacePalette, isRed: isRed, deleteSlot: deleteSlot, toast: toast, shake: shake, fail: fail, deny: deny,
-    pressable: pressable, modal: modal, closeBadge: closeBadge,
+    pressable: pressable, numberField: numberField, modal: modal, closeBadge: closeBadge,
     PRESETS: PRESETS, colorPicker: colorPicker, colorSwatch: colorSwatch, swMark: swMark, swMarkRow: swMarkRow, refind: refind, paintWin: paintWin, ask: ask, glyph: glyph, labelled: labelled, labelTip: labelTip, menu: menu, slosh: slosh,
     edge: edge, placeAt: placeAt,
     icons: {
