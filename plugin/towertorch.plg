@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.4.0">
+  <!ENTITY version   "1.4.1">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "294f1f5fe3088f25dc7a6a5ed67d123a679ee9d20ea76ef33915d20e7fe550ef">
+  <!ENTITY sha256    "ffccae82e058bf4f7a6079766fd94de63fb3f1c6d5d5789c5f8e553694073002">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,22 @@
 </ICON>
 
 <CHANGES>
+### 1.4.1
+TowerTorch's internal settings and styles have new names, and your settings move over on their own. Please update ShipLog to 3.7.3 and FireSquire to 3.1.1 at the same time, so they keep TowerTorch's look.
+
+**🎨 Design**
+- **GlimStone arrows on number fields.** The fields in the Docker windows and the VM disk field use them in place of the browser's own.
+
+**⚡ Improved**
+- **A clean move for bandwidth limits.** The update removes the old rules, and the engine applies your limits again at its next check after it starts.
+
+**🐛 Fixed**
+- **An unmountable disk no longer covers the Format button.** On Main, the text, button and checkbox now stack, in both the tiles and the list.
+- **The boot hint stays in its card.** On Main it no longer hangs over the next card in Firefox. Its background is opaque and its text easier to read.
+- **The bell and menu button keep their place** in your saved header order after the update.
+
+If you go back to an older TowerTorch after this update, it starts with its default settings.
+
 ### 1.4.0
 TowerTorch moves to GlimStone 3.8.0. Its own buttons get glyphs, and Unraid's buttons wear the glyph that fits what they do.
 
