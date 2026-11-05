@@ -141,6 +141,9 @@ html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopt { position: ab
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg p { margin: 0; }
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status { background: none; }
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr { grid-template-columns: auto minmax(0, 1fr) auto; }
+/* A first cell that keeps its text, the list of unmountable disks, would squeeze the button's track
+   to nothing and the button would run under the cell after it, so such a row stacks instead. */
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr:has(> td:first-child:not(:empty)) { grid-template-columns: minmax(0, 1fr); row-gap: 8px; }
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status td { width: auto; }
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr > td:is(:first-child, :nth-child(3)) { padding: 0 !important; }
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-aopg table.array_status tr > td:nth-child(2) { flex-wrap: wrap; row-gap: 8px; white-space: normal; }

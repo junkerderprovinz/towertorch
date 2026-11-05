@@ -782,7 +782,9 @@ html.tt-shares-on.tt-on-main #displaybox table.array_status tr[style*="table-row
 html.tt-shares-on.tt-on-main #displaybox table.array_status td { display: block; min-width: 0; border: none !important; padding: 8px 10px !important; }
 html.tt-shares-on.tt-on-main #displaybox table.array_status td.line { display: none; }
 html.tt-shares-on.tt-on-main #displaybox table.array_status tr:has(> td.line) { display: none; }   /* separator rows stay collapsed */
-html.tt-shares-on.tt-on-main #displaybox table.array_status tr > td:first-child { padding-left: 0 !important; }
+/* width: auto takes the whole track back from Unraid's percentage; a disk id has no break of its own
+   and would run into the button track */
+html.tt-shares-on.tt-on-main #displaybox table.array_status tr > td:first-child { width: auto; padding-left: 0 !important; overflow-wrap: anywhere; }
 /* the control column is a flex box, so whitespace-only text nodes take no room, and with no left
    padding every control starts at the column edge */
 html.tt-shares-on.tt-on-main #displaybox table.array_status tr > td:nth-child(2) { display: flex; align-items: center; padding-left: 0 !important; min-height: var(--tt-lgb-h, 36px); white-space: nowrap; }
