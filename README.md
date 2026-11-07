@@ -27,6 +27,26 @@ leaves your server.
 
 <br>
 
+<p><a id="table-of-contents" href="#table-of-contents"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/table-of-contents-dark.svg"><img src=".github/assets/sections/table-of-contents.svg" alt="Table of Contents" width="100%"></picture></a></p>
+
+1. [Support](#1-support)
+2. [What is this?](#2-what-is-this)
+3. [Screenshots](#3-screenshots)
+4. [Features](#4-features)
+5. [Installation](#5-installation)
+6. [The Docker tab](#6-the-docker-tab)
+7. [The settings page](#7-the-settings-page)
+8. [How it works](#8-how-it-works)
+9. [Safety notes](#9-safety-notes)
+10. [Uninstall](#10-uninstall)
+11. [Development](#11-development)
+12. [License](#12-license)
+13. [How AI is used here](#13-how-ai-is-used-here)
+
+<br>
+
+<p><a id="1-support" href="#1-support"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/1-support-dark.svg"><img src=".github/assets/sections/1-support.svg" alt="1. Support" width="100%"></picture></a></p>
+
 <p align="center">
 A one-knight job: I build it, keep it running, work through the issues and add what people ask for, until nothing is missing. It is free, with no accounts, no telemetry, no ads and no paid tier. No asterisk anywhere. Nothing readable ever leaves your own walls. Forged on evenings and weekends, with heart and stubbornness.
 </p>
@@ -47,25 +67,7 @@ If it has earned a place on your server or computer, toss a coin to your knight:
 
 <br>
 
-## Table of Contents
-
-1. [What is this?](#1-what-is-this)
-2. [Screenshots](#2-screenshots)
-3. [Features](#3-features)
-4. [Installation](#4-installation)
-5. [The Docker tab](#5-the-docker-tab)
-6. [The settings page](#6-the-settings-page)
-7. [How it works](#7-how-it-works)
-8. [Safety notes](#8-safety-notes)
-9. [Uninstall](#9-uninstall)
-10. [Development](#10-development)
-11. [License](#11-license)
-12. [How AI is used here](#12-how-ai-is-used-here)
-13. [Support this project](#13-support-this-project)
-
-<br>
-
-## 1. What is this?
+<p><a id="2-what-is-this" href="#2-what-is-this"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/2-what-is-this-dark.svg"><img src=".github/assets/sections/2-what-is-this.svg" alt="2. What is this?" width="100%"></picture></a></p>
 
 TowerTorch gives Unraid's native **Docker, Plugins and VM tabs** both muscle
 and a makeover, without replacing a single page. Everything is enhanced in place.
@@ -88,7 +90,7 @@ Docker, Plugins, VMs, Settings) on or off independently, each with its own style
 
 <br>
 
-## 2. Screenshots
+<p><a id="3-screenshots" href="#3-screenshots"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/3-screenshots-dark.svg"><img src=".github/assets/sections/3-screenshots.svg" alt="3. Screenshots" width="100%"></picture></a></p>
 
 Every picture uses a different accent colour. The server and its apps, shares and addresses are made up.
 
@@ -141,7 +143,7 @@ Every picture uses a different accent colour. The server and its apps, shares an
 
 <br>
 
-## 3. Features
+<p><a id="4-features" href="#4-features"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/4-features-dark.svg"><img src=".github/assets/sections/4-features.svg" alt="4. Features" width="100%"></picture></a></p>
 
 **Orchestration**
 - Start plan with dependencies ("start the app after its database"), computed
@@ -252,7 +254,7 @@ Every picture uses a different accent colour. The server and its apps, shares an
 
 <br>
 
-## 4. Installation
+<p><a id="5-installation" href="#5-installation"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/5-installation-dark.svg"><img src=".github/assets/sections/5-installation.svg" alt="5. Installation" width="100%"></picture></a></p>
 
 Unraid → **Plugins → Install Plugin** → paste:
 
@@ -266,7 +268,7 @@ restarted automatically.
 
 <br>
 
-## 5. The Docker tab
+<p><a id="6-the-docker-tab" href="#6-the-docker-tab"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/6-the-docker-tab-dark.svg"><img src=".github/assets/sections/6-the-docker-tab.svg" alt="6. The Docker tab" width="100%"></picture></a></p>
 
 - Every row gets its badges, the actions column, and the resource lines
   (CPU / RAM / BW) with a gear each. The gear is filled in your accent colour
@@ -283,7 +285,7 @@ restarted automatically.
 
 <br>
 
-## 6. The settings page
+<p><a id="7-the-settings-page" href="#7-the-settings-page"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/7-the-settings-page-dark.svg"><img src=".github/assets/sections/7-the-settings-page.svg" alt="7. The settings page" width="100%"></picture></a></p>
 
 **Settings → Utilities → TowerTorch** holds the appearance settings (accent
 colour with an embedded picker, rainbow palette, shape, motion, density, column
@@ -295,7 +297,7 @@ every browser and origin sees the same configuration, and only what changed is s
 
 <br>
 
-## 7. How it works
+<p><a id="8-how-it-works" href="#8-how-it-works"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/8-how-it-works-dark.svg"><img src=".github/assets/sections/8-how-it-works.svg" alt="8. How it works" width="100%"></picture></a></p>
 
 | Piece | What it does |
 | --- | --- |
@@ -309,7 +311,7 @@ netfilter state from the container's netns, and the monitor's last apply attempt
 
 <br>
 
-## 8. Safety notes
+<p><a id="9-safety-notes" href="#9-safety-notes"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/9-safety-notes-dark.svg"><img src=".github/assets/sections/9-safety-notes.svg" alt="9. Safety notes" width="100%"></picture></a></p>
 
 - **No tc ingress qdisc, ever.** Download limiting is pure netfilter policing on
   the container's INPUT chain; the `sch_ingress` module (which can freeze some
@@ -326,7 +328,7 @@ netfilter state from the container's netns, and the monitor's last apply attempt
 
 <br>
 
-## 9. Uninstall
+<p><a id="10-uninstall" href="#10-uninstall"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/10-uninstall-dark.svg"><img src=".github/assets/sections/10-uninstall.svg" alt="10. Uninstall" width="100%"></picture></a></p>
 
 **Plugins → Remove**. The daemon is stopped by PID and all program files are
 removed. The start plan and config on the flash are kept, so a reinstall picks up
@@ -335,7 +337,7 @@ a truly clean slate.
 
 <br>
 
-## 10. Development
+<p><a id="11-development" href="#11-development"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/11-development-dark.svg"><img src=".github/assets/sections/11-development.svg" alt="11. Development" width="100%"></picture></a></p>
 
 ```bash
 go build ./...          # engine
@@ -350,7 +352,7 @@ measurement through the rule.
 
 <br>
 
-## 11. License
+<p><a id="12-license" href="#12-license"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/12-license-dark.svg"><img src=".github/assets/sections/12-license.svg" alt="12. License" width="100%"></picture></a></p>
 
 **Copyright (C) 2026 Junker der Provinz.**
 
@@ -360,7 +362,7 @@ TowerTorch is free software under the **GNU Affero General Public License v3.0**
 
 <br>
 
-## 12. How AI is used here
+<p><a id="13-how-ai-is-used-here" href="#13-how-ai-is-used-here"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/sections/13-how-ai-is-used-here-dark.svg"><img src=".github/assets/sections/13-how-ai-is-used-here.svg" alt="13. How AI is used here" width="100%"></picture></a></p>
 
 One knight builds this, and AI is one of the tools I work with, the same way I work with an editor or a compiler. It helps me write code and documentation and it checks my work, and that saves me a good many evenings. It does not make the decisions, though. I read and understand everything before it ships, and if something here breaks, that is on me and not on the tool.
 
@@ -368,18 +370,4 @@ You do not have to take my word for it. The code is open and every release note 
 
 <br>
 
-## 13. Support this project
-
 Questions, bugs, ideas or feature requests? Please [open a GitHub issue](https://github.com/junkerderprovinz/towertorch/issues).
-
-A one-knight job: I build it, keep it running, work through the issues and add what people ask for, until nothing is missing. It is free, with no accounts, no telemetry, no ads and no paid tier. No asterisk anywhere. Nothing readable ever leaves your own walls. Forged on evenings and weekends, with heart and stubbornness.
-
-If it has earned a place on your server or computer, toss a coin to your knight: it helps cover the costs and keeps the project alive. It also makes this knight's heart beat a little faster. Three ways below, whichever suits you.
-
-<p align="center">
-  <a href="https://buymeacoffee.com/junkerderprovinz"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(0,0,841.9,245.3))" alt="Buy me a coffee" width="160" height="46.62"></a>
-  &nbsp;
-  <a href="https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(841.9,0,841.9,245.3))" alt="PayPal" width="160" height="46.62"></a>
-  &nbsp;
-  <a href="https://junkerderprovinz.github.io/junkerderprovinz/"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(1683.8,0,841.9,245.3))" alt="Donate with crypto" width="160" height="46.62"></a>
-</p>
