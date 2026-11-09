@@ -16,12 +16,17 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime/debug"
+	"strings"
 	"syscall"
 	"time"
+
+	"github.com/junkerderprovinz/parleyport/kit/status"
 
 	"github.com/junkerderprovinz/towertorch/internal/api"
 	"github.com/junkerderprovinz/towertorch/internal/bugreport"
 	"github.com/junkerderprovinz/towertorch/internal/dockercli"
+	"github.com/junkerderprovinz/towertorch/internal/fortress"
 	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
 	"github.com/junkerderprovinz/towertorch/internal/monitor"
 	"github.com/junkerderprovinz/towertorch/internal/netshape"
@@ -107,12 +112,17 @@ func serve() {
 	vmc := vmctl.New()
 	icons := iconsrc.New(dataDir)
 	defer icons.Close()
-	notifier := monitor.SysNotifier{}
-	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
+	notifier := monitor.Alerts{Channels: st.LoadChannels}
 
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		log.Fatalf("towertorch: mkdir %s: %v", dataDir, err)
 	}
+	// The first start after an update moves the notify block to notify.json.
+	if _, err := st.LoadChannels(); err != nil {
+		log.Printf("towertorch: notification channels unreadable: %v", err)
+	}
+	board := &fortress.Board{App: app(version), Instance: instance(st), Docker: docker}
+	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, Fortress: board, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
 	// A stale socket from an unclean stop would make Listen fail with EADDRINUSE.
 	_ = os.Remove(apiSock)
 	ln, err := net.Listen("unix", apiSock)
@@ -121,7 +131,7 @@ func serve() {
 	}
 	_ = os.Chmod(apiSock, 0o660)
 
-	httpSrv := &http.Server{Handler: srv.Handler()}
+	httpSrv := srv.HTTPServer()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
@@ -133,7 +143,7 @@ func serve() {
 		_ = os.Remove(apiSock)
 	}()
 
-	mon := &monitor.Monitor{Docker: docker, Config: st, Notifier: notifier, Pidder: docker, Shaper: shaperAdapter{}, Statter: docker, VMShaper: vmc}
+	mon := &monitor.Monitor{Docker: docker, Config: st, Notifier: notifier, Recorder: board, Pidder: docker, Shaper: shaperAdapter{}, Statter: docker, VMShaper: vmc}
 	srv.BwLast = mon
 	// A saved config takes effect at once instead of on the next 30s tick.
 	srv.Kicker = mon
@@ -147,6 +157,34 @@ func serve() {
 	if err := httpSrv.Serve(ln); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("towertorch: serve: %v", err)
 	}
+}
+
+// app names TowerTorch in its fortress status report.
+func app(version string) status.App {
+	a := status.App{ID: "towertorch", Name: "TowerTorch", Version: strings.TrimPrefix(version, "v")}
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, s := range info.Settings {
+			if s.Key == "vcs.revision" && len(s.Value) >= 7 {
+				a.Commit = s.Value[:7]
+			}
+		}
+	}
+	return a
+}
+
+// instance names this install. Without a stored id the report still goes out,
+// under a placeholder other apps will not mistake for a real install.
+func instance(st *store.Store) status.Instance {
+	in := status.Instance{ID: "unknown", Name: "Unraid"}
+	if id, err := st.InstanceID(); err == nil {
+		in.ID = id
+	} else {
+		log.Printf("towertorch: instance id unreadable: %v", err)
+	}
+	if host, err := os.Hostname(); err == nil && host != "" {
+		in.Name = host
+	}
+	return in
 }
 
 // apply pokes the running supervisor to (re)apply its plan. The array-start

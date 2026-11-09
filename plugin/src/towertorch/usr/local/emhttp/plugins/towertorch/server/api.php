@@ -12,7 +12,12 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // vms: read-only VM list + current limits; vmlimits: apply CPU-pin/cap, RAM, bandwidth to
 // one VM (the engine validates the name against the live libvirt domain list, uses only
 // virsh --config/--live, and never virsh-defines/undefines/creates a domain).
-$allow = ['state' => ['GET'], 'stats' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST']];
+// fortressstatus/fortresslog: the status report and log the apps of a fortress
+// read. The engine answers them only on its socket, so this signed-in proxy is
+// the one way in from a browser.
+$allow = ['state' => ['GET'], 'stats' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
+          'fortressstatus' => ['GET'], 'fortresslog' => ['GET']];
+$route = ['fortressstatus' => 'fortress/v1/status', 'fortresslog' => 'fortress/v1/log'];
 
 $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '';
 $method = $_SERVER['REQUEST_METHOD'];
@@ -27,25 +32,31 @@ if (!isset($allow[$path]) || !in_array($method, $allow[$path], true)) {
 
 // Forward only the query params each path explicitly needs (allowlist, like
 // $allow) so no attacker-supplied param ever reaches the engine unfiltered.
-$qallow = ['limits' => ['name']];
+// Each fortress parameter passes only in the shape the engine accepts.
+$qallow = ['limits' => ['name'], 'fortressstatus' => ['lang'], 'fortresslog' => ['lang', 'after', 'limit']];
+$qshape = ['lang' => '/^[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*$/', 'after' => '/^[0-9]{1,20}$/', 'limit' => '/^[0-9]{1,3}$/'];
 $extra = [];
 if (isset($qallow[$path])) {
     foreach ($qallow[$path] as $k) {
-        if (isset($_GET[$k])) {
+        if (isset($_GET[$k]) && is_string($_GET[$k]) && (!isset($qshape[$k]) || preg_match($qshape[$k], $_GET[$k]))) {
             $extra[$k] = $_GET[$k];
         }
     }
 }
 $qs = http_build_query($extra);
+$headers = ['Content-Type: application/json', 'Accept: application/json'];
+if (isset($route[$path]) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+    $headers[] = 'Accept-Language: ' . substr(preg_replace('/[^A-Za-z0-9,;=.\- ]/', '', $_SERVER['HTTP_ACCEPT_LANGUAGE']), 0, 200);
+}
 
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_UNIX_SOCKET_PATH => $sock,
-    CURLOPT_URL            => 'http://localhost/api/' . $path . ($qs ? '?' . $qs : ''),
+    CURLOPT_URL            => 'http://localhost/api/' . (isset($route[$path]) ? $route[$path] : $path) . ($qs ? '?' . $qs : ''),
     CURLOPT_CUSTOMREQUEST  => $method,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT        => 900,
-    CURLOPT_HTTPHEADER     => ['Content-Type: application/json', 'Accept: application/json'],
+    CURLOPT_HTTPHEADER     => $headers,
 ]);
 if ($method === 'PUT' || $method === 'POST') {
     curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents('php://input'));

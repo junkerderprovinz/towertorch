@@ -1,9 +1,11 @@
-// Package store persists the orchestration plan and the automation config as JSON
-// on the Unraid flash (/boot/config/plugins/towertorch), so they survive
-// reboots.
+// Package store persists the orchestration plan, the automation config and the
+// notification channels as JSON on the Unraid flash
+// (/boot/config/plugins/towertorch), so they survive reboots.
 package store
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"os"
@@ -11,20 +13,32 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/junkerderprovinz/parleyport/kit/notify"
+	"github.com/junkerderprovinz/parleyport/kit/notify/legacy"
+
 	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
-// Store reads and writes the plan and the config, which live next to each other.
+// Store reads and writes the plan, the config and the notification channels,
+// which live next to each other.
 type Store struct {
-	path    string // plan.json
-	cfgPath string // config.json (in the same dir)
-	mu      sync.Mutex
+	path       string // plan.json
+	cfgPath    string // config.json (in the same dir)
+	notifyPath string // notify.json
+	idPath     string // instance-id
+	mu         sync.Mutex
 }
 
-// New builds a store backed by the given plan JSON file path; the config lives in
-// config.json in the same directory.
+// New builds a store backed by the given plan JSON file path; the config,
+// channels and instance id live in the same directory.
 func New(path string) *Store {
-	return &Store{path: path, cfgPath: filepath.Join(filepath.Dir(path), "config.json")}
+	dir := filepath.Dir(path)
+	return &Store{
+		path:       path,
+		cfgPath:    filepath.Join(dir, "config.json"),
+		notifyPath: filepath.Join(dir, "notify.json"),
+		idPath:     filepath.Join(dir, "instance-id"),
+	}
 }
 
 // Load reads the plan. A missing or empty file yields an empty plan, not an
@@ -140,8 +154,103 @@ func renameUIValues(ui map[string]string) {
 	}
 }
 
-// SaveConfig writes the automation config atomically.
-func (s *Store) SaveConfig(c model.Config) error { return s.write(s.cfgPath, c) }
+// SaveConfig writes the automation config atomically. The settings page edits
+// notifications as the config's notify block, so a changed block replaces the
+// unraid and webhook channels and leaves every other channel as it is.
+func (s *Store) SaveConfig(c model.Config) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var old model.Config
+	oldErr := readJSON(s.cfgPath, &old)
+	if err := writeJSON(s.cfgPath, c); err != nil {
+		return err
+	}
+	if oldErr == nil && old.Notify == c.Notify {
+		return nil
+	}
+	channels, err := s.channels()
+	if err != nil {
+		return err
+	}
+	fromBlock, err := blockChannels(c.Notify)
+	if err != nil {
+		return err
+	}
+	for _, ch := range channels {
+		if ch.ID != "unraid" && ch.ID != "webhook" {
+			fromBlock = append(fromBlock, ch)
+		}
+	}
+	return writeJSON(s.notifyPath, fromBlock)
+}
+
+// LoadChannels reads the notification channels. Without notify.json yet, it
+// builds them from the notify block of the config and saves them, leaving the
+// block in place for an older TowerTorch.
+func (s *Store) LoadChannels() ([]notify.Channel, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.channels()
+}
+
+func (s *Store) channels() ([]notify.Channel, error) {
+	var out []notify.Channel
+	b, err := os.ReadFile(s.notifyPath)
+	if err == nil {
+		if len(b) == 0 {
+			return nil, nil
+		}
+		return out, json.Unmarshal(b, &out)
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		return nil, err
+	}
+	var c model.Config
+	if err := readJSON(s.cfgPath, &c); err != nil {
+		return nil, err
+	}
+	if out, err = blockChannels(c.Notify); err != nil {
+		return nil, err
+	}
+	return out, writeJSON(s.notifyPath, out)
+}
+
+// blockChannels turns a notify block into its channels, never nil, so the file
+// holds a list.
+func blockChannels(n model.Notify) ([]notify.Channel, error) {
+	b, err := json.Marshal(n)
+	if err != nil {
+		return nil, err
+	}
+	out, err := legacy.FromUnraidWebhook(b)
+	if out == nil {
+		out = []notify.Channel{}
+	}
+	return out, err
+}
+
+// InstanceID names this install to the other apps of a fortress. It is made
+// once and kept on the flash, so it survives reboots and updates.
+func (s *Store) InstanceID() (string, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	b, err := os.ReadFile(s.idPath)
+	if err == nil && len(strings.TrimSpace(string(b))) > 0 {
+		return strings.TrimSpace(string(b)), nil
+	}
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return "", err
+	}
+	raw := make([]byte, 16)
+	if _, err := rand.Read(raw); err != nil {
+		return "", err
+	}
+	id := hex.EncodeToString(raw)
+	if err := os.MkdirAll(filepath.Dir(s.idPath), 0o755); err != nil {
+		return "", err
+	}
+	return id, os.WriteFile(s.idPath, []byte(id+"\n"), 0o644)
+}
 
 // ErrTooManyUISettings is returned by MergeUISettings when the merge would hold
 // more entries than a config may.

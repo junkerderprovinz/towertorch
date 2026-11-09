@@ -9,12 +9,15 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/junkerderprovinz/parleyport/kit/status"
 
 	"github.com/junkerderprovinz/towertorch/internal/bugreport"
 	"github.com/junkerderprovinz/towertorch/internal/hostcpu"
@@ -68,9 +71,10 @@ type Runner interface {
 	Run(ctx context.Context, plan model.Plan) model.RunResult
 }
 
-// Notifier delivers an alert through Unraid's notifications or a webhook.
+// Notifier delivers an alert to the notification channels. importance is
+// Unraid's level: normal, warning or alert.
 type Notifier interface {
-	Notify(ctx context.Context, cfg model.Notify, subject, desc, importance string)
+	Notify(ctx context.Context, subject, desc, importance string)
 }
 
 // IconSource is the icon pipeline's cache.
@@ -89,9 +93,17 @@ type VMController interface {
 	ResizeDisk(ctx context.Context, name, target string, newBytes int64) error
 }
 
-// Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier and
-// Icons may be nil; an empty TemplatesDir skips writing limits into the Unraid
-// templates.
+// Fortress is what the server tells the other apps of a fortress: the status
+// report and log, and the start plan's runs that feed them.
+type Fortress interface {
+	status.Source
+	RunStarted()
+	RunFinished(model.RunResult)
+}
+
+// Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier,
+// Icons and Fortress may be nil; an empty TemplatesDir skips writing limits
+// into the Unraid templates.
 type Server struct {
 	Docker       Docker
 	Store        Store
@@ -102,6 +114,7 @@ type Server struct {
 	BwLast       BwLaster
 	Kicker       Kicker
 	Icons        IconSource
+	Fortress     Fortress
 	TemplatesDir string
 	Version      string
 	// Diag names the host files the bug report reads.
@@ -146,7 +159,37 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/icons", s.handleIcons)
 	mux.HandleFunc("GET /api/iconsvg", s.handleIconSVG)
 	mux.HandleFunc("GET /api/bugreport", s.handleBugReport)
+	if s.Fortress != nil {
+		h := status.Handler(s.Fortress, fromSocket)
+		mux.Handle(status.StatusPath, h)
+		mux.Handle(status.LogPath, h)
+	}
 	return mux
+}
+
+// HTTPServer serves the API with every request marked by how it came in, so
+// the fortress paths answer only on the unix socket.
+func (s *Server) HTTPServer() *http.Server {
+	return &http.Server{Handler: s.Handler(), ConnContext: connContext, ReadHeaderTimeout: 10 * time.Second}
+}
+
+type viaSocket struct{}
+
+func connContext(ctx context.Context, c net.Conn) context.Context {
+	if _, ok := c.(*net.UnixConn); ok {
+		return context.WithValue(ctx, viaSocket{}, true)
+	}
+	return ctx
+}
+
+// fromSocket lets a fortress request through only when it came over the unix
+// socket, which root and Unraid's signed-in PHP proxy reach and nothing on the
+// network does.
+func fromSocket(r *http.Request) error {
+	if r.Context().Value(viaSocket{}) == true {
+		return nil
+	}
+	return status.ErrUnauthenticated
 }
 
 // handleBugReport answers the bug report file as a download. A plan or config
@@ -543,7 +586,13 @@ func (s *Server) handleApply(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusInternalServerError, err)
 		return
 	}
+	if s.Fortress != nil {
+		s.Fortress.RunStarted()
+	}
 	res := s.Runner.Run(r.Context(), plan)
+	if s.Fortress != nil {
+		s.Fortress.RunFinished(res)
+	}
 	s.mu.Lock()
 	s.lastRun = res
 	s.mu.Unlock()
@@ -577,12 +626,7 @@ func (s *Server) alertFailedStarts(ctx context.Context, res model.RunResult) {
 	if importance == "" {
 		return
 	}
-	cfg, err := s.Store.LoadConfig()
-	if err != nil {
-		log.Printf("apply: no start alert sent, config unreadable: %v", err)
-		return
-	}
-	s.Notifier.Notify(ctx, cfg.Notify, "Start failed", strings.Join(lines, "; "), importance)
+	s.Notifier.Notify(ctx, "Start failed", strings.Join(lines, "; "), importance)
 }
 
 // handleAction performs a single lifecycle verb on one container. The container

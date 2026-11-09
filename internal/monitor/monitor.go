@@ -40,9 +40,19 @@ type Shaper interface {
 	DetectIface(pid int) string
 }
 
-// Notifier delivers an alert through Unraid's notifications or a webhook.
+// Notifier delivers an alert to the notification channels. importance is
+// Unraid's level: normal, warning or alert.
 type Notifier interface {
-	Notify(ctx context.Context, cfg model.Notify, subject, desc, importance string)
+	Notify(ctx context.Context, subject, desc, importance string)
+}
+
+// Recorder keeps what the watchdog did for the fortress status. exitCode is
+// the crash's exit code, or 0 for a container that went unhealthy.
+type Recorder interface {
+	WatchdogRestarted(name string, exitCode int)
+	WatchdogGaveUp(name string, max int)
+	WatchdogRestartFailed(name string, err error)
+	WatchdogRecovered(name string)
 }
 
 // Statter samples a container's current resource usage. The CPU% has to come
@@ -66,6 +76,7 @@ type Monitor struct {
 	Docker   Docker
 	Config   ConfigSource
 	Notifier Notifier
+	Recorder Recorder
 	Pidder   Pidder
 	Shaper   Shaper
 	Statter  Statter
@@ -269,7 +280,7 @@ func (m *Monitor) tickIdleStop(ctx context.Context, cfg model.Config) {
 			delete(m.idle, name)
 			m.mu.Unlock()
 			if m.throttle(name+"|idlenetns", now) {
-				m.notify(ctx, cfg.Notify, "Idle-stop skipped: "+name,
+				m.notify(ctx, "Idle-stop skipped: "+name,
 					name+" uses host/container networking, so per-container idle can't be measured and it is not auto-stopped.", "warning")
 			}
 			continue
@@ -336,7 +347,7 @@ func (m *Monitor) tickIdleStop(ctx context.Context, cfg model.Config) {
 		}
 		if err := m.Docker.Stop(ctx, name); err != nil {
 			if m.throttle(name+"|idlestopfail", now) {
-				m.notify(ctx, cfg.Notify, "Idle-stop failed", name+": "+err.Error(), "warning")
+				m.notify(ctx, "Idle-stop failed", name+": "+err.Error(), "warning")
 			}
 			continue
 		}
@@ -344,7 +355,7 @@ func (m *Monitor) tickIdleStop(ctx context.Context, cfg model.Config) {
 		delete(m.idle, name)
 		m.mu.Unlock()
 		if m.throttle(name+"|idlestopped", now) {
-			m.notify(ctx, cfg.Notify, "Idle-stopped "+name,
+			m.notify(ctx, "Idle-stopped "+name,
 				name+" was idle (CPU <= "+strconv.Itoa(int(threshold))+"%, low network) for "+strconv.Itoa(is.IdleMinutes)+" min and was stopped", "normal")
 		}
 	}
@@ -424,7 +435,7 @@ func (m *Monitor) tickBandwidths(ctx context.Context, cfg model.Config) {
 		}
 		if sharedNetns(c) {
 			if m.throttle(name+"|bwshared", now) && m.Notifier != nil {
-				m.Notifier.Notify(ctx, cfg.Notify, "Bandwidth not applied: "+name,
+				m.Notifier.Notify(ctx, "Bandwidth not applied: "+name,
 					"Shaping is skipped for a host/container-network container (it would shape the host or another container).", "warning")
 			}
 			continue
@@ -457,7 +468,7 @@ func (m *Monitor) tickBandwidths(ctx context.Context, cfg model.Config) {
 		m.mu.Unlock()
 		if err != nil {
 			if m.throttle(name+"|bwfail", now) && m.Notifier != nil {
-				m.Notifier.Notify(ctx, cfg.Notify, "Bandwidth shaping failed: "+name, err.Error(), "warning")
+				m.Notifier.Notify(ctx, "Bandwidth shaping failed: "+name, err.Error(), "warning")
 			}
 			continue
 		}
@@ -507,7 +518,7 @@ func (m *Monitor) tickSchedules(ctx context.Context, cfg model.Config) {
 		if err := m.act(ctx, s.Name, s.Action); err != nil {
 			// Not marked as fired, so the next tick in the same minute retries it.
 			if m.throttle(s.Name+"|schedfail|"+s.Action+"|"+s.Time, now) {
-				m.notify(ctx, cfg.Notify, "Schedule failed", s.Name+": "+s.Action+": "+err.Error(), "warning")
+				m.notify(ctx, "Schedule failed", s.Name+": "+s.Action+": "+err.Error(), "warning")
 			}
 			continue
 		}
@@ -538,18 +549,24 @@ func (m *Monitor) tickWatchdogs(ctx context.Context, cfg model.Config) {
 		if !ok {
 			continue
 		}
-		trigger := ""
+		trigger, exitCode := "", 0
 		if w.OnUnhealthy && c.Health == "unhealthy" {
 			trigger = "unhealthy"
 		} else if w.OnExit && c.State == "exited" && isCrashExit(c.ExitCode) {
-			trigger = "crashed (exit " + strconv.Itoa(c.ExitCode) + ")"
+			trigger, exitCode = "crashed (exit "+strconv.Itoa(c.ExitCode)+")", c.ExitCode
 		}
 		if trigger == "" {
+			if m.Recorder != nil {
+				m.Recorder.WatchdogRecovered(w.Name)
+			}
 			continue
 		}
 		if !m.allowRestart(w, now) {
+			if m.Recorder != nil {
+				m.Recorder.WatchdogGaveUp(w.Name, w.MaxRestarts)
+			}
 			if m.throttle(w.Name+"|gaveup", now) {
-				m.notify(ctx, cfg.Notify, "Watchdog gave up", w.Name+": too many restarts (>"+strconv.Itoa(w.MaxRestarts)+"/h)", "alert")
+				m.notify(ctx, "Watchdog gave up", w.Name+": too many restarts (>"+strconv.Itoa(w.MaxRestarts)+"/h)", "alert")
 			}
 			continue
 		}
@@ -559,14 +576,20 @@ func (m *Monitor) tickWatchdogs(ctx context.Context, cfg model.Config) {
 			m.recordRestart(w.Name, now)
 		}
 		if err := m.Docker.Restart(ctx, w.Name); err != nil {
+			if m.Recorder != nil {
+				m.Recorder.WatchdogRestartFailed(w.Name, err)
+			}
 			if m.throttle(w.Name+"|failed", now) {
-				m.notify(ctx, cfg.Notify, "Watchdog restart failed", w.Name+": "+err.Error(), "alert")
+				m.notify(ctx, "Watchdog restart failed", w.Name+": "+err.Error(), "alert")
 			}
 			continue
 		}
+		if m.Recorder != nil {
+			m.Recorder.WatchdogRestarted(w.Name, exitCode)
+		}
 		// A flapping container would otherwise notify on every cycle.
 		if m.throttle(w.Name+"|restarted", now) {
-			m.notify(ctx, cfg.Notify, "Watchdog restarted "+w.Name, w.Name+" was "+trigger+" and was restarted", "warning")
+			m.notify(ctx, "Watchdog restarted "+w.Name, w.Name+" was "+trigger+" and was restarted", "warning")
 		}
 	}
 }
@@ -641,11 +664,11 @@ func (m *Monitor) throttle(key string, now time.Time) bool {
 	return true
 }
 
-func (m *Monitor) notify(ctx context.Context, n model.Notify, subject, desc, importance string) {
-	if m.Notifier == nil || (!n.Unraid && n.Webhook == "") {
+func (m *Monitor) notify(ctx context.Context, subject, desc, importance string) {
+	if m.Notifier == nil {
 		return
 	}
-	m.Notifier.Notify(ctx, n, subject, desc, importance)
+	m.Notifier.Notify(ctx, subject, desc, importance)
 }
 
 func containsInt(xs []int, x int) bool {

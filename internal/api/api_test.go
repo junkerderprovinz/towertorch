@@ -172,21 +172,20 @@ type resultRunner struct{ res model.RunResult }
 func (r resultRunner) Run(context.Context, model.Plan) model.RunResult { return r.res }
 
 type sentAlert struct {
-	cfg                       model.Notify
 	subject, desc, importance string
 }
 
 type fakeNotifier struct{ sent []sentAlert }
 
-func (f *fakeNotifier) Notify(_ context.Context, cfg model.Notify, subject, desc, importance string) {
-	f.sent = append(f.sent, sentAlert{cfg, subject, desc, importance})
+func (f *fakeNotifier) Notify(_ context.Context, subject, desc, importance string) {
+	f.sent = append(f.sent, sentAlert{subject, desc, importance})
 }
 
 func applyWith(t *testing.T, nodes ...model.NodeResult) *fakeNotifier {
 	t.Helper()
 	nt := &fakeNotifier{}
 	s := &Server{
-		Store:    &memStore{cfg: model.Config{Notify: model.Notify{Unraid: true}}},
+		Store:    &memStore{},
 		Runner:   resultRunner{model.RunResult{Nodes: nodes}},
 		Notifier: nt,
 	}
@@ -208,7 +207,7 @@ func TestApplyAlertsWhenAStartFails(t *testing.T) {
 		t.Fatalf("want one alert, got %+v", nt.sent)
 	}
 	a := nt.sent[0]
-	if !a.cfg.Unraid || a.subject != "Start failed" || a.importance != "alert" {
+	if a.subject != "Start failed" || a.importance != "alert" {
 		t.Fatalf("alert = %+v", a)
 	}
 	if !strings.Contains(a.desc, "db: not ready within timeout") || !strings.Contains(a.desc, "app: dependency db did not come up") {
