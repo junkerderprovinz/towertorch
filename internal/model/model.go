@@ -143,8 +143,8 @@ type Watchdog struct {
 	MaxRestarts int    `json:"max_restarts"` // cap per hour (0 = unlimited)
 }
 
-// Notify controls where the monitor sends alerts (a failed start, a watchdog
-// restart, a schedule error).
+// Notify controls where alerts go: a failed start from the plan run, and the
+// monitor's watchdog, schedule, idle-stop and bandwidth alerts.
 type Notify struct {
 	Unraid  bool   `json:"unraid"`            // use Unraid's own notification system
 	Webhook string `json:"webhook,omitempty"` // POST a JSON body to this URL

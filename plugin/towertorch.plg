@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.4.1">
+  <!ENTITY version   "1.4.2">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,6 +28,10 @@
 </ICON>
 
 <CHANGES>
+### 1.4.2
+**🐛 Fixed**
+- **A failed start sends a notification.** When a container in the start plan does not come up, at boot or after Start in order, TowerTorch tells you the way you chose on the Notifications card: as an Unraid notification, through your webhook, or both. The message names each container that did not start and why.
+
 ### 1.4.1
 TowerTorch's internal settings and styles have new names, and your settings move over on their own. Please update ShipLog to 3.7.3 and FireSquire to 3.1.1 at the same time, so they keep TowerTorch's look.
 

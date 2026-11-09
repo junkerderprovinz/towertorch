@@ -68,6 +68,11 @@ type Runner interface {
 	Run(ctx context.Context, plan model.Plan) model.RunResult
 }
 
+// Notifier delivers an alert through Unraid's notifications or a webhook.
+type Notifier interface {
+	Notify(ctx context.Context, cfg model.Notify, subject, desc, importance string)
+}
+
 // IconSource is the icon pipeline's cache.
 type IconSource interface {
 	// Resolve answers from the cache and does not block on the network.
@@ -84,12 +89,14 @@ type VMController interface {
 	ResizeDisk(ctx context.Context, name, target string, newBytes int64) error
 }
 
-// Server holds the handlers' dependencies. VMs, BwLast, Kicker and Icons may be
-// nil; an empty TemplatesDir skips writing limits into the Unraid templates.
+// Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier and
+// Icons may be nil; an empty TemplatesDir skips writing limits into the Unraid
+// templates.
 type Server struct {
 	Docker       Docker
 	Store        Store
 	Runner       Runner
+	Notifier     Notifier
 	VMs          VMController
 	Pidder       Pidder
 	BwLast       BwLaster
@@ -540,7 +547,42 @@ func (s *Server) handleApply(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	s.lastRun = res
 	s.mu.Unlock()
+	s.alertFailedStarts(r.Context(), res)
 	writeJSON(w, http.StatusOK, res)
+}
+
+// alertFailedStarts sends one alert per run that names every container that did
+// not come up. Skipped containers are listed but never trigger it alone, so a
+// run cancelled at shutdown stays quiet.
+func (s *Server) alertFailedStarts(ctx context.Context, res model.RunResult) {
+	if s.Notifier == nil {
+		return
+	}
+	importance := ""
+	var lines []string
+	for _, n := range res.Nodes {
+		switch n.State {
+		case model.StateFailed:
+			importance = "alert"
+		case model.StateDegraded:
+			if importance == "" {
+				importance = "warning"
+			}
+		case model.StateSkipped:
+		default:
+			continue
+		}
+		lines = append(lines, n.Name+": "+n.Reason)
+	}
+	if importance == "" {
+		return
+	}
+	cfg, err := s.Store.LoadConfig()
+	if err != nil {
+		log.Printf("apply: no start alert sent, config unreadable: %v", err)
+		return
+	}
+	s.Notifier.Notify(ctx, cfg.Notify, "Start failed", strings.Join(lines, "; "), importance)
 }
 
 // handleAction performs a single lifecycle verb on one container. The container

@@ -167,6 +167,74 @@ func TestApply(t *testing.T) {
 	}
 }
 
+type resultRunner struct{ res model.RunResult }
+
+func (r resultRunner) Run(context.Context, model.Plan) model.RunResult { return r.res }
+
+type sentAlert struct {
+	cfg                       model.Notify
+	subject, desc, importance string
+}
+
+type fakeNotifier struct{ sent []sentAlert }
+
+func (f *fakeNotifier) Notify(_ context.Context, cfg model.Notify, subject, desc, importance string) {
+	f.sent = append(f.sent, sentAlert{cfg, subject, desc, importance})
+}
+
+func applyWith(t *testing.T, nodes ...model.NodeResult) *fakeNotifier {
+	t.Helper()
+	nt := &fakeNotifier{}
+	s := &Server{
+		Store:    &memStore{cfg: model.Config{Notify: model.Notify{Unraid: true}}},
+		Runner:   resultRunner{model.RunResult{Nodes: nodes}},
+		Notifier: nt,
+	}
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, httptest.NewRequest("POST", "/api/apply", nil))
+	if rec.Code != 200 {
+		t.Fatalf("apply code = %d", rec.Code)
+	}
+	return nt
+}
+
+func TestApplyAlertsWhenAStartFails(t *testing.T) {
+	nt := applyWith(t,
+		model.NodeResult{Name: "db", State: model.StateFailed, Reason: "not ready within timeout"},
+		model.NodeResult{Name: "app", State: model.StateSkipped, Reason: "dependency db did not come up"},
+		model.NodeResult{Name: "web", State: model.StateReady},
+	)
+	if len(nt.sent) != 1 {
+		t.Fatalf("want one alert, got %+v", nt.sent)
+	}
+	a := nt.sent[0]
+	if !a.cfg.Unraid || a.subject != "Start failed" || a.importance != "alert" {
+		t.Fatalf("alert = %+v", a)
+	}
+	if !strings.Contains(a.desc, "db: not ready within timeout") || !strings.Contains(a.desc, "app: dependency db did not come up") {
+		t.Fatalf("alert should name each container that did not come up: %q", a.desc)
+	}
+	if strings.Contains(a.desc, "web") {
+		t.Fatalf("a ready container does not belong in the alert: %q", a.desc)
+	}
+}
+
+func TestApplyWarnsWhenAStartIsDegraded(t *testing.T) {
+	nt := applyWith(t, model.NodeResult{Name: "db", State: model.StateDegraded, Reason: "no healthy status"})
+	if len(nt.sent) != 1 || nt.sent[0].importance != "warning" {
+		t.Fatalf("want one warning, got %+v", nt.sent)
+	}
+}
+
+func TestApplyStaysQuietWithoutAFailedStart(t *testing.T) {
+	if nt := applyWith(t, model.NodeResult{Name: "db", State: model.StateReady}); len(nt.sent) != 0 {
+		t.Fatalf("a clean run sent %+v", nt.sent)
+	}
+	if nt := applyWith(t, model.NodeResult{Name: "db", State: model.StateSkipped, Reason: "run cancelled"}); len(nt.sent) != 0 {
+		t.Fatalf("a cancelled run sent %+v", nt.sent)
+	}
+}
+
 func TestAction(t *testing.T) {
 	s, h := newServer()
 	body, _ := json.Marshal(map[string]string{"name": "gluetun", "action": "restart"})

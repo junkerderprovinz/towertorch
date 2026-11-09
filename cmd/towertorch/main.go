@@ -107,7 +107,8 @@ func serve() {
 	vmc := vmctl.New()
 	icons := iconsrc.New(dataDir)
 	defer icons.Close()
-	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
+	notifier := monitor.SysNotifier{}
+	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
 
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		log.Fatalf("towertorch: mkdir %s: %v", dataDir, err)
@@ -132,7 +133,7 @@ func serve() {
 		_ = os.Remove(apiSock)
 	}()
 
-	mon := &monitor.Monitor{Docker: docker, Config: st, Notifier: monitor.SysNotifier{}, Pidder: docker, Shaper: shaperAdapter{}, Statter: docker, VMShaper: vmc}
+	mon := &monitor.Monitor{Docker: docker, Config: st, Notifier: notifier, Pidder: docker, Shaper: shaperAdapter{}, Statter: docker, VMShaper: vmc}
 	srv.BwLast = mon
 	// A saved config takes effect at once instead of on the next 30s tick.
 	srv.Kicker = mon
