@@ -24,6 +24,7 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/netshape"
 	"github.com/junkerderprovinz/towertorch/internal/orchestrator"
 	"github.com/junkerderprovinz/towertorch/internal/store"
+	"github.com/junkerderprovinz/towertorch/internal/tmplicon"
 	"github.com/junkerderprovinz/towertorch/internal/unraidtmpl"
 	"github.com/junkerderprovinz/towertorch/internal/vmctl"
 )
@@ -81,6 +82,13 @@ type IconSource interface {
 	SVG(name string) ([]byte, string, bool)
 }
 
+// TemplateIcons tells which containers show an icon their user set. It answers
+// from its cache and does not block on the network.
+type TemplateIcons interface {
+	// Check maps a name to tmplicon.Own or tmplicon.Pending and leaves out the rest.
+	Check(names []string) map[string]string
+}
+
 // VMController manages libvirt VM limits.
 type VMController interface {
 	List(ctx context.Context) ([]vmctl.VM, error)
@@ -89,21 +97,22 @@ type VMController interface {
 	ResizeDisk(ctx context.Context, name, target string, newBytes int64) error
 }
 
-// Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier and
-// Icons may be nil; an empty TemplatesDir skips writing limits into the Unraid
-// templates.
+// Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier, Icons
+// and TemplateIcons may be nil; an empty TemplatesDir skips writing limits into
+// the Unraid templates.
 type Server struct {
-	Docker       Docker
-	Store        Store
-	Runner       Runner
-	Notifier     Notifier
-	VMs          VMController
-	Pidder       Pidder
-	BwLast       BwLaster
-	Kicker       Kicker
-	Icons        IconSource
-	TemplatesDir string
-	Version      string
+	Docker        Docker
+	Store         Store
+	Runner        Runner
+	Notifier      Notifier
+	VMs           VMController
+	Pidder        Pidder
+	BwLast        BwLaster
+	Kicker        Kicker
+	Icons         IconSource
+	TemplateIcons TemplateIcons
+	TemplatesDir  string
+	Version       string
 	// Diag names the host files the bug report reads.
 	Diag bugreport.Sources
 
@@ -188,7 +197,25 @@ func (s *Server) handleIcons(w http.ResponseWriter, r *http.Request) {
 	if len(req.Names) > 512 {
 		req.Names = req.Names[:512]
 	}
-	writeJSON(w, http.StatusOK, s.Icons.Resolve(req.Names))
+	res := s.Icons.Resolve(req.Names)
+	if s.TemplateIcons != nil {
+		for name, st := range s.TemplateIcons.Check(req.Names) {
+			r, ok := res[name]
+			if !ok {
+				continue
+			}
+			switch st {
+			case tmplicon.Own:
+				r.Own = true
+			case tmplicon.Pending:
+				// Until the template's icon is known the curated one must not show,
+				// or an icon the user set would appear swapped for a moment.
+				r = iconsrc.Result{Kind: iconsrc.KindPending}
+			}
+			res[name] = r
+		}
+	}
+	writeJSON(w, http.StatusOK, res)
 }
 
 // handleIconSVG serves one cached icon as image/svg+xml. Coming through the

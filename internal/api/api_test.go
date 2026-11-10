@@ -15,6 +15,7 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/hostcpu"
 	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
 	"github.com/junkerderprovinz/towertorch/internal/model"
+	"github.com/junkerderprovinz/towertorch/internal/tmplicon"
 )
 
 // fakeHostMem is what the fake daemon reports, used where /proc/meminfo is
@@ -644,5 +645,48 @@ func TestIconSVGIsSandboxed(t *testing.T) {
 		if got := rec.Header().Get(k); got != v {
 			t.Errorf("%s = %q, want %q", k, got, v)
 		}
+	}
+}
+
+type cachedIcons map[string]iconsrc.Result
+
+func (c cachedIcons) Resolve(names []string) map[string]iconsrc.Result {
+	out := map[string]iconsrc.Result{}
+	for _, n := range names {
+		out[n] = c[n]
+	}
+	return out
+}
+func (c cachedIcons) SVG(string) ([]byte, string, bool) { return nil, "", false }
+
+type fakeOwners map[string]string
+
+func (f fakeOwners) Check([]string) map[string]string { return f }
+
+// The browser learns which containers show an icon their user set in the same answer
+// that carries the curated icons, and a name whose template default is still being
+// looked up waits like a pending icon, so it never shows the curated logo first.
+func TestIconsCarryTheUsersOwnIcon(t *testing.T) {
+	s, h := newServer()
+	curated := iconsrc.Result{Kind: iconsrc.KindColor, Source: iconsrc.SrcDashboard, Slug: "x"}
+	s.Icons = cachedIcons{"crowdsec": curated, "plex": curated, "sonarr": curated}
+	s.TemplateIcons = fakeOwners{"crowdsec": tmplicon.Own, "plex": tmplicon.Pending}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("POST", "/api/icons", strings.NewReader(`{"names":["crowdsec","plex","sonarr"]}`)))
+	var got map[string]iconsrc.Result
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+		t.Fatalf("decode: %v (%s)", err, rec.Body.String())
+	}
+	if r := got["crowdsec"]; !r.Own || r.Kind != iconsrc.KindColor {
+		t.Errorf("crowdsec = %+v, want the curated answer marked own", r)
+	}
+	if r := got["plex"]; r.Own || r.Kind != iconsrc.KindPending {
+		t.Errorf("plex = %+v, want pending", r)
+	}
+	if r := got["sonarr"]; r.Own || r != curated {
+		t.Errorf("sonarr = %+v, want the curated answer untouched", r)
+	}
+	if !strings.Contains(rec.Body.String(), `"own":true`) || strings.Count(rec.Body.String(), `"own"`) != 1 {
+		t.Errorf("only the own icon carries the field: %s", rec.Body.String())
 	}
 }

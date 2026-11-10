@@ -788,7 +788,7 @@
     if (stand) nativeSrc = stand;
     // A font glyph is monochrome by construction: measure nothing, fetch nothing, ink it.
     var spread = isGlyphEl ? 0 : CI.spread(nativeSrc);
-    var plan = CI.plan(mode, kind === "pending" ? "" : kind, spread, isGlyphEl ? null : CI.tile(nativeSrc));
+    var plan = CI.plan(mode, kind === "pending" ? "" : kind, spread, isGlyphEl ? null : CI.tile(nativeSrc), !!(res && res.own));
     var url = stand;
     if (!isGlyphEl && (plan.src === "glyph" || plan.src === "color")) url = CI.svgUrl(name);
     return { treat: plan.treat, url: url, tile: plan.tile, why: plan.why };
@@ -3275,13 +3275,13 @@
           ["Natives Icon", "Keine Einfärbung. Das Logo bleibt in seinen echten Farben; nur ein deutlich besseres Logo aus der gepflegten Sammlung wird noch bevorzugt."],
           ["Nachzeichnen", "Immer in deiner Farbe nachzeichnen. Ein Logo auf einer Fläche behält sein Motiv, die Fläche fällt weg."],
           ["Tönen", "Immer nur tönen. Helle Stellen bleiben hell, dunkle dunkel, das Logo behält seine Zeichnung."],
-          ["Original-Logo", "Das eigene Logo, genau wie geliefert: nie durch ein anderes ersetzt und nie eingefärbt."]]
+          ["Original-Logo", "Das eigene Logo: nie durch ein anderes ersetzt, aber eingefärbt wie alle anderen Icons."]]
       : [["", "How TowerTorch colours this entry's logo. With no choice of its own, the Settings page's “Icon colouring” applies."],
           ["Automatic", "TowerTorch decides: shapes are redrawn, with a real brand logo fetched for well-known apps, and pictures are only toned."],
           ["Native icon", "No colouring. The logo keeps its real colours; only a markedly better logo from the curated set is still preferred."],
           ["Redraw", "Always redraw in your colour. A logo drawn on a plate keeps its mark and loses the plate."],
           ["Tone", "Always only tone. Bright stays bright, dark stays dark, the logo keeps its drawing."],
-          ["Original logo", "Its own logo exactly as it ships: never swapped for another and never tinted."]];
+          ["Original logo", "Its own logo: never swapped for another, but coloured like every other icon."]];
   }
   function iconModeSelect(scope, name) {
     var CI = window.TTTheme && window.TTTheme.icons;

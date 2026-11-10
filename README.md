@@ -211,8 +211,10 @@ Every picture uses a different accent colour. The server and its apps, shares an
   and [dashboard-icons](https://github.com/homarr-labs/dashboard-icons) (Apache-2.0,
   the colour artwork); the engine fetches and caches them on the flash in the
   background, so the browser never waits on a CDN and a box with no internet simply
-  keeps the icons it shipped with. Choose the treatment globally under **Logos &
-  Icons**, or pin it per container / VM / plugin in that item's own window. That card
+  keeps the icons it shipped with. A container icon you set yourself, one that differs
+  from the icon its template ships, is never swapped for a curated one, only coloured.
+  Choose the treatment globally under **Logos & Icons**, or pin it per container / VM /
+  plugin in that item's own window. That card
   previews the choice on real Docker, VM and Plugin icons from this box, through the
   same pipeline the tabs themselves run.
 - Dropdowns take the scroll wheel: hover a **closed** selection field and the wheel

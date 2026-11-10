@@ -444,15 +444,17 @@
   //   3. Otherwise tint the best colour source: dashboard-icons (Apache-2.0) before the
   //      container's own icon.
   // The engine answers steps 2 and 3 from its cache and fetches only on its own workers (see
-  // internal/iconsrc), so the browser never waits on a CDN.
+  // internal/iconsrc), so the browser never waits on a CDN. It also marks a container whose icon
+  // differs from the one its template ships (see internal/tmplicon): the user set that icon, so
+  // steps 2 and 3 never replace it, and step 1 and the mode below colour it.
   //
   // tt.iconmode is the global default and tt.iconov holds per-item pins:
   //   auto    the chain above (default)
   //   native    no recolouring, but a curated colour icon still beats a poor shipped one
   //   flat      always flatten, whatever the heuristic says
   //   tint      always tint
-  //   original  the item's own icon as it ships, never swapped and never recoloured; offered per
-  //             item only
+  //   original  the item's own icon, never swapped, coloured by the global mode like any other;
+  //             offered per item only, and "native" is the way to leave an icon uncoloured
   var ICON_PROXY = "/plugins/towertorch/server/ttapi.php";
   var ICON_MODES = ["auto", "native", "flat", "tint", "original"];
   // Luminance spread on a 0-255 scale, measured over the 55 containers of a real box. The values
@@ -471,8 +473,9 @@
 
   function icoNorm(n) { return String(n == null ? "" : n).trim().toLowerCase(); }
   function icoValidMode(m) { return ICON_MODES.indexOf(m) >= 0 ? m : null; }
-  // The global default. Anything unrecognised (or unset) is "auto".
-  function iconGlobalMode() { return icoValidMode(g("tt.iconmode", "auto")) || "auto"; }
+  // The global default. Anything unrecognised (or unset) is "auto", and so is "original", which
+  // takes its colouring from here.
+  function iconGlobalMode() { var m = icoValidMode(g("tt.iconmode", "auto")); return m && m !== "original" ? m : "auto"; }
   // Per-item pins share one tt.* key, keyed "<scope>:<lowercased name>", so the settings sync
   // carries them.
   function iconOverrides() { try { var j = JSON.parse(g("tt.iconov", "null")); return (j && typeof j === "object") ? j : {}; } catch (e) { return {}; } }
@@ -524,8 +527,8 @@
       Object.keys(j).forEach(function (n) {
         var key = icoNorm(n), v = j[n] || {};
         var was = icoRes[key];
-        if (!was || was.kind !== v.kind) changed = true;
-        icoRes[key] = { kind: v.kind || "none", source: v.source || "", slug: v.slug || "" };
+        if (!was || was.kind !== v.kind || was.own !== !!v.own) changed = true;
+        icoRes[key] = { kind: v.kind || "none", source: v.source || "", slug: v.slug || "", own: !!v.own };
         delete icoWant[key];
       });
       // The engine skips a name it normalises to nothing; left waiting, it would be asked for again
@@ -659,15 +662,19 @@
     return light >= dark ? { bg: r2(plate), mk: r2(lsum / light), mark: "light" } : { bg: r2(plate), mk: r2(dsum / dark), mark: "dark" };
   }
 
-  // Pure, so a DOM test can pin every branch without a browser.
+  // Pure but for the global mode an original logo follows, so a DOM test can pin every branch
+  // without a browser.
   //   treat: "flat" | "tint" | "native"      what to do to the pixels
   //   src:   "native" | "glyph" | "color"    which picture to do it to
   //   tile:  the tile iconTile() found, for "knock"
+  // own is the engine's mark on an icon the user set. It and "original" keep the item's own
+  // picture by ignoring the curated kind, and nothing else changes.
   // A glyph is only chosen when it will be inked, since an un-inked monochrome glyph on a dark
   // card is a black square. A tile is never flattened whole: "knock" inks its mark and drops the
   // plate, the flat look without the blank square.
-  function iconPlan(mode, kind, spread, tile) {
-    if (mode === "original") return { treat: "native", src: "native", why: "mode:original" };
+  function iconPlan(mode, kind, spread, tile, own) {
+    if (mode === "original") { mode = iconGlobalMode(); own = true; }
+    if (own) kind = "";
     if (mode === "native") return { treat: "native", src: kind === "color" ? "color" : "native", why: "mode:native" };
     if (mode === "tint") return { treat: "tint", src: kind === "color" ? "color" : "native", why: "mode:tint" };
     if (mode === "flat") {

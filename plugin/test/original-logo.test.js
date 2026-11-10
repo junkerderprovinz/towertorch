@@ -1,8 +1,10 @@
 // A container, VM or plugin can be pinned to its original logo: the icon it ships with, never
-// swapped for a curated or brand logo and never tinted, whatever the global icon colouring says.
-// The settings page lists the pinned containers on the Docker tab, each one removable, with a
-// picker to add another. What can quietly break it:
+// swapped for a curated or brand logo, but coloured like every other icon under the global icon
+// colouring. A container icon the user set is kept the same way without a pin. The settings page
+// lists the pinned containers on the Docker tab, each one removable, with a picker to add
+// another. What can quietly break it:
 //   · the plan picking the curated colour icon, as "native" does
+//   · the plan leaving the kept logo out of the colouring
 //   · one of the per-item pickers missing the choice
 //   · the settings list showing a container that is not pinned, or offering one that is
 const fs = require('fs');
@@ -44,21 +46,48 @@ function grabFn(src, name) {
 }
 const docker = read('docker.js'), vms = read('vms.js'), theme = read('tt-theme.js'), settings = read('settings.js');
 
-console.log('\nThe Docker tab keeps the shipped icon');
+console.log('\nThe Docker tab keeps the shipped icon and colours it');
 {
   const treat = new Function('window', grabFn(docker, 'iconTreatment') + '\nreturn iconTreatment;')(global.window);
   const own = '/state/plugins/dynamix.docker.manager/images/plex-icon.png';
+  const was = { result: CI.result, spread: CI.spread };
   CI.setOverride('docker', 'Plex', 'native');
-  const was = CI.result;
   CI.result = () => ({ kind: 'color', source: 'dashboard-icons', slug: 'plex' });
   ok('native swaps in a curated colour logo', treat('docker', 'Plex', false, own).url !== '');
   CI.setOverride('docker', 'Plex', 'original');
-  const p = treat('docker', 'Plex', false, own);
-  ok('original keeps the container\'s own icon and leaves its pixels alone', p.url === '' && p.treat === 'native', JSON.stringify(p));
+  let p = treat('docker', 'Plex', false, own);
+  ok('original keeps the container\'s own icon', p.url === '', JSON.stringify(p));
+  ok('and tints it like the rest while it is unmeasured', p.treat === 'tint', JSON.stringify(p));
+  CI.spread = () => 3;
+  p = treat('docker', 'Plex', false, own);
+  ok('a one-tone logo of its own is redrawn under auto', p.url === '' && p.treat === 'flat', JSON.stringify(p));
   CI.result = () => ({ kind: 'glyph', source: 'simple-icons', slug: 'plex' });
   ok('a brand glyph does not replace it either', treat('docker', 'Plex', false, own).url === '');
-  CI.result = was;
+  store['tt.iconmode'] = 'tint';
+  p = treat('docker', 'Plex', false, own);
+  ok('it follows the global colouring', p.url === '' && p.treat === 'tint', JSON.stringify(p));
+  store['tt.iconmode'] = 'native';
+  ok('and stays uncoloured when the global colouring is native', treat('docker', 'Plex', false, own).treat === 'native');
+  delete store['tt.iconmode'];
   CI.setOverride('docker', 'Plex', '');
+  CI.spread = was.spread;
+
+  console.log('\nA container icon the user set is kept without a pin');
+  const crowd = '/state/plugins/dynamix.docker.manager/images/CrowdSec-icon.png';
+  CI.result = () => ({ kind: 'color', source: 'dashboard-icons', slug: 'crowdsec', own: true });
+  p = treat('docker', 'CrowdSec', false, crowd);
+  ok('auto leaves the curated logo out', p.url === '', JSON.stringify(p));
+  ok('and colours the user\'s icon instead', p.treat === 'tint', JSON.stringify(p));
+  CI.result = () => ({ kind: 'color', source: 'dashboard-icons', slug: 'crowdsec' });
+  ok('an icon as its template ships it is still swapped', treat('docker', 'CrowdSec', false, crowd).url !== '');
+  CI.result = was.result;
+}
+
+console.log('\nThe help texts describe the colouring');
+{
+  const at = (src, mark) => src.slice(src.indexOf(mark), src.indexOf(mark) + 3000);
+  const texts = [['the bubble', grabFn(docker, 'iconModeItems')], ['the settings list', at(settings, 'var cOrig = card(')], ['the global help', at(settings, 'Ein Logo ist entweder')]];
+  texts.forEach(([where, txt]) => ok(where + ' does not promise an uncoloured logo', !/never tinted|nie eingefärbt|completely untouched|Ganz unverändert/.test(txt)));
 }
 
 console.log('\nEvery per-item picker offers it');

@@ -28,6 +28,7 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/orchestrator"
 	"github.com/junkerderprovinz/towertorch/internal/readiness"
 	"github.com/junkerderprovinz/towertorch/internal/store"
+	"github.com/junkerderprovinz/towertorch/internal/tmplicon"
 	"github.com/junkerderprovinz/towertorch/internal/unraidtmpl"
 	"github.com/junkerderprovinz/towertorch/internal/vmctl"
 )
@@ -107,8 +108,11 @@ func serve() {
 	vmc := vmctl.New()
 	icons := iconsrc.New(dataDir)
 	defer icons.Close()
+	tmplDir := env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir)
+	tmplIcons := tmplicon.New(dataDir, tmplDir, tmplicon.DefaultCACache)
+	defer tmplIcons.Close()
 	notifier := monitor.SysNotifier{}
-	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
+	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, TemplateIcons: tmplIcons, TemplatesDir: tmplDir, Version: version, Diag: bugreport.Default}
 
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		log.Fatalf("towertorch: mkdir %s: %v", dataDir, err)
