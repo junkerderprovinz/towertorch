@@ -11,6 +11,7 @@ import (
 
 	"github.com/junkerderprovinz/parleyport/kit/status"
 
+	"github.com/junkerderprovinz/towertorch/internal/maint"
 	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
@@ -25,12 +26,14 @@ type Containers interface {
 
 // Board collects the events and answers the status contract. App and Instance
 // go into every report as they are. Docker is optional and lets a failed start
-// drop out once its container runs after all.
+// drop out once its container runs after all. NextMaintenance, when set, names
+// the next scheduled maintenance run.
 type Board struct {
-	App      status.App
-	Instance status.Instance
-	Docker   Containers
-	Now      func() time.Time
+	App             status.App
+	Instance        status.Instance
+	Docker          Containers
+	NextMaintenance func() (time.Time, bool)
+	Now             func() time.Time
 
 	mu       sync.Mutex
 	runs     int       // plan runs in progress
@@ -40,6 +43,8 @@ type Board struct {
 	watchdog map[string]trouble
 	log      []entry
 	nextID   int64
+	maintRun *maint.Progress
+	maintBad *maint.Report // the last run, when it failed or held the restart
 }
 
 // trouble is a container the watchdog could not keep up.
@@ -184,6 +189,7 @@ func (b *Board) Report(ctx context.Context, lang string) (status.Report, error) 
 	for k, v := range b.watchdog {
 		watchdog[k] = v
 	}
+	run, bad := b.maintRun, b.maintBad
 	b.mu.Unlock()
 
 	r := status.Report{App: b.App, Instance: b.Instance, State: status.StateOK}
@@ -191,10 +197,21 @@ func (b *Board) Report(ctx context.Context, lang string) (status.Report, error) 
 	if runs > 0 {
 		r.Work = append(r.Work, status.Task{ID: "plan-run", Kind: status.KindOther, Title: t.say("plan.running"), StartedAt: runSince, BlocksRestart: true})
 	}
+	if run != nil {
+		r.Work = append(r.Work, maintenanceWork(*run, lang))
+	}
 	r.NeedsYou = b.startNeeds(ctx, last, lastAt, t)
 	for _, name := range sortedKeys(watchdog) {
 		tr := watchdog[name]
 		r.NeedsYou = append(r.NeedsYou, status.Need{ID: "watchdog-" + name, Severity: status.SeverityError, Code: tr.code, Text: t.say(tr.code, tr.args...), Since: tr.since})
+	}
+	if bad != nil {
+		r.NeedsYou = append(r.NeedsYou, maintenanceNeed(*bad, lang))
+	}
+	if b.NextMaintenance != nil {
+		if at, ok := b.NextMaintenance(); ok {
+			r.Next = append(r.Next, status.Scheduled{Kind: status.KindOther, Title: maint.Say(lang, "maintenance.next"), At: at})
+		}
 	}
 	return r, nil
 }
@@ -264,7 +281,6 @@ func (b *Board) Log(_ context.Context, q status.LogQuery) (status.LogPage, error
 	}
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	t := texts(q.Lang)
 	page := status.LogPage{Next: q.After}
 	for _, e := range b.log {
 		if e.id <= after {
@@ -273,7 +289,7 @@ func (b *Board) Log(_ context.Context, q status.LogQuery) (status.LogPage, error
 		if len(page.Entries) == q.Limit {
 			break
 		}
-		page.Entries = append(page.Entries, status.LogEntry{ID: strconv.FormatInt(e.id, 10), At: e.at, Level: e.level, Code: e.code, Text: t.say(e.code, e.args...)})
+		page.Entries = append(page.Entries, status.LogEntry{ID: strconv.FormatInt(e.id, 10), At: e.at, Level: e.level, Code: e.code, Text: say(q.Lang, e.code, e.args)})
 		page.Next = strconv.FormatInt(e.id, 10)
 	}
 	return page, nil

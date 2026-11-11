@@ -136,6 +136,16 @@ func (e *Engine) State(_ context.Context) Overview {
 	return o
 }
 
+// NextRun is the start of the next scheduled run, false when none is
+// scheduled.
+func (e *Engine) NextRun() (time.Time, bool) {
+	saved, err := e.Store.Load()
+	if err != nil {
+		return time.Time{}, false
+	}
+	return saved.Plan.Schedule.Next(e.now())
+}
+
 func (e *Engine) found(action string) Found {
 	m, err := e.Jobs.Find(action)
 	var no *NoAppError

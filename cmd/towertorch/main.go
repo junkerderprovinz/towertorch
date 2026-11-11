@@ -14,6 +14,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"runtime/debug"
@@ -28,6 +29,7 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/dockercli"
 	"github.com/junkerderprovinz/towertorch/internal/fortress"
 	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
+	"github.com/junkerderprovinz/towertorch/internal/maint"
 	"github.com/junkerderprovinz/towertorch/internal/monitor"
 	"github.com/junkerderprovinz/towertorch/internal/netshape"
 	"github.com/junkerderprovinz/towertorch/internal/orchestrator"
@@ -122,7 +124,24 @@ func serve() {
 		log.Printf("towertorch: notification channels unreadable: %v", err)
 	}
 	board := &fortress.Board{App: app(version), Instance: instance(st), Docker: docker}
-	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, Fortress: board, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
+	engine := &maint.Engine{
+		Check:    maint.FireSquire{Script: env("TT_FIRESQUIRE", maint.DefaultFireSquire)},
+		Reboot:   reboot,
+		Docker:   docker,
+		Board:    board,
+		Notifier: notifier,
+		Store:    &maint.File{Path: filepath.Join(dataDir, "maintenance.json")},
+	}
+	board.NextMaintenance = engine.NextRun
+	membership, err := fortress.Join(env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), board.App, board)
+	if err != nil {
+		log.Printf("towertorch: not taking part in the fortress: %v", err)
+	}
+	if membership != nil {
+		defer func() { _ = membership.Close() }()
+		engine.Jobs = &maint.Jobs{Fortress: maint.Kit{Fortress: membership.Fortress}, Device: membership.Device}
+	}
+	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, Fortress: board, Maintenance: engine, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
 	// A stale socket from an unclean stop would make Listen fail with EADDRINUSE.
 	_ = os.Remove(apiSock)
 	ln, err := net.Listen("unix", apiSock)
@@ -148,6 +167,7 @@ func serve() {
 	// A saved config takes effect at once instead of on the next 30s tick.
 	srv.Kicker = mon
 	go mon.Run(ctx)
+	go engine.Serve(ctx)
 
 	log.Print("\n" + bannerArt)
 	// No ANSI colour: rc.towertorch sends this to a flat log file that
@@ -157,6 +177,12 @@ func serve() {
 	if err := httpSrv.Serve(ln); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("towertorch: serve: %v", err)
 	}
+}
+
+// reboot restarts the server through Unraid's shutdown, which stops the
+// array before the power cycles.
+func reboot() error {
+	return exec.Command("/sbin/reboot").Run()
 }
 
 // app names TowerTorch in its fortress status report.

@@ -102,7 +102,7 @@ type Fortress interface {
 }
 
 // Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier,
-// Icons and Fortress may be nil; an empty TemplatesDir skips writing limits
+// Icons, Fortress and Maintenance may be nil; an empty TemplatesDir skips writing limits
 // into the Unraid templates.
 type Server struct {
 	Docker       Docker
@@ -115,6 +115,7 @@ type Server struct {
 	Kicker       Kicker
 	Icons        IconSource
 	Fortress     Fortress
+	Maintenance  Maintenance
 	TemplatesDir string
 	Version      string
 	// Diag names the host files the bug report reads.
@@ -163,6 +164,12 @@ func (s *Server) Handler() http.Handler {
 		h := status.Handler(s.Fortress, fromSocket)
 		mux.Handle(status.StatusPath, h)
 		mux.Handle(status.LogPath, h)
+	}
+	if s.Maintenance != nil {
+		mux.HandleFunc("GET /api/maintenance", s.handleGetMaintenance)
+		mux.HandleFunc("PUT /api/maintenance", s.handlePutMaintenance)
+		mux.HandleFunc("POST /api/maintenance/run", s.handleRunMaintenance)
+		mux.HandleFunc("POST /api/maintenance/stop", s.handleStopMaintenance)
 	}
 	return mux
 }

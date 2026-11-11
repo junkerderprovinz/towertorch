@@ -55,11 +55,12 @@ var english = map[string]string{
 	"running.check":   "Maintenance: FireSquire is checking the server",
 	"running.restart": "Maintenance: restarting the server",
 
-	"outcome.done":    "Maintenance done",
-	"outcome.warn":    "Maintenance done with notes",
-	"outcome.held":    "Maintenance done, restart held back",
-	"outcome.failed":  "Maintenance failed",
-	"outcome.stopped": "Maintenance stopped",
+	"maintenance.done":    "Maintenance done",
+	"maintenance.warn":    "Maintenance done with notes",
+	"maintenance.held":    "Maintenance done, restart held back",
+	"maintenance.failed":  "Maintenance failed",
+	"maintenance.stopped": "Maintenance stopped",
+	"maintenance.next":    "Maintenance",
 }
 
 var german = map[string]string{
@@ -112,11 +113,12 @@ var german = map[string]string{
 	"running.check":   "Wartung: FireSquire prüft den Server",
 	"running.restart": "Wartung: Server startet neu",
 
-	"outcome.done":    "Wartung fertig",
-	"outcome.warn":    "Wartung fertig mit Hinweisen",
-	"outcome.held":    "Wartung fertig, Neustart zurückgehalten",
-	"outcome.failed":  "Wartung gescheitert",
-	"outcome.stopped": "Wartung angehalten",
+	"maintenance.done":    "Wartung fertig",
+	"maintenance.warn":    "Wartung fertig mit Hinweisen",
+	"maintenance.held":    "Wartung fertig, Neustart zurückgehalten",
+	"maintenance.failed":  "Wartung gescheitert",
+	"maintenance.stopped": "Wartung angehalten",
+	"maintenance.next":    "Wartung",
 }
 
 // Say puts a code and its args in the language of tag, English when there
@@ -153,7 +155,7 @@ func Summary(r Report, lang string) (subject, desc, importance string) {
 	case StateFailed:
 		importance = "alert"
 	}
-	return Say(lang, "outcome."+string(r.Outcome)), strings.Join(lines, " "), importance
+	return Say(lang, "maintenance."+string(r.Outcome)), strings.Join(lines, " "), importance
 }
 
 // Title says what a run is doing, for the fortress's list of work.
