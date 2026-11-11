@@ -24,7 +24,7 @@ func words(t *testing.T) string {
 func TestThePhraseLetsTowerTorchIn(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "fortress")
 	var got *Membership
-	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Opened: func(m *Membership) { got = m }}
+	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Changed: func(m *Membership) { got = m }}
 	if err := d.Enter(words(t)); err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +40,7 @@ func TestThePhraseLetsTowerTorchIn(t *testing.T) {
 
 func TestAMistypedPhraseKeepsNothing(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "fortress")
-	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Opened: func(*Membership) { t.Error("opened") }}
+	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Changed: func(*Membership) { t.Error("opened") }}
 	err := d.Enter("abandon abandon abandon")
 	if !errors.Is(err, ErrPhrase) {
 		t.Errorf("err = %v", err)
@@ -53,7 +53,7 @@ func TestAMistypedPhraseKeepsNothing(t *testing.T) {
 func TestAMemberDoesNotJoinTwice(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "fortress")
 	var m *Membership
-	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Opened: func(x *Membership) { m = x }}
+	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Changed: func(x *Membership) { m = x }}
 	if err := d.Enter(words(t)); err != nil {
 		t.Fatal(err)
 	}
@@ -61,4 +61,40 @@ func TestAMemberDoesNotJoinTwice(t *testing.T) {
 	if err := d.Enter(words(t)); !errors.Is(err, ErrMember) {
 		t.Errorf("second join: %v", err)
 	}
+}
+
+func TestLeavingForgetsTheFortressAndThePhraseLetsItBackIn(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "fortress")
+	var got []*Membership
+	d := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: "off", Changed: func(m *Membership) { got = append(got, m) }}
+	if err := d.Enter(words(t)); err != nil {
+		t.Fatal(err)
+	}
+	if err := d.Leave(); err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 2 || got[1] != nil {
+		t.Fatalf("changes = %v", got)
+	}
+	if _, err := os.Stat(dir); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("leaving kept %s: %v", dir, err)
+	}
+	if err := d.Leave(); !errors.Is(err, ErrNotMember) {
+		t.Errorf("leaving twice: %v", err)
+	}
+	if err := d.Enter(words(t)); err != nil {
+		t.Errorf("joining again: %v", err)
+	}
+	_ = d.Close()
+}
+
+func TestTheDoorOpensAKeptMembership(t *testing.T) {
+	dir := t.TempDir()
+	joined(t, dir, false)
+	var got *Membership
+	d := &Door{Dir: dir, App: towertorch, Changed: func(m *Membership) { got = m }}
+	if err := d.Open(); err != nil || got == nil || got.Device != "Tower" {
+		t.Fatalf("open = %v, %+v", err, got)
+	}
+	_ = d.Close()
 }

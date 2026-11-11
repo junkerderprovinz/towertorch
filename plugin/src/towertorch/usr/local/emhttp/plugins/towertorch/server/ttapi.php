@@ -20,12 +20,13 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // bugreport: the diagnostics file for a bug report, with its secrets already taken out
 // by the engine, passed on as a download.
 // maintenance: the maintenance plan, its run and its last report; fortressjoin takes the
-// fortress phrase, which the engine turns into its keys and never keeps.
+// fortress phrase, which the engine turns into its keys and never keeps, and fortressleave
+// takes TowerTorch out again.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'hostcpu' => ['GET'], 'hostnet' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'],
     'bwstatus' => ['GET'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'uisettings' => ['PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
     'vmdisks' => ['GET'], 'vmdiskresize' => ['POST'], 'icons' => ['POST'], 'iconsvg' => ['GET'], 'bugreport' => ['GET'],
-    'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST']];
-$route = ['maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join'];
+    'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST']];
+$route = ['maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave'];
 
 $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '';
 $method = $_SERVER['REQUEST_METHOD'];

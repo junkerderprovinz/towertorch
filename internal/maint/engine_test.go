@@ -104,10 +104,14 @@ func (b *fakeBoard) MaintenanceFinished(r Report) {
 
 type sent struct{ subject, desc, importance string }
 
-type fakeNotifier struct{ sent []sent }
+type fakeNotifier struct {
+	sent   []sent
+	failed []string
+}
 
-func (n *fakeNotifier) Notify(_ context.Context, subject, desc, importance string) {
+func (n *fakeNotifier) Send(_ context.Context, subject, desc, importance string) (int, []string) {
 	n.sent = append(n.sent, sent{subject, desc, importance})
+	return 2 - len(n.failed), n.failed
 }
 
 type rig struct {
@@ -643,5 +647,30 @@ func TestThePanelSeesTheContainersAndTheStepsInItsLanguage(t *testing.T) {
 	}
 	if s := step(*o.Last, StepBackup); s.Text != "Im Plan abgeschaltet." {
 		t.Errorf("text = %q", s.Text)
+	}
+}
+
+func TestTheReportSaysWhereTheNotificationWent(t *testing.T) {
+	r := newRig(t, Plan{Steps: Steps{Check: true}})
+	r.notify.failed = []string{"Home Assistant"}
+	rep := r.run(t)
+	if rep.Notified == nil || rep.Notified.Sent != 1 || !slices.Equal(rep.Notified.Failed, []string{"Home Assistant"}) {
+		t.Fatalf("notified = %+v", rep.Notified)
+	}
+	saved, _ := r.e.Store.Load()
+	if saved.Last.Notified == nil || saved.Last.Notified.Sent != 1 {
+		t.Errorf("kept = %+v", saved.Last.Notified)
+	}
+}
+
+func TestLeavingTheFortressTakesBackupAndUpdateOut(t *testing.T) {
+	r := newRig(t, Plan{Steps: all})
+	r.e.SetJobs(r.jobs, "Tower")
+	r.e.SetJobs(nil, "")
+	if st := r.e.State(context.Background()); st.Ready.Fortress || st.Ready.Device != "" {
+		t.Errorf("ready = %+v", st.Ready)
+	}
+	if b := step(r.run(t), StepBackup); b.Code != "backup.no_fortress" {
+		t.Errorf("backup = %+v", b)
 	}
 }

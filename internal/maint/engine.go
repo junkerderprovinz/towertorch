@@ -47,9 +47,10 @@ type Reporter interface {
 	MaintenanceFinished(r Report)
 }
 
-// Notifier sends a run's summary to the notification channels.
+// Notifier sends a run's summary to the notification channels and says how
+// many took it and which did not.
 type Notifier interface {
-	Notify(ctx context.Context, subject, desc, importance string)
+	Send(ctx context.Context, subject, desc, importance string) (sent int, failed []string)
 }
 
 // Engine runs the maintenance plan kept in Store. Jobs is nil while TowerTorch
@@ -364,7 +365,9 @@ func (e *Engine) finish(ctx context.Context, rep *Report) {
 	}
 	if e.Notifier != nil {
 		subject, desc, importance := Summary(*rep, "en")
-		e.Notifier.Notify(ctx, subject, desc, importance)
+		sent, failed := e.Notifier.Send(ctx, subject, desc, importance)
+		rep.Notified = &Delivery{Sent: sent, Failed: failed}
+		e.save(*rep)
 	}
 }
 

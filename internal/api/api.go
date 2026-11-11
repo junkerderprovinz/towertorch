@@ -174,6 +174,7 @@ func (s *Server) Handler() http.Handler {
 	}
 	if s.Door != nil {
 		mux.HandleFunc("POST /api/fortress/join", s.handleJoin)
+		mux.HandleFunc("POST /api/fortress/leave", s.handleLeave)
 	}
 	return mux
 }

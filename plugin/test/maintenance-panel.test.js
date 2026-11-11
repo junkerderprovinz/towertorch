@@ -30,6 +30,7 @@ console.log('\nThe proxy forwards the panel\'s paths and nothing more');
   ok('the plan is read and saved', /'maintenance' => \['GET', 'PUT'\]/.test(proxy));
   ok('a run starts and stops by POST only', /'maintenancerun' => \['POST'\]/.test(proxy) && /'maintenancestop' => \['POST'\]/.test(proxy));
   ok('the phrase goes in by POST only', /'fortressjoin' => \['POST'\]/.test(proxy));
+  ok('leaving goes out by POST only, to its engine route', /'fortressleave' => \['POST'\]/.test(proxy) && /'fortressleave' => 'fortress\/leave'/.test(proxy));
   ok('each reaches its engine route', /'maintenancerun' => 'maintenance\/run'/.test(proxy) && /'maintenancestop' => 'maintenance\/stop'/.test(proxy) && /'fortressjoin' => 'fortress\/join'/.test(proxy) && /\$route\[\$path\]/.test(proxy));
   ok('lang passes only in the shape of a language tag', /'maintenance' => \['lang'\]/.test(proxy) && /\$qshape = \['lang' => /.test(proxy));
 }
@@ -105,6 +106,25 @@ console.log('\nThe Docker tab and the settings page mount the panel');
   }
   const css = read('styles/docker.css');
   ok('the bar button looks like its neighbours', /\.tt-bulkmode-badge, \.tt-allct, \.tt-maintbtn\)/.test(css) && /div\.js-actions \.tt-maintbtn:hover/.test(css));
+}
+
+console.log('\nThe report says where the notification went');
+{
+  const { delivery } = make(['t', 'delivery'])(...Object.values({ ...env, S: {} }));
+  ok('every channel took it', delivery({ sent: 2 }) === 'sent to 2 of 2 channels');
+  ok('the one channel there is', delivery({ sent: 1 }) === 'sent');
+  ok('a channel that failed is named', delivery({ sent: 1, failed: ['Home Assistant'] }) === 'sent to 1 of 2, Home Assistant failed');
+  ok('no channel set up', delivery({ sent: 0 }) === 'no channel set up');
+  ok('the report shows it only when the engine sent one', /r\.notified \? .*delivery\(r\.notified\)/.test(grab('viewReport')));
+}
+
+console.log('\nLeaving the fortress, as GlimStone\'s FortressPairing does');
+{
+  const card = grab('paintCard'), leave = grab('leave');
+  ok('a row of its own while TowerTorch is in a fortress, with an (i)', /if \(ready\.fortress\) \{[\s\S]*set\.leaveRow[\s\S]*info\(t\("set\.leaveAbout"\)\)[\s\S]*data-act="leave"/.test(card));
+  ok('it asks first and says what ends', /theme\(\)\.ask\(\{ title: t\("set\.leaveTitle"\), text: t\("set\.leaveBody"\)/.test(leave));
+  ok('the answer is not a red delete', !/danger/.test(leave) && !/Trash/.test(leave));
+  ok('the button wears GlimStone\'s sign-out glyph', /glyph\("SignOut"\)/.test(card) && /glyph: "SignOut"/.test(leave));
 }
 
 console.log('\nThe phrase stays out of sight');

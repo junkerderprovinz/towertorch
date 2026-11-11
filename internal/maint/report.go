@@ -47,6 +47,14 @@ type Report struct {
 	Finished time.Time    `json:"finished,omitzero"`
 	Outcome  State        `json:"outcome"`
 	Steps    []StepReport `json:"steps"`
+	Notified *Delivery    `json:"notified,omitempty"`
+}
+
+// Delivery is where a run's notification went: how many channels took it and
+// the names of those that did not.
+type Delivery struct {
+	Sent   int      `json:"sent"`
+	Failed []string `json:"failed,omitempty"`
 }
 
 // StepReport is how one step went.

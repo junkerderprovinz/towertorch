@@ -111,6 +111,12 @@ func TestWithoutAnEngineThereIsNoMaintenanceRoute(t *testing.T) {
 type fakeDoor struct {
 	words string
 	err   error
+	left  bool
+}
+
+func (d *fakeDoor) Leave() error {
+	d.left = true
+	return d.err
 }
 
 func (d *fakeDoor) Enter(words string) error {
@@ -141,5 +147,17 @@ func TestAJoinThatFailsSaysWhyWithACode(t *testing.T) {
 		if rec.Code != c.code || !strings.Contains(rec.Body.String(), c.body) {
 			t.Errorf("%v: %d %s", c.err, rec.Code, rec.Body)
 		}
+	}
+}
+
+func TestLeavingAsksTheDoor(t *testing.T) {
+	d := &fakeDoor{}
+	s := &Server{Store: &memStore{}, Door: d}
+	if rec := call(s, http.MethodPost, "/api/fortress/leave", ""); rec.Code != http.StatusOK || !d.left {
+		t.Errorf("leave = %d %s", rec.Code, rec.Body)
+	}
+	s.Door = &fakeDoor{err: fortress.ErrNotMember}
+	if rec := call(s, http.MethodPost, "/api/fortress/leave", ""); rec.Code != http.StatusConflict || !strings.Contains(rec.Body.String(), `"error":"notMember"`) {
+		t.Errorf("leave outside = %d %s", rec.Code, rec.Body)
 	}
 }

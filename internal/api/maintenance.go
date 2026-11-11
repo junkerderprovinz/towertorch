@@ -10,9 +10,10 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/maint"
 )
 
-// Door lets TowerTorch join a fortress with its phrase.
+// Door lets TowerTorch join a fortress with its phrase and leave it.
 type Door interface {
 	Enter(words string) error
+	Leave() error
 }
 
 // Maintenance runs the maintenance plan.
@@ -89,5 +90,17 @@ func (s *Server) handleJoin(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusInternalServerError, err)
 	default:
 		writeJSON(w, http.StatusOK, map[string]string{"status": "joined"})
+	}
+}
+
+func (s *Server) handleLeave(w http.ResponseWriter, _ *http.Request) {
+	err := s.Door.Leave()
+	switch {
+	case errors.Is(err, fortress.ErrNotMember):
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "notMember"})
+	case err != nil:
+		writeErr(w, http.StatusInternalServerError, err)
+	default:
+		writeJSON(w, http.StatusOK, map[string]string{"status": "left"})
 	}
 }

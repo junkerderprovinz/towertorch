@@ -31,8 +31,8 @@
      header when the version is set.
 
 **✨ New**
-- **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you set. BombVault takes the backups and ShipLog the updates, FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report. Open it from the Docker tab's bar or from its card in the settings.
-- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase.
+- **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you set. BombVault takes the backups and ShipLog the updates, FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report, which also says how many of your notification channels got the summary. Open it from the Docker tab's bar or from its card in the settings.
+- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking.
 - **TowerTorch tells the other apps of your fortress how it is doing.** They can read whether a start in order is running, which containers did not start and why, and which ones the watchdog could not keep up, along with a log of runs and watchdog restarts. TowerTorch answers this only on its local socket and through your Unraid login, never on a network port.
 
 **⚡ Improved**

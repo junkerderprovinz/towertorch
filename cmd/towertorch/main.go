@@ -19,7 +19,6 @@ import (
 	"path/filepath"
 	"runtime/debug"
 	"strings"
-	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -135,23 +134,18 @@ func serve() {
 		Server:   board.Instance.Name,
 	}
 	board.NextMaintenance = engine.NextRun
-	var member atomic.Pointer[fortress.Membership]
-	attach := func(m *fortress.Membership) {
-		member.Store(m)
-		engine.SetJobs(&maint.Jobs{Fortress: maint.Kit{Fortress: m.Fortress}, Device: m.Device}, m.Device)
-	}
-	fortressDir := env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress"))
-	if m, err := fortress.Join(fortressDir, board.App, board); err != nil {
+	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name,
+		Changed: func(m *fortress.Membership) {
+			if m == nil {
+				engine.SetJobs(nil, "")
+				return
+			}
+			engine.SetJobs(&maint.Jobs{Fortress: maint.Kit{Fortress: m.Fortress}, Device: m.Device}, m.Device)
+		}}
+	if err := door.Open(); err != nil {
 		log.Printf("towertorch: not taking part in the fortress: %v", err)
-	} else if m != nil {
-		attach(m)
 	}
-	defer func() {
-		if m := member.Load(); m != nil {
-			_ = m.Close()
-		}
-	}()
-	door := &fortress.Door{Dir: fortressDir, App: board.App, Src: board, Device: board.Instance.Name, Opened: attach}
+	defer func() { _ = door.Close() }()
 	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, Fortress: board, Maintenance: engine, Door: door, TemplatesDir: env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir), Version: version, Diag: bugreport.Default}
 	// A stale socket from an unclean stop would make Listen fail with EADDRINUSE.
 	_ = os.Remove(apiSock)

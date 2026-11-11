@@ -100,3 +100,29 @@ func TestAlertsWithoutChannelsSendNothing(t *testing.T) {
 	case <-time.After(200 * time.Millisecond):
 	}
 }
+
+func TestSendSaysWhichChannelsTookTheAlert(t *testing.T) {
+	hook := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusInternalServerError) }))
+	defer hook.Close()
+	a := Alerts{
+		Channels: func() ([]notify.Channel, error) {
+			return []notify.Channel{
+				{ID: "unraid", Kind: notify.KindUnraid, Enabled: true, On: notify.OnAlways},
+				{ID: "hook-1", Name: "Home Assistant", Kind: notify.KindWebhook, Enabled: true, On: notify.OnAlways, TimeoutSeconds: 2,
+					Webhook: &notify.Webhook{URL: hook.URL, Method: "POST", Body: `{}`}},
+			}, nil
+		},
+		Unraid: make(recordingRunner, 4),
+	}
+	sent, failed := a.Send(context.Background(), "Maintenance done", "all went through", "normal")
+	if sent != 1 || !slices.Equal(failed, []string{"Home Assistant"}) {
+		t.Errorf("sent %d, failed %v", sent, failed)
+	}
+}
+
+func TestSendWithoutChannelsReachesNobody(t *testing.T) {
+	a := Alerts{Channels: func() ([]notify.Channel, error) { return nil, nil }}
+	if sent, failed := a.Send(context.Background(), "x", "y", "normal"); sent != 0 || len(failed) != 0 {
+		t.Errorf("sent %d, failed %v", sent, failed)
+	}
+}

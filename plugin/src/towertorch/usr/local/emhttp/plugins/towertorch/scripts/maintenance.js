@@ -142,6 +142,19 @@
       "set.joinPh": "twelve words",
       "set.joinBtn": "Join",
       "set.joined": "Welcome to your fortress.",
+      "set.leaveRow": "This app in the fortress",
+      "set.leaveAbout": "Takes TowerTorch out of the fortress. The phrase brings it back any time.",
+      "set.leave": "Leave",
+      "set.leaveTitle": "Leave the fortress?",
+      "set.leaveBody": "The other apps won't see TowerTorch anymore, and every permission with TowerTorch ends. You can come back any time with the phrase.",
+      "set.cancel": "Cancel",
+      "set.left": "TowerTorch has left the fortress.",
+      "err.notMember": "TowerTorch isn't in a fortress.",
+      "rep.notify": "Notification",
+      "rep.sent": "sent",
+      "rep.sentAll": "sent to {n} of {total} channels",
+      "rep.sentSome": "sent to {n} of {total}, {failed} failed",
+      "rep.noChannel": "no channel set up",
       "err.phrase": "Those words aren't a fortress phrase. Check each one once more.",
       "err.member": "TowerTorch is in a fortress already."
     },
@@ -274,6 +287,19 @@
       "set.joinPh": "zwölf Wörter",
       "set.joinBtn": "Beitreten",
       "set.joined": "Willkommen in deiner Festung.",
+      "set.leaveRow": "Diese App in der Festung",
+      "set.leaveAbout": "Nimmt TowerTorch aus der Festung. Mit der Phrase kommt TowerTorch jederzeit zurück.",
+      "set.leave": "Verlassen",
+      "set.leaveTitle": "Festung verlassen?",
+      "set.leaveBody": "Die anderen Apps sehen TowerTorch danach nicht mehr, und alle Erlaubnisse mit TowerTorch enden. Zurück kommst du jederzeit mit der Phrase.",
+      "set.cancel": "Abbrechen",
+      "set.left": "TowerTorch hat die Festung verlassen.",
+      "err.notMember": "TowerTorch ist in keiner Festung.",
+      "rep.notify": "Benachrichtigung",
+      "rep.sent": "gesendet",
+      "rep.sentAll": "an {n} von {total} Kanälen gesendet",
+      "rep.sentSome": "an {n} von {total} gesendet, {failed} gescheitert",
+      "rep.noChannel": "kein Kanal eingerichtet",
       "err.phrase": "Das ist keine Festungs-Phrase. Schau dir jedes Wort noch einmal an.",
       "err.member": "TowerTorch ist schon in einer Festung."
     }
@@ -514,8 +540,17 @@
     return '<div class="tt-mw-block tt-mw-top"><div class="tt-mw-row">' + chip(chipCls(r.outcome), t("o." + r.outcome), true) + "</div>" +
       '<div class="tt-mw-meta"><div><span>' + esc(t("rep.started")) + "</span><b>" + esc(when(r.started)) + "</b></div>" +
       "<div><span>" + esc(t("rep.finished")) + "</span><b>" + esc(r.finished ? hm(new Date(r.finished)) : "") + "</b></div>" +
-      "<div><span>" + esc(t("rep.trigger")) + "</span><b>" + esc(t("trig." + r.trigger)) + "</b></div></div></div>" +
+      "<div><span>" + esc(t("rep.trigger")) + "</span><b>" + esc(t("trig." + r.trigger)) + "</b></div>" +
+      (r.notified ? "<div><span>" + esc(t("rep.notify")) + "</span><b>" + esc(delivery(r.notified)) + "</b></div>" : "") + "</div></div>" +
       '<div class="tt-mw-gap">' + r.steps.map(function (s) { return stepRow(s); }).join("") + "</div>";
+  }
+
+  // where the run's notification went, as the report says it
+  function delivery(n) {
+    var failed = n.failed || [], total = n.sent + failed.length;
+    if (!total) return t("rep.noChannel");
+    if (failed.length) return t("rep.sentSome", { n: n.sent, total: total, failed: failed.join(", ") });
+    return total === 1 ? t("rep.sent") : t("rep.sentAll", { n: n.sent, total: total });
   }
 
   function paintWindow() {
@@ -696,6 +731,7 @@
       var el = e.target.closest("[data-act]"); if (!el) return;
       if (el.getAttribute("data-act") === "open") open(el, S.o && S.o.last && !running() ? "report" : null);
       if (el.getAttribute("data-act") === "join") join(el, body.querySelector(".tt-mw-phrase"));
+      if (el.getAttribute("data-act") === "leave") leave(el);
     });
     body.addEventListener("keydown", function (e) {
       var el = e.target;
@@ -715,7 +751,12 @@
     }).join("");
     var html = '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.sched")) + '</span><span class="tt-mw-setval">' + esc(S.plan ? schedText() : "") + "</span></div>" +
       '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.last")) + '</span><span class="tt-mw-setval">' + last + "</span></div>" +
-      '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.fortress")) + '</span><span class="tt-mw-setval">' + (ready.fortress ? '<span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" : "") + apps + "</span></div>";
+      '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.fortress")) + '</span><span class="tt-mw-setval">' + apps + "</span></div>";
+    if (ready.fortress) {
+      html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.leaveRow")) + info(t("set.leaveAbout")) + "</span>" +
+        '<span class="tt-mw-setval"><span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" +
+        '<span class="tt-btn" role="button" tabindex="0" data-act="leave">' + glyph("SignOut") + esc(t("set.leave")) + "</span></span></div>";
+    }
     if (S.o && !ready.fortress) {
       html += '<div class="tt-set-row tt-mw-joinrow"><span class="tt-set-rl">' + esc(t("set.join")) + info(t("set.joinInfo")) + "</span>" +
         '<span class="tt-mw-setval"><input class="tt-in tt-mw-phrase" type="password" autocomplete="off" spellcheck="false" placeholder="' + esc(t("set.joinPh")) + '" aria-label="' + esc(t("set.join")) + '">' +
@@ -738,6 +779,22 @@
     }, function (e) {
       deny(field, t(e.code === "member" ? "err.member" : e.code === "phrase" ? "err.phrase" : "err.load", { e: e.message }));
     });
+  }
+
+  // Leaving asks first and is no red button: the window says what ends, and the
+  // phrase brings TowerTorch back.
+  function leave(btn) {
+    var go = function () {
+      api("POST", "fortressleave", {}).then(function () {
+        toast(t("set.left"), "ok");
+        return load();
+      }, function (e) {
+        deny(btn, e.code === "notMember" ? t("err.notMember") : t("err.load", { e: e.message }));
+        load();
+      });
+    };
+    if (theme().ask) theme().ask({ title: t("set.leaveTitle"), text: t("set.leaveBody"), ok: t("set.leave"), cancel: t("set.cancel"), glyph: "SignOut", cancelGlyph: "Close", opener: btn, onOk: go });
+    else go();
   }
 
   function paint() {

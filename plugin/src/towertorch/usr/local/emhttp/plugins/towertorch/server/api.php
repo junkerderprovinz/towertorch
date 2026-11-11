@@ -16,12 +16,13 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // read. The engine answers them only on its socket, so this signed-in proxy is
 // the one way in from a browser.
 // maintenance/maintenancerun/maintenancestop: the maintenance plan and its run; fortressjoin
-// takes the fortress phrase, which the engine turns into its keys and never keeps.
+// takes the fortress phrase, which the engine turns into its keys and never keeps, and
+// fortressleave takes TowerTorch out again.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
           'fortressstatus' => ['GET'], 'fortresslog' => ['GET'],
-          'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST']];
+          'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST']];
 $route = ['fortressstatus' => 'fortress/v1/status', 'fortresslog' => 'fortress/v1/log',
-          'maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join'];
+          'maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave'];
 
 $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '';
 $method = $_SERVER['REQUEST_METHOD'];
