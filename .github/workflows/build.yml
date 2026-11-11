@@ -11,6 +11,10 @@ on:
       - "LICENSE"
       - "docs/**"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version, X.Y.Z for a release"
+        default: "0.0.0-ci"
 
 permissions:
   contents: read
@@ -28,7 +32,9 @@ jobs:
         run: go test ./...
 
       - name: Package plugin (.txz and sha)
-        run: bash plugin/pkg_build.sh 0.0.0-ci
+        env:
+          VERSION: ${{ inputs.version || '0.0.0-ci' }}
+        run: bash plugin/pkg_build.sh "$VERSION"
 
       - name: Boot smoke
         run: |
