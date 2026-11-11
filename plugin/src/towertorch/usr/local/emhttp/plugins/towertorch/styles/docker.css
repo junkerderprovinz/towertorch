@@ -2159,6 +2159,11 @@ html.tt-ctout-on #displaybox .content fieldset,
 html.tt-ctout-on #displaybox .content fieldset > * { overflow-wrap: anywhere !important; word-break: break-word !important; }
 html.tt-ctout-on #displaybox .content fieldset > p.logLine { margin: 0 !important; }
 html.tt-ctout-on #displaybox .content > p.logLine { text-align: left !important; margin: 0 !important; }   /* log text outside a card stays left-aligned rather than centred on the frame */
+/* A dry run prints the template and the docker command as bare <pre> blocks; overflow-x is hidden
+   above, so a line that does not wrap is cut off at the window's edge. */
+html.tt-ctout-on #displaybox .content > pre {
+  text-align: left !important; white-space: pre-wrap !important; overflow-wrap: anywhere !important;
+}
 /* The status badge: a spinning refresh while the install or recreate streams, a green check when
    it finishes, the same look and timing as the update window's own. docker.js re-homes it like
    that window's loader, into the button row once one exists, where the row's flex places it, or
