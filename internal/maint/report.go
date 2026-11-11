@@ -56,6 +56,7 @@ type StepReport struct {
 	Code     string    `json:"code,omitempty"`
 	Args     []string  `json:"args,omitempty"`
 	Verdict  string    `json:"verdict,omitempty"`
+	Text     string    `json:"text,omitempty"` // Code said in a reader's language, by Localize
 	Items    []Item    `json:"items,omitempty"`
 	Started  time.Time `json:"started,omitzero"`
 	Finished time.Time `json:"finished,omitzero"`

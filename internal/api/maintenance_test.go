@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/junkerderprovinz/towertorch/internal/fortress"
 	"github.com/junkerderprovinz/towertorch/internal/maint"
 )
 
@@ -104,5 +105,41 @@ func TestWithoutAnEngineThereIsNoMaintenanceRoute(t *testing.T) {
 	s := &Server{Store: &memStore{}}
 	if rec := call(s, http.MethodGet, "/api/maintenance", ""); rec.Code != http.StatusNotFound {
 		t.Errorf("code = %d", rec.Code)
+	}
+}
+
+type fakeDoor struct {
+	words string
+	err   error
+}
+
+func (d *fakeDoor) Enter(words string) error {
+	d.words = words
+	return d.err
+}
+
+func TestThePhraseJoinsTheFortress(t *testing.T) {
+	d := &fakeDoor{}
+	s := &Server{Store: &memStore{}, Door: d}
+	rec := call(s, http.MethodPost, "/api/fortress/join", `{"phrase":"legal winner thank year wave sausage worth useful legal winner thank yellow"}`)
+	if rec.Code != http.StatusOK || !strings.HasPrefix(d.words, "legal winner") {
+		t.Errorf("join = %d %s, words %q", rec.Code, rec.Body, d.words)
+	}
+}
+
+func TestAJoinThatFailsSaysWhyWithACode(t *testing.T) {
+	for _, c := range []struct {
+		err  error
+		code int
+		body string
+	}{
+		{fortress.ErrPhrase, http.StatusBadRequest, `"error":"phrase"`},
+		{fortress.ErrMember, http.StatusConflict, `"error":"member"`},
+	} {
+		s := &Server{Store: &memStore{}, Door: &fakeDoor{err: c.err}}
+		rec := call(s, http.MethodPost, "/api/fortress/join", `{"phrase":"x"}`)
+		if rec.Code != c.code || !strings.Contains(rec.Body.String(), c.body) {
+			t.Errorf("%v: %d %s", c.err, rec.Code, rec.Body)
+		}
 	}
 }

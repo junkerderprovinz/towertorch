@@ -3,6 +3,7 @@ package maint
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"slices"
 	"sort"
@@ -14,8 +15,12 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/model"
 )
 
-// ErrBusy means a run is going already.
-var ErrBusy = errors.New("a maintenance run is going already")
+var (
+	// ErrBusy means a run is going already.
+	ErrBusy = errors.New("a maintenance run is going already")
+	// ErrNoPlan means no valid plan is saved.
+	ErrNoPlan = errors.New("save a maintenance plan first")
+)
 
 // Jobber reaches the apps of the fortress that back up and update.
 type Jobber interface {
@@ -47,8 +52,9 @@ type Notifier interface {
 	Notify(ctx context.Context, subject, desc, importance string)
 }
 
-// Engine runs the maintenance plan kept in Store. Jobs is nil when TowerTorch
-// is in no fortress; Board and Notifier may be nil.
+// Engine runs the maintenance plan kept in Store. Jobs is nil while TowerTorch
+// is in no fortress, SetJobs brings in a fortress joined later; Board and
+// Notifier may be nil.
 type Engine struct {
 	Jobs     Jobber
 	Check    Checker
@@ -60,6 +66,7 @@ type Engine struct {
 	Now      func() time.Time
 
 	mu       sync.Mutex
+	device   string
 	busy     bool
 	stop     bool
 	progress *Progress
@@ -70,19 +77,22 @@ type Engine struct {
 // Overview is what the panel shows: the plan, the run going on, the last
 // report, the next scheduled run and what the fortress offers.
 type Overview struct {
-	Plan    Plan       `json:"plan"`
-	Running *Progress  `json:"running"`
-	Last    *Report    `json:"last"`
-	Next    *time.Time `json:"next"`
-	Ready   Ready      `json:"ready"`
+	Plan       Plan       `json:"plan"`
+	Containers []string   `json:"containers"`
+	Running    *Progress  `json:"running"`
+	Last       *Report    `json:"last"`
+	Next       *time.Time `json:"next"`
+	Ready      Ready      `json:"ready"`
 }
 
-// Ready says which steps have an app to do them.
+// Ready says which steps have an app to do them. Device is this server's
+// name in the fortress.
 type Ready struct {
-	Fortress bool  `json:"fortress"`
-	Backup   Found `json:"backup"`
-	Update   Found `json:"update"`
-	Check    bool  `json:"check"`
+	Fortress bool   `json:"fortress"`
+	Device   string `json:"device,omitempty"`
+	Backup   Found  `json:"backup"`
+	Update   Found  `json:"update"`
+	Check    bool   `json:"check"`
 }
 
 // Found is the app on this server that does a step, or the servers that have
@@ -111,13 +121,21 @@ func (e *Engine) SavePlan(p Plan) error {
 }
 
 // State tells the panel how things stand.
-func (e *Engine) State(_ context.Context) Overview {
+func (e *Engine) State(ctx context.Context) Overview {
 	var o Overview
 	saved, err := e.Store.Load()
 	if err != nil {
 		log.Printf("towertorch: maintenance plan unreadable: %v", err)
 	}
 	o.Plan, o.Last = saved.Plan, saved.Last
+	if e.Docker != nil {
+		if list, err := e.Docker.List(ctx); err == nil {
+			for _, c := range list {
+				o.Containers = append(o.Containers, c.Name)
+			}
+			sort.Strings(o.Containers)
+		}
+	}
 	if next, ok := saved.Plan.Schedule.Next(e.now()); ok {
 		o.Next = &next
 	}
@@ -127,10 +145,10 @@ func (e *Engine) State(_ context.Context) Overview {
 		o.Running = &p
 	}
 	e.mu.Unlock()
-	if e.Jobs != nil {
-		o.Ready.Fortress = true
-		o.Ready.Backup = e.found(BackupAction)
-		o.Ready.Update = e.found(UpdateAction)
+	if jobs, device := e.jobs(); jobs != nil {
+		o.Ready.Fortress, o.Ready.Device = true, device
+		o.Ready.Backup = found(jobs, BackupAction)
+		o.Ready.Update = found(jobs, UpdateAction)
 	}
 	o.Ready.Check = e.Check != nil && e.Check.Installed()
 	return o
@@ -146,8 +164,22 @@ func (e *Engine) NextRun() (time.Time, bool) {
 	return saved.Plan.Schedule.Next(e.now())
 }
 
-func (e *Engine) found(action string) Found {
-	m, err := e.Jobs.Find(action)
+// SetJobs takes the fortress TowerTorch joined as device for the runs to
+// come.
+func (e *Engine) SetJobs(j Jobber, device string) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.Jobs, e.device = j, device
+}
+
+func (e *Engine) jobs() (Jobber, string) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.Jobs, e.device
+}
+
+func found(jobs Jobber, action string) Found {
+	m, err := jobs.Find(action)
 	var no *NoAppError
 	if errors.As(err, &no) {
 		return Found{Elsewhere: no.Elsewhere}
@@ -158,6 +190,9 @@ func (e *Engine) found(action string) Found {
 // Start runs the plan in the background. The run outlives ctx's
 // cancellation, so a request can start it.
 func (e *Engine) Start(ctx context.Context, trigger Trigger) error {
+	if err := e.planned(); err != nil {
+		return err
+	}
 	if err := e.begin(); err != nil {
 		return err
 	}
@@ -172,11 +207,25 @@ func (e *Engine) Start(ctx context.Context, trigger Trigger) error {
 
 // Run runs the plan and returns its report.
 func (e *Engine) Run(ctx context.Context, trigger Trigger) (Report, error) {
+	if err := e.planned(); err != nil {
+		return Report{}, err
+	}
 	if err := e.begin(); err != nil {
 		return Report{}, err
 	}
 	defer e.end()
 	return e.run(ctx, trigger), nil
+}
+
+func (e *Engine) planned() error {
+	saved, err := e.Store.Load()
+	if err != nil {
+		return err
+	}
+	if err := saved.Plan.Validate(); err != nil {
+		return fmt.Errorf("%w: %w", ErrNoPlan, err)
+	}
+	return nil
 }
 
 // Wait returns once the run Start began is over.
@@ -247,7 +296,8 @@ func (e *Engine) run(ctx context.Context, trigger Trigger) Report {
 	}
 	e.save(rep)
 
-	r := runner{e: e, ctx: ctx, plan: plan, started: start}
+	jobs, _ := e.jobs()
+	r := runner{e: e, jobs: jobs, ctx: ctx, plan: plan, started: start}
 	failed, stopped, reboot := false, false, false
 	for i := range rep.Steps {
 		s := &rep.Steps[i]
@@ -324,6 +374,7 @@ func (e *Engine) save(r Report) {
 // runner carries what the steps of one run hand on to each other.
 type runner struct {
 	e        *Engine
+	jobs     Jobber
 	ctx      context.Context
 	plan     Plan
 	started  time.Time
@@ -370,11 +421,11 @@ func (r *runner) containers() ([]string, []string, error) {
 // app finds the member for action, or fills s with why there is none.
 func (r *runner) app(s *StepReport, action string) (Member, bool) {
 	prefix := string(s.Step) + "."
-	if r.e.Jobs == nil {
+	if r.jobs == nil {
 		s.State, s.Code = StateSkipped, prefix+"no_fortress"
 		return Member{}, false
 	}
-	m, err := r.e.Jobs.Find(action)
+	m, err := r.jobs.Find(action)
 	var no *NoAppError
 	switch {
 	case errors.As(err, &no) && len(no.Elsewhere) > 0:
@@ -418,7 +469,7 @@ func (r *runner) backup(s *StepReport) {
 			continue
 		}
 		r.e.at(Progress{Started: r.started, Step: StepBackup, Index: i + 1, Total: len(have), Item: name, BlocksRestart: true})
-		snap, err := r.e.Jobs.Backup(r.ctx, m, name)
+		snap, err := r.jobs.Backup(r.ctx, m, name)
 		if err != nil {
 			it.State, it.Code, it.Detail = StateFailed, "backup.failed", err.Error()
 			failed = append(failed, name)
@@ -467,7 +518,7 @@ func (r *runner) update(s *StepReport) {
 		list = have
 	}
 	r.e.at(Progress{Started: r.started, Step: StepUpdate, BlocksRestart: true})
-	results, err := r.e.Jobs.Update(r.ctx, m, list, r.backedUp)
+	results, err := r.jobs.Update(r.ctx, m, list, r.backedUp)
 	if err != nil {
 		s.State, s.Code, s.Args = StateFailed, "update.failed", []string{err.Error()}
 		return

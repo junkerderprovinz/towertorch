@@ -165,3 +165,18 @@ func Title(p Progress, lang string) string {
 	}
 	return Say(lang, "running."+string(p.Step))
 }
+
+// Localize says each step of the last report in the language of tag.
+func Localize(o *Overview, tag string) {
+	if o.Last == nil {
+		return
+	}
+	last := *o.Last
+	last.Steps = append([]StepReport(nil), last.Steps...)
+	for i := range last.Steps {
+		if s := &last.Steps[i]; s.Code != "" {
+			s.Text = Say(tag, s.Code, s.Args...)
+		}
+	}
+	o.Last = &last
+}

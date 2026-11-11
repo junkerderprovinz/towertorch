@@ -598,3 +598,46 @@ func TestTheStateSaysWhatTheFortressOffers(t *testing.T) {
 		t.Errorf("outside a fortress = %+v", st.Ready)
 	}
 }
+
+func TestJobsJoinedLaterTakePartInTheNextRun(t *testing.T) {
+	r := newRig(t, Plan{Steps: Steps{Backup: true}})
+	r.e.Jobs = nil
+	if st := r.e.State(context.Background()); st.Ready.Fortress {
+		t.Fatal("in a fortress before joining")
+	}
+	r.e.SetJobs(r.jobs, "Tower")
+	st := r.e.State(context.Background())
+	if !st.Ready.Fortress || st.Ready.Device != "Tower" {
+		t.Errorf("ready = %+v", st.Ready)
+	}
+	if b := step(r.run(t), StepBackup); b.State != StateDone {
+		t.Errorf("backup = %+v", b)
+	}
+}
+
+func TestARunNeedsASavedPlan(t *testing.T) {
+	r := newRig(t, Plan{Steps: all})
+	r.e.Store = &File{Path: filepath.Join(t.TempDir(), "maintenance.json")}
+	if _, err := r.e.Run(context.Background(), TriggerManual); !errors.Is(err, ErrNoPlan) {
+		t.Errorf("err = %v", err)
+	}
+	if err := r.e.Start(context.Background(), TriggerManual); !errors.Is(err, ErrNoPlan) {
+		t.Errorf("start: %v", err)
+	}
+}
+
+func TestThePanelSeesTheContainersAndTheStepsInItsLanguage(t *testing.T) {
+	r := newRig(t, Plan{Steps: Steps{Check: true}})
+	r.run(t)
+	o := r.e.State(context.Background())
+	if !slices.Equal(o.Containers, []string{"immich", "mariadb", "nextcloud"}) {
+		t.Errorf("containers = %v", o.Containers)
+	}
+	Localize(&o, "de")
+	if s := step(*o.Last, StepCheck); s.Text != "FireSquire sagt GO." {
+		t.Errorf("text = %q", s.Text)
+	}
+	if s := step(*o.Last, StepBackup); s.Text != "Im Plan abgeschaltet." {
+		t.Errorf("text = %q", s.Text)
+	}
+}
