@@ -151,6 +151,8 @@
       "set.left": "TowerTorch has left the fortress.",
       "set.removedRow": "Taken out",
       "set.removed": "Another member of the fortress took {server} out of it. The plan runs without backups and updates until you join again with your phrase below.",
+      "set.changedRow": "New phrase",
+      "set.changed": "Your fortress has a new phrase that TowerTorch couldn't follow on its own. Enter the new words below and it stays the same member. Until then the plan runs without backups and updates.",
       "err.notMember": "TowerTorch isn't in a fortress.",
       "rep.notify": "Notification",
       "rep.sent": "sent",
@@ -298,6 +300,8 @@
       "set.left": "TowerTorch hat die Festung verlassen.",
       "set.removedRow": "Herausgenommen",
       "set.removed": "Ein anderes Mitglied der Festung hat {server} herausgenommen. Bis du mit deiner Phrase unten wieder beitrittst, läuft der Plan ohne Backups und Updates.",
+      "set.changedRow": "Neue Phrase",
+      "set.changed": "Deine Festung hat eine neue Phrase, der TowerTorch nicht von selbst folgen konnte. Gib unten die neuen Wörter ein, dann bleibt TowerTorch dasselbe Mitglied wie bisher. Bis dahin läuft der Plan ohne Backups und Updates.",
       "err.notMember": "TowerTorch ist in keiner Festung.",
       "rep.notify": "Benachrichtigung",
       "rep.sent": "gesendet",
@@ -764,7 +768,10 @@
     if (ready.removed && !ready.fortress) {
       html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.removedRow")) + '</span><span class="tt-mw-setval tt-mw-removed">' + esc(t("set.removed", { server: server() })) + "</span></div>";
     }
-    if (S.o && !ready.fortress) {
+    if (ready.fortress && ready.phraseChanged) {
+      html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.changedRow")) + '</span><span class="tt-mw-setval tt-mw-removed">' + esc(t("set.changed")) + "</span></div>";
+    }
+    if (S.o && (!ready.fortress || ready.phraseChanged)) {
       html += '<div class="tt-set-row tt-mw-joinrow"><span class="tt-set-rl">' + esc(t("set.join")) + info(t("set.joinInfo")) + "</span>" +
         '<span class="tt-mw-setval"><input class="tt-in tt-mw-phrase" type="password" autocomplete="off" spellcheck="false" placeholder="' + esc(t("set.joinPh")) + '" aria-label="' + esc(t("set.join")) + '">' +
         '<span class="tt-btn" role="button" tabindex="0" data-act="join">' + esc(t("set.joinBtn")) + "</span></span></div>";

@@ -134,14 +134,14 @@ func serve() {
 		Server:   board.Instance.Name,
 	}
 	board.NextMaintenance = engine.NextRun
-	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name,
-		Changed: func(m *fortress.Membership) {
-			if m == nil {
-				engine.SetJobs(nil, "")
-				return
-			}
-			engine.SetJobs(&maint.Jobs{Fortress: maint.Kit{Fortress: m.Fortress}, Device: m.Device}, m.Device)
-		}}
+	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name}
+	door.Changed = func(m *fortress.Membership) {
+		if m == nil {
+			engine.SetJobs(nil, "")
+			return
+		}
+		engine.SetJobs(&maint.Jobs{Fortress: maint.Kit{Fortress: door}, Device: m.Device}, m.Device)
+	}
 	if err := door.Open(); err != nil {
 		log.Printf("towertorch: not taking part in the fortress: %v", err)
 	}
@@ -173,6 +173,7 @@ func serve() {
 	srv.Kicker = mon
 	go mon.Run(ctx)
 	go engine.Serve(ctx)
+	go door.Watch(ctx)
 
 	log.Print("\n" + bannerArt)
 	// No ANSI colour: rc.towertorch sends this to a flat log file that

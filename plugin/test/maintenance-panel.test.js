@@ -135,6 +135,14 @@ console.log('\nTaken out by another member, the card says so and offers the phra
   ok('the words name this server and the phrase', /\{server\}/.test(T.en['set.removed'] || '') && /\{server\}/.test(T.de['set.removed'] || '') && /phrase/i.test(T.en['set.removed'] || ''));
 }
 
+console.log('\nAfter a phrase change it could not follow, the card asks for the new words');
+{
+  const card = grab('paintCard');
+  ok('the card says so once the engine does', /if \(ready\.fortress && ready\.phraseChanged\)[\s\S]*t\("set\.changed"\)/.test(card));
+  ok('the phrase field follows it while TowerTorch is still in', /if \(S\.o && \(!ready\.fortress \|\| ready\.phraseChanged\)\)/.test(card) && card.indexOf('set.changed"') < card.indexOf('tt-mw-joinrow'));
+  ok('both languages name the new words', /new words/.test(T.en['set.changed'] || '') && /neuen Wörter/.test(T.de['set.changed'] || '') && !!T.en['set.changedRow'] && !!T.de['set.changedRow']);
+}
+
 console.log('\nThe phrase stays out of sight');
 {
   ok('the field hides what is typed and is never spell-checked', /type="password" autocomplete="off" spellcheck="false"/.test(grab('paintCard')));

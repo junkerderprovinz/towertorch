@@ -113,9 +113,12 @@ type fakeDoor struct {
 	err     error
 	left    bool
 	removed bool
+	changed bool
 }
 
 func (d *fakeDoor) Removed() bool { return d.removed }
+
+func (d *fakeDoor) PhraseChanged() bool { return d.changed }
 
 func (d *fakeDoor) Leave() error {
 	d.left = true
@@ -174,5 +177,17 @@ func TestThePanelHearsThatTowerTorchWasTakenOut(t *testing.T) {
 	}
 	if !o.Ready.Removed || o.Ready.Fortress {
 		t.Errorf("ready = %+v, want removed and out of the fortress", o.Ready)
+	}
+}
+
+func TestThePanelHearsThatThePhraseChanged(t *testing.T) {
+	s := &Server{Store: &memStore{}, Maintenance: &fakeMaintenance{}, Door: &fakeDoor{changed: true}}
+	rec := call(s, http.MethodGet, "/api/maintenance", "")
+	var o maint.Overview
+	if err := json.Unmarshal(rec.Body.Bytes(), &o); err != nil {
+		t.Fatal(err)
+	}
+	if !o.Ready.PhraseChanged {
+		t.Errorf("ready = %+v, want the phrase changed", o.Ready)
 	}
 }

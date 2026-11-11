@@ -91,14 +91,16 @@ type Overview struct {
 
 // Ready says which steps have an app to do them. Device is this server's
 // name in the fortress. Removed says another member took TowerTorch out of
-// it, until it joins again.
+// it, until it joins again. PhraseChanged says the fortress has a new phrase
+// TowerTorch could not follow, so the card asks for the new words.
 type Ready struct {
-	Fortress bool   `json:"fortress"`
-	Removed  bool   `json:"removed,omitempty"`
-	Device   string `json:"device,omitempty"`
-	Backup   Found  `json:"backup"`
-	Update   Found  `json:"update"`
-	Check    bool   `json:"check"`
+	Fortress      bool   `json:"fortress"`
+	Removed       bool   `json:"removed,omitempty"`
+	PhraseChanged bool   `json:"phraseChanged,omitempty"`
+	Device        string `json:"device,omitempty"`
+	Backup        Found  `json:"backup"`
+	Update        Found  `json:"update"`
+	Check         bool   `json:"check"`
 }
 
 // Found is the app on this server that does a step, or the servers that have

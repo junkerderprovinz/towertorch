@@ -15,6 +15,7 @@ type Door interface {
 	Enter(words string) error
 	Leave() error
 	Removed() bool
+	PhraseChanged() bool
 }
 
 // Maintenance runs the maintenance plan.
@@ -28,7 +29,7 @@ type Maintenance interface {
 func (s *Server) handleGetMaintenance(w http.ResponseWriter, r *http.Request) {
 	o := s.Maintenance.State(r.Context())
 	if s.Door != nil {
-		o.Ready.Removed = s.Door.Removed()
+		o.Ready.Removed, o.Ready.PhraseChanged = s.Door.Removed(), s.Door.PhraseChanged()
 	}
 	lang := r.URL.Query().Get("lang")
 	if lang == "" {
