@@ -149,6 +149,8 @@
       "set.leaveBody": "The other apps won't see TowerTorch anymore, and every permission with TowerTorch ends. You can come back any time with the phrase.",
       "set.cancel": "Cancel",
       "set.left": "TowerTorch has left the fortress.",
+      "set.removedRow": "Taken out",
+      "set.removed": "Another member of the fortress took {server} out of it. The plan runs without backups and updates until you join again with your phrase below.",
       "err.notMember": "TowerTorch isn't in a fortress.",
       "rep.notify": "Notification",
       "rep.sent": "sent",
@@ -294,6 +296,8 @@
       "set.leaveBody": "Die anderen Apps sehen TowerTorch danach nicht mehr, und alle Erlaubnisse mit TowerTorch enden. Zurück kommst du jederzeit mit der Phrase.",
       "set.cancel": "Abbrechen",
       "set.left": "TowerTorch hat die Festung verlassen.",
+      "set.removedRow": "Herausgenommen",
+      "set.removed": "Ein anderes Mitglied der Festung hat {server} herausgenommen. Bis du mit deiner Phrase unten wieder beitrittst, läuft der Plan ohne Backups und Updates.",
       "err.notMember": "TowerTorch ist in keiner Festung.",
       "rep.notify": "Benachrichtigung",
       "rep.sent": "gesendet",
@@ -756,6 +760,9 @@
       html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.leaveRow")) + info(t("set.leaveAbout")) + "</span>" +
         '<span class="tt-mw-setval"><span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" +
         '<span class="tt-btn" role="button" tabindex="0" data-act="leave">' + glyph("SignOut") + esc(t("set.leave")) + "</span></span></div>";
+    }
+    if (ready.removed && !ready.fortress) {
+      html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.removedRow")) + '</span><span class="tt-mw-setval tt-mw-removed">' + esc(t("set.removed", { server: server() })) + "</span></div>";
     }
     if (S.o && !ready.fortress) {
       html += '<div class="tt-set-row tt-mw-joinrow"><span class="tt-set-rl">' + esc(t("set.join")) + info(t("set.joinInfo")) + "</span>" +

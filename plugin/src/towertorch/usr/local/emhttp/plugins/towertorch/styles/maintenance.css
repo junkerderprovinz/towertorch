@@ -107,6 +107,7 @@ html .tt-mw a.tt-mw-link:hover { background: var(--tt-rb-c, var(--tt-rbaccent, v
 .tt-mw-setval { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; color: #cfcfcf; font-size: var(--tt-text-subline); font-variant-numeric: tabular-nums; }
 .tt-mw-av { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px; border-radius: var(--tt-radius-pill); background: #2e2e2e; color: #cfcfcf; font-size: var(--tt-text-meta); }
 .tt-mw-device { color: #a3a3a3; font-size: var(--tt-text-meta); }
+.tt-mw-removed { max-width: 46ch; text-align: end; }
 html .tt-mw-card .tt-mw-phrase { width: 260px; max-width: 100%; height: 30px; margin: 0; padding: 0 10px; border: none; border-radius: var(--tt-radius-control); background: #2e2e2e !important; color: #e6e6e6 !important; font-size: var(--tt-text-subline); }
 html .tt-mw-card .tt-mw-phrase:focus { background: #383838 !important; outline: none; }
 .tt-mw-foot { display: flex; justify-content: flex-end; margin-top: 12px; }

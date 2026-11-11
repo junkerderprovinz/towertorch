@@ -127,6 +127,14 @@ console.log('\nLeaving the fortress, as GlimStone\'s FortressPairing does');
   ok('the button wears GlimStone\'s sign-out glyph', /glyph\("SignOut"\)/.test(card) && /glyph: "SignOut"/.test(leave));
 }
 
+console.log('\nTaken out by another member, the card says so and offers the phrase');
+{
+  const card = grab('paintCard');
+  ok('the card names it once the engine says so', /if \(ready\.removed && !ready\.fortress\)[\s\S]*t\("set\.removed"/.test(card));
+  ok('the phrase field follows it', card.indexOf('set.removed') > 0 && card.indexOf('set.removed') < card.indexOf('tt-mw-joinrow'));
+  ok('the words name this server and the phrase', /\{server\}/.test(T.en['set.removed'] || '') && /\{server\}/.test(T.de['set.removed'] || '') && /phrase/i.test(T.en['set.removed'] || ''));
+}
+
 console.log('\nThe phrase stays out of sight');
 {
   ok('the field hides what is typed and is never spell-checked', /type="password" autocomplete="off" spellcheck="false"/.test(grab('paintCard')));

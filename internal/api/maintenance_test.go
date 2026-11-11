@@ -109,10 +109,13 @@ func TestWithoutAnEngineThereIsNoMaintenanceRoute(t *testing.T) {
 }
 
 type fakeDoor struct {
-	words string
-	err   error
-	left  bool
+	words   string
+	err     error
+	left    bool
+	removed bool
 }
+
+func (d *fakeDoor) Removed() bool { return d.removed }
 
 func (d *fakeDoor) Leave() error {
 	d.left = true
@@ -159,5 +162,17 @@ func TestLeavingAsksTheDoor(t *testing.T) {
 	s.Door = &fakeDoor{err: fortress.ErrNotMember}
 	if rec := call(s, http.MethodPost, "/api/fortress/leave", ""); rec.Code != http.StatusConflict || !strings.Contains(rec.Body.String(), `"error":"notMember"`) {
 		t.Errorf("leave outside = %d %s", rec.Code, rec.Body)
+	}
+}
+
+func TestThePanelHearsThatTowerTorchWasTakenOut(t *testing.T) {
+	s := &Server{Store: &memStore{}, Maintenance: &fakeMaintenance{}, Door: &fakeDoor{removed: true}}
+	rec := call(s, http.MethodGet, "/api/maintenance", "")
+	var o maint.Overview
+	if err := json.Unmarshal(rec.Body.Bytes(), &o); err != nil {
+		t.Fatal(err)
+	}
+	if !o.Ready.Removed || o.Ready.Fortress {
+		t.Errorf("ready = %+v, want removed and out of the fortress", o.Ready)
 	}
 }

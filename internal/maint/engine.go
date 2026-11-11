@@ -90,9 +90,11 @@ type Overview struct {
 }
 
 // Ready says which steps have an app to do them. Device is this server's
-// name in the fortress.
+// name in the fortress. Removed says another member took TowerTorch out of
+// it, until it joins again.
 type Ready struct {
 	Fortress bool   `json:"fortress"`
+	Removed  bool   `json:"removed,omitempty"`
 	Device   string `json:"device,omitempty"`
 	Backup   Found  `json:"backup"`
 	Update   Found  `json:"update"`

@@ -37,15 +37,19 @@ type Door struct {
 	// has left.
 	Changed func(*Membership)
 
-	mu sync.Mutex
-	m  *Membership
+	mu      sync.Mutex
+	m       *Membership
+	removed bool
+	// gen counts the memberships opened, so a removal that arrives late does
+	// not end one joined after it.
+	gen int
 }
 
 // Open takes part in the fortress kept in Dir, if TowerTorch joined one.
 func (d *Door) Open() error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	m, err := Join(d.Dir, d.App, d.Src)
+	m, err := d.join()
 	if err != nil || m == nil {
 		return err
 	}
@@ -69,10 +73,11 @@ func (d *Door) Enter(words string) error {
 	if err := kitfortress.Join(d.Dir, secret, m); err != nil {
 		return err
 	}
-	in, err := Join(d.Dir, d.App, d.Src)
+	in, err := d.join()
 	if err != nil {
 		return err
 	}
+	d.removed = false
 	d.set(in)
 	return nil
 }
@@ -88,7 +93,40 @@ func (d *Door) Leave() error {
 	}
 	err := d.m.Close()
 	d.set(nil)
+	d.removed = false
 	return errors.Join(err, os.RemoveAll(d.Dir))
+}
+
+// Removed says another member took TowerTorch out of the fortress, until it
+// joins again.
+func (d *Door) Removed() bool {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.removed
+}
+
+func (d *Door) join() (*Membership, error) {
+	d.gen++
+	gen := d.gen
+	return Join(d.Dir, d.App, d.Src, func() { d.removedBy(gen) })
+}
+
+// removedBy forgets the membership once another member took it out: its key
+// is no good anywhere now, and the phrase makes a new one. The kit calls it on
+// a goroutine that closing the membership waits for, so the closing happens
+// on another.
+func (d *Door) removedBy(gen int) {
+	go func() {
+		d.mu.Lock()
+		defer d.mu.Unlock()
+		if d.gen != gen || d.m == nil {
+			return
+		}
+		_ = d.m.Close()
+		d.set(nil)
+		_ = os.RemoveAll(d.Dir)
+		d.removed = true
+	}()
 }
 
 // Close stops taking part and keeps the membership for the next start.

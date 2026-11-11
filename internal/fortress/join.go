@@ -25,8 +25,9 @@ func (m *Membership) Close() error { return m.close() }
 
 // Join takes part in the fortress whose membership the kit's fortress join
 // kept in dir, as app, and answers the other members about TowerTorch from
-// src. It returns nil when nobody joined there.
-func Join(dir string, app status.App, src status.Source) (*Membership, error) {
+// src. removed runs once another member takes TowerTorch out. It returns nil
+// when nobody joined there.
+func Join(dir string, app status.App, src status.Source, removed func()) (*Membership, error) {
 	cfg, err := config(dir, app, src)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
@@ -34,6 +35,7 @@ func Join(dir string, app status.App, src status.Source) (*Membership, error) {
 	if err != nil {
 		return nil, err
 	}
+	cfg.OnRemoved = removed
 	if cfg.LAN != nil {
 		cfg.LAN.Start()
 	}

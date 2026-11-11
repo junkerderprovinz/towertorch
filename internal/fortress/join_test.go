@@ -29,7 +29,7 @@ var towertorch = status.App{ID: "towertorch", Name: "TowerTorch", Version: "1.5.
 
 func TestWithoutAMembershipTowerTorchIsInNoFortress(t *testing.T) {
 	for _, dir := range []string{"", t.TempDir()} {
-		m, err := Join(dir, towertorch, nil)
+		m, err := Join(dir, towertorch, nil, nil)
 		if err != nil || m != nil {
 			t.Fatalf("Join(%q) = %v, %v, want no fortress", dir, m, err)
 		}
@@ -39,7 +39,7 @@ func TestWithoutAMembershipTowerTorchIsInNoFortress(t *testing.T) {
 func TestJoinTakesPartWithTheKeptMembership(t *testing.T) {
 	dir := t.TempDir()
 	joined(t, dir, false)
-	m, err := Join(dir, towertorch, &Board{})
+	m, err := Join(dir, towertorch, &Board{}, nil)
 	if err != nil || m == nil {
 		t.Fatalf("Join = %v, %v", m, err)
 	}
@@ -72,7 +72,7 @@ func TestTowerTorchUsesTheBackupAndTheUpdates(t *testing.T) {
 func TestJoinTakesPartOnThisNetworkAndLeavesIt(t *testing.T) {
 	dir := t.TempDir()
 	joined(t, dir, true)
-	m, err := Join(dir, towertorch, nil)
+	m, err := Join(dir, towertorch, nil, nil)
 	if err != nil || m == nil {
 		t.Fatalf("Join = %v, %v", m, err)
 	}
@@ -86,7 +86,7 @@ func TestJoinRefusesADamagedMembership(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dir, "fortress.json"), []byte(`{"seed":"zz"}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if m, err := Join(dir, towertorch, nil); err == nil {
+	if m, err := Join(dir, towertorch, nil, nil); err == nil {
 		_ = m.Close()
 		t.Fatal("want an error")
 	}
