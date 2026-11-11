@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.4.2">
+  <!ENTITY version   "1.4.3">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,6 +28,13 @@
 </ICON>
 
 <CHANGES>
+### 1.4.3
+**🐛 Fixed**
+- **An icon you set yourself stays.** When a container's icon differs from the one its template ships, TowerTorch keeps it and only colours it instead of swapping in the official logo.
+- **Original logo keeps the picture and colours it.** A container set to Original logo keeps its own icon and is coloured like every other icon. Native is still the way to leave an icon uncoloured.
+- **The dry run fits the update window.** The template and the docker command are set left and wrap their long lines instead of being cut off at the right edge.
+- **Built with Go 1.27.4.** The engine picks up the latest Go security fixes, which close 14 known vulnerabilities in the standard library, among them an HTTP server crash (GO-2026-6859).
+
 ### 1.4.2
 **🐛 Fixed**
 - **A failed start sends a notification.** When a container in the start plan does not come up, at boot or after Start in order, TowerTorch tells you the way you chose on the Notifications card: as an Unraid notification, through your webhook, or both. The message names each container that did not start and why.
