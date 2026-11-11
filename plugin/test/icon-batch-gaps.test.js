@@ -18,7 +18,7 @@ global.fetch = (url, opts) => {
   calls++;
   const names = JSON.parse(decodeURIComponent(String(opts.body).split('data=')[1])).names;
   const out = {};
-  names.filter((n) => n !== '-').forEach((n) => { out[n] = { kind: 'none' }; });
+  names.filter((n) => n !== '-').forEach((n) => { out[n] = n === 'crowdsec' ? { kind: 'color', source: 'dashboard-icons', slug: 'crowdsec', own: true } : { kind: 'none' }; });
   return Promise.resolve({ ok: true, json: () => Promise.resolve(out) });
 };
 
@@ -29,11 +29,12 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
 console.log('\nA name the answer leaves out');
-CI.want(['plex', '-']);
+CI.want(['plex', '-', 'crowdsec']);
 setTimeout(() => {
   ok('is asked for once, not again and again', calls === 1, calls + ' requests');
   ok('settles on the native icon', CI.result('-') && CI.result('-').kind === 'none', JSON.stringify(CI.result('-')));
   ok('leaves the answered names as they came', CI.result('plex') && CI.result('plex').kind === 'none');
+  ok('keeps the engine mark on an icon the user set', CI.result('CrowdSec') && CI.result('CrowdSec').own === true && !CI.result('plex').own, JSON.stringify(CI.result('CrowdSec')));
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 }, 300);

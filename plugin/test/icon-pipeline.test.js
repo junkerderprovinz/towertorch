@@ -159,12 +159,39 @@ console.log('\nThe manual overrides are overrides, not suggestions');
   ok('native leaves the pixels alone whatever the heuristic says', p.treat === 'native', JSON.stringify(p));
   p = CI.plan('native', 'color', 200);
   ok('native still prefers a curated colour icon over a poor shipped one', p.src === 'color', JSON.stringify(p));
-  for (const kind of ['', 'glyph', 'color', 'none']) {
-    for (const spread of [1, 200, null]) {
-      p = CI.plan('original', kind, spread, { bg: 0.2, mk: 0.9, mark: 'light' });
-      ok('original keeps the shipped icon untouched (' + (kind || 'unknown') + ', ' + spread + ')', p.treat === 'native' && p.src === 'native', JSON.stringify(p));
+}
+
+console.log('\nAn original logo keeps its own picture and is coloured like every other icon');
+{
+  const tile = { bg: 0.2, mk: 0.9, mark: 'light' };
+  for (const global of ['auto', 'native', 'flat', 'tint']) {
+    reset();
+    localStorage.setItem('tt.iconmode', global);
+    for (const kind of ['', 'glyph', 'color', 'none']) {
+      for (const spread of [1, 200, null]) {
+        for (const t of [null, tile]) {
+          const p = CI.plan('original', kind, spread, t), same = CI.plan(global, '', spread, t);
+          ok('original under ' + global + ' (' + (kind || 'unknown') + ', ' + spread + (t ? ', tile' : '') + ') keeps its picture and gets the ' + same.treat,
+            p.src === 'native' && p.treat === same.treat, JSON.stringify(p));
+        }
+      }
     }
   }
+  reset();
+  localStorage.setItem('tt.iconmode', 'original');
+  ok('a stored global "original" counts as auto, it is a choice for one item', CI.globalMode() === 'auto' && CI.plan('original', 'glyph', 200).treat === 'tint');
+  reset();
+}
+
+console.log('\nAn icon the user set keeps its picture in every mode');
+{
+  for (const mode of ['auto', 'native', 'flat', 'tint']) {
+    for (const kind of ['glyph', 'color']) {
+      const p = CI.plan(mode, kind, 90, null, true), same = CI.plan(mode, '', 90, null);
+      ok(mode + ' with a ' + kind + ' match leaves the user\'s icon in place', p.src === 'native' && p.treat === same.treat, JSON.stringify(p));
+    }
+  }
+  ok('without the mark the curated icon still wins', CI.plan('auto', 'color', 90, null, false).src === 'color');
 }
 
 console.log('\nGlobal default + per-item pin');

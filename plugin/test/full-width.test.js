@@ -55,7 +55,7 @@ console.log('\nA dropdown or a one-line field stands beside its name');
   }
   ok('the motion setting goes through the shared option row, beside its name', /themingCard\.appendChild\(segRow\(T\("Bewegung", "Motion"\)/.test(settings) && /function segRow\(labelText, opts, cur, onChange, help, pairs\) \{\s*return dropRow\(/.test(settings));
   ok('below 600px a selector with long labels sets its segments two to a row', /@media \(max-width:599px\)\{" \+\s*"#tt-settings \.tt-seg\.tt-set-mode\.tt-set-pairs\{[^}]*--seg-basis:calc\(50% - 1\.5px\)/.test(settings) && /\.tt-set-pairs \.tt-seg-btn\{flex:1 0 var\(--seg-basis, auto\);[^}]*white-space:normal/.test(settings));
-  ok('the Labels and icon colouring selectors take that layout', (settings.match(/\), true\)\);/g) || []).length >= 1 && /completely untouched\."\), true\);/.test(settings));
+  ok('the Labels and icon colouring selectors take that layout', (settings.match(/\), true\)\);/g) || []).length >= 1 && /never swapped either\."\), true\);/.test(settings));
   const flag = /"#tt-settings \.tt-flag-row \.tt-flag-picker\{([^}]*)\}"/.exec(settings);
   ok('the country picker stands at the end of its row, wide enough for a long name', !!flag && /margin-left:auto/.test(flag[1]) && /flex:0 1 300px/.test(flag[1]), flag && flag[1]);
   ok('the flag row names the country beside the picker', /el\("div", "tt-set-row tt-flag-row"\), frl = el\("span", "tt-set-rl", T\("Land", "Country"\)\)/.test(settings) && /fr\.appendChild\(picker\);/.test(settings));

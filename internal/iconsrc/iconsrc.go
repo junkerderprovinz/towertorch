@@ -82,11 +82,13 @@ func (e entry) fresh(now time.Time) bool {
 	}
 }
 
-// Result is what Resolve hands back per name.
+// Result is what Resolve hands back per name. Own is set by the API, not by
+// Resolve: it marks a container whose icon its user set, which the browser keeps.
 type Result struct {
 	Kind   string `json:"kind"`
 	Source string `json:"source,omitempty"`
 	Slug   string `json:"slug,omitempty"`
+	Own    bool   `json:"own,omitempty"`
 }
 
 // Resolver owns the cache directory and the background lookup workers.
