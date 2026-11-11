@@ -1641,6 +1641,7 @@
         var hc = document.querySelector(".tt-headctl"); if (hc) hc.remove();
         foldBar(jsa);
         ensureBarToggle(jsa);
+        if (window.TTMaint) window.TTMaint.bar(jsa);
         if (listView) ensureBulkModeBadge(jsa);
         var advGrp = jsa.querySelector(".tt-bar-adv");
         if (advGrp && !advGrp.querySelector(".tt-hgear")) advGrp.appendChild(makeGear("tt-hgear-home"));

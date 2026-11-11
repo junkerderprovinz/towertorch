@@ -628,8 +628,12 @@ func TestARunNeedsASavedPlan(t *testing.T) {
 
 func TestThePanelSeesTheContainersAndTheStepsInItsLanguage(t *testing.T) {
 	r := newRig(t, Plan{Steps: Steps{Check: true}})
+	r.e.Server = "Tower"
 	r.run(t)
 	o := r.e.State(context.Background())
+	if o.Server != "Tower" {
+		t.Errorf("server = %q", o.Server)
+	}
 	if !slices.Equal(o.Containers, []string{"immich", "mariadb", "nextcloud"}) {
 		t.Errorf("containers = %v", o.Containers)
 	}

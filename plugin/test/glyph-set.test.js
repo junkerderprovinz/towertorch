@@ -40,7 +40,7 @@ console.log('\nThe set');
 
 console.log('\nEvery name the scripts ask for is in the set');
 {
-  const files = ['scripts/docker.js', 'scripts/vms.js', 'scripts/header.js', 'scripts/settings.js', 'scripts/shares.js', 'scripts/tt-theme.js', 'scripts/sortreset.js'];
+  const files = ['scripts/docker.js', 'scripts/vms.js', 'scripts/header.js', 'scripts/settings.js', 'scripts/shares.js', 'scripts/tt-theme.js', 'scripts/sortreset.js', 'scripts/maintenance.js'];
   const asked = new Map();
   const patterns = [
     /\b(?:ttGlyph|glyph|ttGlyphEl)\("([A-Za-z]+)"/g,

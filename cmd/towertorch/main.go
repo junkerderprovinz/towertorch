@@ -132,6 +132,7 @@ func serve() {
 		Board:    board,
 		Notifier: notifier,
 		Store:    &maint.File{Path: filepath.Join(dataDir, "maintenance.json")},
+		Server:   board.Instance.Name,
 	}
 	board.NextMaintenance = engine.NextRun
 	var member atomic.Pointer[fortress.Membership]

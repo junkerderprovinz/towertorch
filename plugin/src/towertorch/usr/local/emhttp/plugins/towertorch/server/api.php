@@ -15,9 +15,13 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // fortressstatus/fortresslog: the status report and log the apps of a fortress
 // read. The engine answers them only on its socket, so this signed-in proxy is
 // the one way in from a browser.
+// maintenance/maintenancerun/maintenancestop: the maintenance plan and its run; fortressjoin
+// takes the fortress phrase, which the engine turns into its keys and never keeps.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
-          'fortressstatus' => ['GET'], 'fortresslog' => ['GET']];
-$route = ['fortressstatus' => 'fortress/v1/status', 'fortresslog' => 'fortress/v1/log'];
+          'fortressstatus' => ['GET'], 'fortresslog' => ['GET'],
+          'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST']];
+$route = ['fortressstatus' => 'fortress/v1/status', 'fortresslog' => 'fortress/v1/log',
+          'maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join'];
 
 $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '';
 $method = $_SERVER['REQUEST_METHOD'];
@@ -33,7 +37,7 @@ if (!isset($allow[$path]) || !in_array($method, $allow[$path], true)) {
 // Forward only the query params each path explicitly needs (allowlist, like
 // $allow) so no attacker-supplied param ever reaches the engine unfiltered.
 // Each fortress parameter passes only in the shape the engine accepts.
-$qallow = ['limits' => ['name'], 'fortressstatus' => ['lang'], 'fortresslog' => ['lang', 'after', 'limit']];
+$qallow = ['limits' => ['name'], 'fortressstatus' => ['lang'], 'fortresslog' => ['lang', 'after', 'limit'], 'maintenance' => ['lang']];
 $qshape = ['lang' => '/^[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*$/', 'after' => '/^[0-9]{1,20}$/', 'limit' => '/^[0-9]{1,3}$/'];
 $extra = [];
 if (isset($qallow[$path])) {

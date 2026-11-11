@@ -64,6 +64,8 @@ type Engine struct {
 	Notifier Notifier
 	Store    *File
 	Now      func() time.Time
+	// Server is this server's name, for the panel to say.
+	Server string
 
 	mu       sync.Mutex
 	device   string
@@ -77,6 +79,7 @@ type Engine struct {
 // Overview is what the panel shows: the plan, the run going on, the last
 // report, the next scheduled run and what the fortress offers.
 type Overview struct {
+	Server     string     `json:"server"`
 	Plan       Plan       `json:"plan"`
 	Containers []string   `json:"containers"`
 	Running    *Progress  `json:"running"`
@@ -127,7 +130,7 @@ func (e *Engine) State(ctx context.Context) Overview {
 	if err != nil {
 		log.Printf("towertorch: maintenance plan unreadable: %v", err)
 	}
-	o.Plan, o.Last = saved.Plan, saved.Last
+	o.Server, o.Plan, o.Last = e.Server, saved.Plan, saved.Last
 	if e.Docker != nil {
 		if list, err := e.Docker.List(ctx); err == nil {
 			for _, c := range list {

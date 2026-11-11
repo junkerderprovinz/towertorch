@@ -10,7 +10,9 @@ Icon="towertorch.png"
 ?>
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/give.css')?>">
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/maintenance.css')?>">
 <div id="tt-settings" class="tt-root"></div>
 <script defer src="<?autov('/plugins/towertorch/scripts/flags.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/give.js')?>"></script>
+<script defer src="<?autov('/plugins/towertorch/scripts/maintenance.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/settings.js')?>"></script>
