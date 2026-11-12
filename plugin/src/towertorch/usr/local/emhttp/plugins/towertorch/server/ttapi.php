@@ -21,12 +21,14 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // by the engine, passed on as a download.
 // maintenance: the maintenance plan, its run and its last report; fortressjoin takes the
 // fortress phrase, which the engine turns into its keys and never keeps, and fortressleave
-// takes TowerTorch out again. fortressremove takes another member out by its id.
+// takes TowerTorch out again. fortressremove takes another member out by its id. fortress is
+// the state the settings card draws, and fortressmember another member's status and log.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'hostcpu' => ['GET'], 'hostnet' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'],
     'bwstatus' => ['GET'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'uisettings' => ['PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
     'vmdisks' => ['GET'], 'vmdiskresize' => ['POST'], 'icons' => ['POST'], 'iconsvg' => ['GET'], 'bugreport' => ['GET'],
-    'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST'], 'fortressremove' => ['POST']];
-$route = ['maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave', 'fortressremove' => 'fortress/remove'];
+    'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST'], 'fortressremove' => ['POST'],
+    'fortress' => ['GET'], 'fortressmember' => ['GET']];
+$route = ['maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave', 'fortressremove' => 'fortress/remove', 'fortressmember' => 'fortress/member'];
 
 $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '';
 $method = $_SERVER['REQUEST_METHOD'];
@@ -54,8 +56,8 @@ if (!isset($allow[$path]) || !in_array($method, $allow[$path], true)) {
 
 // Forward only the query params each path explicitly needs (allowlist, like
 // $allow) so no attacker-supplied param ever reaches the engine unfiltered.
-$qallow = ['limits' => ['name'], 'bwstatus' => ['name'], 'vmdisks' => ['name'], 'iconsvg' => ['name'], 'maintenance' => ['lang']];
-$qshape = ['lang' => '/^[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*$/'];
+$qallow = ['limits' => ['name'], 'bwstatus' => ['name'], 'vmdisks' => ['name'], 'iconsvg' => ['name'], 'maintenance' => ['lang'], 'fortressmember' => ['id', 'lang']];
+$qshape = ['lang' => '/^[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*$/', 'id' => '/^[a-z0-9-]{1,80}$/'];
 $extra = [];
 if (isset($qallow[$path])) {
     foreach ($qallow[$path] as $k) {

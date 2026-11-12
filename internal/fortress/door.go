@@ -146,6 +146,17 @@ func (d *Door) PhraseChanged() bool {
 	return d.phraseChanged
 }
 
+// Joined says whether TowerTorch is in a fortress, and the device name it
+// joined with.
+func (d *Door) Joined() (string, bool) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.m == nil {
+		return "", false
+	}
+	return d.m.Device, true
+}
+
 // Members lists the other members, none while TowerTorch is out.
 func (d *Door) Members() []kitfortress.Member {
 	f := d.current()
@@ -163,17 +174,28 @@ func (d *Door) Act(ctx context.Context, id, action string, body []byte) ([]byte,
 	if f == nil {
 		return nil, ErrNotMember
 	}
-	out, err := f.Act(ctx, id, action, body)
+	var out []byte
+	err := d.call(ctx, f, id, func(f *kitfortress.Fortress) (err error) {
+		out, err = f.Act(ctx, id, action, body)
+		return err
+	})
+	return out, err
+}
+
+// call runs fn on f, and once more on the fortress under the new keys when
+// member id answered on the phrase f left and TowerTorch could follow.
+func (d *Door) call(ctx context.Context, f *kitfortress.Fortress, id string, fn func(*kitfortress.Fortress) error) error {
+	err := fn(f)
 	var no *kitfortress.Refusal
 	if !errors.As(err, &no) || no.Code != "phrase_changed" {
-		return out, err
+		return err
 	}
 	moved := d.follow(ctx, f, true)
 	if moved == nil {
-		return out, err
+		return err
 	}
 	reach(ctx, moved, id)
-	return moved.Act(ctx, id, action, body)
+	return fn(moved)
 }
 
 // Watch follows a phrase change now and then, so that TowerTorch, which

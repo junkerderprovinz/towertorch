@@ -182,6 +182,8 @@ func (s *Server) Handler() http.Handler {
 		mux.HandleFunc("POST /api/maintenance/stop", s.handleStopMaintenance)
 	}
 	if s.Door != nil {
+		mux.HandleFunc("GET /api/fortress", s.handleGetFortress)
+		mux.HandleFunc("GET /api/fortress/member", s.handleMember)
 		mux.HandleFunc("POST /api/fortress/join", s.handleJoin)
 		mux.HandleFunc("POST /api/fortress/leave", s.handleLeave)
 		mux.HandleFunc("POST /api/fortress/remove", s.handleRemove)
