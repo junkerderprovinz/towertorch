@@ -325,7 +325,7 @@ html.tt-tools-on #displaybox .tt-tgl {
 }
 html.tt-tools-on #displaybox .tt-tgl.tt-tgl-on { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
 html.tt-tools-on #displaybox .tt-tgl .tt-tgl-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--tt-radius-pill); background: #fff; transition: left .15s; }
-html.tt-tools-on #displaybox .tt-tgl.tt-tgl-on .tt-tgl-knob { left: 23px; }
+html.tt-tools-on #displaybox .tt-tgl.tt-tgl-on .tt-tgl-knob { left: 23px; background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
 /* native switch tracks (Docker aktivieren, for one) take the TowerTorch shape and rotate through the
    colour mode via --tt-rb-c */
 html.tt-tools-on #displaybox .switch-button-background {
@@ -342,7 +342,7 @@ html.tt-tools-on #displaybox .switch-button-background {
 html.tt-tools-on #displaybox .switch-button-background .switch-button-button {
   width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.tt-tools-on #displaybox .switch-button-background.checked .switch-button-button { left: 23px !important; }
+html.tt-tools-on #displaybox .switch-button-background.checked .switch-button-button { left: 23px !important; background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
 
 /* The Basic/Advanced view switch sits in the top-right corner of the content with a full-size TowerTorch
    track. The knob's inline left is beaten by an !important rule keyed on .checked, so it snaps to
@@ -362,7 +362,7 @@ html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-background {
 html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-button {
   width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-background.checked .switch-button-button { left: 23px !important; }
+html.tt-tools-on #displaybox dl:has(.advancedview) .switch-button-background.checked .switch-button-button { left: 23px !important; background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
 
 /* links: no native blue / underline on tools pages */
 html.tt-tools-on #displaybox a:not(.button) { color: var(--tt-accent-ink, #FCC419); text-decoration: none; }

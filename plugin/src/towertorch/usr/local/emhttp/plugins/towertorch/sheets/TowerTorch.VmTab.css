@@ -197,7 +197,7 @@ html.tt-vms-on #kvm_list .switch-button-background .switch-button-button {
   border-radius: var(--tt-radius-pill) !important; background: #fff !important; box-shadow: none !important;
   border: none !important; transition: left .15s;
 }
-html.tt-vms-on #kvm_list .switch-button-background.checked .switch-button-button { left: 21px !important; }
+html.tt-vms-on #kvm_list .switch-button-background.checked .switch-button-button { left: 21px !important; background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
 html.tt-vms-on #kvm_list .switch-button-label { display: none !important; }
 
 /* Actions column: Docker's action bar retargeted to #kvm_list. Grey icon buttons that vms.js

@@ -1096,7 +1096,7 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
   border: none !important; transition: left .15s;
 }
 .tt-enh #docker_list .switch-button-background.checked .switch-button-button,
-.ToggleViewMode .switch-button-background.checked .switch-button-button { left: 21px !important; }
+.ToggleViewMode .switch-button-background.checked .switch-button-button { left: 21px !important; background: var(--tt-accent-text, #161616) !important; }
 /* the on/off text goes next to the per-row autostart switch only; the view toggle outside the
    table keeps its label */
 .tt-enh #docker_list .switch-button-label { display: none !important; }
@@ -1115,7 +1115,7 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
   content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
   border-radius: var(--tt-radius-pill); background: #fff; transition: left .15s;   /* capped at half the knob */
 }
-.tt-enh #docker_list input.autostart.tt-noswitch:checked::before { left: 21px; }
+.tt-enh #docker_list input.autostart.tt-noswitch:checked::before { left: 21px; background: var(--tt-accent-text, #161616); }
 /* The native toggle row is hidden from the first paint; collapsing it in JS lets an
    Unraid-styled gear flash in the corner first. */
 .ToggleViewMode { display: none !important; }
@@ -1895,7 +1895,7 @@ html.tt-docker-on.tt-on-addct .switch-button-background .switch-button-button {
   border-radius: var(--tt-radius-pill) !important; background: #fff !important; box-shadow: none !important;   /* capped at half the knob */
   border: none !important; transition: left .15s;
 }
-html.tt-docker-on.tt-on-addct .switch-button-background.checked .switch-button-button { left: 21px !important; }
+html.tt-docker-on.tt-on-addct .switch-button-background.checked .switch-button-button { left: 21px !important; background: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 /* The CPU assignment grid (label.checkbox > input + span.checkmark) picks cores, so each core is
    the round selection mark (GlimStone, "Switches"): a grey disc at rest, filled with the mode
    colour and carrying GlimStone's tick in the fill's ink once picked. */

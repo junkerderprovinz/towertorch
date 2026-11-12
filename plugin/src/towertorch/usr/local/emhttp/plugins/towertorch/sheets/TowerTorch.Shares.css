@@ -742,7 +742,7 @@ html.tt-shares-on.tt-on-main #displaybox .switch-button-background .switch-butto
   width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important;
   border-radius: var(--tt-radius-pill) !important; background: #fff !important; box-shadow: none !important; border: none !important; transition: left .15s;   /* the 9px cap is half the knob */
 }
-html.tt-shares-on.tt-on-main #displaybox .switch-button-background.checked .switch-button-button { left: 21px !important; }
+html.tt-shares-on.tt-on-main #displaybox .switch-button-background.checked .switch-button-button { left: 21px !important; background: var(--tt-rb-ct, var(--tt-shr-accent-text, #161616)) !important; }
 /* The UD containers are inline-block with floated switchButton children, which leaves the label
    high, so the cluster is a centred flex row; the plugin's .show() and .hide() on the twin labels
    still work. */

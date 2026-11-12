@@ -105,6 +105,7 @@ html[data-tt-page="vmform"] #displaybox .switch-button-button {
   width: 14px !important; height: 14px !important; top: 3px !important; border: none !important; box-shadow: none !important;
   background: var(--tt-toggle-knob, #fff) !important; border-radius: var(--tt-radius-pill) !important;
 }
+html[data-tt-page="vmform"] #displaybox .switch-button-background.checked .switch-button-button { background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
 html[data-tt-page="vmform"] #displaybox .switch-button-label { text-transform: none !important; letter-spacing: normal !important; font-size: var(--tt-text-subline); }
 /* The native checkboxes (USB and PCI devices) are switches, drawn on the input so the form still
    reads it. */

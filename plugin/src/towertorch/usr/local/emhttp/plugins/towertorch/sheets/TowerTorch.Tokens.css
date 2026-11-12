@@ -374,7 +374,8 @@ html.Theme--azure {
   --tt-text-hint:  #5e5e5e;
   /* Unraid's own ink for its header bar, which is dark on white and light on azure */
   --tt-header-ink: var(--header-text-color, #cfcfcf);
-  --tt-toggle-track-off: #cfcfcf;
+  /* 3:1 against a card and against the knob, so a switch that is off still reads as one */
+  --tt-toggle-track-off: #8d8d8d;
   --tt-toggle-knob:      #ffffff;
   --tt-line-solid:  #d0d0d0;
   --tt-badge-neutral: #d8d8d8;      /* light enough for the dark chip text of this theme */

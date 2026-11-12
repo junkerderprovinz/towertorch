@@ -231,6 +231,7 @@ html.tt-dash-on table.dashboard .switch-button-button {
   border: none !important; box-shadow: none !important; border-radius: var(--tt-radius-pill) !important;
   background: var(--tt-toggle-knob, #fff) !important; width: 14px !important; height: 14px !important; top: 3px !important;
 }
+html.tt-dash-on table.dashboard .switch-button-background.checked .switch-button-button { background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; }
 
 /* A server without a model name drops the model block (dashboard.js), and one without a case
    drops Unraid's stand-in drawing. The case picker stays reachable: it comes in, dimmed, while the
