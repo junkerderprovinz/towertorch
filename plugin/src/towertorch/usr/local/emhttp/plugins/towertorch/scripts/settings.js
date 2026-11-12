@@ -187,8 +187,8 @@
       "@keyframes tt-rbtn-sheen{to{left:calc(100% + 32px)}}" +
       "@media (hover:hover) and (prefers-reduced-motion:no-preference){html:not([data-tt-motion=\"off\"]) #tt-settings .tt-rbtn-unit:hover .tt-rbtn-sheen::after{animation:tt-rbtn-sheen .7s linear}}" +
       // Where a row is too narrow for its name and its control, the control moves under the name
-      // and keeps the row's end (GlimStone, "Narrow windows"). A selector or a group of buttons
-      // still wider than the card breaks into even rows rather than pushing the page sideways.
+      // and keeps the row's end (GlimStone, "Narrow windows"). A group of buttons still wider than
+      // the card breaks into rows, while a selector keeps to one row and fitStrip() gives way inside it.
       "@media (max-width:1023px){" +
         "#tt-settings .tt-hero{gap:16px;height:104px;padding:0 20px}" +
         "#tt-settings .tt-hero-mark{inset-inline-end:-36px;width:208px;height:208px}" +
@@ -198,19 +198,19 @@
         "#tt-settings .tt-set-row.tt-set-inline{flex-wrap:wrap;row-gap:8px}" +
         "#tt-settings .tt-set-row.tt-set-inline > :last-child{margin-left:auto;max-width:100%}" +
         "#tt-settings .tt-set-colend{flex-wrap:wrap;justify-content:flex-end;row-gap:8px;min-width:0}" +
-        "#tt-settings .tt-seg.tt-set-mode{display:flex;flex-wrap:wrap;justify-content:flex-end;max-width:100%;border-radius:var(--tt-radius-control)}" +
-        "#tt-settings .tt-set-mode .tt-seg-btn{flex:1 0 auto}" +
+        "#tt-settings .tt-seg.tt-set-mode{display:flex;flex-wrap:nowrap;justify-content:flex-end;max-width:100%;border-radius:var(--tt-radius-control)}" +
+        "#tt-settings .tt-set-mode .tt-seg-btn{flex:1 1 auto;min-width:0}" +
         "#tt-settings .tt-set-fieldrow{flex-wrap:wrap;row-gap:8px}" +
         "#tt-settings .tt-set-fieldrow > .tt-set-pickrow{flex:1 1 100%}" +
         "#tt-settings .tt-set-swatches.tt-fill{flex-wrap:wrap}" +
         "#tt-settings .tt-set-swatches.tt-fill .tt-set-hexin{min-width:90px}" +
       "}" +
-      // A selector with long labels sets its segments two to a row, each half the strip less half
-      // the gap, and a label that does not fit its half wraps instead of being cut off.
-      "@media (max-width:599px){" +
-        "#tt-settings .tt-seg.tt-set-mode.tt-set-pairs{flex:1 1 100%;align-items:stretch;--seg-basis:calc(50% - 1.5px)}" +
-        "#tt-settings .tt-set-pairs .tt-seg-btn{flex:1 0 var(--seg-basis, auto);box-sizing:border-box;min-width:0;white-space:normal;text-align:center}" +
-      "}";
+      // A selector keeps to one row at every width (GlimStone, "The one horizontal selector").
+      // Where its labels do not fit, every segment that has a glyph shows it alone, and a strip
+      // without glyphs cuts its labels short. Either way the whole label stays the segment's
+      // accessible name and its bubble.
+      "#tt-settings .tt-set-mode.tt-seg-glyphs .tt-seg-btn > span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}" +
+      "#tt-settings .tt-set-mode.tt-seg-cut .tt-seg-btn > span{min-width:0;overflow:hidden;text-overflow:ellipsis}";
     document.head.appendChild(st);
   })();
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
@@ -582,10 +582,10 @@
   }
   // GlimStone's horizontal selector in its well styling, compact at the end of its row. An option
   // is [value, label, glyph, unavailable]. The arrows move the choice and the focus with it, as in
-  // a radio group; an unavailable choice stays in view and refuses the move. A selector whose labels
-  // run long takes pairs, and sets its segments two to a row on a phone.
-  function modeSelector(opts, cur, onPick, pairs) {
-    var box = el("div", "tt-seg tt-set-mode" + (pairs ? " tt-set-pairs" : "")); box.setAttribute("role", "radiogroup");
+  // a radio group, and an unavailable choice stays in view and refuses the move. It keeps to one
+  // row at every width, and fitStrip() decides how its segments give way.
+  function modeSelector(opts, cur, onPick) {
+    var box = el("div", "tt-seg tt-set-mode"); box.setAttribute("role", "radiogroup");
     var btns = opts.map(function (o) {
       var on = o[0] === cur, b = el("span", "tt-seg-btn" + (on ? " tt-seg-on" : ""));
       if (o[2]) b.appendChild(segGlyph(o[2]));
@@ -609,10 +609,30 @@
       if (opts[to][3]) { if (window.TTTheme && window.TTTheme.deny) window.TTTheme.deny(btns[to]); return; }
       if (to !== at) onPick(opts[to][0]);
     });
+    watchStrip(box);
     return box;
   }
+  // The labels first, then the glyphs alone where every segment has one, then labels cut short.
+  // It measures from the labels each time, so a strip that has room again shows them again.
+  function fitStrip(box) {
+    var segs = Array.prototype.slice.call(box.children);
+    box.classList.remove("tt-seg-glyphs", "tt-seg-cut");
+    segs.forEach(function (b) { b.removeAttribute("data-tip"); });
+    if (box.scrollWidth <= box.clientWidth + 1) return;
+    box.classList.add(segs.every(function (b) { return b.querySelector(".tt-seg-ico"); }) ? "tt-seg-glyphs" : "tt-seg-cut");
+    segs.forEach(function (b) { var l = b.querySelector("span"); if (l) b.setAttribute("data-tip", l.textContent); });
+  }
+  var stripWatch = window.ResizeObserver ? new ResizeObserver(function (entries) {
+    entries.forEach(function (e) { var box = e.target.querySelector(":scope > .tt-set-mode"); if (box) fitStrip(box); });
+  }) : null;
+  // The row around the strip is watched rather than the strip, whose own width changes with the
+  // way it gives way.
+  function watchStrip(box) {
+    if (!stripWatch) return;
+    requestAnimationFrame(function () { if (box.parentNode) stripWatch.observe(box.parentNode); });
+  }
   // The selector for a setting that stays on the page: the pick moves the badge and runs onChange.
-  function segPicker(opts, cur, onChange, pairs) {
+  function segPicker(opts, cur, onChange) {
     var box = modeSelector(opts, cur, function (v) {
       Array.prototype.forEach.call(box.children, function (b, i) {
         var on = opts[i][0] === v;
@@ -621,7 +641,7 @@
       });
       paintToggles();
       onChange(v);
-    }, pairs);
+    });
     return box;
   }
   // The one shape of a setting row: its name and (i) at the start, its control at the end.
@@ -1252,8 +1272,7 @@
         [["off", T("Aus", "Off"), "IconMotionOff"], ["subtle", T("Dezent", "Subtle"), "IconMotionSubtle"], ["wild", T("Wild", "Wild"), "IconMotionWild"]],
         motionLevel(get("tt.anim", "subtle")),
         function (v) { set("tt.anim", v); applyAnim(); },
-        T("Aus: nichts bewegt sich. Dezent: kurze Übergänge und Einblendungen. Wild: kräftigere Effekte, etwa Hauptleisten-Tabs, die beim Überfahren hüpfen. Wenn im System „Bewegung reduzieren“ an ist, gilt das bei jeder Stufe.", "Off: nothing moves. Subtle: short transitions and fades. Wild: stronger effects, such as main-bar tabs that hop on hover. If the system is set to reduce motion, that wins at every level."),
-        true));
+        T("Aus: nichts bewegt sich. Dezent: kurze Übergänge und Einblendungen. Wild: kräftigere Effekte, etwa Hauptleisten-Tabs, die beim Überfahren hüpfen. Wenn im System „Bewegung reduzieren“ an ist, gilt das bei jeder Stufe.", "Off: nothing moves. Subtle: short transitions and fades. Wild: stronger effects, such as main-bar tabs that hop on hover. If the system is set to reduce motion, that wins at every level.")));
     }
     // The section order follows the main menu. header.js persists a drag-reordered menu, and this
     // reads it loosely: either shape is accepted, and anything else falls back to the order below.
@@ -1641,7 +1660,7 @@
     paintExceptions();
     // Density and tile size are each one key every list reads, so they sit here with the other
     // global controls rather than being repeated per tab.
-    if (themingCard) themingCard.appendChild(segRow(T("Dichte", "Density"), [["compact", T("Kompakt", "Compact"), "IconRowCompact"], ["normal", "Normal", "IconRowMedium"], ["airy", T("Luftig", "Airy"), "IconRowComfortable"]], density, function (v) { density = v; set("tt.density", v); }, T("Gilt global für alle Listen: Docker, Start, Freigaben und VMs.", "Applies globally to every list: Docker, Start, Shares and VMs."), true));
+    if (themingCard) themingCard.appendChild(segRow(T("Dichte", "Density"), [["compact", T("Kompakt", "Compact"), "IconRowCompact"], ["normal", "Normal", "IconRowMedium"], ["airy", T("Luftig", "Airy"), "IconRowComfortable"]], density, function (v) { density = v; set("tt.density", v); }, T("Gilt global für alle Listen: Docker, Start, Freigaben und VMs.", "Applies globally to every list: Docker, Start, Shares and VMs.")));
     if (themingCard) themingCard.appendChild(tileSizeRow());
     // The global logos card edits the shared icon keys every adopting tab resolves through eff().
     // It carries the same controls as a per-area card and the same preview: this is where the icon
@@ -1685,7 +1704,7 @@
         get("tt.iconmode", "auto"),
         function (v) { set("tt.iconmode", v); gsync(); },
         T("Ein Logo ist entweder eine einzelne durchgehende Form oder ein kleines mehrfarbiges Bild. Eine Form kann man komplett in deiner Farbe nachzeichnen und sie bleibt erkennbar; ein Bild würde dabei zum Farbklecks, weil Hintergrund und Motiv dieselbe Farbe bekämen. Darum zwei Behandlungen:\n\nAutomatisch (empfohlen): TowerTorch sieht sich jedes Logo an. Formen werden nachgezeichnet, für bekannte Programme wird dafür sogar ein echtes Marken-Logo geholt; Bilder werden nur eingefärbt.\nNatives Icon: nichts einfärben. Für bekannte Programme nimmt TowerTorch dabei ein sauberes Marken-Logo in seinen eigenen Farben, sonst bleibt das Logo, wie es ist.\nNachzeichnen: alles nachzeichnen, auch Bilder.\nTönen: alles nur einfärben, auch Formen.\n\nDie Wahl wirkt, sobald „Icons einfärben“ an ist. Einzelne Container, VMs und Plugins kannst du in ihrem eigenen Fenster abweichend einstellen; diese Einzelwahl gewinnt immer gegen die Einstellung hier. „Original-Logo“ im Startplan-Fenster eines Containers behält sein eigenes Logo und färbt es wie die anderen ein. Ein Icon, das du im Container selbst eingetragen hast, wird ebenfalls nie ersetzt.",
-          "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): TowerTorch looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app TowerTorch still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window keeps its own logo and colours it like the rest. An icon you set yourself in the container is never swapped either."), true);
+          "A logo is either one solid shape or a small multi-colour picture. A shape can be redrawn entirely in your colour and stays recognisable; a picture would turn into a blob, because its background and its mark would end up the same colour. Hence two treatments:\n\nAutomatic (recommended): TowerTorch looks at each logo. Shapes are redrawn, and for a well-known app a real brand logo is fetched to redraw; pictures are only tinted.\nNative icon: no colouring. For a well-known app TowerTorch still uses a clean brand logo in its own colours, otherwise the logo stays as it is.\nRedraw: redraw everything, pictures included.\nTone: only tint everything, shapes included.\n\nThe choice applies once “Tint icons” is on. Individual containers, VMs and plugins can be set differently in their own window; that per-item choice always wins over the setting here. “Original logo” in a container's start plan window keeps its own logo and colours it like the rest. An icon you set yourself in the container is never swapped either."));
       cLI.appendChild(modeRow);
       cLI.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview")));
       // Three preview sections, each with that area's real icons, each running the same pipeline
@@ -2179,7 +2198,7 @@
         LM.indexOf(cur) < 0 ? "textGlyph" : cur,
         function (v) { set("tt.labels.buttons", v); try { window.ttLabelsApply && window.ttLabelsApply(); } catch (e) {} },
         T("Gilt für Unraids eigene Buttons, die TowerTorch als Badge zeichnet. Reaktiv zeigt nur das Symbol und blendet die Wörter ein, sobald du darauf zeigst oder sie mit der Tastatur erreichst. Ein Button ohne passendes Symbol behält seinen Text.",
-          "Applies to Unraid's own buttons that TowerTorch draws as badges. Reactive shows the symbol alone and slides the words in when you point at it or reach it with the keyboard. A button without a matching symbol keeps its text."), true));
+          "Applies to Unraid's own buttons that TowerTorch draws as badges. Reactive shows the symbol alone and slides the words in when you point at it or reach it with the keyboard. A button without a matching symbol keeps its text.")));
       wrapHeader.appendChild(cL);
     })();
     // The server name's look. header.js reads the tt.brand.* keys live and inlines them, so the
@@ -2927,19 +2946,19 @@
       help: T("Ab dieser Temperatur wird ein Wert in der Status-Insel orange, 15 °C darüber rot.", "From this temperature a reading in the status island turns orange, and red 15 °C above it.")
     }, onChange);
   }
-  function segRow(labelText, opts, cur, onChange, help, pairs) {
-    return dropRow(labelText, opts, cur, onChange, help, pairs);
+  function segRow(labelText, opts, cur, onChange, help) {
+    return dropRow(labelText, opts, cur, onChange, help);
   }
   // A setting with up to six choices is GlimStone's horizontal selector at the end of its row,
   // where an option is [value, label, glyph]. A longer list stays a dropdown, a native select
   // dressed as a TowerTorch control, where an option is [value, label, face] and the font list previews
   // each face.
   var SEG_MAX = 6;
-  function dropRow(labelText, opts, cur, onChange, help, pairs) {
+  function dropRow(labelText, opts, cur, onChange, help) {
     if (opts.length <= SEG_MAX) {
       var srow = el("div", "tt-set-row tt-set-inline"), lw = el("span", "tt-set-lblwrap");
       lw.appendChild(el("span", null, labelText)); if (help) lw.appendChild(infoIcon(help));
-      srow.appendChild(lw); srow.appendChild(segPicker(opts, cur, onChange, pairs));
+      srow.appendChild(lw); srow.appendChild(segPicker(opts, cur, onChange));
       return srow;
     }
     var row = el("div", "tt-set-row"); var rl = el("span", "tt-set-rl", labelText); if (help) rl.appendChild(infoIcon(help)); row.appendChild(rl);

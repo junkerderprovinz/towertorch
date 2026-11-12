@@ -81,7 +81,7 @@ console.log('\nOne font and a phone-width page');
   ok('the page takes the theme\'s face', /#tt-settings\{font-family:inherit\}/.test(sheet));
   const narrow = sheet.slice(sheet.indexOf('@media (max-width:1023px){'));
   ok('a row that is too narrow puts its control under its name, at the row\'s end', /\.tt-set-row\.tt-set-inline\{flex-wrap:wrap;row-gap:8px\}/.test(narrow) && /\.tt-set-row\.tt-set-inline > :last-child\{margin-left:auto;max-width:100%\}/.test(narrow));
-  ok('a selector wider than the card breaks into rows', /\.tt-seg\.tt-set-mode\{display:flex;flex-wrap:wrap/.test(narrow) && /\.tt-set-mode \.tt-seg-btn\{flex:1 0 auto\}/.test(narrow));
+  ok('a selector wider than the card keeps to one row and lets its segments shrink', /\.tt-seg\.tt-set-mode\{display:flex;flex-wrap:nowrap/.test(narrow) && /\.tt-set-mode \.tt-seg-btn\{flex:1 1 auto;min-width:0\}/.test(narrow));
   ok('so do the buttons at a row\'s end and the swatches', /\.tt-set-colend\{flex-wrap:wrap/.test(narrow) && /\.tt-set-swatches\.tt-fill\{flex-wrap:wrap\}/.test(narrow) && /\.tt-set-fieldrow\{flex-wrap:wrap/.test(narrow));
   ok('the narrow rules come last, after the selector\'s own grid', sheet.lastIndexOf('display:inline-grid') < sheet.indexOf('@media (max-width:1023px){'));
 }

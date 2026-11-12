@@ -78,7 +78,7 @@ console.log('\nA selector keeps an unavailable choice in view and refuses it');
   const picks = [], denied = [];
   const doc = { activeElement: null };
   const el = (tag, cls, txt) => { const n = new Ctl(); (cls || '').split(' ').filter(Boolean).forEach((c) => n.cls.add(c)); n.textContent = txt || ''; return n; };
-  const make = new Function('el', 'segGlyph', 'document', 'window', grabFn(settings, 'modeSelector') + 'return modeSelector;');
+  const make = new Function('el', 'segGlyph', 'document', 'window', grabFn(settings, 'modeSelector') + '\nfunction watchStrip() {}\n' + 'return modeSelector;');
   const box = make(el, () => new Ctl(), doc, { TTTheme: { deny: (b) => denied.push(b) } })([['list', 'Liste'], ['grid', 'Raster'], ['folder', 'Ordner', null, true]], 'grid', (v) => picks.push(v));
   const [, grid, folder] = box.kids;
   ok('the choice is marked as unavailable', folder.attrs['aria-disabled'] === 'true' && grid.attrs['aria-disabled'] === undefined);

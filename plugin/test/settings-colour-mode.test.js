@@ -90,7 +90,7 @@ console.log('\nThe selector is a radio group the arrows move through');
   }
   const doc = { activeElement: null };
   const picks = [];
-  const box = new Function('el', 'document', grabFn(settings, 'modeSelector') + '\nreturn modeSelector;')((t, c, x) => new N(t, c, x), doc)(
+  const box = new Function('el', 'document', grabFn(settings, 'modeSelector') + '\nfunction watchStrip() {}\n' + '\nreturn modeSelector;')((t, c, x) => new N(t, c, x), doc)(
     [['accent', 'Accent'], ['rainbow', 'Rainbow'], ['flag', 'Flag']], 'rainbow', (m) => picks.push(m));
   ok('it is a radio group', box.attrs.role === 'radiogroup' && box.kids.every((b) => b.attrs.role === 'radio'));
   ok('the chosen mode is the badge and the one tab stop', box.kids[1].cls.has('tt-seg-on') && box.kids[1].attrs.tabindex === '0' && box.kids[0].attrs.tabindex === '-1');
@@ -116,7 +116,7 @@ console.log('\nA setting with a few choices is a horizontal selector, a long lis
   }
   const doc = { activeElement: null, createElement: (t) => ({ tag: t, style: {} }) };
   const mk = (t, c, x) => new N(t, c, x);
-  const make = new Function('el', 'document', 'infoIcon', 'paintToggles', 'ttDsel', 'segGlyph', grabFn(settings, 'modeSelector') + '\n' + grabFn(settings, 'segPicker') + '\nvar SEG_MAX = 6;\n' + grabFn(settings, 'dropRow') + '\nreturn dropRow;')(mk, doc, () => mk('span', 'tt-info'), () => {}, () => mk('span', 'tt-dsel'), (g) => mk('svg', 'tt-seg-ico', g));
+  const make = new Function('el', 'document', 'infoIcon', 'paintToggles', 'ttDsel', 'segGlyph', grabFn(settings, 'modeSelector') + '\nfunction watchStrip() {}\n' + '\n' + grabFn(settings, 'segPicker') + '\nvar SEG_MAX = 6;\n' + grabFn(settings, 'dropRow') + '\nreturn dropRow;')(mk, doc, () => mk('span', 'tt-info'), () => {}, () => mk('span', 'tt-dsel'), (g) => mk('svg', 'tt-seg-ico', g));
   const got = [];
   const row = make('Form', [['round', 'Rund'], ['soft', 'Weich'], ['square', 'Eckig']], 'soft', (v) => got.push(v));
   const seg = row.kids[1];
