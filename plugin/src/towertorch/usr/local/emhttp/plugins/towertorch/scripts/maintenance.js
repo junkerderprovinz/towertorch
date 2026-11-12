@@ -164,8 +164,7 @@
       "set.removedBody": "{device} is out. As long as the phrase stays the same, the way back in is still open.",
       "set.later": "Later",
       "set.removedNote": "Removed: {devices}. Change the phrase to close the way back in.",
-      "set.changePhrase": "Change phrase",
-      "set.changeIn": "{app} opened in a new tab. Change the phrase there, and TowerTorch follows on its own.",
+      "set.changeIn": "You change the phrase in {apps}.",
       "set.changeNone": "TowerTorch never keeps the phrase. Change it in an app that does, such as BombVault, and TowerTorch follows on its own.",
       "err.noMember": "That app isn't in the fortress anymore.",
       "rep.notify": "Notification",
@@ -327,8 +326,7 @@
       "set.removedBody": "{device} ist draußen. Solange die Phrase gleich bleibt, steht der Weg zurück aber noch offen.",
       "set.later": "Später",
       "set.removedNote": "Herausgenommen: {devices}. Ändere die Phrase, dann ist der Weg zurück zu.",
-      "set.changePhrase": "Phrase ändern",
-      "set.changeIn": "{app} ist in einem neuen Tab offen. Ändere die Phrase dort, TowerTorch zieht von selbst nach.",
+      "set.changeIn": "Die Phrase änderst du in {apps}.",
       "set.changeNone": "TowerTorch behält die Phrase nie. Ändere sie in einer App, die sie behält, etwa BombVault. TowerTorch zieht dann von selbst nach.",
       "err.noMember": "Diese App ist nicht mehr in der Festung.",
       "rep.notify": "Benachrichtigung",
@@ -769,7 +767,6 @@
       if (el.getAttribute("data-act") === "join") join(el, body.querySelector(".tt-mw-phrase"));
       if (el.getAttribute("data-act") === "leave") leave(el);
       if (el.getAttribute("data-act") === "remove") removeMember(el, el.getAttribute("data-id"));
-      if (el.getAttribute("data-act") === "change") changePhrase();
     });
     body.addEventListener("keydown", function (e) {
       var el = e.target;
@@ -796,8 +793,8 @@
       var leaveVal = '<span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" +
         '<span class="tt-btn" role="button" tabindex="0" data-act="leave">' + glyph("SignOut") + esc(t("set.leave")) + "</span>";
       // The reminder is a second line of this row's value, so it starts where the device does.
-      var note = removed.length ? '<span class="tt-mw-removednote" role="status"><span class="tt-mw-removed">' + esc(t("set.removedNote", { devices: listOf(removed.map(memberName)) })) + "</span>" +
-        '<span class="tt-btn" role="button" tabindex="0" data-act="change">' + glyph("Key") + esc(t("set.changePhrase")) + "</span></span>" : "";
+      var note = removed.length ? '<span class="tt-mw-removednote" role="status"><span class="tt-mw-removed">' +
+        esc(t("set.removedNote", { devices: listOf(removed.map(memberName)) }) + " " + changeWhere()) + "</span></span>" : "";
       html += head + (note ? '<span class="tt-mw-setval tt-mw-stack"><span class="tt-mw-in">' + leaveVal + "</span>" + note : '<span class="tt-mw-setval">' + leaveVal) + "</span></div>";
       members.forEach(function (m) {
         html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(memberName(m)) + '</span><span class="tt-mw-setval">' +
@@ -852,8 +849,8 @@
   }
 
   function memberName(m) { return m.name ? t("set.memberOn", { app: m.name, device: m.device }) : m.device || ""; }
-  function listOf(names) {
-    try { return new Intl.ListFormat(LANG, { type: "conjunction" }).format(names); } catch (e) { return names.join(", "); }
+  function listOf(names, type) {
+    try { return new Intl.ListFormat(LANG, { type: type || "conjunction" }).format(names); } catch (e) { return names.join(", "); }
   }
 
   // Removing asks first, names app and device and is no red button. Right after, the window
@@ -875,19 +872,23 @@
     else go();
   }
   function offerChange(btn, name) {
-    if (theme().ask) theme().ask({ title: t("set.removedTitle"), text: t("set.removedBody", { device: name }), ok: t("set.changePhrase"), cancel: t("set.later"), glyph: "Key", cancelGlyph: "Hourglass", opener: btn, onOk: changePhrase });
+    if (theme().ask) theme().ask({ title: t("set.removedTitle"), text: t("set.removedBody", { device: name }) + " " + changeWhere(), ok: t("set.later"), glyph: "Hourglass", opener: btn });
   }
   // TowerTorch holds only keys. An app that runs on its own, not as a plugin, keeps the phrase
-  // and changes it.
-  function keeper() {
-    var list = ((S.o && S.o.fortress && S.o.fortress.members) || []).filter(function (m) { return m.kind === "instance" && m.deployment !== "plugin" && safeLink(m.address); });
-    return list.filter(function (m) { return m.online; })[0] || list[0] || null;
+  // and changes it. Those in reach come first, and an app the fortress still knows from an
+  // earlier install is named once.
+  function keepers() {
+    var list = ((S.o && S.o.fortress && S.o.fortress.members) || []).filter(function (m) { return m.kind === "instance" && m.deployment !== "plugin"; });
+    var names = [];
+    list.filter(function (m) { return m.online; }).concat(list.filter(function (m) { return !m.online; })).forEach(function (m) {
+      var n = memberName(m);
+      if (names.indexOf(n) < 0) names.push(n);
+    });
+    return names;
   }
-  function changePhrase() {
-    var k = keeper();
-    if (!k) return toast(t("set.changeNone"));
-    window.open(k.address, "_blank", "noopener");
-    toast(t("set.changeIn", { app: memberName(k) }), "ok");
+  function changeWhere() {
+    var k = keepers();
+    return k.length ? t("set.changeIn", { apps: listOf(k, "disjunction") }) : t("set.changeNone");
   }
 
   function paint() {

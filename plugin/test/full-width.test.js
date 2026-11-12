@@ -91,7 +91,7 @@ console.log('\nA window\'s actions stand at the end of its foot');
   const pbtn = { tag: 'span', classes: ['tt-btn'], inside: ['.tt-pop', '.tt-pop-act'], outside: ['.tt-menu-plain', '.tt-card-actions', '.tt-search'] };
   ok('and its buttons keep their own width', val(win(docker, pbtn, 'flex')) === '0 0 auto', val(win(docker, pbtn, 'flex')));
   const ask = grabFn(fs.readFileSync(path.join(DIR, 'scripts/tt-theme.js'), 'utf8'), 'ask');
-  ok('Close or Cancel comes first and the answer last', /act\.appendChild\(no\); act\.appendChild\(yes\);/.test(ask));
+  ok('Close or Cancel comes first and the answer last', /act\.appendChild\(no\);\s+act\.appendChild\(yes\);/.test(ask));
 }
 
 console.log('\nThe share detail page runs the full width');

@@ -157,7 +157,7 @@ console.log('\nThe phrase stays out of sight');
 console.log('\nThe reminder starts in the value column of the row above');
 {
   const S2 = { plan: null, o: { server: 'Tower', ready: { fortress: true, device: 'Bottich' }, fortress: { members: [], removed: [{ app: 'tollroll', name: 'TollRoll', device: 'Bottich' }] } } };
-  const names = ['t', 'esc', 'info', 'glyph', 'running', 'chip', 'chipCls', 'when', 'server', 'memberName', 'listOf', 'paintCard'];
+  const names = ['t', 'esc', 'info', 'glyph', 'running', 'chip', 'chipCls', 'when', 'server', 'memberName', 'listOf', 'keepers', 'changeWhere', 'paintCard'];
   const p = new Function(...Object.keys(env), 'theme', names.map(grab).join('\n') + '\nreturn {' + names.join(',') + '};')(...Object.values({ ...env, S: S2 }), () => ({}));
   const attrs = {};
   const body = { querySelector: () => null, getAttribute: (k) => attrs[k], setAttribute: (k, v) => { attrs[k] = v; }, innerHTML: '' };
@@ -165,7 +165,7 @@ console.log('\nThe reminder starts in the value column of the row above');
   const rows = body.innerHTML.split('<div class="tt-set-row').slice(1);
   const leaveRow = rows.find((r) => /data-act="leave"/.test(r)) || '';
   ok('no row of its own with an empty label column', !rows.some((r) => /tt-mw-removednote/.test(r) && !/data-act="leave"/.test(r)));
-  ok('it sits in the value of "This app in the fortress", under the device', /tt-mw-device[\s\S]*data-act="leave"[\s\S]*tt-mw-removednote[\s\S]*Removed: TollRoll on Bottich\.[\s\S]*data-act="change"/.test(leaveRow), leaveRow);
+  ok('it sits in the value of "This app in the fortress", under the device', /tt-mw-device[\s\S]*data-act="leave"[\s\S]*tt-mw-removednote[\s\S]*Removed: TollRoll on Bottich\./.test(leaveRow) && leaveRow.includes(T.en['set.changeNone']) && !/data-act="change"/.test(leaveRow), leaveRow);
   const css = read('styles/maintenance.css');
   ok('the value stacks its lines from the left', /\.tt-mw-stack \{[^}]*flex-direction: column[^}]*align-items: flex-start/.test(css));
   ok('the text reads from the left with the button right after it, wrapping on a phone', /\.tt-mw-removednote \{[^}]*flex-wrap: wrap/.test(css) && /\.tt-mw-removednote \.tt-mw-removed \{[^}]*text-align: start/.test(css));
@@ -184,13 +184,17 @@ console.log('\nRemoving another member, then the offer to change the phrase');
   const card = grab('paintCard');
   ok('each other member gets a row with Remove while TowerTorch is in', /if \(ready\.fortress\) \{[\s\S]*members\.forEach[\s\S]*data-act="remove" data-id="/.test(card));
   ok('Remove wears the bin and no red', /glyph\("Trash"\) \+ esc\(t\("set\.remove"\)\)/.test(card) && !/tt-btn-del|danger/.test(card));
-  ok('the reminder names the removed and offers the change', /removed\.length[\s\S]*t\("set\.removedNote", \{ devices: /.test(card) && /data-act="change"/.test(card));
+  ok('the reminder names the removed and where the phrase is changed', /removed\.length[\s\S]*t\("set\.removedNote", \{ devices: [\s\S]*changeWhere\(\)/.test(card) && !/data-act="change"/.test(card));
+  const theme = read('scripts/tt-theme.js');
+  ok('a window with a single answer shows a single button', /if \(o\.cancel != null\) act\.appendChild\(no\)/.test(theme));
 
   const calls = [], asks = [], toasts = [], opened = [];
   const S = { o: { ready: { fortress: true }, fortress: {
     members: [
       { id: 'i-tr', kind: 'viewer', app: 'tollroll', name: 'TollRoll', device: 'Bottich', deployment: 'plugin', address: '', online: true },
       { id: 'i-bv', kind: 'instance', app: 'bombvault', name: 'BombVault', device: 'Bottich', deployment: 'container', address: 'http://192.168.10.10:8484', online: true },
+      { id: 'i-kl', kind: 'instance', app: 'knightloader', name: 'KnightLoader', device: 'Attic', deployment: 'container', online: false },
+      { id: 'i-bv0', kind: 'instance', app: 'bombvault', name: 'BombVault', device: 'Bottich', deployment: 'container', online: false },
     ], removed: [] } } };
   const fake = {
     theme: () => ({ ask: (o) => asks.push(o) }),
@@ -198,8 +202,9 @@ console.log('\nRemoving another member, then the offer to change the phrase');
     toast: (m, k) => toasts.push([m, k]), deny: (el, m) => toasts.push([m, 'error']), load: () => Promise.resolve(),
     window: { open: (u, n, f) => opened.push([u, n, f]) },
   };
-  const names = ['t', 'safeLink', 'memberName', 'keeper', 'removeMember', 'offerChange', 'changePhrase'];
-  const f = new Function(...Object.keys(env), ...Object.keys(fake), names.map(grab).join('\n') + '\nreturn {' + names.join(',') + '};')(...Object.values({ ...env, S }), ...Object.values(fake));
+  const names = ['t', 'memberName', 'listOf', 'keepers', 'changeWhere', 'removeMember', 'offerChange'];
+  const build = (lang) => new Function(...Object.keys(env), ...Object.keys(fake), names.map(grab).join('\n') + '\nreturn {' + names.join(',') + '};')(...Object.values({ ...env, LANG: lang, S }), ...Object.values(fake));
+  const f = build('en');
 
   f.removeMember(null, 'i-tr');
   const q = asks[0] || {};
@@ -210,17 +215,15 @@ console.log('\nRemoving another member, then the offer to change the phrase');
   setTimeout(() => {
     ok('the answer removes that member by its id', calls.length === 1 && calls[0][0] === 'POST' && calls[0][1] === 'fortressremove' && calls[0][2].id === 'i-tr', JSON.stringify(calls));
     const c = asks[1] || {};
-    ok('then the window asks to change the phrase', c.title === 'Change the phrase now?' && c.ok === 'Change phrase' && c.cancel === 'Later' && /TollRoll on Bottich is out/.test(c.text || ''), JSON.stringify(c));
-    if (c.onOk) c.onOk();
-    ok('TowerTorch keeps no phrase, so Change phrase opens an app that does', opened.length === 1 && opened[0][0] === 'http://192.168.10.10:8484' && /noopener/.test(opened[0][2] || ''), JSON.stringify(opened));
-    ok('and says where to change it', toasts.some(([m]) => /BombVault on Bottich/.test(m)), JSON.stringify(toasts));
-    S.o.fortress.members = S.o.fortress.members.filter((m) => m.app !== 'bombvault');
-    toasts.length = 0; opened.length = 0;
-    f.changePhrase();
-    ok('without such an app it says where the phrase changes', opened.length === 0 && toasts.length === 1 && toasts[0][0] === T.en['set.changeNone']);
-    ok('a plugin or a link that is not http(s) keeps no phrase', f.keeper() === null);
+    ok('then the window asks to change the phrase', c.title === 'Change the phrase now?' && /TollRoll on Bottich is out/.test(c.text || ''), JSON.stringify(c));
+    ok('and names the apps and devices where that happens, those in reach first and each once', (c.text || '').endsWith(' You change the phrase in BombVault on Bottich or KnightLoader on Attic.'), c.text);
+    ok('Later is its only answer', c.ok === 'Later' && c.cancel == null && !c.onOk, JSON.stringify(c));
+    ok('nothing opens a member\'s address', opened.length === 0 && !/192\.168/.test(JSON.stringify(asks)), JSON.stringify(opened));
+    ok('in German too', build('de').changeWhere() === 'Die Phrase änderst du in BombVault auf Bottich oder KnightLoader auf Attic.', build('de').changeWhere());
+    S.o.fortress.members = S.o.fortress.members.filter((m) => m.deployment === 'plugin');
+    ok('a plugin keeps no phrase, so then the window says where it changes', f.changeWhere() === T.en['set.changeNone'], f.changeWhere());
     ok('an app without a name is called by its device', f.memberName({ device: 'Attic' }) === 'Attic');
-    for (const k of ['set.remove', 'set.removeTitle', 'set.removeBody', 'set.removedTitle', 'set.removedBody', 'set.later', 'set.removedNote', 'set.changePhrase', 'set.memberOn']) {
+    for (const k of ['set.remove', 'set.removeTitle', 'set.removeBody', 'set.removedTitle', 'set.removedBody', 'set.later', 'set.removedNote', 'set.memberOn']) {
       ok(k + ' matches GlimStone', T.en[k] === glim.en[k] && T.de[k] === glim.de[k], T.en[k] + ' | ' + T.de[k]);
     }
     console.log(fail ? '\nFAIL  ' + fail + ' failed, ' + pass + ' passed' : '\nOK  ' + pass + ' passed');
@@ -230,6 +233,6 @@ console.log('\nRemoving another member, then the offer to change the phrase');
 
 // GlimStone's own words for removing, so every app in the fortress says the same.
 const glim = {
-  en: { 'set.remove': 'Remove', 'set.memberOn': '{app} on {device}', 'set.removeTitle': 'Remove {device}?', 'set.removeBody': "{device} loses its access right away. This can't be undone.", 'set.removedTitle': 'Change the phrase now?', 'set.removedBody': '{device} is out. As long as the phrase stays the same, the way back in is still open.', 'set.later': 'Later', 'set.removedNote': 'Removed: {devices}. Change the phrase to close the way back in.', 'set.changePhrase': 'Change phrase' },
-  de: { 'set.remove': 'Herausnehmen', 'set.memberOn': '{app} auf {device}', 'set.removeTitle': '{device} herausnehmen?', 'set.removeBody': '{device} verliert sofort den Zugang. Das lässt sich nicht rückgängig machen.', 'set.removedTitle': 'Phrase jetzt ändern?', 'set.removedBody': '{device} ist draußen. Solange die Phrase gleich bleibt, steht der Weg zurück aber noch offen.', 'set.later': 'Später', 'set.removedNote': 'Herausgenommen: {devices}. Ändere die Phrase, dann ist der Weg zurück zu.', 'set.changePhrase': 'Phrase ändern' },
+  en: { 'set.remove': 'Remove', 'set.memberOn': '{app} on {device}', 'set.removeTitle': 'Remove {device}?', 'set.removeBody': "{device} loses its access right away. This can't be undone.", 'set.removedTitle': 'Change the phrase now?', 'set.removedBody': '{device} is out. As long as the phrase stays the same, the way back in is still open.', 'set.later': 'Later', 'set.removedNote': 'Removed: {devices}. Change the phrase to close the way back in.' },
+  de: { 'set.remove': 'Herausnehmen', 'set.memberOn': '{app} auf {device}', 'set.removeTitle': '{device} herausnehmen?', 'set.removeBody': '{device} verliert sofort den Zugang. Das lässt sich nicht rückgängig machen.', 'set.removedTitle': 'Phrase jetzt ändern?', 'set.removedBody': '{device} ist draußen. Solange die Phrase gleich bleibt, steht der Weg zurück aber noch offen.', 'set.later': 'Später', 'set.removedNote': 'Herausgenommen: {devices}. Ändere die Phrase, dann ist der Weg zurück zu.' },
 };

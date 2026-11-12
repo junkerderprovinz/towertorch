@@ -1278,7 +1278,8 @@
   // A question in its own window, in place of window.confirm and window.prompt. o.input asks for a
   // name, which Enter takes and an empty one refuses; o.danger marks a deleting answer, which looks
   // like Cancel rather than red and leaves the focus on Cancel, the safe choice. o.onOk gets the
-  // trimmed name. o.glyph is the answer's glyph and o.cancelGlyph the other one's.
+  // trimmed name. o.glyph is the answer's glyph and o.cancelGlyph the other one's. Without
+  // o.cancel the answer stands alone.
   function ask(o) {
     var win = document.createElement("div"); win.className = "tt-win tt-dlg";
     var title = document.createElement("div"); title.className = "tt-win-title"; title.textContent = o.title; win.appendChild(title);
@@ -1296,7 +1297,8 @@
     var act = document.createElement("div"); act.className = "tt-win-act";
     var no = pressable(document.createElement("span")); no.className = "tt-win-btn"; labelled(no, o.cancelGlyph || "Close", o.cancel);
     var yes = pressable(document.createElement("span")); yes.className = "tt-win-btn " + (o.danger ? "tt-win-del" : "tt-win-go"); labelled(yes, o.glyph || (o.danger ? "Trash" : "Confirm"), o.ok);
-    act.appendChild(no); act.appendChild(yes); win.appendChild(act);
+    if (o.cancel != null) act.appendChild(no);
+    act.appendChild(yes); win.appendChild(act);
     document.body.appendChild(win);
     paintWin(win);
     var done = false;

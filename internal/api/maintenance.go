@@ -37,9 +37,8 @@ type fortressView struct {
 	Removed []fortress.Removal `json:"removed"`
 }
 
-// memberView is another member as the card names it. Deployment and Address
-// let the card find an app that keeps the phrase, since TowerTorch keeps
-// none.
+// memberView is another member as the card names it. Kind and Deployment let
+// the card name the apps that keep the phrase, since TowerTorch keeps none.
 type memberView struct {
 	ID         string `json:"id"`
 	Kind       string `json:"kind"`
@@ -47,7 +46,6 @@ type memberView struct {
 	Name       string `json:"name"`
 	Device     string `json:"device"`
 	Deployment string `json:"deployment"`
-	Address    string `json:"address"`
 	Online     bool   `json:"online"`
 }
 
@@ -67,7 +65,7 @@ func (s *Server) fortressView() *fortressView {
 		}
 		v.Members = append(v.Members, memberView{
 			ID: m.ID, Kind: string(m.Kind), App: m.App.ID, Name: cmp.Or(m.App.Name, m.App.ID), Device: m.Device,
-			Deployment: m.Deployment, Address: m.Address, Online: m.Online(),
+			Deployment: m.Deployment, Online: m.Online(),
 		})
 	}
 	return v

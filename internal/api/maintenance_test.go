@@ -259,10 +259,13 @@ func TestThePanelListsTheOtherMembersAndThoseRemoved(t *testing.T) {
 		t.Fatalf("members = %s", rec.Body)
 	}
 	m := o.Fortress.Members[0]
-	for k, want := range map[string]any{"id": "i-bv", "app": "bombvault", "name": "BombVault", "device": "Bottich", "kind": "instance", "deployment": "container", "address": "http://192.168.10.10:8484", "online": true} {
+	for k, want := range map[string]any{"id": "i-bv", "app": "bombvault", "name": "BombVault", "device": "Bottich", "kind": "instance", "deployment": "container", "online": true} {
 		if m[k] != want {
 			t.Errorf("member %s = %v, want %v", k, m[k], want)
 		}
+	}
+	if strings.Contains(rec.Body.String(), "address") || strings.Contains(rec.Body.String(), "192.168.10.10") {
+		t.Errorf("the panel gets a member's address: %s", rec.Body)
 	}
 	if len(o.Fortress.Removed) != 1 || o.Fortress.Removed[0].Name != "TollRoll" {
 		t.Errorf("removed = %+v", o.Fortress.Removed)
