@@ -58,7 +58,7 @@ func (f fakeCfg) LoadConfig() (model.Config, error) { return f.c, nil }
 
 type fakeNotifier struct{ n []string }
 
-func (f *fakeNotifier) Notify(_ context.Context, _ model.Notify, subject, _, _ string) {
+func (f *fakeNotifier) Notify(_ context.Context, subject, _, _ string) {
 	f.n = append(f.n, subject)
 }
 
@@ -583,5 +583,54 @@ func TestIdleStopDefaultThreshold(t *testing.T) {
 	m.Tick(context.Background())
 	if countAction(fd.actions, "stop:z") != 1 {
 		t.Fatalf("CPU below the default threshold should idle-stop, got %v", fd.actions)
+	}
+}
+
+type fakeRecorder struct{ events []string }
+
+func (f *fakeRecorder) WatchdogRestarted(name string, exitCode int) {
+	f.events = append(f.events, fmt.Sprintf("restarted %s %d", name, exitCode))
+}
+func (f *fakeRecorder) WatchdogGaveUp(name string, max int) {
+	f.events = append(f.events, fmt.Sprintf("gave up %s %d", name, max))
+}
+func (f *fakeRecorder) WatchdogRestartFailed(name string, err error) {
+	f.events = append(f.events, fmt.Sprintf("failed %s %v", name, err))
+}
+func (f *fakeRecorder) WatchdogRecovered(name string) {
+	f.events = append(f.events, "recovered "+name)
+}
+
+func TestWatchdogTellsTheRecorderWhatHappened(t *testing.T) {
+	fd := &fakeDocker{list: []model.Container{
+		{Name: "crashed", State: "exited", ExitCode: 2},
+		{Name: "sick", State: "running", Health: "unhealthy"},
+		{Name: "fine", State: "running", Health: "healthy"},
+	}}
+	rec := &fakeRecorder{}
+	clock := time.Date(2026, 7, 3, 3, 0, 0, 0, time.Local)
+	m := &Monitor{
+		Docker:   fd,
+		Recorder: rec,
+		Config: fakeCfg{c: model.Config{Watchdogs: []model.Watchdog{
+			{Name: "crashed", Enabled: true, OnExit: true, MaxRestarts: 1},
+			{Name: "sick", Enabled: true, OnUnhealthy: true},
+			{Name: "fine", Enabled: true, OnUnhealthy: true},
+		}}},
+		Now: func() time.Time { return clock },
+	}
+	m.Tick(context.Background())
+	fd.restartErr = errors.New("no such container")
+	m.Tick(context.Background())
+	fd.list = []model.Container{{Name: "crashed", State: "running"}}
+	m.Tick(context.Background())
+
+	want := []string{
+		"restarted crashed 2", "restarted sick 0", "recovered fine",
+		"gave up crashed 1", "failed sick no such container", "recovered fine",
+		"recovered crashed",
+	}
+	if fmt.Sprint(rec.events) != fmt.Sprint(want) {
+		t.Errorf("events\n got %q\nwant %q", rec.events, want)
 	}
 }

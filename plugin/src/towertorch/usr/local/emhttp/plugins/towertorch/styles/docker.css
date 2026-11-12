@@ -1641,7 +1641,7 @@ div.js-actions > * { pointer-events: auto; }
    rest grey and take their mode colour under the pointer, the slot docker.js colorBarButtons()
    stamps in the rainbow. The four run-everything buttons wait hidden behind the menu. */
 div.js-actions input[type=button],
-div.js-actions :is(.tt-bulkmode-badge, .tt-allct) { flex: none !important; background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important; border: none !important; box-shadow: none !important; padding: var(--tt-md-btnpad, 0 14px) !important; font-size: var(--tt-md-fs) !important; height: var(--tt-md-h, 30px) !important; box-sizing: border-box !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important; font-family: inherit !important; cursor: pointer; transition: background-color .12s, color .12s; }
+div.js-actions :is(.tt-bulkmode-badge, .tt-allct, .tt-maintbtn) { flex: none !important; background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important; border: none !important; box-shadow: none !important; padding: var(--tt-md-btnpad, 0 14px) !important; font-size: var(--tt-md-fs) !important; height: var(--tt-md-h, 30px) !important; box-sizing: border-box !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important; font-family: inherit !important; cursor: pointer; transition: background-color .12s, color .12s; }
 div.js-actions input[type=button].tt-bar-primary {
   order: 2; margin-inline-start: 12px !important;
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
@@ -1653,7 +1653,7 @@ div.js-actions :is(input[type=button]:disabled, .tt-allct[aria-disabled="true"])
    for free is spelled out here: a centred single-line text box and the native input margin,
    which together with the bar's flex gap is what sets the buttons apart. gap:0 drops the .tt-b
    flex gap, which would otherwise pad the label. */
-div.js-actions :is(.tt-bulkmode-badge, .tt-allct) {
+div.js-actions :is(.tt-bulkmode-badge, .tt-allct, .tt-maintbtn) {
   display: inline-flex !important; align-items: center !important; justify-content: center !important;
   gap: 0 !important; line-height: normal !important; margin: 10px 12px 10px 0 !important;
   white-space: nowrap; user-select: none; vertical-align: baseline;
@@ -1684,7 +1684,8 @@ div.js-actions .tt-bar-adv .tt-hgear-home:hover { color: var(--tt-accent-ink, #F
 div.js-actions .tt-bar-adv-lbl { color: var(--tt-text-chip, #cfcfcf); font-size: var(--tt-md-fs); font-weight: 600; }
 div.js-actions input[type=button]:hover:not(:disabled),
 div.js-actions .tt-bulkmode-badge:hover,
-div.js-actions .tt-allct:hover:not([aria-disabled="true"]) {
+div.js-actions .tt-allct:hover:not([aria-disabled="true"]),
+div.js-actions .tt-maintbtn:hover {
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
   color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important;
 }
@@ -1692,7 +1693,7 @@ div.js-actions input[type=button].tt-bar-primary:hover:not(:disabled) { backgrou
 /* Every button in the bar shows focus with the halo, the natives included, since TowerTorch draws them:
    the bar's own rules clear box-shadow with more weight than the shared halo in Tokens.css, and
    the blanket rule for Unraid's controls would add a brightness step on top. */
-div.js-actions :is(input[type=button], .tt-bulkmode-badge, .tt-allct):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; filter: none; }
+div.js-actions :is(input[type=button], .tt-bulkmode-badge, .tt-allct, .tt-maintbtn):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; filter: none; }
 
 /* ShipLog: where its changelog bubble is on the Docker tab, its buttons and severity pill take the
    TowerTorch look. The .sl-bubble selector matches only once ShipLog has rendered one, so with the plugin
@@ -2557,7 +2558,7 @@ html .ToggleViewMode .switch-button-background .switch-button-button,
 html .tt-enh #docker_list input.autostart.tt-noswitch,
 html .tt-enh #docker_list input.autostart.tt-noswitch::before,
 html div.js-actions input[type=button],
-html div.js-actions .tt-bulkmode-badge, html div.js-actions .tt-allct,
+html div.js-actions .tt-bulkmode-badge, html div.js-actions .tt-allct, html div.js-actions .tt-maintbtn,
 html .tt-cb, html .tt-pop input[type="checkbox"],
 html .tt-set-toggle.tt-set-toggle, html .tt-set-knob.tt-set-knob { border-radius: var(--tt-radius-pill) !important; }
 

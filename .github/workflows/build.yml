@@ -51,7 +51,9 @@ jobs:
           fi
           # The docker socket is bogus, so /api/state answers with a docker_error.
           grep -q docker_error <<< "$(curl -fsS --unix-socket /tmp/tt.sock http://localhost/api/state)"
-          echo "supervisor booted and served /api/health and /api/state"
+          grep -q '"id":"towertorch"' <<< "$(curl -fsS --unix-socket /tmp/tt.sock http://localhost/api/fortress/v1/status)"
+          grep -q '"entries"' <<< "$(curl -fsS --unix-socket /tmp/tt.sock http://localhost/api/fortress/v1/log)"
+          echo "supervisor booted and served /api/health, /api/state and the fortress status"
           kill "$PID" || true
 
       # The runner ships docker, so the caps are set, raised and removed against a

@@ -143,8 +143,10 @@ type Watchdog struct {
 	MaxRestarts int    `json:"max_restarts"` // cap per hour (0 = unlimited)
 }
 
-// Notify controls where alerts go: a failed start from the plan run, and the
-// monitor's watchdog, schedule, idle-stop and bandwidth alerts.
+// Notify is how the settings page sets where alerts go: a failed start from the
+// plan run, and the monitor's watchdog, schedule, idle-stop and bandwidth
+// alerts. The store keeps it as the unraid and webhook channels of notify.json,
+// which the alerts are sent to.
 type Notify struct {
 	Unraid  bool   `json:"unraid"`            // use Unraid's own notification system
 	Webhook string `json:"webhook,omitempty"` // POST a JSON body to this URL

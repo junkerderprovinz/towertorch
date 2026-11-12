@@ -1,0 +1,41 @@
+{
+  "schedules": [
+    {
+      "name": "plex",
+      "action": "restart",
+      "time": "04:30",
+      "days": [
+        1,
+        4
+      ],
+      "enabled": true
+    }
+  ],
+  "watchdogs": [
+    {
+      "name": "nextcloud",
+      "enabled": true,
+      "on_unhealthy": true,
+      "on_exit": true,
+      "max_restarts": 3
+    }
+  ],
+  "bandwidths": [
+    {
+      "name": "qbittorrent",
+      "egress_kbit": 20000,
+      "ingress_kbit": 80000
+    }
+  ],
+  "ui_settings": {
+    "tt.accent": "#e8a33d",
+    "tt.anim": "subtle",
+    "tt.iconadoptgrid": "1",
+    "tt.iconadoptsplit": "1",
+    "tt.styletools": "1"
+  },
+  "notify": {
+    "unraid": true,
+    "webhook": "https://hooks.example.org/towertorch/T0K3N"
+  }
+}

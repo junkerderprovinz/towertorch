@@ -8,4 +8,6 @@ Tag="rocket"
    existing container list in place. Data comes from the same-origin PHP proxy. */
 ?>
 <link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/docker.css')?>">
+<link type="text/css" rel="stylesheet" href="<?autov('/plugins/towertorch/styles/maintenance.css')?>">
+<script defer src="<?autov('/plugins/towertorch/scripts/maintenance.js')?>"></script>
 <script defer src="<?autov('/plugins/towertorch/scripts/docker.js')?>"></script>

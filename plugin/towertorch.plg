@@ -27,6 +27,20 @@
 /usr/local/emhttp/plugins/&slug;/images/&slug;.png
 </ICON>
 
+<!-- Notes for the next version. They move into CHANGES under the version
+     header when the version is set.
+
+**✨ New**
+- **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you set. BombVault takes the backups and ShipLog the updates, FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report, which also says how many of your notification channels got the summary. Open it from the Docker tab's bar or from its card in the settings.
+- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When another member takes TowerTorch out, the card says so and the phrase brings it back.
+- **TowerTorch tells the other apps of your fortress how it is doing.** They can read whether a start in order is running, which containers did not start and why, and which ones the watchdog could not keep up, along with a log of runs and watchdog restarts. TowerTorch answers this only on its local socket and through your Unraid login, never on a network port.
+
+**⚡ Improved**
+- **Your notification settings get a file of their own.** The first start after the update copies the Unraid and webhook settings from the Notifications card to `notify.json` next to the config. The card works as before, and your webhook gets the same JSON.
+- **A webhook that fails is tried again**, up to three times, instead of once. A redirect to another host is no longer followed, since the request can carry secrets, and a notification that could not be sent shows up in TowerTorch's log.
+- Sending a notification no longer holds up the watchdog or a start in order.
+-->
+
 <CHANGES>
 ### 1.4.3
 **🐛 Fixed**

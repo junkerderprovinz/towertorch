@@ -1843,6 +1843,7 @@
     win.addEventListener("input", function () { notify.webhook = win.value.trim(); notifyDirty = true; afterQuiet("notify", function () { saveNotify(document.getElementById("tt-set-webhook")); }); });
     wrow.appendChild(win); c5.appendChild(wrow);
     wrap.appendChild(c5);
+    if (window.TTMaint) wrap.appendChild(window.TTMaint.card(card(window.TTMaint.t("mw.title"), window.TTMaint.t("mw.info"))));
 
     var c6 = card(T("Bandbreite", "Bandwidth"), T("Schnittstelle im Container, auf der die Limits gesetzt werden. Leer heißt automatisch, also die Default-Route des Containers, und ist die Empfehlung. Pro-Container-Limits stellst du im Docker-Tab ein.", "The interface inside the container the limits are applied to. Blank means automatic, the container's default route, which is the recommendation. Per-container limits are set in the Docker tab."));
     var ifrow = el("div", "tt-set-row"), ifl = ifrow.appendChild(el("span", "tt-set-rl", T("Schnittstelle", "Interface")));
