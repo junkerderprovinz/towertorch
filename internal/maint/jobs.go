@@ -28,9 +28,11 @@ const reason = "maintenance"
 
 // Member is an instance of the fortress.
 type Member struct {
-	ID      string
-	App     string
-	Device  string
+	ID     string
+	App    string
+	Device string
+	// Host is the server it runs on, empty for a member that names none.
+	Host    string
 	Online  bool
 	Actions []string
 }
@@ -90,6 +92,10 @@ type Jobs struct {
 	Fortress Fortress
 	// Device is the server TowerTorch runs on, as it joined the fortress.
 	Device string
+	// Host is the server as every app on it names it, whatever each calls
+	// itself. A member that names its host is matched by it, any other by
+	// its device name.
+	Host string
 	// Poll is how often a job is asked about, ten seconds when zero.
 	Poll time.Duration
 	// CallTimeout bounds each call, a minute when zero, so a relay that never
@@ -109,7 +115,7 @@ func (j *Jobs) Find(action string) (Member, error) {
 	for _, m := range j.Fortress.Members() {
 		switch {
 		case !slices.Contains(m.Actions, action):
-		case sameDevice(m.Device, j.Device):
+		case j.here(m):
 			here = append(here, m)
 		default:
 			elsewhere = append(elsewhere, m.Device)
@@ -125,6 +131,13 @@ func (j *Jobs) Find(action string) (Member, error) {
 		}
 	}
 	return here[0], fmt.Errorf("%s on %s is not reachable", here[0].App, here[0].Device)
+}
+
+func (j *Jobs) here(m Member) bool {
+	if m.Host != "" && j.Host != "" {
+		return sameDevice(m.Host, j.Host)
+	}
+	return sameDevice(m.Device, j.Device)
 }
 
 // Backup has m back up container and returns the snapshot once it is done.

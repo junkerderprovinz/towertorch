@@ -33,6 +33,9 @@ type Door struct {
 	App    status.App
 	Src    status.Source
 	Device string
+	// Host is the server as every app on it names it, so the others find
+	// TowerTorch there under any device name.
+	Host string
 	// Relay is "" for the project's relay, "off" or the address of an own one.
 	Relay string
 	// Changed gets the membership whenever it changes, nil once TowerTorch
@@ -256,7 +259,7 @@ func (d *Door) current() *kitfortress.Fortress {
 func (d *Door) join() (*Membership, error) {
 	d.gen++
 	gen := d.gen
-	return Join(d.Dir, d.App, d.Src, func() { d.removedBy(gen) })
+	return Join(d.Dir, d.App, d.Host, d.Src, func() { d.removedBy(gen) })
 }
 
 // removedBy forgets the membership once another member took it out: its key

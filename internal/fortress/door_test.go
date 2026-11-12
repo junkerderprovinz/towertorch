@@ -15,6 +15,7 @@ import (
 	"github.com/junkerderprovinz/parleyport/kit/member"
 	"github.com/junkerderprovinz/parleyport/kit/phrase"
 	"github.com/junkerderprovinz/parleyport/kit/relay"
+	"github.com/junkerderprovinz/parleyport/kit/status"
 
 	"github.com/junkerderprovinz/towertorch/internal/maint"
 )
@@ -39,8 +40,10 @@ func TestThePhraseLetsTowerTorchIn(t *testing.T) {
 		t.Fatalf("membership = %+v", got)
 	}
 	defer func() { _ = got.Close() }()
-	cfg, err := config(dir, towertorch, nil)
-	if err != nil || !slices.Contains(cfg.Uses, maint.UpdateAction) || cfg.Self.Name != "Tower" {
+	app := towertorch
+	app.Icon = testIcon(t)
+	cfg, err := config(dir, app, "tower", nil)
+	if err != nil || !slices.Contains(cfg.Uses, maint.UpdateAction) || cfg.Self.Name != "Tower" || cfg.Host != "tower" || cfg.App.Icon != app.Icon {
 		t.Errorf("kept membership = %+v, %v", cfg, err)
 	}
 }
@@ -198,4 +201,13 @@ func waitFor(t *testing.T, what string, cond func() bool) {
 		time.Sleep(25 * time.Millisecond)
 	}
 	t.Fatalf("timed out waiting for %s", what)
+}
+
+func testIcon(t *testing.T) string {
+	t.Helper()
+	icon, err := status.IconFromSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return icon
 }

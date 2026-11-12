@@ -27,8 +27,8 @@ func (m *Membership) Close() error { return m.close() }
 // kept in dir, as app, and answers the other members about TowerTorch from
 // src. removed runs once another member takes TowerTorch out. It returns nil
 // when nobody joined there.
-func Join(dir string, app status.App, src status.Source, removed func()) (*Membership, error) {
-	cfg, err := config(dir, app, src)
+func Join(dir string, app status.App, host string, src status.Source, removed func()) (*Membership, error) {
+	cfg, err := config(dir, app, host, src)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
 	}
@@ -53,7 +53,7 @@ func Join(dir string, app status.App, src status.Source, removed func()) (*Membe
 	return m, nil
 }
 
-func config(dir string, app status.App, src status.Source) (kitfortress.Config, error) {
+func config(dir string, app status.App, host string, src status.Source) (kitfortress.Config, error) {
 	if dir == "" {
 		return kitfortress.Config{}, fs.ErrNotExist
 	}
@@ -61,7 +61,8 @@ func config(dir string, app status.App, src status.Source) (kitfortress.Config, 
 	if err != nil {
 		return cfg, err
 	}
-	cfg.App = kitfortress.App{ID: app.ID, Name: app.Name, Version: app.Version}
+	cfg.App = kitfortress.App{ID: app.ID, Name: app.Name, Version: app.Version, Icon: app.Icon}
+	cfg.Host = host
 	cfg.Status = src
 	for _, a := range []string{maint.BackupAction, maint.UpdateAction} {
 		if !slices.Contains(cfg.Uses, a) {

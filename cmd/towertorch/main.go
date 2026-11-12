@@ -138,13 +138,14 @@ func serve() {
 		Server:   board.Instance.Name,
 	}
 	board.NextMaintenance = engine.NextRun
-	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name}
+	host, _ := os.Hostname()
+	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name, Host: host}
 	door.Changed = func(m *fortress.Membership) {
 		if m == nil {
 			engine.SetJobs(nil, "")
 			return
 		}
-		engine.SetJobs(&maint.Jobs{Fortress: maint.Kit{Fortress: door}, Device: m.Device}, m.Device)
+		engine.SetJobs(&maint.Jobs{Fortress: maint.Kit{Fortress: door}, Device: m.Device, Host: host}, m.Device)
 	}
 	if err := door.Open(); err != nil {
 		log.Printf("towertorch: not taking part in the fortress: %v", err)
@@ -195,9 +196,16 @@ func reboot() error {
 	return exec.Command("/sbin/reboot").Run()
 }
 
+// logoSVG is the TowerTorch mark the other apps of the fortress show.
+//
+//go:embed logo.svg
+var logoSVG []byte
+
+var appIcon, _ = status.IconFromSVG(logoSVG)
+
 // app names TowerTorch in its fortress status report.
 func app(version string) status.App {
-	a := status.App{ID: "towertorch", Name: "TowerTorch", Version: strings.TrimPrefix(version, "v")}
+	a := status.App{ID: "towertorch", Name: "TowerTorch", Version: strings.TrimPrefix(version, "v"), Icon: appIcon}
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, s := range info.Settings {
 			if s.Key == "vcs.revision" && len(s.Value) >= 7 {

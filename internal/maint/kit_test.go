@@ -24,7 +24,7 @@ func (f *fakeKit) Act(_ context.Context, _, action string, _ []byte) ([]byte, er
 
 func TestTheKitListsInstancesWithTheirApp(t *testing.T) {
 	k := Kit{Fortress: &fakeKit{members: []fortress.Member{
-		{ID: "a", Kind: member.KindInstance, App: fortress.App{ID: "bombvault"}, Device: "Tower", Direct: true, Actions: []string{BackupAction}},
+		{ID: "a", Kind: member.KindInstance, App: fortress.App{ID: "bombvault"}, Device: "My vault", Host: "Tower", Direct: true, Actions: []string{BackupAction}},
 		{ID: "b", Kind: member.KindInstance, App: fortress.App{ID: "shiplog"}, Device: "Tower"},
 		{ID: "c", Kind: member.KindViewer, App: fortress.App{ID: "tollroll"}, Device: "Phone", Relay: true},
 	}}}
@@ -32,7 +32,7 @@ func TestTheKitListsInstancesWithTheirApp(t *testing.T) {
 	if len(got) != 2 {
 		t.Fatalf("members = %+v", got)
 	}
-	if got[0].App != "bombvault" || !got[0].Online || got[0].Actions[0] != BackupAction || got[1].Online {
+	if got[0].App != "bombvault" || got[0].Host != "Tower" || !got[0].Online || got[0].Actions[0] != BackupAction || got[1].Online {
 		t.Errorf("members = %+v", got)
 	}
 }

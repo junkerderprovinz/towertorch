@@ -25,7 +25,7 @@ func (k Kit) Members() []Member {
 	var out []Member
 	for _, m := range k.Fortress.Members() {
 		if m.Kind == member.KindInstance {
-			out = append(out, Member{ID: m.ID, App: m.App.ID, Device: m.Device, Online: m.Online(), Actions: m.Actions})
+			out = append(out, Member{ID: m.ID, App: m.App.ID, Device: m.Device, Host: m.Host, Online: m.Online(), Actions: m.Actions})
 		}
 	}
 	return out

@@ -225,3 +225,23 @@ func TestAFailedUpdateRunSaysWhy(t *testing.T) {
 		t.Errorf("err = %v", err)
 	}
 }
+
+func TestAnAppOnThisServerIsFoundWhateverItIsCalled(t *testing.T) {
+	renamed := bombvault("My vault", true)
+	renamed.Host = "tower.lan"
+	j := newJobs(&fakeFortress{members: []Member{renamed}})
+	j.Host = "Tower"
+	if m, err := j.Find(BackupAction); err != nil || m.ID != renamed.ID {
+		t.Errorf("m = %+v, err = %v; want the app on this server", m, err)
+	}
+}
+
+func TestAnAppOnAnotherServerUnderTheSameNameIsNotFound(t *testing.T) {
+	there := bombvault("Tower", true)
+	there.Host = "Barn"
+	j := newJobs(&fakeFortress{members: []Member{there}})
+	j.Host = "Tower"
+	if _, err := j.Find(BackupAction); !errors.Is(err, ErrNoApp) {
+		t.Errorf("err = %v, want ErrNoApp for an app on another server", err)
+	}
+}
