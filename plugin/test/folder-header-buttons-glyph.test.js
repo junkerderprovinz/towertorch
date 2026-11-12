@@ -60,7 +60,7 @@ console.log('\nEvery folder-header button calls folderActBtn()');
 {
   ok('hide-stopped button: an open eye, a crossed one while stopped containers are hidden', /var hsBtn = folderActBtn\("tt-folder-act" \+ \(hsOn \? " tt-folder-act-on" : ""\), hsOn \? "EyeOff" : "Eye", t\("hideStopped"\)\);/.test(src));
   ok('start, stop and restart all: Play, Stop and Retry through folderActBtn()', /\[\["Play", "bulkStartAll", "start"\], \["Stop", "bulkStopAll", "stop"\], \["Retry", "bulkRestartAll", "restart"\]\]\.forEach\(function \(b\) \{\s*var btn = folderActBtn\("tt-folder-act", b\[0\], t\(b\[1\]\)\);/.test(src));
-  ok('update all button: folderActBtn(..., "Update", t("bulkUpdateAll"))', /var updBtn = folderActBtn\("tt-folder-act", "Update", t\("bulkUpdateAll"\)\);/.test(src));
+  ok('update all button: folderActBtn(..., "Sync", t("bulkUpdateAll"))', /var updBtn = folderActBtn\("tt-folder-act", "Sync", t\("bulkUpdateAll"\)\);/.test(src));
   ok('edit button: folderActBtn(..., "Pencil", t("editFolder"))', /var editBtn = folderActBtn\("tt-folder-act", "Pencil", t\("editFolder"\)\);/.test(src));
   ok('delete button: folderActBtn(..., "Trash", t("deleteFolder"))', /var delBtn = folderActBtn\("tt-folder-act", "Trash", t\("deleteFolder"\)\);/.test(src));
 }

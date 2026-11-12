@@ -48,8 +48,10 @@
     // The Add Share page reads another share's settings in and writes its own out to others.
     Import: ["read", "lesen"],
     Export: ["write", "schreiben"],
-    Update: ["update", "aktualisieren", "aktualisierung", "update all", "alle aktualisieren", "alle plugins aktualisieren",
+    // Checking for updates and updating wear the two arrows; the cloud stays for a section about updates.
+    Sync: ["update", "aktualisieren", "update all", "alle aktualisieren", "alle plugins aktualisieren",
       "check for updates", "nach aktualisierungen suchen"],
+    Update: ["aktualisierung"],
     Retry: ["refresh", "neu laden", "restart", "neustart"],
     Search: ["search", "suche", "suchen", "find", "browse", "durchsuchen", "rescan", "neu prüfen", "erneut scannen"],
     Play: ["start", "starten", "start all", "alle starten", "spin up", "platten anlaufen lassen", "run script"],

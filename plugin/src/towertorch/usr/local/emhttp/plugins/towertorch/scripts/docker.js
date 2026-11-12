@@ -1465,7 +1465,7 @@
     var konsole = de ? "Konsole" : "Console";
     r3.appendChild(term && running ? actBtn("Code", konsole, function () { if (cx.shell) window.openTerminal("docker", name, cx.shell); else window.openTerminal("docker", name); }) : actBtnOff("Code", term ? (de ? "Konsole erst, wenn der Container läuft" : "Console once the container is running") : konsole));
     // Update and remove go through Unraid's own functions, which ask before they act.
-    r3.appendChild(typeof window.updateContainer === "function" ? actBtn("Update", t("updateCt"), function () { window.updateContainer(name); }) : actBtnOff("Update", t("updateCt")));
+    r3.appendChild(typeof window.updateContainer === "function" ? actBtn("Sync", t("updateCt"), function () { window.updateContainer(name); }) : actBtnOff("Sync", t("updateCt")));
     var rmLabel = de ? "Entfernen" : "Remove";
     var rm = typeof window.rmContainer === "function" && cx.id ? actBtn("Trash", rmLabel, function () { window.rmContainer(name, cx.image, cx.id); }) : actBtnOff("Trash", rmLabel);
     rm.classList.add("tt-act-del"); r3.appendChild(rm);
@@ -2117,7 +2117,7 @@
     state.appendChild(dot);
     state.appendChild(el("span", "tt-tile-status", stateLabel(st)));
     if (updateReady(c.name, row) && typeof window.updateContainer === "function") {
-      var up = el("span", "tt-tile-up"); up.setAttribute("data-tip", t("updateCt")); ttLabelled(up, "Update", t("update"));
+      var up = el("span", "tt-tile-up"); up.setAttribute("data-tip", t("updateCt")); ttLabelled(up, "Sync", t("update"));
       up.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); window.updateContainer(c.name); });
       if (window.TTTheme && window.TTTheme.pressable) window.TTTheme.pressable(up);
       state.appendChild(up);
@@ -2296,7 +2296,7 @@
     var de = LANG === "de";
     ttOrgAsk({
       title: de ? names.length + " Container aktualisieren?" : "Update " + names.length + " container" + (names.length === 1 ? "" : "s") + "?",
-      text: names.join(", "), ok: t("updateCt"), glyph: "Update", cancel: t("cancel"), opener: ctl,
+      text: names.join(", "), ok: t("updateCt"), glyph: "Sync", cancel: t("cancel"), opener: ctl,
       onOk: function () { window.openDocker("update_container " + names.map(encodeURIComponent).join("*"), t("bulkUpdateAll"), "", "loadlist"); }
     });
   }
@@ -2580,7 +2580,7 @@
           });
           var updatable = names.filter(function (n) { return updateReady(n, rowsByName[n]); });
           if (updatable.length && typeof window.openDocker === "function") {
-            var updBtn = folderActBtn("tt-folder-act", "Update", t("bulkUpdateAll"));
+            var updBtn = folderActBtn("tt-folder-act", "Sync", t("bulkUpdateAll"));
             updBtn.addEventListener("click", function (ev) { ev.stopPropagation(); ttFolderUpdate(updatable, updBtn); });
             acts.appendChild(updBtn);
           }

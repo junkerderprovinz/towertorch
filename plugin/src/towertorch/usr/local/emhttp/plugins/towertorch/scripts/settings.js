@@ -2427,7 +2427,7 @@
       }).catch(function () { engine.textContent = T("nicht erreichbar", "not reachable"); engine.classList.add("tt-set-verbad"); });
       var crow = el("div", "tt-set-btnrow");
       var notes = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-notes", function () { openReleaseNotes(notes); }), "WhatsNew", T("Versionshinweise", "Release notes"));
-      var chk = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-check", function () { checkUpdates(chk); }), "Update", T("Nach Updates suchen", "Check for updates"));
+      var chk = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-check", function () { checkUpdates(chk); }), "Sync", T("Nach Updates suchen", "Check for updates"));
       crow.appendChild(notes); crow.appendChild(chk); cVer.appendChild(crow);
       wrapInfo.appendChild(cVer);
 
@@ -2642,7 +2642,7 @@
   // release, orange with the newer number, red and shaken when the check fails.
   function checkUpdates(btn) {
     btn.classList.remove("tt-set-chk-ok", "tt-set-chk-new", "tt-set-chk-bad");
-    labelled(btn, "Update", T("Prüfe …", "Checking …"));
+    labelled(btn, "Sync", T("Prüfe …", "Checking …"));
     return fetch(LATEST_API, { headers: { Accept: "application/vnd.github+json" } })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (j) {
