@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.4.3">
+  <!ENTITY version   "1.5.0">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -27,47 +27,43 @@
 /usr/local/emhttp/plugins/&slug;/images/&slug;.png
 </ICON>
 
-<!-- Notes for the next version. They move into CHANGES under the version
-     header when the version is set.
-
-**✨ New**
-- **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you set. BombVault takes the backups and ShipLog the updates, FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report, which also says how many of your notification channels got the summary. Open it from the Docker tab's bar or from its card in the settings.
-- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When another member takes TowerTorch out, the card says so and the phrase brings it back.
-- **TowerTorch tells the other apps of your fortress how it is doing.** They can read whether a start in order is running, which containers did not start and why, and which ones the watchdog could not keep up, along with a log of runs and watchdog restarts. TowerTorch answers this only on its local socket and through your Unraid login, never on a network port.
-
-**⚡ Improved**
-- **Your notification settings get a file of their own.** The first start after the update copies the Unraid and webhook settings from the Notifications card to `notify.json` next to the config. The card works as before, and your webhook gets the same JSON.
-- **A webhook that fails is tried again**, up to three times, instead of once. A redirect to another host is no longer followed, since the request can carry secrets, and a notification that could not be sent shows up in TowerTorch's log.
-- Sending a notification no longer holds up the watchdog or a start in order.
--->
-
 <CHANGES>
-### 1.4.3
-**🐛 Fixed**
-- **An icon you set yourself stays.** When a container's icon differs from the one its template ships, TowerTorch keeps it and only colours it instead of swapping in the official logo.
-- **Original logo keeps the picture and colours it.** A container set to Original logo keeps its own icon and is coloured like every other icon. Native is still the way to leave an icon uncoloured.
-- **The dry run fits the update window.** The template and the docker command are set left and wrap their long lines instead of being cut off at the right edge.
-- **Built with Go 1.27.4.** The engine picks up the latest Go security fixes, which close 14 known vulnerabilities in the standard library, among them an HTTP server crash (GO-2026-6859).
+### 1.5.0
+TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks and restarts your server in one go, and the look moves to GlimStone 4.4.0, true black included. Please update ShipLog to 3.8.0 along with it, so the two share one look and can hand each other the work.
 
-### 1.4.2
-**🐛 Fixed**
-- **A failed start sends a notification.** When a container in the start plan does not come up, at boot or after Start in order, TowerTorch tells you the way you chose on the Notifications card: as an Unraid notification, through your webhook, or both. The message names each container that did not start and why.
-
-### 1.4.1
-TowerTorch's internal settings and styles have new names, and your settings move over on their own. Please update ShipLog to 3.7.3 and FireSquire to 3.1.1 at the same time, so they keep TowerTorch's look.
+**✨ Added**
+- **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you pick. BombVault takes the backups, ShipLog the updates and FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report, which also says how many of your notification channels got the summary. Open it from the Docker tab's bar or from its card in the settings.
+- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When the phrase changes, TowerTorch follows on its own. If it can't, or another member takes it out, the card says so and asks for the words.
+- **TowerTorch tells the other apps of your fortress how it is doing.** They can read whether a start in order is running, which containers did not start and why, and which ones the watchdog could not keep up, along with a log of runs and restarts. It answers only on its local socket and through your Unraid login, never on a network port.
+- **OLED.** A switch under Dark mode puts the dark look on true black for OLED and AMOLED screens. It only works while dark mode is on, says so when you try it on a light theme, and applies to this device only.
+- **A failed start sends a notification.** When a container in the start plan does not come up, at boot or after Start in order, you hear about it the way you chose on the Notifications card. The message names each container and why.
 
 **🎨 Design**
+- **GlimStone 4.4.0.** The Version card on the Info tab names it.
+- **Switches you can read.** A switch that is on draws its knob in the ink of its colour instead of white, which all but vanished on gold. On the light themes a switch that is off is a darker grey, so it no longer melts into the card.
+- **Text on colour always reads.** Every ink TowerTorch works out keeps a contrast of 4.5:1, on a mid-grey badge too. An accent you picked yourself gets a lighter or darker ink for text where it would be too faint.
+- **Toasts are one size.** Each is a card 24rem wide on a whole-pixel line, and a phone shows the newest two across its width.
+- **A selector stays on one row.** Where its labels don't fit, it shows their symbols alone instead of stacking choices two to a row.
+- **The rest trembles while you drag.** Hold a tab, a header chip or a container row and the others tremble as much as your motion setting allows, while the one in your hand keeps still.
+- **Check for updates, Update and Update all wear the two-arrow sync symbol.**
+- **The fortress speaks GlimStone.** An app in the maintenance plan is Connected or Not reachable, and joining and a mistyped phrase use the same words as every other app.
 - **GlimStone arrows on number fields.** The fields in the Docker windows and the VM disk field use them in place of the browser's own.
 
 **⚡ Improved**
-- **A clean move for bandwidth limits.** The update removes the old rules, and the engine applies your limits again at its next check after it starts.
+- **Your notification settings get a file of their own.** The first start after the update copies them from the Notifications card to `notify.json` next to the config. The card works as before, and your webhook gets the same JSON.
+- **A webhook that fails gets three tries** instead of one. A redirect to another host is no longer followed, since the request can carry secrets, and a notification that could not be sent shows up in TowerTorch's log.
+- Sending a notification no longer holds up the watchdog or a start in order.
+- **A clean move for bandwidth limits.** The update removes the old rules, and the engine applies your limits again at its next check.
+- **Built with Go 1.27.4.** The engine picks up the latest Go security fixes, which close 14 known holes in the standard library, among them an HTTP server crash (GO-2026-6859).
+- TowerTorch's internal settings and styles have new names, and your settings move over on their own. If you go back to an older TowerTorch afterwards, it starts with its default settings.
 
 **🐛 Fixed**
-- **An unmountable disk no longer covers the Format button.** On Main, the text, button and checkbox now stack, in both the tiles and the list.
-- **The boot hint stays in its card.** On Main it no longer hangs over the next card in Firefox. Its background is opaque and its text easier to read.
-- **The bell and menu button keep their place** in your saved header order after the update.
-
-If you go back to an older TowerTorch after this update, it starts with its default settings.
+- **An icon you set yourself stays.** When a container's icon differs from the one its template ships, TowerTorch keeps it and only colours it instead of swapping in the official logo.
+- **Original logo keeps the picture and colours it.** A container set to Original logo keeps its own icon and is coloured like every other. Native is still the way to leave an icon alone.
+- **The dry run fits the update window.** The template and the docker command are set left and wrap their long lines instead of being cut off.
+- **An unmountable disk no longer covers the Format button.** On Main, the text, button and checkbox stack, in the tiles and in the list.
+- **The boot hint stays in its card.** On Main it no longer hangs over the next card in Firefox, and its text is easier to read.
+- **The bell and menu button keep their place** in your saved header order.
 
 ### 1.4.0
 TowerTorch moves to GlimStone 3.8.0. Its own buttons get glyphs, and Unraid's buttons wear the glyph that fits what they do.

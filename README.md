@@ -164,6 +164,18 @@ Every picture uses a different accent colour. The server and its apps, shares an
   can't be measured) is skipped. TowerTorch does not wake it back up: a schedule, the
   plan, or Unraid's autostart does.
 
+**Maintenance plan and the fortress**
+- A maintenance plan beside the start plan: back up, update, check and restart
+  the server in that order, by hand or on a schedule. BombVault takes the
+  backups, ShipLog the updates and FireSquire checks the server first, and a
+  NO-GO keeps it running. A step whose app is missing is skipped and named in
+  the report, and the summary goes out to your notification channels.
+- TowerTorch joins your fortress with its twelve-word phrase, keeps only its own
+  keys and follows a phrase change by itself. The other apps of the fortress can
+  read how it is doing: a start in order that is running, containers that did
+  not come up and why, and the watchdog's restarts, over the local socket and
+  your Unraid login only.
+
 **Resource limits**
 - Live CPU limit, CPU pinning (topology-aware, with P/E-core detection on Intel
   hybrid CPUs) and RAM limit via Docker update, no container restart.
@@ -296,6 +308,8 @@ the bandwidth interface (blank = auto-detected from the container's default rout
 and notifications. Every row has an (i) that explains it, and rows that depend on a
 switch stay locked while it is off. Settings are mirrored into the engine config, so
 every browser and origin sees the same configuration, and only what changed is sent.
+The one exception is OLED, which puts the dark look on true black and stays on the
+device it was switched on, since it belongs to the screen.
 
 <br>
 
