@@ -201,10 +201,9 @@ html.tt-header-on.tt-arrange #tt-island .tt-isl-chip { cursor: grab; }
 html.tt-header-on.tt-arrange #tt-island .tt-isl-row { outline: 1px dashed rgba(255, 255, 255, .22); outline-offset: 3px; border-radius: var(--tt-radius-control); }
 html.tt-header-on #tt-island .tt-isl-chip.tt-isl-dragging { opacity: .4; cursor: grabbing; }
 /* the chips wiggle in arrange mode, like the menu drag, to show they can be moved */
-@keyframes tt-isl-wiggle { 0%{transform:rotate(-1.6deg);} 25%{transform:rotate(1.4deg) translateY(-.5px);} 50%{transform:rotate(-1.2deg);} 75%{transform:rotate(1.6deg) translateY(.5px);} 100%{transform:rotate(-1.6deg);} }
-html.tt-header-on.tt-arrange #tt-island .tt-isl-chip { animation: tt-isl-wiggle .32s ease-in-out infinite; transform-origin: 50% 50%; }
-html.tt-header-on.tt-arrange #tt-island .tt-isl-chip:nth-child(2n) { animation-delay: -0.16s; }   /* per-chip phase offset -> individual jitter, not a synced block */
-html.tt-header-on.tt-arrange #tt-island .tt-isl-chip:nth-child(3n) { animation-delay: -0.08s; }
+html.tt-header-on.tt-arrange #tt-island .tt-isl-chip { animation: tt-tremble var(--tt-motion-tremble-dur, 0s) ease-in-out infinite alternate; transform-origin: 50% 50%; }
+html.tt-header-on.tt-arrange #tt-island .tt-isl-chip:nth-child(2n) { animation-delay: calc(var(--tt-motion-tremble-dur, 0s) * -.5); }   /* each chip out of step, not a synced block */
+html.tt-header-on.tt-arrange #tt-island .tt-isl-chip:nth-child(3n) { animation-delay: calc(var(--tt-motion-tremble-dur, 0s) * -.33); }
 html.tt-header-on.tt-arrange #tt-island .tt-isl-chip.tt-isl-dragging { animation: none; }
 
 /* prefers-reduced-motion turns off TowerTorch's wiggle, pulse and transitions at every motion level. A toast
@@ -1296,25 +1295,15 @@ html.tt-popups-on.tt-header-rbneutral .unapi div.fixed.z-50.bg-background [class
    reorders it and saves tt.navorder. The dragged pill dims and stops wiggling. */
 html.tt-header-on #menu .tt-navdrag > a { cursor: pointer; }
 html.tt-header-on #menu .tt-dragging { opacity: .45; animation: none !important; }
-/* A square 36px icon moves far less than a wide chip at the same rotation, since the corners
-   travel with the width, so the wiggle adds a horizontal shake to the rotation. */
-@keyframes tt-nav-wiggle {
-  0%   { transform: rotate(-2.8deg) translate(-1.2px, 0); }
-  25%  { transform: rotate(2.6deg)  translate(1.2px, -0.9px); }
-  50%  { transform: rotate(-2.4deg) translate(-1.2px, 0.3px); }
-  75%  { transform: rotate(2.8deg)  translate(1.2px, 0.9px); }
-  100% { transform: rotate(-2.8deg) translate(-1.2px, 0); }
-}
 /* one wiggle rule for both zones: the tab pills and the utility icons with the usage meter */
 html.tt-header-on #menu .tt-nav-wiggle {
-  animation: tt-nav-wiggle .32s ease-in-out infinite;
+  animation: tt-tremble var(--tt-motion-tremble-dur, 0s) ease-in-out infinite alternate;
   transform-origin: 50% 50%;
 }
-/* per-item phase offsets (negative delays start mid-cycle), so neighbours wiggle out of sync
+/* per-item phase offsets (negative delays start mid-beat), so neighbours tremble out of step
    rather than the whole row tilting at once */
-html.tt-header-on #menu .tt-nav-wiggle:nth-child(2n) { animation-delay: -0.16s; }
-html.tt-header-on #menu .tt-nav-wiggle:nth-child(3n) { animation-delay: -0.08s; }
-html.tt-header-on #menu .tt-nav-wiggle:nth-child(5n) { animation-delay: -0.24s; }
+html.tt-header-on #menu .tt-nav-wiggle:nth-child(2n) { animation-delay: calc(var(--tt-motion-tremble-dur, 0s) * -.5); }
+html.tt-header-on #menu .tt-nav-wiggle:nth-child(3n) { animation-delay: calc(var(--tt-motion-tremble-dur, 0s) * -.33); }
 
 /* The native footer strip (footer#footer, fixed, 28px: array status, temperatures, copyright) is
    hidden by default and tt.footer="0" brings it back. header.js sets tt-footer-off only with

@@ -111,6 +111,12 @@
     };
     jQuery.fn.readmore.__ttPatched = true;
   })();
+  // While a row is held, the others tremble and it stays still (GlimStone, "Reordering by
+  // dragging"). jQuery UI marks only the held row, so the list carries tt-held for the sheet.
+  (function () {
+    if (!window.jQuery) return;
+    jQuery(document).on("sortstart sortstop", "#docker_list", function (e) { this.classList.toggle("tt-held", e.type === "sortstart"); });
+  })();
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
   // Mon-first day toggles; value is Go's time.Weekday (0=Sun..6=Sat).
   var DAYS = LANG === "de"

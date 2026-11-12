@@ -310,6 +310,12 @@ html.tt-docker-on #docker_list tr.ui-sortable-placeholder > td { background: tra
   html.tt-docker-on:not([data-tt-motion="off"]) #docker_list.ui-sortable > tr.sortable:nth-child(2n) { animation-delay: calc(var(--tt-motion-wiggle-dur, 0s) * -.5); }
   html.tt-docker-on:not([data-tt-motion="off"]) #docker_list.ui-sortable > tr.sortable:nth-child(3n) { animation-delay: calc(var(--tt-motion-wiggle-dur, 0s) * -.25); }
   html.tt-docker-on:not([data-tt-motion="off"]) #docker_list.ui-sortable > tr.sortable:nth-child(5n) { animation-delay: calc(var(--tt-motion-wiggle-dur, 0s) * -.75); }
+  /* While a row is held the others tremble on the tremble's beat, and the held one stays still
+     under the pointer. Longhands, so the delays above keep their place. */
+  html.tt-docker-on:not([data-tt-motion="off"]) #docker_list.ui-sortable.tt-held > tr.sortable:not(.ui-sortable-helper, .ui-sortable-placeholder) {
+    --tt-motion-wiggle-tilt: var(--tt-motion-tremble-tilt, 0deg); --tt-motion-wiggle-lift: var(--tt-motion-tremble-lift, 0px);
+    animation-name: tt-row-wiggle; animation-duration: calc(var(--tt-motion-tremble-dur, 0s) * 2);
+  }
 }
 /* The Mehrfachauswahl badge takes its whole look from the same rules as the native bar buttons, in
    the div.js-actions block further down. Nothing about its size, shape or colour belongs here, or

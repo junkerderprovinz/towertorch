@@ -87,6 +87,10 @@ html {
   --tt-motion-wiggle-dur:           0s;
   --tt-motion-wiggle-tilt:          0deg;
   --tt-motion-wiggle-lift:          0px;
+  --tt-motion-tremble-dur:          0s;
+  --tt-motion-tremble-angle:        0deg;
+  --tt-motion-tremble-tilt:         0deg;
+  --tt-motion-tremble-lift:         0px;
   --tt-dir-sign: 1;
 }
 html[dir="rtl"] { --tt-dir-sign: -1; }   /* a keyframe does not mirror on its own */
@@ -126,6 +130,12 @@ html[dir="rtl"] { --tt-dir-sign: -1; }   /* a keyframe does not mirror on its ow
     --tt-motion-wiggle-dur:           320ms;
     --tt-motion-wiggle-tilt:          .16deg;
     --tt-motion-wiggle-lift:          1px;
+    /* While an item is held every other one trembles: one beat, how far a tab or chip turns, and
+       how far a full-width row tilts and lifts, since its ends would swing far at a chip's angle. */
+    --tt-motion-tremble-dur:          120ms;
+    --tt-motion-tremble-angle:        2deg;
+    --tt-motion-tremble-tilt:         .15deg;
+    --tt-motion-tremble-lift:         1.5px;
   }
   html[data-tt-motion="subtle"] {
     --tt-motion-control-dur: 80ms;
@@ -155,6 +165,10 @@ html[dir="rtl"] { --tt-dir-sign: -1; }   /* a keyframe does not mirror on its ow
     --tt-motion-wiggle-dur:           440ms;
     --tt-motion-wiggle-tilt:          .08deg;
     --tt-motion-wiggle-lift:          .5px;
+    --tt-motion-tremble-dur:          140ms;
+    --tt-motion-tremble-angle:        1.4deg;
+    --tt-motion-tremble-tilt:         .1deg;
+    --tt-motion-tremble-lift:         1px;
   }
   html[data-tt-motion="off"] {
     --tt-motion-control-dur: 0s;
@@ -184,6 +198,10 @@ html[dir="rtl"] { --tt-dir-sign: -1; }   /* a keyframe does not mirror on its ow
     --tt-motion-wiggle-dur:           0s;
     --tt-motion-wiggle-tilt:          0deg;
     --tt-motion-wiggle-lift:          0px;
+    --tt-motion-tremble-dur:          0s;
+    --tt-motion-tremble-angle:        0deg;
+    --tt-motion-tremble-tilt:         0deg;
+    --tt-motion-tremble-lift:         0px;
   }
 }
 /* Every button and clickable badge gives way on press and returns on release. It goes through the
@@ -209,6 +227,9 @@ button[type="button"]:where(.tt-btn, .tt-seg-btn, .tt-abtn, .tt-hgear, .tt-card-
   min-width: 0; margin: 0; text-transform: none; letter-spacing: normal; font-weight: inherit; font-family: inherit;
 }
 @keyframes tt-fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* A held item's neighbours turn to and fro through the rotate property, which composes with any
+   transform they already carry. */
+@keyframes tt-tremble { from { rotate: calc(var(--tt-motion-tremble-angle, 0deg) * -1); } to { rotate: var(--tt-motion-tremble-angle, 0deg); } }
 @keyframes tt-fade-out { from { opacity: 1; } to { opacity: 0; } }
 
 /* A bar that shows a fill level sloshes at its end (GlimStone, "Illustrations"), once it is at
