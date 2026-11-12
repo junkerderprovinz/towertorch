@@ -33,8 +33,8 @@ TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks
 
 **✨ Added**
 - **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you pick. BombVault takes the backups, ShipLog the updates and FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report, which also says how many of your notification channels got the summary. Open it from the Docker tab's bar or from its card in the settings.
-- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When the phrase changes, TowerTorch follows on its own. If it can't, or another member takes it out, the card says so and asks for the words.
-- **The maintenance plan finds the backup app on this server by the server itself.** Your backup app can go by any name, and the other apps of your fortress show TowerTorch with its own logo.
+- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When the phrase changes, TowerTorch follows on its own. If it can't, or another member takes it out, the card says so and asks for the current phrase.
+- **BombVault is found on this server, whatever name you give it**, so the maintenance plan never misses its backups. Your other apps show TowerTorch with its own logo.
 - **TowerTorch tells the other apps of your fortress how it is doing.** They can read whether a start in order is running, which containers did not start and why, and which ones the watchdog could not keep up, along with a log of runs and restarts. It answers only on its local socket and through your Unraid login, never on a network port.
 - **OLED.** A switch under Dark mode puts the dark look on true black for OLED and AMOLED screens. It only works while dark mode is on, says so when you try it on a light theme, and applies to this device only.
 - **A failed start sends a notification.** When a container in the start plan does not come up, at boot or after Start in order, you hear about it the way you chose on the Notifications card. The message names each container and why.
@@ -65,6 +65,7 @@ TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks
 - **An unmountable disk no longer covers the Format button.** On Main, the text, button and checkbox stack, in the tiles and in the list.
 - **The boot hint stays in its card.** On Main it no longer hangs over the next card in Firefox, and its text is easier to read.
 - **The bell and menu button keep their place** in your saved header order.
+- **The name in the banner reads on a phone.** Below 600 px it runs across the watermark instead of shrinking to "To…".
 
 ### 1.4.0
 TowerTorch moves to GlimStone 3.8.0. Its own buttons get glyphs, and Unraid's buttons wear the glyph that fits what they do.
