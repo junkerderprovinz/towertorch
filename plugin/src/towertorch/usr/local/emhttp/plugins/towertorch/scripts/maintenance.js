@@ -154,6 +154,20 @@
       "set.changedRow": "New phrase",
       "set.changed": "Your fortress has a new phrase that TowerTorch couldn't follow on its own. Enter the new words below and it stays the same member. Until then the plan runs without backups and updates.",
       "err.notMember": "TowerTorch isn't in a fortress.",
+      "set.memberOn": "{app} on {device}",
+      "set.connected": "Connected",
+      "set.away": "Not reachable",
+      "set.remove": "Remove",
+      "set.removeTitle": "Remove {device}?",
+      "set.removeBody": "{device} loses its access right away. This can't be undone.",
+      "set.removedTitle": "Change the phrase now?",
+      "set.removedBody": "{device} is out. As long as the phrase stays the same, the way back in is still open.",
+      "set.later": "Later",
+      "set.removedNote": "Removed: {devices}. Change the phrase to close the way back in.",
+      "set.changePhrase": "Change phrase",
+      "set.changeIn": "{app} opened in a new tab. Change the phrase there, and TowerTorch follows on its own.",
+      "set.changeNone": "TowerTorch never keeps the phrase. Change it in an app that does, such as BombVault, and TowerTorch follows on its own.",
+      "err.noMember": "That app isn't in the fortress anymore.",
       "rep.notify": "Notification",
       "rep.sent": "sent",
       "rep.sentAll": "sent to {n} of {total} channels",
@@ -303,6 +317,20 @@
       "set.changedRow": "Neue Phrase",
       "set.changed": "Deine Festung hat eine neue Phrase, der TowerTorch nicht von selbst folgen konnte. Gib unten die neuen Wörter ein, dann bleibt TowerTorch dasselbe Mitglied wie bisher. Bis dahin läuft der Plan ohne Sicherungen und Updates.",
       "err.notMember": "TowerTorch ist in keiner Festung.",
+      "set.memberOn": "{app} auf {device}",
+      "set.connected": "Verbunden",
+      "set.away": "Nicht erreichbar",
+      "set.remove": "Herausnehmen",
+      "set.removeTitle": "{device} herausnehmen?",
+      "set.removeBody": "{device} verliert sofort den Zugang. Das lässt sich nicht rückgängig machen.",
+      "set.removedTitle": "Phrase jetzt ändern?",
+      "set.removedBody": "{device} ist draußen. Solange die Phrase gleich bleibt, steht der Weg zurück aber noch offen.",
+      "set.later": "Später",
+      "set.removedNote": "Herausgenommen: {devices}. Ändere die Phrase, dann ist der Weg zurück zu.",
+      "set.changePhrase": "Phrase ändern",
+      "set.changeIn": "{app} ist in einem neuen Tab offen. Ändere die Phrase dort, TowerTorch zieht von selbst nach.",
+      "set.changeNone": "TowerTorch behält die Phrase nie. Ändere sie in einer App, die sie behält, etwa BombVault. TowerTorch zieht dann von selbst nach.",
+      "err.noMember": "Diese App ist nicht mehr in der Festung.",
       "rep.notify": "Benachrichtigung",
       "rep.sent": "gesendet",
       "rep.sentAll": "an {n} von {total} Kanälen gesendet",
@@ -740,6 +768,8 @@
       if (el.getAttribute("data-act") === "open") open(el, S.o && S.o.last && !running() ? "report" : null);
       if (el.getAttribute("data-act") === "join") join(el, body.querySelector(".tt-mw-phrase"));
       if (el.getAttribute("data-act") === "leave") leave(el);
+      if (el.getAttribute("data-act") === "remove") removeMember(el, el.getAttribute("data-id"));
+      if (el.getAttribute("data-act") === "change") changePhrase();
     });
     body.addEventListener("keydown", function (e) {
       var el = e.target;
@@ -764,6 +794,16 @@
       html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.leaveRow")) + info(t("set.leaveAbout")) + "</span>" +
         '<span class="tt-mw-setval"><span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" +
         '<span class="tt-btn" role="button" tabindex="0" data-act="leave">' + glyph("SignOut") + esc(t("set.leave")) + "</span></span></div>";
+      var fo = o.fortress || {}, members = fo.members || [], removed = fo.removed || [];
+      if (removed.length) {
+        html += '<div class="tt-set-row tt-mw-removednote" role="status"><span class="tt-mw-setval tt-mw-removed">' + esc(t("set.removedNote", { devices: listOf(removed.map(memberName)) })) + "</span>" +
+          '<span class="tt-btn" role="button" tabindex="0" data-act="change">' + glyph("Key") + esc(t("set.changePhrase")) + "</span></div>";
+      }
+      members.forEach(function (m) {
+        html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(memberName(m)) + '</span><span class="tt-mw-setval">' +
+          '<span class="tt-mw-av"><span class="tt-mw-dot' + (m.online ? " tt-mw-dot-ok" : "") + '"></span>' + esc(t(m.online ? "set.connected" : "set.away")) + "</span>" +
+          '<span class="tt-btn" role="button" tabindex="0" data-act="remove" data-id="' + esc(m.id) + '">' + glyph("Trash") + esc(t("set.remove")) + "</span></span></div>";
+      });
     }
     if (ready.removed && !ready.fortress) {
       html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.removedRow")) + '</span><span class="tt-mw-setval tt-mw-removed">' + esc(t("set.removed", { server: server() })) + "</span></div>";
@@ -809,6 +849,45 @@
     };
     if (theme().ask) theme().ask({ title: t("set.leaveTitle"), text: t("set.leaveBody"), ok: t("set.leave"), cancel: t("set.cancel"), glyph: "SignOut", cancelGlyph: "Close", opener: btn, onOk: go });
     else go();
+  }
+
+  function memberName(m) { return m.name ? t("set.memberOn", { app: m.name, device: m.device }) : m.device || ""; }
+  function listOf(names) {
+    try { return new Intl.ListFormat(LANG, { type: "conjunction" }).format(names); } catch (e) { return names.join(", "); }
+  }
+
+  // Removing asks first, names app and device and is no red button. Right after, the window
+  // offers to change the phrase, since the old one lets the member straight back in.
+  function removeMember(btn, id) {
+    var m = ((S.o && S.o.fortress && S.o.fortress.members) || []).filter(function (x) { return x.id === id; })[0];
+    if (!m) return;
+    var name = memberName(m);
+    var go = function () {
+      api("POST", "fortressremove", { id: id }).then(function () {
+        load();
+        offerChange(btn, name);
+      }, function (e) {
+        deny(btn, e.code === "noMember" ? t("err.noMember") : e.code === "notMember" ? t("err.notMember") : t("err.load", { e: e.message }));
+        load();
+      });
+    };
+    if (theme().ask) theme().ask({ title: t("set.removeTitle", { device: name }), text: t("set.removeBody", { device: name }), ok: t("set.remove"), cancel: t("set.cancel"), glyph: "Trash", cancelGlyph: "Close", opener: btn, onOk: go });
+    else go();
+  }
+  function offerChange(btn, name) {
+    if (theme().ask) theme().ask({ title: t("set.removedTitle"), text: t("set.removedBody", { device: name }), ok: t("set.changePhrase"), cancel: t("set.later"), glyph: "Key", cancelGlyph: "Hourglass", opener: btn, onOk: changePhrase });
+  }
+  // TowerTorch holds only keys. An app that runs on its own, not as a plugin, keeps the phrase
+  // and changes it.
+  function keeper() {
+    var list = ((S.o && S.o.fortress && S.o.fortress.members) || []).filter(function (m) { return m.kind === "instance" && m.deployment !== "plugin" && safeLink(m.address); });
+    return list.filter(function (m) { return m.online; })[0] || list[0] || null;
+  }
+  function changePhrase() {
+    var k = keeper();
+    if (!k) return toast(t("set.changeNone"));
+    window.open(k.address, "_blank", "noopener");
+    toast(t("set.changeIn", { app: memberName(k) }), "ok");
   }
 
   function paint() {
