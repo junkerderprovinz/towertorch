@@ -276,3 +276,30 @@ func TestOutsideAFortressThePanelListsNobody(t *testing.T) {
 		t.Errorf("body = %s", rec.Body)
 	}
 }
+
+func TestAMemberThatNeverSaidItsAppStaysOffTheCard(t *testing.T) {
+	d := &fakeDoor{
+		members: []kitfortress.Member{
+			{ID: "i-fs", Kind: member.KindInstance, Device: "Bottich", Deployment: "plugin"},
+			{ID: "i-bv", Kind: member.KindInstance, App: kitfortress.App{ID: "bombvault", Name: "BombVault"}, Device: "Bottich"},
+		},
+		removals: []fortress.Removal{{Device: "Bottich"}, {App: "tollroll", Name: "TollRoll", Device: "Bottich"}},
+	}
+	s := &Server{Store: &memStore{}, Maintenance: &fakeMaintenance{}, Door: d}
+	rec := call(s, http.MethodGet, "/api/maintenance", "")
+	var o struct {
+		Fortress struct {
+			Members []memberView       `json:"members"`
+			Removed []fortress.Removal `json:"removed"`
+		} `json:"fortress"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &o); err != nil {
+		t.Fatal(err)
+	}
+	if len(o.Fortress.Members) != 1 || o.Fortress.Members[0].ID != "i-bv" {
+		t.Errorf("members = %+v, want BombVault alone", o.Fortress.Members)
+	}
+	if len(o.Fortress.Removed) != 1 || o.Fortress.Removed[0].App != "tollroll" {
+		t.Errorf("removed = %+v, want TollRoll alone", o.Fortress.Removed)
+	}
+}

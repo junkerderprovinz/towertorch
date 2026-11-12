@@ -51,9 +51,20 @@ type memberView struct {
 	Online     bool   `json:"online"`
 }
 
+// fortressView leaves out a member that never said which app it runs, such
+// as FireSquire's helper, which is online only while it runs. Its row would
+// name a device and nothing else.
 func (s *Server) fortressView() *fortressView {
-	v := &fortressView{Members: []memberView{}, Removed: s.Door.RemovedMembers()}
+	v := &fortressView{Members: []memberView{}, Removed: []fortress.Removal{}}
+	for _, r := range s.Door.RemovedMembers() {
+		if r.App != "" {
+			v.Removed = append(v.Removed, r)
+		}
+	}
 	for _, m := range s.Door.Members() {
+		if m.App.ID == "" {
+			continue
+		}
 		v.Members = append(v.Members, memberView{
 			ID: m.ID, Kind: string(m.Kind), App: m.App.ID, Name: cmp.Or(m.App.Name, m.App.ID), Device: m.Device,
 			Deployment: m.Deployment, Address: m.Address, Online: m.Online(),
