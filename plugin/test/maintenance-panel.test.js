@@ -71,14 +71,14 @@ console.log('\nEach step says whether its app is there');
   ok('without FireSquire the check is red and names the server', f.avail('check')[0] === 'err' && /Tower/.test(f.avail('check')[1]));
   ok('and the restart waits', f.avail('restart')[0] === 'warn' && f.pending({ step: 'restart' }) !== '');
   f = fns({ plan, o: { server: 'Tower', ready: { fortress: true, backup: { found: true, app: 'bombvault', device: 'Tower', online: true }, update: { found: false, elsewhere: ['Basement'] }, check: true } } });
-  ok('a backup app here is named with its server', f.avail('backup')[0] === 'ok' && f.avail('backup')[1] === 'BombVault on Tower is reachable');
+  ok('a backup app here is named with its server and the state in GlimStone\'s word', f.avail('backup')[0] === 'ok' && f.avail('backup')[1] === 'BombVault on Tower: Connected');
   ok('an app on another server is named, and the step is skipped', f.avail('update')[0] === 'warn' && /Basement/.test(f.avail('update')[1]) && /ShipLog is missing/.test(f.pending({ step: 'update' })));
   f = fns({ plan, o: { server: 'Tower', ready: { fortress: true, backup: { found: true, app: 'bombvault', device: 'Tower', online: false }, update: {}, check: true } } });
-  ok('one that is offline is red, never skipped quietly', f.avail('backup')[0] === 'err' && /isn't reachable/.test(f.avail('backup')[1]));
+  ok('one that is offline is red and Not reachable, never skipped quietly', f.avail('backup')[0] === 'err' && f.avail('backup')[1] === 'BombVault on Tower: Not reachable');
   const off = fns({ plan: { ...plan, steps: { ...plan.steps, update: false } }, o: { ready: {} } });
   ok('a step switched off says so', off.avail('update')[1] === 'Switched off');
   const de = fns({ plan, o: { server: 'Tower', ready: { fortress: true, backup: { found: true, app: 'bombvault', device: 'Tower', online: true }, update: {}, check: true } } }, 'de');
-  ok('in German too', de.avail('backup')[1] === 'BombVault auf Tower erreichbar');
+  ok('in German too', de.avail('backup')[1] === 'BombVault auf Tower: Verbunden');
 }
 
 console.log('\nThe report reads plainly');
