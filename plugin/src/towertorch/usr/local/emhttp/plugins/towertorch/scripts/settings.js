@@ -218,7 +218,7 @@
   function T(d, e) { return de ? d : e; }
   var TT_VER = "@@TTVER@@"; if (TT_VER.indexOf("@@") === 0) TT_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "3.8.0";
+  var GLS_VER = "4.4.0";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
   var LATEST_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest";
