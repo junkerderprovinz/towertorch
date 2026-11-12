@@ -205,6 +205,7 @@
         "#tt-settings .tt-set-swatches.tt-fill{flex-wrap:wrap}" +
         "#tt-settings .tt-set-swatches.tt-fill .tt-set-hexin{min-width:90px}" +
       "}" +
+      "@media (max-width:599px){#tt-settings .tt-hero-text{max-width:none}}" +
       // A selector keeps to one row at every width (GlimStone, "The one horizontal selector").
       // Where its labels do not fit, every segment that has a glyph shows it alone, and a strip
       // without glyphs cuts its labels short. Either way the whole label stays the segment's

@@ -42,6 +42,11 @@ console.log('\nThe sizes ShipLog and FireSquire share');
   ok('a narrow window takes a 104px banner, a 64px logo, a 208px silhouette and a 26px name',
     /\.tt-hero\{gap:16px;height:104px;padding:0 20px\}/.test(narrow) && /\.tt-hero-logo\{width:64px;height:64px\}/.test(narrow) &&
     /\.tt-hero-mark\{inset-inline-end:-36px;width:208px;height:208px\}/.test(narrow) && /\.tt-hero-name\{font-size:26px\}/.test(narrow));
+  // On a phone the space kept for the silhouette would leave the name two letters, so the text runs
+  // over the silhouette, which sits behind it anyway.
+  const phone = settings.slice(settings.indexOf('"@media (max-width:599px){'));
+  ok('a phone keeps the whole width for the name', settings.indexOf('"@media (max-width:599px){') > settings.indexOf('"@media (max-width:1023px){') &&
+    /^"@media \(max-width:599px\)\{#tt-settings \.tt-hero-text\{max-width:none\}/.test(phone), phone.slice(0, 80));
 }
 
 console.log('\nThe silhouette takes the colour while the banner is pointed at or focused');
