@@ -134,7 +134,7 @@ console.log('\nTaken out by another member, the card says so and offers the phra
   ok('the phrase field follows it', card.indexOf('set.removed') > 0 && card.indexOf('set.removed') < card.indexOf('tt-mw-joinrow'));
   ok('the words name this server and the phrase', /\{server\}/.test(T.en['set.removed'] || '') && /\{server\}/.test(T.de['set.removed'] || '') && /phrase/i.test(T.en['set.removed'] || ''));
   // The phrase TowerTorch knew may have changed since, so nothing promises it still opens the fortress.
-  for (const k of ['set.removed', 'set.leaveAbout']) {
+  for (const k of ['set.removed', 'set.leaveAbout', 'set.leaveBody']) {
     ok(k + ' points at the current phrase', /current phrase/.test(T.en[k] || '') && /aktuellen Phrase/.test(T.de[k] || ''));
     ok(k + ' promises no way back at any time', !/any time/.test(T.en[k] || '') && !/jederzeit/.test(T.de[k] || ''));
   }
