@@ -1,0 +1,10 @@
+{
+  "targets": [
+    {
+      "name": "plugin",
+      "mode": "port",
+      "version": "3.8.0",
+      "versionFile": "plugin/src/towertorch/usr/local/emhttp/plugins/towertorch/scripts/settings.js"
+    }
+  ]
+}
