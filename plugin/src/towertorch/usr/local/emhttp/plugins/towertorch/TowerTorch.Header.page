@@ -29,6 +29,8 @@ Link="tt-hdr-hook"
     r.setAttribute("data-tt-motion", anim === "off" || anim === "0" ? "off" : anim === "wild" || anim === "2" ? "wild" : "subtle");
     r.classList.toggle("tt-badge-glass", g("tt.badgeglass", "0") === "1" && theming);
     r.classList.toggle("tt-popups-on", theming);
+    // OLED belongs to the screen, so it lives under a key the engine's mirror never syncs.
+    if (g("towertorch.oled", "0") === "1" && theming) r.setAttribute("data-oled", ""); else r.removeAttribute("data-oled");
     r.classList.toggle("tt-footer-off", g("tt.footer", "1") === "1" && theming);
     r.classList.toggle("tt-hide-favtab", g("tt.hidefavtab", "0") === "1" && theming);
     r.classList.toggle("tt-usage-isl", on && g("tt.island", "1") !== "0");

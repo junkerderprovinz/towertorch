@@ -127,6 +127,12 @@
       // field takes no click at all, so its wrapper receives the press.
       "#tt-settings .tt-set-lbl.tt-set-disabled,#tt-settings .tt-set-disabled > span:first-child:not(.tt-set-lblwrap),#tt-settings .tt-set-disabled :is(.tt-set-lblwrap > span:first-child, .tt-seg, .tt-set-toggle, .tt-set-numwrap){opacity:.45}" +
       "#tt-settings .tt-set-disabled :is(.tt-seg, .tt-seg-btn, .tt-set-toggle, .tt-set-numwrap){cursor:not-allowed}" +
+      // A refused switch dims its track and keeps its row, and the reason line shows only where
+      // no pointer can hover the bubble.
+      "#tt-settings .tt-set-refused{flex-wrap:wrap}" +
+      "#tt-settings .tt-set-refused .tt-set-toggle{opacity:.45;cursor:not-allowed}" +
+      "#tt-settings .tt-set-why{display:none;flex:1 1 100%;font-size:var(--tt-text-meta);color:var(--tt-text-dim)}" +
+      "@media (hover:none){#tt-settings .tt-set-refused .tt-set-why{display:block}}" +
       "#tt-settings .tt-set-disabled input{pointer-events:none}" +
       "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on){background:transparent;color:var(--tt-text-chip,#cfcfcf)}" +
       "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on):not([aria-disabled=true]):hover{background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6)}" +
@@ -1129,12 +1135,31 @@
           var from = unraidTheme(), to = get("tt.theme." + (v ? "dark" : "light"), v ? "black" : "white");
           set("tt.theme." + (v ? "light" : "dark"), from);
           if (!swapTheme(from, to)) { back(); return failed(null, T("Das Farbschema wurde nicht gefunden.", "The colour theme sheet was not found.")); }
+          syncOled();
           postDisplay({ theme: to }).catch(function () {
-            swapTheme(to, from); back();
+            swapTheme(to, from); back(); syncOled();
             failed(null, T("Die Anzeige-Einstellung wurde nicht gespeichert.", "The display setting was not saved."));
           });
         });
         cCard.appendChild(darkRow);
+        // OLED puts the dark look on true black. It belongs to the screen, so it is kept on this
+        // device under a key the engine's mirror leaves alone. Under a light theme the switch keeps
+        // its state and its tab stop but refuses a press, and says why in its bubble and, on a
+        // touch screen, in a line under the row.
+        var oledWhy = T("Geht nur mit eingeschaltetem Dunkelmodus.", "Only works with dark mode on.");
+        var oledRow = toggleRow("OLED", T("Echtes Schwarz für OLED- und AMOLED-Bildschirme, solange der Dunkelmodus an ist. Gilt nur für dieses Gerät.", "True black for OLED and AMOLED screens while dark mode is on. Applies to this device only."), get("towertorch.oled", "0") === "1", function (v) {
+          set("towertorch.oled", v ? "1" : "0");
+          if (v) document.documentElement.setAttribute("data-oled", ""); else document.documentElement.removeAttribute("data-oled");
+        });
+        oledRow.appendChild(el("span", "tt-set-why", oledWhy));
+        var syncOled = function () {
+          var dark = /^(black|gray)$/.test(unraidTheme()), tg = oledRow.querySelector(".tt-set-toggle");
+          oledRow.classList.toggle("tt-set-refused", !dark);
+          if (dark) { tg.removeAttribute("aria-disabled"); tg.removeAttribute("data-tip"); tg.removeAttribute("aria-description"); }
+          else { tg.setAttribute("aria-disabled", "true"); tg.setAttribute("data-tip", oledWhy); tg.setAttribute("aria-description", oledWhy); }
+        };
+        syncOled();
+        cCard.appendChild(oledRow);
         var arLabel = T("Kopf-Farben ans Thema koppeln", "Match header colours to the theme");
         var arHelp = T("An: die Kopfzeilen-Hintergrund- und Textfarbe folgen automatisch Unraids Farbschema, also dunkler Hintergrund mit heller Schrift beim dunklen Thema und umgekehrt. Wirkt, wenn TowerTorchs Kopfbereich aus ist.", "On: the header background and text colour follow Unraid's colour scheme automatically, dark background with light text on a dark theme and the reverse on a light one. Applies while TowerTorch's header area is off.");
         // TowerTorch's own header area paints over the native colours, so while it is on the

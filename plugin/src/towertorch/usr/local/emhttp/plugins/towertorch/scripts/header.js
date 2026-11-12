@@ -2661,6 +2661,7 @@
       // The native jQuery-UI dialogs and the SweetAlert confirmations follow the TowerTorch look on every
       // page. Master-gated only, since it is chrome rather than an area of its own.
       root.classList.toggle("tt-popups-on", g("tt.theming", "1") !== "0");
+      if (g("towertorch.oled", "0") === "1" && g("tt.theming", "1") !== "0") root.setAttribute("data-oled", ""); else root.removeAttribute("data-oled");
       // CA's settings sub-page is a real Unraid form page, not one of CA's overlays, and nothing in
       // its markup identifies it: its form posts to /update.php like any other settings page. The
       // identity comes from the URL instead, as the sheet already does for CA's other states.

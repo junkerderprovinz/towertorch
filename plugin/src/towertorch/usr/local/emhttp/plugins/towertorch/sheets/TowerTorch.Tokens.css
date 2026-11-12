@@ -419,6 +419,21 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
 }
 
+/* OLED (GlimStone rule 43): the dark look on true black for OLED and AMOLED screens. data-oled on
+   <html> asks for it, and it counts only while Unraid shows a dark theme, so a light theme keeps
+   its own ground. Every surface moves one step down and keeps its order, the page itself goes
+   black, and TowerTorch's windows, which stay dark on every theme, step down with it. The text,
+   the accent, the states, the switch track and the shadows stay: they were measured on darker
+   grounds than they get here, and a ring in place of the shadow would frame every card. ShipLog
+   reads the same attribute for its windows. */
+html[data-oled]:is(.Theme--black, .Theme--gray),
+html[data-oled]:is(.Theme--black, .Theme--gray) :is(.tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, #alternateView .tt-av-win, #alternateView .alternateViewContent) {
+  --tt-surface-1: #161616;  --tt-surface-2: #1a1a1a;  --tt-surface-3: #262626;  --tt-surface-base: #000000;
+  --tt-surface-4: #1e1e1e;  --tt-surface-window: #161616;  --tt-surface-card: #111111;  --tt-surface-deep: #000000;
+  --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
+}
+html.tt-popups-on[data-oled]:is(.Theme--black, .Theme--gray) body { background-color: #000000 !important; }
+
 /* A TowerTorch window (GlimStone rule 15, in the look of TowerTorch's update window): one dark
    surface, the title as a badge across its full width, the content straight on it, the buttons in
    a row at the bottom, no line anywhere. TTTheme.modal puts the scrim behind it, one step under the
