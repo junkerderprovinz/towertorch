@@ -791,14 +791,14 @@
       '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.last")) + '</span><span class="tt-mw-setval">' + last + "</span></div>" +
       '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.fortress")) + '</span><span class="tt-mw-setval">' + apps + "</span></div>";
     if (ready.fortress) {
-      html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.leaveRow")) + info(t("set.leaveAbout")) + "</span>" +
-        '<span class="tt-mw-setval"><span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" +
-        '<span class="tt-btn" role="button" tabindex="0" data-act="leave">' + glyph("SignOut") + esc(t("set.leave")) + "</span></span></div>";
       var fo = o.fortress || {}, members = fo.members || [], removed = fo.removed || [];
-      if (removed.length) {
-        html += '<div class="tt-set-row tt-mw-removednote" role="status"><span class="tt-mw-setval tt-mw-removed">' + esc(t("set.removedNote", { devices: listOf(removed.map(memberName)) })) + "</span>" +
-          '<span class="tt-btn" role="button" tabindex="0" data-act="change">' + glyph("Key") + esc(t("set.changePhrase")) + "</span></div>";
-      }
+      var head = '<div class="tt-set-row"><span class="tt-set-rl">' + esc(t("set.leaveRow")) + info(t("set.leaveAbout")) + "</span>";
+      var leaveVal = '<span class="tt-mw-device">' + esc(t("set.in", { device: ready.device || "" })) + "</span>" +
+        '<span class="tt-btn" role="button" tabindex="0" data-act="leave">' + glyph("SignOut") + esc(t("set.leave")) + "</span>";
+      // The reminder is a second line of this row's value, so it starts where the device does.
+      var note = removed.length ? '<span class="tt-mw-removednote" role="status"><span class="tt-mw-removed">' + esc(t("set.removedNote", { devices: listOf(removed.map(memberName)) })) + "</span>" +
+        '<span class="tt-btn" role="button" tabindex="0" data-act="change">' + glyph("Key") + esc(t("set.changePhrase")) + "</span></span>" : "";
+      html += head + (note ? '<span class="tt-mw-setval tt-mw-stack"><span class="tt-mw-in">' + leaveVal + "</span>" + note : '<span class="tt-mw-setval">' + leaveVal) + "</span></div>";
       members.forEach(function (m) {
         html += '<div class="tt-set-row"><span class="tt-set-rl">' + esc(memberName(m)) + '</span><span class="tt-mw-setval">' +
           '<span class="tt-mw-av"><span class="tt-mw-dot' + (m.online ? " tt-mw-dot-ok" : "") + '"></span>' + esc(t(m.online ? "set.connected" : "set.away")) + "</span>" +

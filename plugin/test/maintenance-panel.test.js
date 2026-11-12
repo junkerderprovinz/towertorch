@@ -154,6 +154,27 @@ console.log('\nThe phrase stays out of sight');
   ok('it is cleared once TowerTorch is in', /field\.value = ""/.test(grab('join')));
 }
 
+console.log('\nThe reminder starts in the value column of the row above');
+{
+  const S2 = { plan: null, o: { server: 'Tower', ready: { fortress: true, device: 'Bottich' }, fortress: { members: [], removed: [{ app: 'tollroll', name: 'TollRoll', device: 'Bottich' }] } } };
+  const names = ['t', 'esc', 'info', 'glyph', 'running', 'chip', 'chipCls', 'when', 'server', 'memberName', 'listOf', 'paintCard'];
+  const p = new Function(...Object.keys(env), 'theme', names.map(grab).join('\n') + '\nreturn {' + names.join(',') + '};')(...Object.values({ ...env, S: S2 }), () => ({}));
+  const attrs = {};
+  const body = { querySelector: () => null, getAttribute: (k) => attrs[k], setAttribute: (k, v) => { attrs[k] = v; }, innerHTML: '' };
+  p.paintCard(body);
+  const rows = body.innerHTML.split('<div class="tt-set-row').slice(1);
+  const leaveRow = rows.find((r) => /data-act="leave"/.test(r)) || '';
+  ok('no row of its own with an empty label column', !rows.some((r) => /tt-mw-removednote/.test(r) && !/data-act="leave"/.test(r)));
+  ok('it sits in the value of "This app in the fortress", under the device', /tt-mw-device[\s\S]*data-act="leave"[\s\S]*tt-mw-removednote[\s\S]*Removed: TollRoll on Bottich\.[\s\S]*data-act="change"/.test(leaveRow), leaveRow);
+  const css = read('styles/maintenance.css');
+  ok('the value stacks its lines from the left', /\.tt-mw-stack \{[^}]*flex-direction: column[^}]*align-items: flex-start/.test(css));
+  ok('the text reads from the left with the button right after it, wrapping on a phone', /\.tt-mw-removednote \{[^}]*flex-wrap: wrap/.test(css) && /\.tt-mw-removednote \.tt-mw-removed \{[^}]*text-align: start/.test(css));
+  S2.o.fortress.removed = [];
+  attrs['data-html'] = '';
+  p.paintCard(body);
+  ok('without anybody removed the row keeps its single line', !/tt-mw-stack|tt-mw-removednote/.test(body.innerHTML));
+}
+
 console.log('\nRemoving another member, then the offer to change the phrase');
 {
   for (const f of ['server/ttapi.php', 'server/api.php']) {
