@@ -129,6 +129,10 @@ console.log('\nEvery call site goes through it');
   ok('the old toast styles are gone', !/#tt-toast\b|\.tt-toast-show/.test(css));
   ok('no toast sets its own font stack', !/\.tt-toast[^{]*\{[^}]*font-family/.test(css) && !/\.tt-toast[^{]*\{[^}]*font:/.test(css));
   ok('a toast has no border line', /\.tt-toast \{[^}]*border: none;/.test(css));
+  ok('a toast is 24rem wide and stays inside the window', /\.tt-toast \{[^}]*width: 24rem; max-width: calc\(100vw - 36px\);/.test(css));
+  ok('its message stands on a whole 20px line', /\.tt-toast \{[^}]*line-height: 20px;/.test(css));
+  ok('its entrance leaves no transform behind', /tt-toast-in var\(--tt-motion-toast-dur\) var\(--tt-motion-toast-ease\) backwards/.test(css) && !/tt-toast-in [^;]* both/.test(css));
+  ok('a phone shows the newest two across its width', /@media \(max-width: 600px\) \{[^@]*#tt-toasts > \.tt-toast:nth-last-child\(n \+ 3\) \{ display: none; \}/.test(css));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

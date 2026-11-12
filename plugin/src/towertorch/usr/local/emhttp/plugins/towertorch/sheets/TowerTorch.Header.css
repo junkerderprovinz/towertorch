@@ -1353,21 +1353,31 @@ html.tt-docker-on .sl-chiprow > *:hover,
 html.tt-docker-on a.tt-badge:hover,
 html.tt-docker-on .tt-badge[onclick]:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 /* The toasts (TTTheme.toast in tt-theme.js): one stack in the bottom corner, each toast a filled
-   pill without a border that slides in from the edge and fades. The stack itself lets clicks
-   through; a toast takes the pointer, since hovering it pauses its countdown. Outside the gate are
-   the stand-ins that reduced motion and "off" keep, a plain fade in and out. */
+   card 24rem wide without a border that slides in from the edge and fades. The stack itself lets
+   clicks through; a toast takes the pointer, since hovering it pauses its countdown. The message
+   stands on a 20px line, so every toast is a whole number of pixels tall and the ones stacked
+   beside it never land on a fraction. The entrance fills backwards only and leaves no transform
+   behind. Outside the gate are the stand-ins that reduced motion and "off" keep, a plain fade in
+   and out. */
 #tt-toasts {
   position: fixed; bottom: 18px; inset-inline-end: 18px; z-index: 100000;
   display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-  max-width: min(88vw, 460px); pointer-events: none;
+  pointer-events: none;
 }
 .tt-toast {
-  pointer-events: auto; cursor: default;
-  padding: 10px 16px; background: #0f0f0f; color: #e8e8e8;
-  font-size: var(--tt-text-subline); line-height: 1.35; text-align: start;
+  pointer-events: auto; cursor: default; box-sizing: border-box;
+  width: 24rem; max-width: calc(100vw - 36px);
+  padding: 12px 14px; background: #0f0f0f; color: #e8e8e8;
+  font-size: var(--tt-text-body); line-height: 20px; text-align: start; overflow-wrap: anywhere;
   border: none; border-radius: var(--tt-radius-card);
   box-shadow: var(--tt-elev-2, 0 10px 28px rgba(0, 0, 0, .38));
-  animation: tt-fade-in 160ms ease both;
+  animation: tt-fade-in 160ms ease backwards;
+}
+/* A phone keeps the window in view: the newest two, across its width. */
+@media (max-width: 600px) {
+  #tt-toasts { inset-inline-start: 8px; inset-inline-end: 8px; bottom: 8px; align-items: stretch; }
+  .tt-toast { width: auto; max-width: none; }
+  #tt-toasts > .tt-toast:nth-last-child(n + 3) { display: none; }
 }
 html .tt-toast.tt-toast-err { color: var(--tt-err-ink, #ff8389); }   /* above the light themes' toast ink */
 html .tt-toast.tt-toast-ok { color: var(--tt-ok-ink, #6fdc8c); }
@@ -1376,8 +1386,8 @@ html .tt-toast.tt-toast-ok { color: var(--tt-ok-ink, #6fdc8c); }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-tt-motion="off"]) .tt-toast {
     animation:
-      tt-toast-in var(--tt-motion-toast-dur) var(--tt-motion-toast-ease) both,
-      tt-fade-in var(--tt-motion-toast-dur) ease-out both;
+      tt-toast-in var(--tt-motion-toast-dur) var(--tt-motion-toast-ease) backwards,
+      tt-fade-in var(--tt-motion-toast-dur) ease-out backwards;
   }
   html:not([data-tt-motion="off"]) .tt-toast.tt-toast-out { animation: tt-fade-out var(--tt-motion-toast-dur) ease-in both; }
 }
