@@ -54,6 +54,10 @@ type Door struct {
 	gen int
 }
 
+// removedHereFile is all that stays of a membership another member ended, so
+// the settings page still says so after a restart.
+const removedHereFile = "removed-here"
+
 // followWait is how long a member that answered on the old phrase gets to
 // hand over the new keys.
 var followWait = 10 * time.Second
@@ -63,8 +67,13 @@ func (d *Door) Open() error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	m, err := d.join()
-	if err != nil || m == nil {
+	if err != nil {
 		return err
+	}
+	if m == nil {
+		_, err := os.Stat(filepath.Join(d.Dir, removedHereFile))
+		d.removed = err == nil
+		return nil
 	}
 	d.set(m)
 	return nil
@@ -100,6 +109,9 @@ func (d *Door) Enter(words string) error {
 	d.removed, d.phraseChanged = false, false
 	d.forgetRemovals()
 	d.set(in)
+	if err := os.Remove(filepath.Join(d.Dir, removedHereFile)); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
 	return nil
 }
 
@@ -278,6 +290,9 @@ func (d *Door) removedBy(gen int) {
 		_ = d.m.Close()
 		d.set(nil)
 		_ = os.RemoveAll(d.Dir)
+		if os.MkdirAll(d.Dir, 0o700) == nil {
+			_ = os.WriteFile(filepath.Join(d.Dir, removedHereFile), nil, 0o600)
+		}
 		d.removed, d.phraseChanged = true, false
 	}()
 }

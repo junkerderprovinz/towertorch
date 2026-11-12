@@ -109,7 +109,7 @@ func TestTheDoorOpensAKeptMembership(t *testing.T) {
 	_ = d.Close()
 }
 
-func TestRemovedByAnotherMemberTowerTorchForgetsTheFortress(t *testing.T) {
+func TestRemovedByAnotherMemberTowerTorchForgetsTheFortressAndSaysSoAfterARestart(t *testing.T) {
 	srv := httptest.NewServer(relay.New())
 	t.Cleanup(srv.CloseClientConnections)
 	t.Cleanup(srv.Close)
@@ -162,14 +162,36 @@ func TestRemovedByAnotherMemberTowerTorchForgetsTheFortress(t *testing.T) {
 	if last != nil {
 		t.Error("the plan still has the fortress of a removed TowerTorch")
 	}
-	if _, err := os.Stat(dir); !errors.Is(err, os.ErrNotExist) {
-		t.Errorf("a removed TowerTorch kept %s: %v", dir, err)
+	if _, err := os.Stat(filepath.Join(dir, "fortress.json")); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("a removed TowerTorch kept its membership: %v", err)
 	}
-	if err := d.Enter(w); err != nil {
+	if err := d.Close(); err != nil {
+		t.Fatal(err)
+	}
+	again := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: srv.URL}
+	t.Cleanup(func() { _ = again.Close() })
+	if err := again.Open(); err != nil {
+		t.Fatal(err)
+	}
+	if !again.Removed() {
+		t.Error("after a restart TowerTorch no longer says it was removed")
+	}
+	if err := again.Enter(w); err != nil {
 		t.Fatalf("joining again: %v", err)
 	}
-	if d.Removed() {
+	if again.Removed() {
 		t.Error("joining again still says TowerTorch was removed")
+	}
+	if err := again.Close(); err != nil {
+		t.Fatal(err)
+	}
+	restarted := &Door{Dir: dir, App: towertorch, Device: "Tower", Relay: srv.URL}
+	t.Cleanup(func() { _ = restarted.Close() })
+	if err := restarted.Open(); err != nil {
+		t.Fatal(err)
+	}
+	if restarted.Removed() {
+		t.Error("a restart after joining again says TowerTorch was removed")
 	}
 }
 
