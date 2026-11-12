@@ -258,9 +258,11 @@ html {
   /* The accent as a fill and the accent as something read are two jobs. Text, a link or a line glyph
      on the page reads --tt-accent-ink, which mixes toward black by --tt-ink-mix: not at all on a
      dark ground, 45% on a light one, where gold text on white would be unreadable. It derives from
-     --tt-accent, so it follows a picked colour as well as the default. */
+     --tt-accent, so it follows a picked colour as well as the default. A picked colour that still
+     falls under 4.5:1 on a ramp's card brings its own ink for that ramp, which TTTheme.paintAccentInks
+     stamps as --tt-accent-ink-dark or --tt-accent-ink-light. */
   --tt-ink-mix:     100%;
-  --tt-accent-ink:  color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black);
+  --tt-accent-ink:  var(--tt-accent-ink-dark, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black));
   /* Hover on a filled control is one colour step toward the theme's text, which is lighter on dark
      and darker on light, rather than a brightness filter that also bleaches the ink on top. A fill
      that is not one of these tokens takes the same mix inline. Where the fill is painted inline or
@@ -377,6 +379,7 @@ html.Theme--azure {
   --tt-line-solid:  #d0d0d0;
   --tt-badge-neutral: #d8d8d8;      /* light enough for the dark chip text of this theme */
   --tt-ink-mix: 55%;
+  --tt-accent-ink: var(--tt-accent-ink-light, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black));
   --tt-ok:   #198038;  --tt-ok-fg:   #fff;  --tt-ok-ink:   #0e6027;
   --tt-warn: #ba4e00;  --tt-warn-fg: #fff;  --tt-warn-ink: #ba4e00;
   --tt-err:  #da1e28;  --tt-err-fg:  #fff;  --tt-err-ink:  #da1e28;
@@ -406,7 +409,7 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-err:  #ff8389;  --tt-err-fg:  #161616;  --tt-err-ink:  #ff8389;
   --tt-backdrop-dim: rgba(0, 0, 0, .72);
   --tt-elev-1: 0 1px 4px rgba(0, 0, 0, .35);  --tt-elev-2: 0 10px 28px rgba(0, 0, 0, .38);  --tt-elev-3: 0 12px 30px rgba(0, 0, 0, .6);
-  --tt-accent-ink:   color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black);
+  --tt-accent-ink:   var(--tt-accent-ink-dark, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black));
   --tt-accent-hover: color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text));
   --tt-hover-wash:   color-mix(in srgb, var(--tt-text) 15%, transparent);
   --tt-ok-hover:   color-mix(in srgb, var(--tt-ok) 85%, var(--tt-text));

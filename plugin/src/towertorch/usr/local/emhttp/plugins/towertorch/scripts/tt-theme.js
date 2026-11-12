@@ -48,13 +48,46 @@
   // it. A stored tt.rbpal replaces the whole set and is never rewritten.
   var RB = ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"];
 
-  // Dark ink or white on a fill, whichever has the higher contrast ratio. Against #161616 and white
-  // the two ratios cross at a relative luminance of 0.197, so every pastel in the palette takes dark
-  // ink. The fallbacks in the area scripts use the same formula.
+  // Dark ink or white on a fill, whichever has the higher contrast ratio, and never under 4.5:1. On
+  // the mid-tones where neither reaches it, the dark ink goes on toward black until it does, which
+  // black always can. The fallbacks in the area scripts use the same formula.
   function idealText(hex) {
     var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff";
     var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
-    return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff";
+    var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22;
+    if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff";
+    while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--;
+    return "#" + ("0" + g.toString(16)).slice(-2).repeat(3);
+  }
+  // The accent read as text, a link or a line glyph has to reach 4.5:1 on the card of each ramp too.
+  // The sheet derives it from the accent, which holds for every preset; a picked colour that falls
+  // short gets an ink pushed toward black on the light ramp and toward white on the dark one, as far
+  // as it needs and no further. --tt-accent-ink-light and --tt-accent-ink-dark carry the result,
+  // and stay unset while the sheet's own mix is enough.
+  function accentInks(hex) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return { light: "", dark: "" };
+    var n = parseInt(m[1], 16), acc = [n >> 16 & 255, n >> 8 & 255, n & 255];
+    var lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    var lum = function (c) { return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]); };
+    var ratio = function (a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+    var mix = function (a, b, t) { return [0, 1, 2].map(function (i) { return a[i] + (b[i] - a[i]) * t; }); };
+    var hex6 = function (c) { return "#" + c.map(function (v) { return ("0" + Math.round(v).toString(16)).slice(-2); }).join(""); };
+    // halving finds the least step toward `to` that reaches 4.5:1 on `ground`
+    var push = function (from, to, ground) {
+      var lo = 0, hi = 1;
+      for (var i = 0; i < 16; i++) { var mid = (lo + hi) / 2; if (ratio(mix(from, to, mid).map(Math.round), ground) >= 4.5) hi = mid; else lo = mid; }
+      return hex6(mix(from, to, hi));
+    };
+    var white = [255, 255, 255], black = [0, 0, 0], darkCard = [38, 38, 38], light = mix(acc, black, 0.45);
+    return {
+      light: ratio(light, white) >= 4.5 ? "" : push(light, black, white),
+      dark: ratio(acc, darkCard) >= 4.5 ? "" : push(acc, white, darkCard)
+    };
+  }
+  function paintAccentInks(style, hex) {
+    var k = accentInks(hex);
+    if (k.light) style.setProperty("--tt-accent-ink-light", k.light); else style.removeProperty("--tt-accent-ink-light");
+    if (k.dark) style.setProperty("--tt-accent-ink-dark", k.dark); else style.removeProperty("--tt-accent-ink-dark");
   }
 
   // tt.anim holds a GlimStone motion level, off, subtle or wild, and subtle when unset. The digits
@@ -1387,7 +1420,7 @@
 
   window.TTTheme = {
     backupWithCurrentKeys: backupWithCurrentKeys,
-    RB: RB, idealText: idealText, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
+    RB: RB, idealText: idealText, accentInks: accentInks, paintAccentInks: paintAccentInks, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,
     TT_INFO_SVG: TT_INFO_SVG, infoIcon: infoIcon, TT_TRASH_SVG: TT_TRASH_SVG, delIcon: delIcon,

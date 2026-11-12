@@ -1391,7 +1391,7 @@
     // marking it against the global accent would un-mark an area card's own pick whenever the
     // global colour changed. The logo previews fall back to the accent for their tiles and ink,
     // so they repaint with it.
-    var prow = colourField(accent, function (v) { accent = v; set("tt.accent", v); root.style.setProperty("--tt-accent", v); root.style.setProperty("--tt-accent-text", idealText(v)); paintPrev(); syncSwOn(); syncAllStyleCards(); repaintLogoPrevs(); tintPrev(); syncHeaderBar(); syncSharesBar(); }, { rowClass: "tt-set-swrow-global" });
+    var prow = colourField(accent, function (v) { accent = v; set("tt.accent", v); root.style.setProperty("--tt-accent", v); root.style.setProperty("--tt-accent-text", idealText(v)); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root.style, v); paintPrev(); syncSwOn(); syncAllStyleCards(); repaintLogoPrevs(); tintPrev(); syncHeaderBar(); syncSharesBar(); }, { rowClass: "tt-set-swrow-global" });
     if (mode === "accent") c1.appendChild(fieldRow(T("Akzentfarbe", "Accent colour"), T("Die Farbe aller Badges, Schalter und Knöpfe im Farbmodus Akzent.", "The colour of every badge, switch and button in the Accent colour mode."), prow));
     // on: every reload deals a fresh colour mapping; off: the colours stay put
     var rrot = el("div", "tt-set-row tt-set-inline");
@@ -2447,7 +2447,7 @@
       .catch(function (e) { failed(ctl, /bad shaping interface/.test(String(e && e.message)) ? T("Ungültige Schnittstelle", "Invalid interface") : T("Nicht gespeichert. Ist die Engine erreichbar?", "Not saved. Is the engine reachable?")); });
   }
   // dark text on a light background and white on a dark one, by perceived luminance
-  function idealText(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff"; }
+  function idealText(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22; if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff"; while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--; return "#" + ("0" + g.toString(16)).slice(-2).repeat(3); }
   // The preview uses the real palette, so it matches what the Docker tab shows.
   function paintPrev() { var p = document.getElementById("tt-set-prev"); if (!p) return; var DEF = (window.TTTheme && window.TTTheme.RB) || ["#FF8389", "#FF832B", "#FCC419", "#6FDC8C", "#3DDBD9", "#1D99F3", "#BE95FF", "#FF7EB6"]; var pal = DEF; try { var fj = get("tt.flagmode", "0") === "1" ? JSON.parse(get("tt.flagpal", "null")) : null; var j = (fj && fj.length) ? fj : JSON.parse(get("tt.rbpal", "null")); if (j && j.length) pal = j; } catch (e) {} if (window.TTTheme && window.TTTheme.surfacePalette) pal = window.TTTheme.surfacePalette(pal, accent); Array.prototype.slice.call(p.children).forEach(function (b, i) { var c = rainbow ? pal[i % pal.length] : accent; b.style.background = c; b.style.color = idealText(c); }); }
   // Every toggle on this page follows the colour engine. In rainbow mode each takes its own slot

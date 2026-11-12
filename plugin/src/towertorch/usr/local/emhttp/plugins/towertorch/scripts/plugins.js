@@ -154,7 +154,7 @@
   function storedPal() { try { if (ls("tt.flagmode") === "1") { var f = JSON.parse(ls("tt.flagpal") || "null"); if (f && f.length) return f; } var jp = JSON.parse(ls("tt.rbpal") || "null"); if (jp && jp.length) return jp; } catch (e) {} return RB_PAL; }
   // On a light theme the near-white slots are swapped, see TTTheme.surfacePalette.
   function pal() { var p = storedPal(); return (window.TTTheme && window.TTTheme.surfacePalette) ? window.TTTheme.surfacePalette(p, accent()) : p; }
-  function idealText(bg) { var m = /^#?([0-9a-f]{6})$/i.exec(bg || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff"; }
+  function idealText(bg) { var m = /^#?([0-9a-f]{6})$/i.exec(bg || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22; if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff"; while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--; return "#" + ("0" + g.toString(16)).slice(-2).repeat(3); }
   function accent() { return eff("accent") || "#FCC419"; }
   function colorFor(i) {
     if (ls("tt.rainbow") !== "1") return accent();

@@ -16,7 +16,7 @@
   function idealText(hex) {
     var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff";
     var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
-    return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff";
+    var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22; if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff"; while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--; return "#" + ("0" + g.toString(16)).slice(-2).repeat(3);
   }
   function motionLevel(v) { return v === "off" || v === "0" ? "off" : v === "wild" || v === "2" ? "wild" : "subtle"; }
   function shapeName(v) { return v === "soft" || v === "rounded" ? "soft" : v === "square" ? "square" : "round"; }
@@ -2700,8 +2700,8 @@
       // below its buttons fall through to the hardcoded default rather than the configured accent.
       // accent() is the same function rbColor()'s own non-rainbow fallback calls.
       try {
-        if (on) { var accA = accent(); root.style.setProperty("--tt-accent", accA); root.style.setProperty("--tt-accent-text", idealText(accA)); }
-        else { root.style.removeProperty("--tt-accent"); root.style.removeProperty("--tt-accent-text"); }
+        if (on) { var accA = accent(); root.style.setProperty("--tt-accent", accA); root.style.setProperty("--tt-accent-text", idealText(accA)); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root.style, accA); }
+        else { root.style.removeProperty("--tt-accent"); root.style.removeProperty("--tt-accent-text"); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root.style, ""); }
         if (on && rbOn()) { var rbA = rbColor(5); root.style.setProperty("--tt-rbaccent", rbA); root.style.setProperty("--tt-rbaccent-text", idealText(rbA)); }
         else { root.style.removeProperty("--tt-rbaccent"); root.style.removeProperty("--tt-rbaccent-text"); }
       } catch (e7) {}

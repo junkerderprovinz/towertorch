@@ -595,7 +595,7 @@
   // The accent colour and the row density come from localStorage as CSS variables, written live
   // by the settings page along with a poke event.
   // the badge text colour for a background: dark ink on a light one, white on a dark one
-  function idealText(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff"; }
+  function idealText(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22; if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff"; while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--; return "#" + ("0" + g.toString(16)).slice(-2).repeat(3); }
   // The container icons are tinted with an inline SVG feColorMatrix filter applied to each icon
   // element, so it cannot be mis-positioned the way an overlay can and it maps to the exact sRGB
   // colour, which a grayscale, sepia and hue-rotate chain only approximates. The icon becomes a
@@ -950,7 +950,7 @@
       // rest-grey never applies.
       document.documentElement.classList.toggle("tt-docker-on", themingOn() && localStorage.getItem("tt.enable.docker") !== "0");
       var root = document.documentElement.style;
-      var accent = effc("accent"); if (accent) { root.setProperty("--tt-accent", accent); root.setProperty("--tt-accent-text", idealText(accent)); }
+      var accent = effc("accent"); if (accent) { root.setProperty("--tt-accent", accent); root.setProperty("--tt-accent-text", idealText(accent)); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root, accent); }
       var dens = localStorage.getItem("tt.density"); root.setProperty("--tt-density", { compact: "5px", normal: "9px", airy: "14px" }[dens] || "9px");
       // tt.sgsize, shared with the settings grid, drives the logo tile as [img, box] per step,
       // where box minus img is twice the tile's padding

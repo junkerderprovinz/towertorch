@@ -173,7 +173,7 @@
   function iconBgAdoptsV() { return ls("tt.iconbgrainbow") === "1"; }
   // The logo tile has its own switch whether or not the colours are adopted (docker.js iconBgOn).
   function iconBgOnV() { return effK("iconbg") === "1"; }
-  function ttIdeal(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255) > 0.197 ? "#161616" : "#fff"; }
+  function ttIdeal(hex) { var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return "#fff"; var n = parseInt(m[1], 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22; if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff"; while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--; return "#" + ("0" + g.toString(16)).slice(-2).repeat(3); }
   // A failed action shakes the control that was used and says why in a toast.
   function ttvFail(ctl, msg) { if (window.TTTheme) window.TTTheme.fail(ctl, msg); }
   function ttAccent() { var a = effK("accent") || "#FCC419"; return /^#[0-9a-f]{6}$/i.test(a) ? a : "#FCC419"; }
@@ -296,7 +296,7 @@
   function enhanceRows() {
     try {
       var a = ttAccent(), root = document.documentElement.style;
-      root.setProperty("--tt-accent", a); root.setProperty("--tt-accent-text", ttIdeal(a));
+      root.setProperty("--tt-accent", a); root.setProperty("--tt-accent-text", ttIdeal(a)); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root, a);
       // the logo tile follows the global tt.sgsize like the Docker and Plugins tabs
       var lg = vmLogoSizes();
       root.setProperty("--tt-logo-img", lg[0]); root.setProperty("--tt-logo-box", lg[1]);

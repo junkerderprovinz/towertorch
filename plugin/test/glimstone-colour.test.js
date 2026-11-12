@@ -45,10 +45,10 @@ ok('no other sheet redeclares the accent on :root', files(DIR, ['.css']).every((
 }
 
 console.log('\nThe accent as ink: derived from the accent, darker on a light ground');
-ok('--tt-accent-ink mixes the accent toward black by --tt-ink-mix', /^color-mix\(in srgb, var\(--tt-accent\) var\(--tt-ink-mix\), black\)$/.test(decl(dark, '--tt-accent-ink') || ''), decl(dark, '--tt-accent-ink'));
+ok('--tt-accent-ink mixes the accent toward black by --tt-ink-mix, unless a picked colour brings its own', /^var\(--tt-accent-ink-dark, color-mix\(in srgb, var\(--tt-accent\) var\(--tt-ink-mix\), black\)\)$/.test(decl(dark, '--tt-accent-ink') || ''), decl(dark, '--tt-accent-ink'));
 ok('the dark themes do not darken it', decl(dark, '--tt-ink-mix') === '100%');
 ok('the light themes mix it 55%', decl(light, '--tt-ink-mix') === '55%', decl(light, '--tt-ink-mix'));
-ok('the light override does not redeclare the ink itself, so it keeps following the accent', decl(light, '--tt-accent-ink') == null);
+ok('the light override keeps the same mix and reads the light ramp\'s own ink first', decl(light, '--tt-accent-ink') === 'var(--tt-accent-ink-light, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black))', decl(light, '--tt-accent-ink'));
 {
   const fav = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Favorites.css'), 'utf8');
   const tools = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tools.css'), 'utf8');
