@@ -8,6 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
+	"github.com/junkerderprovinz/parleyport/kit/member"
+
 	"github.com/junkerderprovinz/towertorch/internal/fortress"
 	"github.com/junkerderprovinz/towertorch/internal/maint"
 )
@@ -109,11 +112,23 @@ func TestWithoutAnEngineThereIsNoMaintenanceRoute(t *testing.T) {
 }
 
 type fakeDoor struct {
-	words   string
-	err     error
-	left    bool
-	removed bool
-	changed bool
+	words    string
+	err      error
+	left     bool
+	removed  bool
+	changed  bool
+	members  []kitfortress.Member
+	removals []fortress.Removal
+	took     string
+}
+
+func (d *fakeDoor) Members() []kitfortress.Member { return d.members }
+
+func (d *fakeDoor) RemovedMembers() []fortress.Removal { return d.removals }
+
+func (d *fakeDoor) Remove(id string) error {
+	d.took = id
+	return d.err
 }
 
 func (d *fakeDoor) Removed() bool { return d.removed }
@@ -189,5 +204,75 @@ func TestThePanelHearsThatThePhraseChanged(t *testing.T) {
 	}
 	if !o.Ready.PhraseChanged {
 		t.Errorf("ready = %+v, want the phrase changed", o.Ready)
+	}
+}
+
+func TestRemovingAMemberAsksTheDoor(t *testing.T) {
+	d := &fakeDoor{}
+	s := &Server{Store: &memStore{}, Door: d}
+	if rec := call(s, http.MethodPost, "/api/fortress/remove", `{"id":"i-bv"}`); rec.Code != http.StatusOK || d.took != "i-bv" {
+		t.Errorf("remove = %d %s, took %q", rec.Code, rec.Body, d.took)
+	}
+}
+
+func TestARemovalThatFailsSaysWhyWithACode(t *testing.T) {
+	for _, c := range []struct {
+		err  error
+		body string
+		code int
+		want string
+	}{
+		{fortress.ErrNoMember, `{"id":"x"}`, http.StatusNotFound, `"error":"noMember"`},
+		{fortress.ErrNotMember, `{"id":"x"}`, http.StatusConflict, `"error":"notMember"`},
+		{nil, `{"id":""}`, http.StatusBadRequest, `"error":"noMember"`},
+		{nil, `not json`, http.StatusBadRequest, `"error":"noMember"`},
+	} {
+		d := &fakeDoor{err: c.err}
+		s := &Server{Store: &memStore{}, Door: d}
+		rec := call(s, http.MethodPost, "/api/fortress/remove", c.body)
+		if rec.Code != c.code || !strings.Contains(rec.Body.String(), c.want) {
+			t.Errorf("%v %s: %d %s", c.err, c.body, rec.Code, rec.Body)
+		}
+	}
+}
+
+func TestThePanelListsTheOtherMembersAndThoseRemoved(t *testing.T) {
+	d := &fakeDoor{
+		members: []kitfortress.Member{{
+			ID: "i-bv", Kind: member.KindInstance, App: kitfortress.App{ID: "bombvault", Name: "BombVault"},
+			Device: "Bottich", Deployment: "container", Address: "http://192.168.10.10:8484", Relay: true,
+		}},
+		removals: []fortress.Removal{{App: "tollroll", Name: "TollRoll", Device: "Bottich"}},
+	}
+	s := &Server{Store: &memStore{}, Maintenance: &fakeMaintenance{}, Door: d}
+	rec := call(s, http.MethodGet, "/api/maintenance", "")
+	var o struct {
+		Fortress struct {
+			Members []map[string]any   `json:"members"`
+			Removed []fortress.Removal `json:"removed"`
+		} `json:"fortress"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &o); err != nil {
+		t.Fatal(err)
+	}
+	if len(o.Fortress.Members) != 1 {
+		t.Fatalf("members = %s", rec.Body)
+	}
+	m := o.Fortress.Members[0]
+	for k, want := range map[string]any{"id": "i-bv", "app": "bombvault", "name": "BombVault", "device": "Bottich", "kind": "instance", "deployment": "container", "address": "http://192.168.10.10:8484", "online": true} {
+		if m[k] != want {
+			t.Errorf("member %s = %v, want %v", k, m[k], want)
+		}
+	}
+	if len(o.Fortress.Removed) != 1 || o.Fortress.Removed[0].Name != "TollRoll" {
+		t.Errorf("removed = %+v", o.Fortress.Removed)
+	}
+}
+
+func TestOutsideAFortressThePanelListsNobody(t *testing.T) {
+	s := &Server{Store: &memStore{}, Maintenance: &fakeMaintenance{}, Door: &fakeDoor{}}
+	rec := call(s, http.MethodGet, "/api/maintenance", "")
+	if !strings.Contains(rec.Body.String(), `"fortress":{"members":[],`) {
+		t.Errorf("body = %s", rec.Body)
 	}
 }

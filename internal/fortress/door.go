@@ -98,6 +98,7 @@ func (d *Door) Enter(words string) error {
 		return errors.Join(joinErr, err)
 	}
 	d.removed, d.phraseChanged = false, false
+	d.forgetRemovals()
 	d.set(in)
 	return nil
 }
@@ -225,6 +226,7 @@ func (d *Door) follow(ctx context.Context, f *kitfortress.Fortress, signalled bo
 		return nil
 	}
 	d.phraseChanged = false
+	d.forgetRemovals()
 	return in.Fortress
 }
 

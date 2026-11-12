@@ -17,12 +17,12 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // the one way in from a browser.
 // maintenance/maintenancerun/maintenancestop: the maintenance plan and its run; fortressjoin
 // takes the fortress phrase, which the engine turns into its keys and never keeps, and
-// fortressleave takes TowerTorch out again.
+// fortressleave takes TowerTorch out again. fortressremove takes another member out by its id.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
           'fortressstatus' => ['GET'], 'fortresslog' => ['GET'],
-          'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST']];
+          'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST'], 'fortressremove' => ['POST']];
 $route = ['fortressstatus' => 'fortress/v1/status', 'fortresslog' => 'fortress/v1/log',
-          'maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave'];
+          'maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave', 'fortressremove' => 'fortress/remove'];
 
 $path   = isset($_GET['path']) ? preg_replace('/[^a-z]/', '', $_GET['path']) : '';
 $method = $_SERVER['REQUEST_METHOD'];

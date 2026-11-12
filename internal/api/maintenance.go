@@ -1,21 +1,65 @@
 package api
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 
+	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
+
 	"github.com/junkerderprovinz/towertorch/internal/fortress"
 	"github.com/junkerderprovinz/towertorch/internal/maint"
 )
 
-// Door lets TowerTorch join a fortress with its phrase and leave it.
+// Door lets TowerTorch join a fortress with its phrase, take another member
+// out and leave it.
 type Door interface {
 	Enter(words string) error
 	Leave() error
 	Removed() bool
 	PhraseChanged() bool
+	Members() []kitfortress.Member
+	Remove(id string) error
+	RemovedMembers() []fortress.Removal
+}
+
+// panelView is the overview with the other members of the fortress, for the
+// card's list with Remove.
+type panelView struct {
+	maint.Overview
+	Fortress *fortressView `json:"fortress,omitempty"`
+}
+
+type fortressView struct {
+	Members []memberView       `json:"members"`
+	Removed []fortress.Removal `json:"removed"`
+}
+
+// memberView is another member as the card names it. Deployment and Address
+// let the card find an app that keeps the phrase, since TowerTorch keeps
+// none.
+type memberView struct {
+	ID         string `json:"id"`
+	Kind       string `json:"kind"`
+	App        string `json:"app"`
+	Name       string `json:"name"`
+	Device     string `json:"device"`
+	Deployment string `json:"deployment"`
+	Address    string `json:"address"`
+	Online     bool   `json:"online"`
+}
+
+func (s *Server) fortressView() *fortressView {
+	v := &fortressView{Members: []memberView{}, Removed: s.Door.RemovedMembers()}
+	for _, m := range s.Door.Members() {
+		v.Members = append(v.Members, memberView{
+			ID: m.ID, Kind: string(m.Kind), App: m.App.ID, Name: cmp.Or(m.App.Name, m.App.ID), Device: m.Device,
+			Deployment: m.Deployment, Address: m.Address, Online: m.Online(),
+		})
+	}
+	return v
 }
 
 // Maintenance runs the maintenance plan.
@@ -36,7 +80,11 @@ func (s *Server) handleGetMaintenance(w http.ResponseWriter, r *http.Request) {
 		lang = r.Header.Get("Accept-Language")
 	}
 	maint.Localize(&o, lang)
-	writeJSON(w, http.StatusOK, o)
+	v := panelView{Overview: o}
+	if s.Door != nil {
+		v.Fortress = s.fortressView()
+	}
+	writeJSON(w, http.StatusOK, v)
 }
 
 func (s *Server) handlePutMaintenance(w http.ResponseWriter, r *http.Request) {
@@ -107,5 +155,28 @@ func (s *Server) handleLeave(w http.ResponseWriter, _ *http.Request) {
 		writeErr(w, http.StatusInternalServerError, err)
 	default:
 		writeJSON(w, http.StatusOK, map[string]string{"status": "left"})
+	}
+}
+
+// handleRemove takes another member out, by its id: noMember for an id no
+// other member has, notMember while TowerTorch is in no fortress.
+func (s *Server) handleRemove(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		ID string `json:"id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.ID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "noMember"})
+		return
+	}
+	err := s.Door.Remove(req.ID)
+	switch {
+	case errors.Is(err, fortress.ErrNoMember):
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "noMember"})
+	case errors.Is(err, fortress.ErrNotMember):
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "notMember"})
+	case err != nil:
+		writeErr(w, http.StatusInternalServerError, err)
+	default:
+		writeJSON(w, http.StatusOK, map[string]string{"status": "removed"})
 	}
 }
