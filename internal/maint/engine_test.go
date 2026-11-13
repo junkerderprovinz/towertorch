@@ -49,7 +49,7 @@ func (f *fakeJobs) Backup(_ context.Context, _ Member, c string) (Snapshot, erro
 	if err := f.backupErr[c]; err != nil {
 		return Snapshot{}, err
 	}
-	return Snapshot{Run: "r-" + c, ID: "snap-" + c, Link: "https://bv/" + c}, nil
+	return Snapshot{Run: "r-" + c, ID: "snap-" + c}, nil
 }
 
 func (f *fakeJobs) Update(_ context.Context, _ Member, containers, backedUp []string) ([]Updated, error) {
@@ -180,7 +180,7 @@ func TestAFullRunBacksUpUpdatesChecksAndRestarts(t *testing.T) {
 	if want := []string{"immich", "mariadb", "nextcloud"}; !slices.Equal(r.jobs.backedUp, want) {
 		t.Errorf("backed up %v, want %v", r.jobs.backedUp, want)
 	}
-	if b := step(rep, StepBackup); b.State != StateDone || len(b.Items) != 3 || b.Items[0].Link != "https://bv/immich" {
+	if b := step(rep, StepBackup); b.State != StateDone || len(b.Items) != 3 {
 		t.Errorf("backup = %+v", b)
 	}
 	if len(r.jobs.updated) != 2 || len(r.jobs.updated[0]) != 0 || len(r.jobs.updated[1]) != 3 {

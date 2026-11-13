@@ -485,7 +485,7 @@ func (r *runner) backup(s *StepReport) {
 			failed = append(failed, name)
 			continue
 		}
-		it.State, it.Code, it.Detail, it.Link = StateOK, "backup.ok", snap.ID, snap.Link
+		it.State, it.Code, it.Detail = StateOK, "backup.ok", snap.ID
 		r.backedUp = append(r.backedUp, name)
 	}
 	n := strconv.Itoa(len(r.backedUp))
@@ -584,7 +584,7 @@ func (r *runner) check(s *StepReport) {
 	}
 	s.Verdict = v.Verdict
 	for _, f := range v.Findings {
-		it := Item{Name: f.ID, State: StateOK, Code: f.Key, Detail: f.Message, Link: f.Link}
+		it := Item{Name: f.ID, State: StateOK, Code: f.Key, Detail: f.Message}
 		switch f.Status {
 		case "warn":
 			it.State = StateWarn

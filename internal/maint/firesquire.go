@@ -38,7 +38,6 @@ type Finding struct {
 	Key     string   `json:"key"`
 	Args    []string `json:"args"`
 	Message string   `json:"message"`
-	Link    string   `json:"link,omitempty"`
 }
 
 // FireSquire runs the check of the FireSquire plugin on this server.

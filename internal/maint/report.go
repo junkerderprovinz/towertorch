@@ -76,7 +76,6 @@ type Item struct {
 	State  State  `json:"state"`
 	Code   string `json:"code"`
 	Detail string `json:"detail,omitempty"`
-	Link   string `json:"link,omitempty"`
 }
 
 // Progress is where a run stands. BlocksRestart asks the other apps of the

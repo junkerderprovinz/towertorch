@@ -73,9 +73,8 @@ func (e *NoAppError) Is(target error) bool { return target == ErrNoApp }
 
 // Snapshot is a finished backup.
 type Snapshot struct {
-	Run  string
-	ID   string
-	Link string
+	Run string
+	ID  string
 }
 
 // Updated is how the update of one container went: updated, current, held,
@@ -144,13 +143,12 @@ func (j *Jobs) here(m Member) bool {
 func (j *Jobs) Backup(ctx context.Context, m Member, container string) (Snapshot, error) {
 	var done struct {
 		Snapshot string `json:"snapshot"`
-		Link     string `json:"link"`
 	}
 	run, err := j.job(ctx, m, BackupAction, map[string]any{"container": container, "reason": reason}, or(j.BackupTimeout, 30*time.Minute), &done)
 	if err != nil {
 		return Snapshot{}, err
 	}
-	return Snapshot{Run: run, ID: done.Snapshot, Link: done.Link}, nil
+	return Snapshot{Run: run, ID: done.Snapshot}, nil
 }
 
 // Update has m update containers, every container with an update when the

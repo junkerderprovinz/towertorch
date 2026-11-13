@@ -4,7 +4,7 @@
 //   · a text missing in one language, or written with a dash or semicolon the house style forbids
 //   · a step that says it will run while its app is missing, or a missing app that is not named
 //   · a plan that was never saved showing every step off
-//   · a link from the engine that is not http(s) turning into a live href
+//   · an item linking to another app, which would show that app's address
 //   · the bar or the settings page not mounting the panel at all
 const fs = require('fs');
 const path = require('path');
@@ -49,7 +49,7 @@ console.log('\nEvery text in both languages, in the house style');
 // The functions run against a stand-in for the panel's state, with the real texts.
 const env = { LANG: 'en', T, STEPS: ['backup', 'update', 'check', 'restart'], APPS: { bombvault: 'BombVault', shiplog: 'ShipLog', firesquire: 'FireSquire' }, DEFAULT_AT: '03:30', S: null };
 const make = (names) => new Function(...Object.keys(env), names.map(grab).join('\n') + '\nreturn {' + names.join(',') + '};');
-const fns = (S, lang) => make(['t', 'appName', 'server', 'avail', 'fromEngine', 'safeLink', 'itemLabel', 'pending', 'schedText', 'dayNames', 'chipCls'])(...Object.values({ ...env, LANG: lang || 'en', S }));
+const fns = (S, lang) => make(['t', 'appName', 'server', 'avail', 'fromEngine', 'itemLabel', 'pending', 'schedText', 'dayNames', 'chipCls'])(...Object.values({ ...env, LANG: lang || 'en', S }));
 
 console.log('\nA plan never saved offers every step');
 {
@@ -88,7 +88,7 @@ console.log('\nThe report reads plainly');
   ok('a container that is gone is named', f.itemLabel('backup', { state: 'skipped', code: 'container.gone' }) === 'no longer there');
   ok('a finding that blocks the restart', f.itemLabel('check', { state: 'failed', code: 'fortress_busy' }) === 'blocks');
   ok('a held restart wears the warning colour', f.chipCls('held') === 'warn' && f.chipCls('failed') === 'failed');
-  ok('only an http(s) link opens', f.safeLink('https://bv.lan/s/1') === 'https://bv.lan/s/1' && f.safeLink('javascript:alert(1)') === '' && f.safeLink('') === '');
+  ok('an item links nowhere, so no address of another app shows', !/\bhref\b|\.link\b/.test(grab('itemsHtml')), grab('itemsHtml'));
 }
 
 console.log('\nThe Docker tab and the settings page mount the panel');

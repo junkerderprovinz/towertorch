@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
@@ -121,7 +122,7 @@ func TestABackupStartsWaitsAndNamesTheSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if snap.ID != "s-42" || snap.Link != "https://bv/s/42" || snap.Run != "r1" {
+	if snap.ID != "s-42" || snap.Run != "r1" {
 		t.Errorf("snap = %+v", snap)
 	}
 	started := f.starts(BackupAction)
@@ -243,5 +244,20 @@ func TestAnAppOnAnotherServerUnderTheSameNameIsNotFound(t *testing.T) {
 	j.Host = "Tower"
 	if _, err := j.Find(BackupAction); !errors.Is(err, ErrNoApp) {
 		t.Errorf("err = %v, want ErrNoApp for an app on another server", err)
+	}
+}
+
+func TestABackupKeepsNoAddressOfTheBackupApp(t *testing.T) {
+	f := &fakeFortress{members: []Member{bombvault("Tower", true)}, polls: map[string][]string{
+		"r1": {`{"state":"done","snapshot":"s-42","link":"https://192.168.10.10:13443/backups/container/nextcloud"}`},
+	}}
+	j := newJobs(f)
+	m, _ := j.Find(BackupAction)
+	snap, err := j.Backup(context.Background(), m, "nextcloud")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := fmt.Sprintf("%+v", snap); strings.Contains(got, "192.168") {
+		t.Errorf("snap = %s, want it without the backup app's address", got)
 	}
 }

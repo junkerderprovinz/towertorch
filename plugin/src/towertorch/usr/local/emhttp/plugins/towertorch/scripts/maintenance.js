@@ -123,7 +123,6 @@
       "v.GO": "GO",
       "v.CAUTION": "CAUTION",
       "v.NO-GO": "NO-GO",
-      "link.snapshot": "Open snapshot",
       "dlg.stop.title": "Stop the maintenance run?",
       "dlg.stop.textBackup": "{item} finishes its backup first. Nothing after it runs.",
       "dlg.stop.text": "The current step finishes first. Nothing after it runs.",
@@ -258,7 +257,6 @@
       "v.GO": "GO",
       "v.CAUTION": "VORSICHT",
       "v.NO-GO": "NO-GO",
-      "link.snapshot": "Snapshot öffnen",
       "dlg.stop.title": "Wartungslauf anhalten?",
       "dlg.stop.textBackup": "{item} wird noch fertig gesichert. Danach läuft nichts mehr.",
       "dlg.stop.text": "Der laufende Schritt wird noch fertig. Danach läuft nichts mehr.",
@@ -305,7 +303,6 @@
   }
   function appName(id) { return APPS[id] || id || ""; }
   function server() { return (S.o && S.o.server) || "Unraid"; }
-  function safeLink(u) { return /^https?:\/\//i.test(u || "") ? u : ""; }
 
   function csrfToken() {
     try {
@@ -476,10 +473,9 @@
   function itemsHtml(s, current) {
     return (s.items || []).map(function (it) {
       if (current && it.name === current && it.state === "waiting") it = { name: it.name, state: "running" };
-      var link = it.state === "ok" ? safeLink(it.link) : "";
       var detail = s.step === "check" || it.state !== "ok" ? it.detail : "";
       return '<div class="tt-mw-it"><span class="tt-mw-nm">' + esc(it.name) + "</span>" + (detail ? '<span class="tt-mw-dt">' + esc(detail) + "</span>" : "") +
-        '<span class="tt-mw-rt">' + (link ? '<a class="tt-mw-link" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">' + glyph("ExternalLink") + esc(t("link.snapshot")) + "</a>" : "") + chip(chipCls(it.state), itemLabel(s.step, it)) + "</span></div>";
+        '<span class="tt-mw-rt">' + chip(chipCls(it.state), itemLabel(s.step, it)) + "</span></div>";
     }).join("");
   }
   function pending(s) {

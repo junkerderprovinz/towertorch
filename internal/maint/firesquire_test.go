@@ -48,9 +48,6 @@ func TestANoGoComesWithWhatBlocksAndWhatToWatch(t *testing.T) {
 	if f := v.Findings[1]; f.Status != "fail" || f.Key != "fortress_busy_open" || f.Message == "" {
 		t.Errorf("finding = %+v", f)
 	}
-	if v.Findings[2].Link != "http://tower:8080" {
-		t.Errorf("link lost: %+v", v.Findings[2])
-	}
 }
 
 func TestACheckThatSaysNothingReadableFails(t *testing.T) {
