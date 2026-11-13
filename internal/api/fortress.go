@@ -9,6 +9,7 @@ import (
 	"time"
 
 	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
+	"github.com/junkerderprovinz/parleyport/kit/group"
 	"github.com/junkerderprovinz/parleyport/kit/member"
 	"github.com/junkerderprovinz/parleyport/kit/status"
 
@@ -94,7 +95,8 @@ func (s *Server) handleGetFortress(w http.ResponseWriter, _ *http.Request) {
 
 // handleJoin takes the phrase and answers with the new state, or with a code
 // the card can word: phrase for words that are no fortress phrase, member
-// when TowerTorch is in one already.
+// when TowerTorch is in one already and closedUntilNewPhrase while the
+// members take nobody new.
 func (s *Server) handleJoin(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Phrase string `json:"phrase"`
@@ -109,6 +111,8 @@ func (s *Server) handleJoin(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "phrase"})
 	case errors.Is(err, fortress.ErrMember):
 		writeJSON(w, http.StatusConflict, map[string]string{"error": "member"})
+	case errors.Is(err, fortress.ErrShutOut):
+		writeJSON(w, http.StatusForbidden, map[string]string{"error": group.ClosedUntilNewPhrase})
 	case err != nil:
 		writeErr(w, http.StatusInternalServerError, err)
 	default:

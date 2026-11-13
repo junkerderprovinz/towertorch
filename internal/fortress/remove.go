@@ -16,7 +16,7 @@ var ErrNoMember = errors.New("no other member of the fortress has that id")
 const removedFile = "removed.json"
 
 // Removal is a member TowerTorch took out of the fortress. Until the phrase
-// changes, the phrase lets it back in, so the card keeps naming it.
+// changes, the fortress takes no new member, so the card keeps naming it.
 type Removal struct {
 	App    string `json:"app"`
 	Name   string `json:"name"`

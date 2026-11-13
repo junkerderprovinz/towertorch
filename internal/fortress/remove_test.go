@@ -12,6 +12,7 @@ import (
 	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
 	"github.com/junkerderprovinz/parleyport/kit/group"
 	"github.com/junkerderprovinz/parleyport/kit/member"
+	"github.com/junkerderprovinz/parleyport/kit/phrase"
 
 	"github.com/junkerderprovinz/towertorch/internal/maint"
 )
@@ -170,5 +171,38 @@ func TestTheNewWordsClearTheList(t *testing.T) {
 	}
 	if got := d.RemovedMembers(); len(got) != 0 {
 		t.Errorf("removed = %+v after the new words", got)
+	}
+}
+
+func TestAfterARemovalTheOldPhraseLetsNoNewTowerTorchIn(t *testing.T) {
+	v, d := inFortress(t, func() ([]byte, error) { return nil, nil })
+	shiplog(t, v)
+	var sl string
+	waitFor(t, "TowerTorch to reach ShipLog", func() bool {
+		for _, m := range d.Members() {
+			if m.App.ID == "shiplog" && m.Online() {
+				sl = m.ID
+				return true
+			}
+		}
+		return false
+	})
+	if err := d.Remove(sl); err != nil {
+		t.Fatal(err)
+	}
+	words, err := phrase.Encode(v.phrase())
+	if err != nil {
+		t.Fatal(err)
+	}
+	late := &Door{Dir: filepath.Join(t.TempDir(), "fortress"), App: towertorch, Device: "Laptop", Relay: v.url}
+	t.Cleanup(func() { _ = late.Close() })
+	if err := late.Enter(words); !errors.Is(err, ErrShutOut) {
+		t.Fatalf("join on the old phrase = %v, want ErrShutOut", err)
+	}
+	if _, in := late.Joined(); in {
+		t.Error("TowerTorch counts itself in after the members turned it away")
+	}
+	if _, err := os.Stat(filepath.Join(late.Dir, "fortress.json")); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("the membership the members turned away is kept: %v", err)
 	}
 }

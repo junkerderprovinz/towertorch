@@ -98,6 +98,11 @@ console.log('\nThe adapter speaks for the card');
   ok('leaving and removing take their paths, removing by id', calls[1][1] === 'fortressleave' && calls[2][1] === 'fortressremove' && calls[2][2].id === 'i-bv' && refreshed.length === 3);
   answer = () => Promise.reject(err(400, 'phrase'));
   ok('a wrong phrase keeps its code for the card', await adapter.join(words).then(() => false, (e) => e.code === 'phrase'));
+  answer = () => Promise.reject(err(403, 'closedUntilNewPhrase'));
+  const refusal = await adapter.join(words).then(() => null, (e) => e);
+  require(path.join(DIR, 'scripts', 'fortress-card.js'));
+  const card = globalThis.GlimFortressCard, en = card.text('en');
+  ok('a fortress closed until its phrase changes shows joinLocked', refusal !== null && en.joinLocked !== '' && card.joinRefusal(en, refusal.code) === en.joinLocked, refusal && refusal.code);
   ok('settings.js gives every failure the engine\'s code and status', /err\.status = r\.status; err\.code = d && d\.error; throw err;/.test(grab('api')) && /function api\(method, path, body, query\)/.test(settings));
 
   calls.length = 0;

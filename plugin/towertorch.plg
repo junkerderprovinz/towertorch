@@ -29,19 +29,19 @@
 
 <CHANGES>
 ### 1.5.0
-TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks and restarts your server in one go, and the look moves to GlimStone 4.4.0, true black included. Please update ShipLog to 3.8.0 along with it, so the two share one look and can hand each other the work.
+TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks and restarts your server in one go, and the look moves to GlimStone 4.4.1, true black included. Please update ShipLog to 3.8.0 along with it, so the two share one look and can hand each other the work.
 
 **✨ Added**
 - **A maintenance plan beside the start plan.** It backs up, updates, checks and restarts the server, one step after the other, by hand or on a schedule you pick. BombVault takes the backups, ShipLog the updates and FireSquire checks the server first, and a NO-GO keeps it running. Whatever your fortress is missing gets skipped and named in the report, which also says how many of your notification channels got the summary. Open it from the Docker tab's bar or from its card in the settings.
-- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When the phrase changes, TowerTorch follows on its own. If it can't, or another member takes it out, the card says so, after a restart too, and asks for the current phrase.
-- **Remove another app from your fortress.** Every other app on the settings card has its own Remove. TowerTorch asks first and names the app and its device, then offers to change the phrase in an app that keeps it, since the old phrase would let the removed one straight back in. Until it changes, the card names whoever you removed.
+- **TowerTorch joins your fortress with the phrase.** Type the twelve words on the settings card. TowerTorch keeps its own keys only, never the phrase, and the same card takes it out again after asking. When the phrase changes, TowerTorch follows on its own. If it can't, or another member takes it out, the card says so, after a restart too, and asks for the new phrase.
+- **Remove another app from your fortress.** Every other app on the settings card has its own Remove. TowerTorch asks first and names the app and its device, then offers to change the phrase in an app that keeps it, since until then your fortress takes no new app. Until it changes, the card names whoever you removed, and an app that tries to join hears why it has to wait.
 - **BombVault is found on this server, whatever name you give it**, so the maintenance plan never misses its backups. Your other apps show TowerTorch with its own logo.
 - **TowerTorch tells the other apps of your fortress how it is doing.** They can read whether a start in order is running, which containers did not start and why, and which ones the watchdog could not keep up, along with a log of runs and restarts. Only members of your fortress can read it. At home they reach TowerTorch directly, relay or not, on a port that lets in fortress members and nobody else. Open on TowerTorch's card in another app shows all of this in a window.
 - **OLED.** A switch under Dark mode puts the dark look on true black for OLED and AMOLED screens. It only works while dark mode is on, says so when you try it on a light theme, and applies to this device only.
 - **A failed start sends a notification.** When a container in the start plan does not come up, at boot or after Start in order, you hear about it the way you chose on the Notifications card. The message names each container and why.
 
 **🎨 Design**
-- **GlimStone 4.4.0.** The Version card on the Info tab names it.
+- **GlimStone 4.4.1.** The Version card on the Info tab names it.
 - **Switches you can read.** A switch that is on draws its knob in the ink of its colour instead of white, which all but vanished on gold. On the light themes a switch that is off is a darker grey, so it no longer melts into the card.
 - **Text on colour always reads.** Every ink TowerTorch works out keeps a contrast of 4.5:1, on a mid-grey badge too. An accent you picked yourself gets a lighter or darker ink for text where it would be too faint.
 - **Toasts are one size.** Each is a card 24rem wide on a whole-pixel line, and a phone shows the newest two across its width.

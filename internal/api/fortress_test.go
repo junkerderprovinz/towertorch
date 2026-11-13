@@ -200,6 +200,7 @@ func TestAJoinThatFailsSaysWhyWithACode(t *testing.T) {
 	}{
 		{fortress.ErrPhrase, http.StatusBadRequest, `"error":"phrase"`},
 		{fortress.ErrMember, http.StatusConflict, `"error":"member"`},
+		{fortress.ErrShutOut, http.StatusForbidden, `"error":"closedUntilNewPhrase"`},
 	} {
 		s := &Server{Store: &memStore{}, Door: &fakeDoor{err: c.err}}
 		rec := call(s, http.MethodPost, "/api/fortress/join", `{"phrase":"x"}`)

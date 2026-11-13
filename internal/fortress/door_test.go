@@ -1,6 +1,7 @@
 package fortress
 
 import (
+	"context"
 	"errors"
 	"net/http/httptest"
 	"os"
@@ -10,8 +11,6 @@ import (
 	"testing"
 	"time"
 
-	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
-	"github.com/junkerderprovinz/parleyport/kit/group"
 	"github.com/junkerderprovinz/parleyport/kit/member"
 	"github.com/junkerderprovinz/parleyport/kit/phrase"
 	"github.com/junkerderprovinz/parleyport/kit/relay"
@@ -121,14 +120,8 @@ func TestRemovedByAnotherMemberTowerTorchForgetsTheFortressAndSaysSoAfterARestar
 	if err != nil {
 		t.Fatal(err)
 	}
-	vault, err := kitfortress.Open(kitfortress.Config{
-		App: kitfortress.App{ID: "bombvault", Name: "BombVault", Version: "1.0.0"}, Secret: secret, Identity: ident,
-		Self: group.Self{Name: "Tower", Deployment: "container"}, Relay: group.RelayOwn, RelayURL: srv.URL, Store: &memStore{},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { _ = vault.Close() })
+	v := &vault{t: t, url: srv.URL, id: ident, store: &memStore{}, secret: secret}
+	v.open(secret, nil)
 
 	dir := filepath.Join(t.TempDir(), "fortress")
 	var mu sync.Mutex
@@ -144,7 +137,7 @@ func TestRemovedByAnotherMemberTowerTorchForgetsTheFortressAndSaysSoAfterARestar
 	}
 	var self string
 	waitFor(t, "BombVault to see TowerTorch", func() bool {
-		for _, m := range vault.Members() {
+		for _, m := range v.f.Members() {
 			if m.App.ID == "towertorch" {
 				self = m.ID
 				return true
@@ -152,7 +145,7 @@ func TestRemovedByAnotherMemberTowerTorchForgetsTheFortressAndSaysSoAfterARestar
 		}
 		return false
 	})
-	if err := vault.Remove(self); err != nil {
+	if err := v.f.Remove(self); err != nil {
 		t.Fatal(err)
 	}
 	waitFor(t, "TowerTorch to leave", d.Removed)
@@ -176,8 +169,25 @@ func TestRemovedByAnotherMemberTowerTorchForgetsTheFortressAndSaysSoAfterARestar
 	if !again.Removed() {
 		t.Error("after a restart TowerTorch no longer says it was removed")
 	}
-	if err := again.Enter(w); err != nil {
-		t.Fatalf("joining again: %v", err)
+	if err := again.Enter(w); !errors.Is(err, ErrShutOut) {
+		t.Fatalf("joining again on the old phrase = %v, want ErrShutOut", err)
+	}
+	if _, in := again.Joined(); in || !again.Removed() {
+		t.Error("turned away on the old phrase, TowerTorch forgets that it was removed")
+	}
+	if _, err := v.f.ChangePhrase(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err := v.f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	v.open(v.phrase(), secret)
+	fresh, err := phrase.Encode(v.phrase())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := again.Enter(fresh); err != nil {
+		t.Fatalf("joining again on the new phrase: %v", err)
 	}
 	if again.Removed() {
 		t.Error("joining again still says TowerTorch was removed")
