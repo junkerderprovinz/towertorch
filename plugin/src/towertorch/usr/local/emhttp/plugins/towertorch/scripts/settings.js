@@ -490,12 +490,17 @@
     if (!at || isNaN(d)) return "";
     try { return d.toLocaleString(fortressLang, { dateStyle: "medium", timeStyle: "short" }); } catch (e) { return d.toLocaleString(); }
   }
+  // The card says what happened, and this line what it costs the maintenance plan meanwhile.
+  function fortressHints(s) {
+    s.hints = s.removedHere || s.phraseChanged ? [{ text: T("Bis dahin läuft der Wartungsplan ohne Sicherungen und Updates.", "Until then the maintenance plan runs without backups and updates."), tone: "warn" }] : [];
+    return s;
+  }
   function fortressStep(p) {
-    return p.then(function (s) { if (window.TTMaint && window.TTMaint.refresh) window.TTMaint.refresh(); return s; });
+    return p.then(function (s) { if (window.TTMaint && window.TTMaint.refresh) window.TTMaint.refresh(); return fortressHints(s); });
   }
   var fortressAdapter = {
     // An engine that is down, or runs without a fortress, hides the card.
-    load: function () { return api("GET", "fortress").catch(function (e) { if (e.status === 404 || e.status === 502) return null; throw e; }); },
+    load: function () { return api("GET", "fortress").then(fortressHints, function (e) { if (e.status === 404 || e.status === 502) return null; throw e; }); },
     join: function (words) { return fortressStep(api("POST", "fortressjoin", { phrase: words.join(" ") })); },
     leave: function () { return fortressStep(api("POST", "fortressleave", {})); },
     remove: function (id) { return fortressStep(api("POST", "fortressremove", { id: id })); },

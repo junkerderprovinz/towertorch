@@ -54,14 +54,31 @@ const calls = [];
 let answer = () => Promise.resolve({ joined: true });
 const refreshed = [];
 const block = settings.slice(settings.indexOf('  var fortressLang = '), settings.indexOf('  function fortressCard('));
-const build = (lang) => new Function('de', 'api', 'window', block + '\nreturn { adapter: fortressAdapter, time: fortressTime };')(
-  lang === 'de', (m, p, b, q) => { calls.push([m, p, b, q]); return answer(m, p); }, { TTMaint: { refresh: () => refreshed.push(1) } });
+const build = (lang) => new Function('de', 'T', 'api', 'window', block + '\nreturn { adapter: fortressAdapter, time: fortressTime };')(
+  lang === 'de', (d, e) => (lang === 'de' ? d : e), (m, p, b, q) => { calls.push([m, p, b, q]); return answer(m, p); }, { TTMaint: { refresh: () => refreshed.push(1) } });
 const { adapter, time } = build('en');
 
 console.log('\nThe adapter speaks for the card');
 (async () => {
   await adapter.load();
   ok('the state is the fortress path', calls[0][0] === 'GET' && calls[0][1] === 'fortress');
+
+  console.log('\nTaken out or left behind by a new phrase, the card says what the plan misses');
+  const EN = 'Until then the maintenance plan runs without backups and updates.';
+  const DE = 'Bis dahin läuft der Wartungsplan ohne Sicherungen und Updates.';
+  const hintsOf = async (a, st) => { answer = () => Promise.resolve(st); return (await a.load()).hints; };
+  ok('a member in good standing gets no line', (await hintsOf(adapter, { joined: true, device: 'Tower' })).length === 0);
+  ok('so does one that is out by choice', (await hintsOf(adapter, { joined: false })).length === 0);
+  const out = await hintsOf(adapter, { joined: false, removedHere: true });
+  ok('taken out, one warning says the plan runs without backups and updates', out.length === 1 && out[0].tone === 'warn' && out[0].text === EN, JSON.stringify(out));
+  const moved = await hintsOf(adapter, { joined: true, phraseChanged: true });
+  ok('the same after a phrase change TowerTorch could not follow', moved.length === 1 && moved[0].tone === 'warn' && moved[0].text === EN && !moved[0].action);
+  ok('in German too', (await hintsOf(build('de').adapter, { joined: true, phraseChanged: true }))[0].text === DE);
+  answer = () => Promise.resolve({ joined: false, removedHere: true });
+  ok('every step the card takes carries it as well', (await adapter.join(['x'])).hints.length === 1 && (await adapter.leave()).hints.length === 1 && (await adapter.remove('i')).hints.length === 1);
+  answer = () => Promise.reject(Object.assign(new Error('x'), { status: 404 }));
+  ok('a hidden card stays hidden', (await adapter.load()) === null);
+  calls.length = 0; refreshed.length = 0; answer = () => Promise.resolve({ joined: true });
   const err = (status, code) => Object.assign(new Error(code || 'HTTP ' + status), { status, code });
   answer = () => Promise.reject(err(502, 'engine unreachable'));
   ok('an engine that is down hides the card', (await adapter.load()) === null);
