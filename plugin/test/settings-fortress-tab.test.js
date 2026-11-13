@@ -39,10 +39,10 @@ console.log('\nThe page loads the card before the settings');
   ok('and its sheet is linked', /<link type="text\/css" rel="stylesheet" href="<\?autov\('\/plugins\/towertorch\/styles\/fortress-card\.css'\)\?>">/.test(page));
 }
 
-console.log('\nIts tab stands right after General');
+console.log('\nIts tab stands just above Info');
 {
-  ok('the second section is the fortress, named in both languages', /var SECS = \[\s*\{ id: "general", [^\n]*\n\s*\{ id: "fortress", t: T\("Festung", "Fortress"\), w: wrapFortress, key: null \},\n\s*\{ id: "header"/.test(settings));
-  ok('its wrapper stands after General\'s on the page', /\[wrapMain, wrapFortress, wrapStart,/.test(settings));
+  ok('the fortress is the section before Info, named in both languages', /SECS\.push\(\{ id: "fortress", t: T\("Festung", "Fortress"\), w: wrapFortress, key: null \}\);\n\s*SECS\.push\(\{ id: "info"/.test(settings));
+  ok('its wrapper stands just above Info\'s on the page', /wrapFavorites, wrapFortress, wrapInfo\]/.test(settings));
   ok('it holds the card\'s element and nothing else', /var wrapFortress = el\("div", "tt-set-wrap"\);\n\s*if \(fortressCard\(\)\) wrapFortress\.appendChild\(fortressCard\(\)\);/.test(settings));
   const mount = grab('fortressCard');
   ok('the card mounts once, in the language T speaks, as TowerTorch', /if \(!fortressEl && window\.GlimFortressCard\)/.test(mount) && /mount\(fortressEl, fortressAdapter, \{ lang: fortressLang, app: \{ id: "towertorch", name: "TowerTorch" \} \}\)/.test(mount) && /var fortressLang = de \? "de" : "en"/.test(settings));

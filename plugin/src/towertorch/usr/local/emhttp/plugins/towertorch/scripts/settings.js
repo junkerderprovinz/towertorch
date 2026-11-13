@@ -1340,13 +1340,11 @@
     var navToks = [];
     navOrder.forEach(function (k9) { navToks.push(String(k9).replace(/^\//, "").split(/[/?#]/)[0].toLowerCase()); });
     function navRank(aliases) { var best = -1; aliases.forEach(function (a9) { var i9 = navToks.indexOf(a9); if (i9 >= 0 && (best < 0 || i9 < best)) best = i9; }); return best; }
-    // Allgemein comes first, then the fortress, which stands after General in every app of it,
-    // and Kopfbereich, all three chrome rather than menu tabs. The rest
+    // Allgemein comes first and Kopfbereich second, both chrome rather than menu tabs. The rest
     // follow the menu order, with anything missing from it keeping its relative order at the end.
     // Each section carries a stable id, which is what tt.settab persists.
     var SECS = [
       { id: "general", t: T("Allgemein", "General"), w: wrapMain, key: null },
-      { id: "fortress", t: T("Festung", "Fortress"), w: wrapFortress, key: null },
       { id: "header", t: T("Kopfbereich", "Header area"), w: wrapHeader, key: "tt.enable.header" }
     ];
     [
@@ -1361,6 +1359,8 @@
     ].map(function (s9, i9) { return { s: s9, i: i9, r: navRank(s9.tabs) }; })
       .sort(function (a9, b9) { return (a9.r < 0 ? 1e9 + a9.i : a9.r) - (b9.r < 0 ? 1e9 + b9.i : b9.r) || a9.i - b9.i; })
       .forEach(function (d9) { SECS.push(d9.s); });
+    // The fortress stands just above Info, as in every plugin.
+    SECS.push({ id: "fortress", t: T("Festung", "Fortress"), w: wrapFortress, key: null });
     SECS.push({ id: "info", t: T("Info", "Info"), w: wrapInfo, key: null });   // GlimStone's Info tile comes last
     var tabBtns = [];
     function areaOn(key) { if (!key) return true; var v = localStorage.getItem(key); return v == null ? !OFF_BY_DEFAULT[key] : v !== "0"; }
@@ -1458,7 +1458,7 @@
     root.appendChild(body);
     alignSetTabs(); // indent the page to the first main-menu tab
     main.appendChild(searchBadge);
-    [wrapMain, wrapFortress, wrapStart, wrapHeader, wrapShares, wrap, wrapPlugin, wrapVms, wrapSettings, wrapTools, wrapFavorites, wrapInfo].forEach(function (w) { main.appendChild(w); });
+    [wrapMain, wrapStart, wrapHeader, wrapShares, wrap, wrapPlugin, wrapVms, wrapSettings, wrapTools, wrapFavorites, wrapFortress, wrapInfo].forEach(function (w) { main.appendChild(w); });
 
     // The picker stays visible with a hex field beside it, both editing the same value and staying
     // in sync. It is embedded rather than an <input type=color>, which opens an OS dialog in a
