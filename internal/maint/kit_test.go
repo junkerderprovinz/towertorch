@@ -3,9 +3,14 @@ package maint
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/junkerderprovinz/parleyport/kit/fortress"
+	"github.com/junkerderprovinz/parleyport/kit/group"
 	"github.com/junkerderprovinz/parleyport/kit/member"
 )
 
@@ -56,5 +61,23 @@ func TestTheKitsNoComesBackAsARefusal(t *testing.T) {
 	k := Kit{Fortress: &fakeKit{err: context.DeadlineExceeded}}
 	if _, err := k.Act(context.Background(), "a", BackupAction, nil); !errors.Is(err, context.DeadlineExceeded) {
 		t.Errorf("err = %v", err)
+	}
+}
+
+func TestAMemberOutOfReachIsReportedWithoutItsAddress(t *testing.T) {
+	const at = "https://192.168.20.5:3443"
+	for _, kitErr := range []error{
+		fmt.Errorf("%w directly at %s: %w", group.ErrUnreachable, at, io.ErrUnexpectedEOF),
+		fmt.Errorf("%w: %s refused the direct call with HTTP 403", group.ErrStranger, at),
+		&group.StatusError{Address: at, Status: http.StatusBadGateway},
+	} {
+		_, err := Kit{Fortress: &fakeKit{err: kitErr}}.Act(context.Background(), "a", BackupAction, nil)
+		if err == nil || strings.Contains(err.Error(), "192.168") {
+			t.Errorf("%v came back as %v", kitErr, err)
+		}
+	}
+	_, err := Kit{Fortress: &fakeKit{err: fmt.Errorf("%w directly at %s: %w", group.ErrUnreachable, at, io.ErrUnexpectedEOF)}}.Act(context.Background(), "a", BackupAction, nil)
+	if !errors.Is(err, group.ErrUnreachable) {
+		t.Errorf("err = %v, want it unreachable", err)
 	}
 }

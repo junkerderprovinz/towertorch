@@ -3,9 +3,11 @@ package maint
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/junkerderprovinz/parleyport/kit/fortress"
+	"github.com/junkerderprovinz/parleyport/kit/group"
 	"github.com/junkerderprovinz/parleyport/kit/member"
 )
 
@@ -43,5 +45,20 @@ func (k Kit) Act(ctx context.Context, id, action string, body []byte) ([]byte, e
 	case errors.Is(err, fortress.ErrNoSuchAction):
 		return nil, &Refused{Status: http.StatusNotFound, Code: "no_such_action"}
 	}
-	return out, err
+	return out, withoutAddress(err)
+}
+
+// withoutAddress is err without the member's network address, which the
+// kit's errors name and which has no place in a report or a notification.
+func withoutAddress(err error) error {
+	var st *group.StatusError
+	switch {
+	case errors.Is(err, group.ErrUnreachable):
+		return group.ErrUnreachable
+	case errors.Is(err, group.ErrStranger):
+		return group.ErrStranger
+	case errors.As(err, &st):
+		return fmt.Errorf("the member answered the direct call with HTTP %d", st.Status)
+	}
+	return err
 }
