@@ -1,7 +1,6 @@
 package fortress
 
 import (
-	"cmp"
 	"encoding/json"
 	"errors"
 	"io/fs"
@@ -44,7 +43,7 @@ func (d *Door) Remove(id string) error {
 		if err != nil {
 			return err
 		}
-		return d.keepRemovals(append(list, Removal{App: m.App.ID, Name: cmp.Or(m.App.Name, m.App.ID), Device: m.Device}))
+		return d.keepRemovals(append(list, Removal{App: m.App.ID, Name: AppName(m.App), Device: m.Device}))
 	}
 	return ErrNoMember
 }

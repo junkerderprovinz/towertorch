@@ -126,7 +126,7 @@ func TestTheCardReadsTheFortressOnItsOwn(t *testing.T) {
 	if sl := got.Members[1]; sl["form"] != "plugin" || sl["relay"] != false {
 		t.Errorf("ShipLog, reached on this network, = %v", sl)
 	}
-	if kl := got.Members[2]; kl["online"] != false || kl["lastSeen"] != "2026-11-12T21:30:00Z" || kl["name"] != "knightloader" {
+	if kl := got.Members[2]; kl["online"] != false || kl["lastSeen"] != "2026-11-12T21:30:00Z" || kl["name"] != "KnightLoader" {
 		t.Errorf("KnightLoader, away = %v", kl)
 	}
 	if _, ok := bv["lastSeen"]; ok {

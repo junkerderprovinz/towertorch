@@ -81,7 +81,7 @@ func (s *Server) fortressState() fortressState {
 			continue
 		}
 		v.Members = append(v.Members, memberView{
-			ID: m.ID, App: m.App.ID, Name: cmp.Or(m.App.Name, m.App.ID), Device: m.Device, Form: m.Deployment,
+			ID: m.ID, App: m.App.ID, Name: fortress.AppName(m.App), Device: m.Device, Form: m.Deployment,
 			Version: m.App.Version, Icon: m.App.Icon, Online: m.Online(), Relay: m.Relay && !m.Direct, LastSeen: m.LastSeen,
 		})
 	}
