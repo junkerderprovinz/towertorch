@@ -10,6 +10,8 @@ github.com/junkerderprovinz/parleyport/kit v0.0.0-20261113191443-701db5a911b3 h1
 github.com/junkerderprovinz/parleyport/kit v0.0.0-20261113191443-701db5a911b3/go.mod h1:VvXmRbkWZsOzDVnLswkwKtG64qx5TlUb+vnKqb21WJA=
 github.com/junkerderprovinz/parleyport/kit v0.0.0-20261113195351-665654a24bf9 h1:3p6xwMumjquue8+hfmA5EvirNMMX5mXHRk0vGQ3tojw=
 github.com/junkerderprovinz/parleyport/kit v0.0.0-20261113195351-665654a24bf9/go.mod h1:VvXmRbkWZsOzDVnLswkwKtG64qx5TlUb+vnKqb21WJA=
+github.com/junkerderprovinz/parleyport/kit v0.0.0-20261113211432-f973fdd3d13c h1:kGxBO1/O3DcVibvbQOM7eU76F8mLkdyhBkSSghNQhlM=
+github.com/junkerderprovinz/parleyport/kit v0.0.0-20261113211432-f973fdd3d13c/go.mod h1:VvXmRbkWZsOzDVnLswkwKtG64qx5TlUb+vnKqb21WJA=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3/go.mod h1:JXeL+ps8p7/KNMjDQk3TCwPpBy0wYklyWTfbkIzdIFU=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
