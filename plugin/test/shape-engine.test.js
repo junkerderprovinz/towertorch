@@ -10,6 +10,8 @@ const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
 
+// GlimStone's own parts stay as GlimStone ships them, which fortress-card-source.test.js checks.
+const COPIES = new Set(Object.keys(require('../../glimstone.json').vanilla.files).map((f) => path.join(__dirname, '..', '..', f)));
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
@@ -152,7 +154,7 @@ for (const f of files(DIR, ['.css', '.js', '.page'])) {
 }
 
 console.log('\nEvery radius in a sheet reads a token');
-for (const f of files(DIR, ['.css'])) {
+for (const f of files(DIR, ['.css']).filter((f) => !COPIES.has(f))) {
   const bad = decls(fs.readFileSync(f, 'utf8'))
     .filter((d) => /^border(-(top|bottom)-(left|right))?-radius\s*:/.test(d.decl))
     .filter((d) => !radiusOk(d.sel, d.decl.replace(/^[^:]+:\s*/, '')))

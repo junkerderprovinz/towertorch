@@ -44,10 +44,11 @@ console.log('\nThe filter and its empty state');
   ];
   const empty = { style: { display: 'none' } }, hint = { textContent: '' };
   const tile = { cls: new Set(['tt-set-tab-on']), attrs: {}, classList: { remove(c) { tile.cls.delete(c); } }, setAttribute(k, v) { tile.attrs[k] = v; } };
+  const fortress = { style: {}, textContent: 'Fortress Join a fortress', getAttribute: () => null, querySelectorAll: () => [] };
   let restored = 0;
   const env = {
     root: { querySelectorAll: (sel) => sel === '.tt-set-card' ? cards : [] },
-    tabBtns: [tile], SECS: [{ w: { style: {} } }], searchEmpty: empty, emptyHint: hint,
+    tabBtns: [tile], SECS: [{ w: { style: {} } }], searchEmpty: empty, emptyHint: hint, wrapFortress: fortress,
     T: (d, e) => e, searchText, restore: () => { restored++; }
   };
   const runFilter = new Function('env', 'with (env) { ' + grabFn(settings, 'runFilter') + '\nreturn runFilter; }')(env);
@@ -57,6 +58,9 @@ console.log('\nThe filter and its empty state');
   ok('its other rows go', cards[0].rows[0].style.display === 'none');
   ok('a card with no match goes', cards[1].style.display === 'none');
   ok('no empty state while something matches', empty.style.display === 'none');
+  ok('the fortress card goes when its words do not match', fortress.style.display === 'none');
+  runFilter('join');
+  ok('and stays when they do, which counts as a match', fortress.style.display === '' && empty.style.display === 'none' && cards.every((c) => c.style.display === 'none'));
   runFilter('zebra');
   ok('nothing matching shows the empty state', empty.style.display === '');
   ok('which names the query', /zebra/.test(hint.textContent));

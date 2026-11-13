@@ -244,6 +244,7 @@
   // its ink so every tab's glyph reads the same size.
   var TAB_GLYPHS = {
     general: ["0.1 0.106 13.797 13.797", '<path fill-rule="evenodd" d="M0.597 1.73 L0.47 1.783 L0.305 1.905 L0.218 2.011 L0.153 2.132 L0.103 2.331 L0.103 2.469 L0.13 2.603 L0.218 2.789 L0.305 2.895 L0.411 2.982 L0.532 3.047 L0.663 3.087 L0.8 3.1 L1.491 3.1 L1.418 2.713 L1.401 2.361 L1.418 2.087 L1.491 1.7 L0.8 1.7ZM13.468 3.047 L13.589 2.982 L13.695 2.895 L13.817 2.73 L13.887 2.537 L13.897 2.331 L13.847 2.132 L13.782 2.011 L13.695 1.905 L13.53 1.783 L13.337 1.713 L13.2 1.7 L6.909 1.7 L6.982 2.087 L6.999 2.361 L6.982 2.713 L6.909 3.1 L13.2 3.1 L13.337 3.087ZM6.114 1.819 L5.964 1.457 L5.746 1.131 L5.469 0.854 L5.143 0.636 L4.781 0.486 L4.396 0.41 L4.004 0.41 L3.619 0.486 L3.257 0.636 L2.931 0.854 L2.654 1.131 L2.436 1.457 L2.286 1.819 L2.21 2.204 L2.21 2.596 L2.286 2.981 L2.436 3.343 L2.654 3.669 L2.931 3.946 L3.257 4.164 L3.619 4.314 L4.004 4.39 L4.396 4.39 L4.781 4.314 L5.143 4.164 L5.469 3.946 L5.746 3.669 L5.964 3.343 L6.114 2.981 L6.19 2.596 L6.19 2.204ZM0.597 6.33 L0.411 6.418 L0.259 6.556 L0.153 6.732 L0.113 6.863 L0.1 7 L0.113 7.137 L0.153 7.268 L0.259 7.444 L0.356 7.541 L0.47 7.617 L0.663 7.687 L0.8 7.7 L7.091 7.7 L7.018 7.313 L7.001 6.961 L7.018 6.687 L7.091 6.3 L0.8 6.3ZM11.714 6.419 L11.564 6.057 L11.346 5.731 L11.069 5.454 L10.743 5.236 L10.381 5.086 L9.996 5.01 L9.604 5.01 L9.219 5.086 L8.857 5.236 L8.531 5.454 L8.254 5.731 L8.036 6.057 L7.886 6.419 L7.81 6.804 L7.81 7.196 L7.886 7.581 L8.036 7.943 L8.254 8.269 L8.531 8.546 L8.857 8.764 L9.219 8.914 L9.604 8.99 L9.996 8.99 L10.381 8.914 L10.743 8.764 L11.069 8.546 L11.346 8.269 L11.564 7.943 L11.714 7.581 L11.79 7.196 L11.79 6.804ZM13.468 7.647 L13.589 7.582 L13.695 7.495 L13.817 7.33 L13.87 7.203 L13.897 7.069 L13.887 6.863 L13.847 6.732 L13.782 6.611 L13.695 6.505 L13.589 6.418 L13.468 6.353 L13.337 6.313 L13.2 6.3 L12.509 6.3 L12.582 6.687 L12.599 6.961 L12.582 7.313 L12.509 7.7 L13.269 7.697ZM0.597 10.93 L0.411 11.018 L0.259 11.156 L0.153 11.332 L0.103 11.531 L0.113 11.737 L0.183 11.93 L0.305 12.095 L0.47 12.217 L0.663 12.287 L0.8 12.3 L3.091 12.3 L3.018 11.913 L3.001 11.639 L3.018 11.287 L3.091 10.9 L0.8 10.9ZM7.648 10.835 L7.463 10.489 L7.214 10.186 L6.911 9.937 L6.565 9.752 L6.19 9.638 L5.8 9.6 L5.41 9.638 L5.035 9.752 L4.689 9.937 L4.386 10.186 L4.137 10.489 L3.952 10.835 L3.838 11.21 L3.8 11.6 L3.838 11.99 L3.952 12.365 L4.137 12.711 L4.386 13.014 L4.689 13.263 L5.035 13.448 L5.41 13.562 L5.8 13.6 L6.19 13.562 L6.565 13.448 L6.911 13.263 L7.214 13.014 L7.463 12.711 L7.648 12.365 L7.762 11.99 L7.8 11.6 L7.762 11.21ZM13.53 12.217 L13.695 12.095 L13.817 11.93 L13.887 11.737 L13.897 11.531 L13.847 11.332 L13.741 11.156 L13.589 11.018 L13.403 10.93 L13.2 10.9 L8.509 10.9 L8.582 11.287 L8.599 11.561 L8.582 11.913 L8.509 12.3 L13.2 12.3 L13.337 12.287Z" />'],   // IconTabGeneral
+    fortress: ["0 0 14 14", '<g><path fill="currentColor" fill-rule="evenodd" d="M6.5 0.5C5.67157 0.5 5 1.17157 5 2v1c0 0.74325 0.54057 1.36024 1.25 1.47926V6.25H3c-0.9665 0 -1.75 0.7835 -1.75 1.75v1.52074C0.540572 9.63976 0 10.2568 0 11v1c0 0.8284 0.671573 1.5 1.5 1.5h1c0.82843 0 1.5 -0.6716 1.5 -1.5v-1c0 -0.7432 -0.54057 -1.36024 -1.25 -1.47926V8c0 -0.13807 0.11193 -0.25 0.25 -0.25h3.25v1.77074C5.54057 9.63976 5 10.2568 5 11v1c0 0.8284 0.67157 1.5 1.5 1.5h1c0.82843 0 1.5 -0.6716 1.5 -1.5v-1c0 -0.7432 -0.54057 -1.36024 -1.25 -1.47926V7.75H11c0.1381 0 0.25 0.11193 0.25 0.25v1.52074C10.5406 9.63976 10 10.2568 10 11v1c0 0.8284 0.6716 1.5 1.5 1.5h1c0.8284 0 1.5 -0.6716 1.5 -1.5v-1c0 -0.7432 -0.5406 -1.36024 -1.25 -1.47926V8c0 -0.9665 -0.7835 -1.75 -1.75 -1.75H7.75V4.47926C8.45943 4.36024 9 3.74325 9 3V2C9 1.17157 8.32843 0.5 7.5 0.5h-1Z" clip-rule="evenodd"/></g>'],
     header: ["0.046 0.047 13.908 13.908", '<g><path fill="currentColor" fill-rule="evenodd" d="M1.546 12.25V3.314h10.908v8.934a0.204 0.204 0 0 1 -0.205 0.205H1.751a0.204 0.204 0 0 1 -0.205 -0.205Zm-1.5 -10.5C0.046 0.81 0.81 0.047 1.751 0.047h10.498c0.942 0 1.705 0.763 1.705 1.705V12.25c0 0.942 -0.763 1.705 -1.705 1.705H1.751A1.704 1.704 0 0 1 0.046 12.25V1.751Z" clip-rule="evenodd" stroke-width="1"></path></g>'],   // IconBrowser
     main: ["0.056 0.112 13.888 13.888", '<g><path fill="currentColor" fill-rule="evenodd" d="M0.551514 2.27783c0 -0.15488 0.07702 -0.36799 0.357204 -0.62937 0.281142 -0.26227 0.721972 -0.52723 1.318962 -0.762786C3.41794 0.416028 5.10495 0.111832 6.99996 0.111832S10.582 0.416028 11.7722 0.885674c0.597 0.235556 1.0379 0.500516 1.319 0.762786 0.2802 0.26138 0.3572 0.47449 0.3572 0.62937 0 0.15487 -0.077 0.36799 -0.3572 0.62936 -0.2811 0.26227 -0.722 0.52723 -1.319 0.76279 -1.1902 0.46965 -2.87723 0.77384 -4.77224 0.77384s-3.58202 -0.30419 -4.77228 -0.77384c-0.59699 -0.23556 -1.03782 -0.50052 -1.318962 -0.76279 -0.280184 -0.26137 -0.357204 -0.47449 -0.357204 -0.62936ZM13.5121 4.16708c-0.3673 0.25522 -0.8026 0.47686 -1.2811 0.66566 -1.3698 0.54049 -3.21949 0.86108 -5.23104 0.86108s-3.86126 -0.32059 -5.23108 -0.86108c-0.47845 -0.18879 -0.913723 -0.41041 -1.280965 -0.66562v3.17781c0.055969 0.0849 0.135466 0.17801 0.246193 0.27869 0.289992 0.26368 0.744472 0.52986 1.359042 0.76629 1.22499 0.47125 2.95961 0.77608 4.90685 0.77608 1.94723 0 3.6819 -0.30483 4.9068 -0.77608 0.6146 -0.23643 1.0691 -0.50261 1.3591 -0.76629 0.1107 -0.10067 0.1902 -0.19378 0.2462 -0.27868V4.16708ZM0.487915 11.209V8.99273c0.341164 0.21282 0.732125 0.4006 1.156435 0.56383C3.04569 10.0957 4.93936 10.416 7 10.416c2.06063 0 3.9543 -0.3203 5.3556 -0.85944 0.4243 -0.16323 0.8153 -0.351 1.1565 -0.56383V11.209c0 1.5406 -2.9154 2.791 -6.51211 2.791 -3.59667 0 -6.512075 -1.2504 -6.512075 -2.791Z" clip-rule="evenodd" stroke-width="1"></path></g>'],   // IconDatabase
     shares: ["0 0 14 14", '<g><path fill="currentColor" d="M6.12675 0.805269c-0.2708 -0.205804 -0.60343 -0.313418 -0.9433 -0.305333H1.5c-0.39782 0 -0.779356 0.158035 -1.06066 0.43934C0.158035 1.22058 0 1.60211 0 1.99994v9.99996c0 0.3979 0.158035 0.7794 0.43934 1.0607 0.281304 0.2813 0.66283 0.4393 1.06066 0.4393h11c0.3978 0 0.7794 -0.158 1.0607 -0.4393S14 12.3978 14 11.9999V3.99994c0 -0.39783 -0.158 -0.77936 -0.4393 -1.06066 -0.2813 -0.28131 -0.6629 -0.43934 -1.0607 -0.43934H6.89039l-0.21495 -0.85979c-0.08224 -0.33249 -0.27599 -0.62762 -0.54869 -0.834881Z" stroke-width="1"></path></g>'],   // IconFolder
@@ -464,18 +465,56 @@
   function csrfToken() {
     try { return (typeof window.csrf_token !== "undefined" && window.csrf_token) || (document.querySelector('input[name="csrf_token"]') || {}).value || ((document.cookie || "").match(/csrf_token=([0-9A-Za-z]+)/) || [])[1] || ""; } catch (e) { return ""; }
   }
-  function api(method, path, body) {
+  function api(method, path, body, query) {
     var opts = { method: method, headers: { Accept: "application/json" } };
-    var u = PROXY + "?path=" + encodeURIComponent(path);
+    var u = PROXY + "?path=" + encodeURIComponent(path) + (query ? "&" + new URLSearchParams(query) : "");
     var tk = csrfToken();
     if (method !== "GET") { // emhttp accepts the csrf_token in a form body only
       opts.headers["Content-Type"] = "application/x-www-form-urlencoded";
       opts.body = (tk ? "csrf_token=" + encodeURIComponent(tk) + "&" : "") + "data=" + encodeURIComponent(JSON.stringify(body != null ? body : {}));
     }
     return fetch(u, opts).then(function (r) {
-      return r.text().then(function (tx) { var d = null; try { d = tx ? JSON.parse(tx) : null; } catch (e) {} if (!r.ok) throw new Error((d && d.error) || ("HTTP " + r.status)); return d; });
+      return r.text().then(function (tx) {
+        var d = null; try { d = tx ? JSON.parse(tx) : null; } catch (e) {}
+        if (!r.ok) { var err = new Error((d && d.error) || ("HTTP " + r.status)); err.status = r.status; err.code = d && d.error; throw err; }
+        return d;
+      });
     });
   }
+  // The fortress card is GlimStone's, in the language T speaks. It is mounted once and carried
+  // into every render, so a repaint keeps its state and an open window. Every step it takes also
+  // refreshes the maintenance card, whose steps wait for the fortress.
+  var fortressLang = de ? "de" : "en", fortressEl = null;
+  function fortressTime(at) {
+    var d = new Date(at);
+    if (!at || isNaN(d)) return "";
+    try { return d.toLocaleString(fortressLang, { dateStyle: "medium", timeStyle: "short" }); } catch (e) { return d.toLocaleString(); }
+  }
+  function fortressStep(p) {
+    return p.then(function (s) { if (window.TTMaint && window.TTMaint.refresh) window.TTMaint.refresh(); return s; });
+  }
+  var fortressAdapter = {
+    // An engine that is down, or runs without a fortress, hides the card.
+    load: function () { return api("GET", "fortress").catch(function (e) { if (e.status === 404 || e.status === 502) return null; throw e; }); },
+    join: function (words) { return fortressStep(api("POST", "fortressjoin", { phrase: words.join(" ") })); },
+    leave: function () { return fortressStep(api("POST", "fortressleave", {})); },
+    remove: function (id) { return fortressStep(api("POST", "fortressremove", { id: id })); },
+    status: function (id) {
+      return api("GET", "fortressmember", null, { id: id, lang: fortressLang }).then(function (r) {
+        var report = r.report;
+        (report.next || []).forEach(function (n) { n.at = fortressTime(n.at); });
+        return { report: report, log: (r.log || []).map(function (l) { return { at: fortressTime(l.at), level: l.level, text: l.text }; }) };
+      });
+    }
+  };
+  function fortressCard() {
+    if (!fortressEl && window.GlimFortressCard) {
+      fortressEl = el("div");
+      window.GlimFortressCard.mount(fortressEl, fortressAdapter, { lang: fortressLang, app: { id: "towertorch", name: "TowerTorch" } });
+    }
+    return fortressEl;
+  }
+
   // Writes fields of Unraid's display settings the way its own form does: a post to update.php
   // with the form's #file and #section and the CSRF token, which merges them into dynamix.cfg. A
   // multipart body times out, hence URLSearchParams.
@@ -1042,6 +1081,8 @@
     var wrapInfo = el("div", "tt-set-wrap");
     var wrapStart = el("div", "tt-set-wrap");
     var wrapMain = el("div", "tt-set-wrap");    // Allgemein, which also hosts the export and import card
+    var wrapFortress = el("div", "tt-set-wrap");
+    if (fortressCard()) wrapFortress.appendChild(fortressCard());
     // Each area's adopt key, "1" or unset while it follows the global badge colour and "0" once it
     // has a colour of its own, with that area's key prefix and the switches showing it.
     var ADOPT_PREF = { "tt.styleheader": "tth.", "tt.styleshares": "ttsh.", "tt.styledocker": "ttd.", "tt.styleplugin": "ttp.", "tt.stylevms": "ttv.", "tt.stylesettings": "tts.", "tt.styletools": "ttt.", "tt.stylefavorites": "ttf.", "tt.stylemain": "ttm." };
@@ -1294,11 +1335,13 @@
     var navToks = [];
     navOrder.forEach(function (k9) { navToks.push(String(k9).replace(/^\//, "").split(/[/?#]/)[0].toLowerCase()); });
     function navRank(aliases) { var best = -1; aliases.forEach(function (a9) { var i9 = navToks.indexOf(a9); if (i9 >= 0 && (best < 0 || i9 < best)) best = i9; }); return best; }
-    // Allgemein comes first and Kopfbereich second, both chrome rather than menu tabs. The rest
+    // Allgemein comes first, then the fortress, which stands after General in every app of it,
+    // and Kopfbereich, all three chrome rather than menu tabs. The rest
     // follow the menu order, with anything missing from it keeping its relative order at the end.
     // Each section carries a stable id, which is what tt.settab persists.
     var SECS = [
       { id: "general", t: T("Allgemein", "General"), w: wrapMain, key: null },
+      { id: "fortress", t: T("Festung", "Fortress"), w: wrapFortress, key: null },
       { id: "header", t: T("Kopfbereich", "Header area"), w: wrapHeader, key: "tt.enable.header" }
     ];
     [
@@ -1410,7 +1453,7 @@
     root.appendChild(body);
     alignSetTabs(); // indent the page to the first main-menu tab
     main.appendChild(searchBadge);
-    [wrapMain, wrapStart, wrapHeader, wrapShares, wrap, wrapPlugin, wrapVms, wrapSettings, wrapTools, wrapFavorites, wrapInfo].forEach(function (w) { main.appendChild(w); });
+    [wrapMain, wrapFortress, wrapStart, wrapHeader, wrapShares, wrap, wrapPlugin, wrapVms, wrapSettings, wrapTools, wrapFavorites, wrapInfo].forEach(function (w) { main.appendChild(w); });
 
     // The picker stays visible with a hex field beside it, both editing the same value and staying
     // in sync. It is embedded rather than an <input type=color>, which opens an OS dialog in a
@@ -1888,7 +1931,7 @@
     win.addEventListener("input", function () { notify.webhook = win.value.trim(); notifyDirty = true; afterQuiet("notify", function () { saveNotify(document.getElementById("tt-set-webhook")); }); });
     wrow.appendChild(win); c5.appendChild(wrow);
     wrap.appendChild(c5);
-    if (window.TTMaint) wrap.appendChild(window.TTMaint.card(card(window.TTMaint.t("mw.title"), window.TTMaint.t("mw.info"))));
+    if (window.TTMaint) wrap.appendChild(window.TTMaint.card(card(window.TTMaint.t("mw.title"), window.TTMaint.t("mw.info")), function () { jumpTo("fortress"); }));
 
     var c6 = card(T("Bandbreite", "Bandwidth"), T("Schnittstelle im Container, auf der die Limits gesetzt werden. Leer heißt automatisch, also die Default-Route des Containers, und ist die Empfehlung. Pro-Container-Limits stellst du im Docker-Tab ein.", "The interface inside the container the limits are applied to. Blank means automatic, the container's default route, which is the recommendation. Per-container limits are set in the Docker tab."));
     var ifrow = el("div", "tt-set-row"), ifl = ifrow.appendChild(el("span", "tt-set-rl", T("Schnittstelle", "Interface")));
@@ -2411,6 +2454,10 @@
         cardEl.style.display = (titleHit || any) ? "" : "none";
         if (titleHit || any) shown++;
       });
+      // The fortress card has no rows of TowerTorch's, so it stays as a whole while its text matches.
+      var fortressHit = searchText(wrapFortress).indexOf(q) >= 0;
+      wrapFortress.style.display = fortressHit ? "" : "none";
+      if (fortressHit) shown++;
       emptyHint.textContent = T("Keine Einstellung enthält „" + raw + "“.", "No setting contains “" + raw + "”.");
       searchEmpty.style.display = shown ? "none" : "";
     }

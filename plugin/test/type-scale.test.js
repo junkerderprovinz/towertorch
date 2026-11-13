@@ -9,6 +9,8 @@ const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 
+// GlimStone's own parts stay as GlimStone ships them, which fortress-card-source.test.js checks.
+const COPIES = new Set(Object.keys(require('../../glimstone.json').vanilla.files).map((f) => path.join(__dirname, '..', '..', f)));
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
@@ -76,7 +78,7 @@ const STAGES = { sm: 'meta', md: 'subline', lg: 'title', lgb: 'body', sec: 'meta
 for (const [stage, role] of Object.entries(STAGES)) ok(`--tt-${stage}-fs reads --tt-text-${role}`, new RegExp(`--tt-${stage}-fs:\\s*var\\(--tt-text-${role}\\);`).test(dark));
 
 console.log('\nNo font size off the scale');
-for (const f of files(DIR, ['.css', '.js'])) {
+for (const f of files(DIR, ['.css', '.js']).filter((f) => !COPIES.has(f))) {
   const src = fs.readFileSync(f, 'utf8');
   const hits = offScale(f.endsWith('.css') ? clean(src) : clean(src).replace(/(^|\s)\/\/.*$/gm, '$1'));
   ok(path.basename(f), hits.length === 0, hits.slice(0, 8).join(' | '));
