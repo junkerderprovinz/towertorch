@@ -10,7 +10,7 @@ const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
 
 // GlimStone's own parts stay as GlimStone ships them, which fortress-card-source.test.js checks.
-const COPIES = new Set(Object.keys(require('../../glimstone.json').vanilla.files).map((f) => path.join(__dirname, '..', '..', f)));
+const COPIES = new Set(require('../../glimstone.json').targets.filter((t) => t.mode === 'copy').flatMap((t) => t.files).map((f) => path.join(__dirname, '..', '..', f.to)));
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 
