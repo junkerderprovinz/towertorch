@@ -116,14 +116,15 @@ func (d *Door) Enter(words string) error {
 }
 
 // Leave takes TowerTorch out of its fortress and forgets the membership. The
-// other members keep it as away until somebody removes it, and the phrase
-// brings it back.
+// members in reach drop it at once, the others when they hear it from them,
+// and the phrase brings it back.
 func (d *Door) Leave() error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if d.m == nil {
 		return ErrNotMember
 	}
+	d.m.Fortress.Leave()
 	err := d.m.Close()
 	d.set(nil)
 	d.removed = false
