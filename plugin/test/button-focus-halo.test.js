@@ -27,7 +27,7 @@ const BLANKETS = [['styles/docker.css', /^:is\(a, button, input, select, \[tabin
 for (const [sheet, re] of BLANKETS) {
   const r = parseRules(read(sheet)).find((x) => re.test(x.selector.replace(/\s+/g, ' ').trim()));
   const sel = r ? r.selector.replace(/\s+/g, ' ') : '';
-  const missing = LIST.filter((c) => !new RegExp(':where\\(:not\\([^)]*\\.' + c.replace(/-/g, '\\-') + '[,)]').test(sel));
+  const missing = LIST.filter((c) => !new RegExp(':where\\(:not\\([^)]*\\.' + c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[,)]').test(sel));
   ok(`${sheet}: every listed control is left out`, !!r && missing.length === 0, missing.join(' '));
 }
 

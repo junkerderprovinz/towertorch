@@ -30,7 +30,7 @@ const clean = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 // The declarations of the plain html { } blocks (the dark defaults) and of the light override.
 function darkBlock(css) { let out = ''; const re = /(^|\})\s*html\s*\{([^}]*)\}/g; let m; while ((m = re.exec(clean(css)))) out += m[2]; return out; }
 function lightBlock(css) { return (/html\.Theme--white,\s*html\.Theme--azure\s*\{([^}]*)\}/.exec(clean(css)) || [])[1] || ''; }
-function decl(block, name) { const m = new RegExp(name.replace(/-/g, '\\-') + ':\\s*([^;]+);').exec(block); return m ? m[1].trim() : null; }
+function decl(block, name) { const m = new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':\\s*([^;]+);').exec(block); return m ? m[1].trim() : null; }
 
 const dark = darkBlock(TOKENS), light = lightBlock(TOKENS);
 

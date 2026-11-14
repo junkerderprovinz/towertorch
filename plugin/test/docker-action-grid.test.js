@@ -135,7 +135,7 @@ console.log('\nThe gaps are the badges\' gaps');
   const win = (cls, dens, prop) => { const c = candidates('docker', { tag: 'div', classes: cls, attrs: {}, states: {}, html: ['tt-docker-on'], inside: ['.tt-enh'].concat(dens ? [dens] : []), outside: DENS.filter((d) => d !== dens) }, prop); return c[c.length - 1]; };
   const gap = { '': '5px', '.tt-dens-compact': '3px', '.tt-dens-airy': '8px' };
   for (const [dens, px] of Object.entries(gap)) {
-    const decl = new RegExp('\\.tt-enh' + dens.replace(/\./g, '\\.') + ' \\{ --tt-badge-gap: ([\\d.]+px); \\}').exec(css);
+    const decl = new RegExp('\\.tt-enh' + dens.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{ --tt-badge-gap: ([\\d.]+px); \\}').exec(css);
     ok('density ' + (dens || 'normal') + ': the action gap is ' + px, !!decl && decl[1] === px);
     const net = win(['tt-rowbadges', 'tt-netgroup'], dens, 'gap');
     ok('density ' + (dens || 'normal') + ': as between the network badges', !!net && net.value === px, net && net.selector + ' => ' + net.value);

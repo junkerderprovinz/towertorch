@@ -12,7 +12,7 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 const tokens = read('sheets/TowerTorch.Tokens.css'), header = read('sheets/TowerTorch.Header.css'), docker = read('styles/docker.css');
 function level(sel) {
-  const m = new RegExp(sel.replace(/[[\]()."=]/g, '\\$&') + '\\s*\\{([^}]*)\\}').exec(tokens);
+  const m = new RegExp(sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*\\{([^}]*)\\}').exec(tokens);
   const b = m ? m[1] : '';
   const v = (n) => { const x = new RegExp(n + ':\\s*([^;]+);').exec(b); return x ? x[1].trim() : null; };
   return { dur: v('--tt-motion-tremble-dur'), angle: v('--tt-motion-tremble-angle'), tilt: v('--tt-motion-tremble-tilt'), lift: v('--tt-motion-tremble-lift') };

@@ -12,7 +12,7 @@ const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + nam
 
 const css = read('sheets/TowerTorch.Tokens.css').replace(/\/\*[\s\S]*?\*\//g, '');
 const block = (/html\[data-oled\]:is\(\.Theme--black, \.Theme--gray\),\s*html\[data-oled\]:is\(\.Theme--black, \.Theme--gray\) :is\(([^)]*)\) \{([^}]*)\}/.exec(css) || []);
-const decl = (name) => { const m = new RegExp(name.replace(/-/g, '\\-') + ':\\s*([^;]+);').exec(block[2] || ''); return m ? m[1].trim() : null; };
+const decl = (name) => { const m = new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':\\s*([^;]+);').exec(block[2] || ''); return m ? m[1].trim() : null; };
 
 console.log('\nThe tokens');
 ok('an OLED block keyed on data-oled and a dark Unraid theme', !!block[2]);
