@@ -217,6 +217,60 @@ func TestWhenItCannotFollowTheCardAsksForTheNewWords(t *testing.T) {
 	}
 }
 
+func TestTowerTorchHearsThePhraseChangedFromAMemberThatCannotHandItOver(t *testing.T) {
+	v, d := inFortress(t, func() ([]byte, error) { return []byte(`{"ok":true}`), nil })
+	old := v.phrase()
+	w, err := phrase.Encode(old)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cellar := &Door{Dir: filepath.Join(t.TempDir(), "fortress"), App: towertorch, Device: "Cellar", Relay: v.url}
+	t.Cleanup(func() { _ = cellar.Close() })
+	if err := cellar.Enter(w); err != nil {
+		t.Fatal(err)
+	}
+	waitFor(t, "the TowerTorchs to see each other", func() bool { return online(d.current(), "towertorch") })
+
+	// Tower is away while the phrase changes, and BombVault is gone by the
+	// time it is back, so only Cellar, which holds no phrase, is left to
+	// tell it.
+	if err := d.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := v.f.ChangePhrase(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err := v.f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	v.open(v.phrase(), old)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	waitFor(t, "Cellar to follow through BombVault", func() bool {
+		out, err := cellar.Act(ctx, v.id.ID(), maint.BackupAction, nil)
+		return err == nil && string(out) == `{"ok":true}`
+	})
+	if err := v.f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := d.Open(); err != nil {
+		t.Fatal(err)
+	}
+	waitFor(t, "Tower to hear the phrase changed", func() bool {
+		// Watch does the same now and then.
+		if f := d.current(); f != nil {
+			d.follow(ctx, f, false)
+		}
+		return d.PhraseChanged()
+	})
+	if d.current() == nil {
+		t.Error("Tower is out of the fortress")
+	}
+	if online(d.current(), "towertorch") {
+		t.Error("Tower sees Cellar online on the phrase it left")
+	}
+}
+
 func TestOutsideAFortressTheDoorActsForNobody(t *testing.T) {
 	d := &Door{Dir: filepath.Join(t.TempDir(), "fortress"), App: towertorch}
 	if _, err := d.Act(context.Background(), "x", maint.BackupAction, nil); !errors.Is(err, ErrNotMember) {
