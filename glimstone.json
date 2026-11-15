@@ -9,7 +9,7 @@
     {
       "name": "fortress card",
       "mode": "copy",
-      "version": "4.4.1",
+      "version": "4.5.1",
       "files": [
         {
           "from": "packages/core/vanilla/fortress-card.css",
