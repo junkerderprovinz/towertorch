@@ -14,8 +14,7 @@ console.log('\nThe halo');
 const tokens = clean(read('sheets/TowerTorch.Tokens.css'));
 const body = (/(^|\})\s*\.tt-info:focus-visible \{([^}]*)\}/.exec(tokens) || [])[2] || '';
 ok('Tokens.css, loaded on every page, gives .tt-info a focus-visible rule', body.length > 0);
-ok('it draws the 3px accent halo', /box-shadow: 0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\) !important;/.test(body));
-ok('with a plain fallback for a browser without color-mix', /box-shadow: 0 0 0 3px rgba\(252, 196, 25, \.42\) !important;/.test(body));
+ok('it draws GlimStone\'s opaque ring in the accent\'s ink', /box-shadow: 0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\) !important;/.test(body));
 ok('round, following the ring the glyph draws', /border-radius: 50%;/.test(body));
 ok('and no outline ring', /outline: none !important;/.test(body));
 ok('focused, the glyph is at full strength', /opacity: 1 !important;/.test(body));
@@ -26,7 +25,7 @@ ok('focused, the glyph is at full strength', /opacity: 1 !important;/.test(body)
 console.log('\nNothing takes it away again, across every sheet a page loads');
 const { candidates, cmp } = require('./cascade');
 const INFO = { tag: 'span', classes: ['tt-info'], attrs: { class: 'tt-info', tabindex: '0', 'data-tip': 'x', 'aria-label': 'x' }, states: { focus: true, 'focus-visible': true } };
-const HALO = /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)$/;
+const HALO = /^0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)$/;
 const winner = (page, prop, el) => { const c = candidates(page, el || INFO, prop); return c[c.length - 1]; };
 {
   const sheets = [{ name: 'a.css', css: '.tt-info:focus-visible { box-shadow: 0 0 0 3px red !important; }' },

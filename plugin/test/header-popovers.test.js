@@ -27,7 +27,7 @@ console.log('\nThe notification drawer');
   ok('header.js marks it and names it in a bubble, in both languages', /x\.classList\.add\("tt-notif-x"\)/.test(header) && /x\.setAttribute\("data-tt-tip", T\("Schließen", "Close"\)\)/.test(header));
   ok('also in the empty drawer, before the bulk actions bail out', header.indexOf('x.classList.add("tt-notif-x")') < header.indexOf('if (host.querySelector(".tt-notif-badge")) return;'));
   const tab = { tag: 'span', classes: [], attrs: { role: 'tab' }, inside: SHEET, outside: ['.shrink-0'], states: { 'focus-visible': true, focus: true } };
-  ok('keyboard focus shows the halo', /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)$/.test(val(tab, 'box-shadow') || ''), val(tab, 'box-shadow'));
+  ok('keyboard focus shows the ring', /^0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)$/.test(val(tab, 'box-shadow') || ''), val(tab, 'box-shadow'));
   const panel = { tag: 'div', classes: [], attrs: { role: 'tabpanel', tabindex: '0' }, inside: SHEET, outside: ['.shrink-0'], states: { 'focus-visible': true, focus: true } };
   ok('the focusable list panel draws no ring at all', val(panel, 'box-shadow') === 'none');
   const drawer = { tag: 'div', classes: ['fixed', 'z-50', 'bg-background'], inside: ['.unapi'] };

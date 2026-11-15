@@ -184,6 +184,6 @@ html.tt-settingsgrid-on #displaybox .Panel > a:focus-visible { outline: none !im
 html.tt-settingsgrid-on #displaybox .Panel > a:focus-visible > span,
 html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a:focus-visible,
 html.tt-settingsgrid-heads-on #displaybox div.title a:focus-visible {
-  outline: none !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  outline: none !important; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 

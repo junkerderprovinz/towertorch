@@ -94,7 +94,7 @@ html[data-tt-page="vmform"] #displaybox #btnSubmit:not(:disabled) {
 html[data-tt-page="vmform"] #displaybox #btnSubmit:hover:not(:disabled) {
   background: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) 85%, var(--tt-text, #e6e6e6)) !important;
 }
-html[data-tt-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+html[data-tt-page="vmform"] #displaybox :is(input[type="button"], input[type="submit"]):focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 /* Unraid's tiny switch track becomes the TowerTorch toggle. */
 html[data-tt-page="vmform"] #displaybox .switch-button-background {
   width: 36px !important; height: 20px !important; border: none !important; box-shadow: none !important;
@@ -121,7 +121,7 @@ html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not
 }
 html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
 html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked::before { left: 19px; background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
-html[data-tt-page="vmform"] #vmform :is(input, textarea, .tt-tsel-trigger):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 55%, transparent) !important; }
+html[data-tt-page="vmform"] #vmform :is(input, textarea, .tt-tsel-trigger):focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 html[data-tt-page="vmform"] #displaybox blockquote.inline_help {
   border: none !important; background: var(--tt-surface-3, #2e2e2e) !important; border-radius: var(--tt-radius-control) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }
@@ -176,7 +176,7 @@ html[data-tt-page="vmtemplates"] #displaybox .vmtemplate img { width: 48px; heig
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate p { margin: 0; font-size: var(--tt-text-subline); line-height: 1.3; text-align: center; color: inherit; }
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) { background: var(--tt-chip); }
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) > span { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
-html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 /* three tiles to a row on a phone */
 @media (max-width: 600px) { html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a { width: 96px; } }
 /* The three actions under the cards are badges, neutral at rest and the colour mode under the
@@ -190,7 +190,7 @@ html[data-tt-page="vmtemplates"] #displaybox center > button {
   cursor: pointer; transition: background-color .12s, color .12s;
 }
 html[data-tt-page="vmtemplates"] #displaybox center > button:hover { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important; }
-html[data-tt-page="vmtemplates"] #displaybox center > button:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+html[data-tt-page="vmtemplates"] #displaybox center > button:focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 
 /* Disk Stats (/Stats). The Shares area already restyles its tab bar and control strip; this adds
    the bars, the legend and the chart. The bar colours keep their meaning: the normal share is the

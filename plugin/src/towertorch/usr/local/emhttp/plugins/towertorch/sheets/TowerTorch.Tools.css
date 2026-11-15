@@ -586,7 +586,7 @@ html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-
 html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):disabled,
 html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):disabled { opacity: .45; cursor: not-allowed; }
 html.tt-tools-on #displaybox input[type="checkbox"]:not(.tt-cb):focus-visible,
-html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+html.tt-shares-on.tt-on-share-detail #displaybox input[type="checkbox"]:not(.tt-cb):focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 /* radio buttons (Energiemodus): dark, borderless, round, with an accent dot when checked */
 html.tt-tools-on #displaybox input[type="radio"] {
   -webkit-appearance: none; appearance: none; width: 18px; height: 18px; box-sizing: border-box; flex: none;

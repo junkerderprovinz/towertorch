@@ -176,7 +176,7 @@ console.log('\nThe window');
   ];
   for (const [name, e] of focused) {
     const halo = candidates(page, e, 'box-shadow').pop();
-    ok(name + ' gets the focus halo past the blanket no-ring rules', halo && /^0 0 0 3px color-mix\(in srgb,var\(--tt-accent,#FCC419\) 45%,transparent\)$/.test(halo.value), halo && halo.selector + ' ' + halo.value);
+    ok(name + ' gets the focus halo past the blanket no-ring rules', halo && /^0 0 0 var\(--tt-focus-ring-width,2px\) var\(--tt-accent-ink,#FCC419\)$/.test(halo.value), halo && halo.selector + ' ' + halo.value);
   }
   ok('the release page link, the one action, stands at the end like every forward action', !/\.tt-win-link\{margin-inline-end:auto\}/.test(style));
 

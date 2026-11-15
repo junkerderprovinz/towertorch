@@ -1,7 +1,8 @@
-// Every TowerTorch button, badge and field shows keyboard focus with the 3px accent halo. TowerTorch draws no
-// rings or outlines, and a brightness step on a filled badge is too faint to see ("Öffnen" moved
-// 1.12:1), so the halo has to win the whole cascade of each page: the blanket no-ring rules in
-// docker.css, Shares.css and VmTab.css leave these controls out.
+// Every TowerTorch button, badge and field shows keyboard focus with GlimStone's ring: opaque, in the
+// accent's ink, so it reaches 3:1 on every ground, 2px wide and 3px when the system asks for more
+// contrast. It is drawn as a box-shadow, since a brightness step on a filled badge is too faint to
+// see ("Öffnen" moved 1.12:1), and it has to win the whole cascade of each page: the blanket no-ring
+// rules in docker.css, Shares.css and VmTab.css leave these controls out.
 const fs = require('fs');
 const path = require('path');
 const { DIR, candidates, parseRules } = require('./cascade');
@@ -9,13 +10,16 @@ const { DIR, candidates, parseRules } = require('./cascade');
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { cond ? (pass++, console.log('  PASS  ' + name)) : (fail++, console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : ''))); };
 const read = (rel) => fs.readFileSync(path.join(DIR, rel), 'utf8');
-const HALO = /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)$/;
+const HALO = /^0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)$/;
 
 // The list the halo rule names, read from Tokens.css.
 const haloRule = parseRules(read('sheets/TowerTorch.Tokens.css')).find((r) => /^:is\([^)]*\.tt-btn[^)]*\):focus-visible$/.test(r.selector.replace(/\s+/g, ' ').trim()));
 const LIST = haloRule ? /^:is\(([^)]*)\)/.exec(haloRule.selector.replace(/\s+/g, ' '))[1].split(',').map((s) => s.trim().slice(1)) : [];
 
 console.log('\nThe halo rule');
+const tokens = read('sheets/TowerTorch.Tokens.css');
+ok('the ring is 2px, and 3px when the system asks for more contrast', /html \{ --tt-focus-ring-width: 2px; \}/.test(tokens) && /@media \(prefers-contrast: more\) \{\s*html \{ --tt-focus-ring-width: 3px; --tt-ink-min: 0\.84; \}/.test(tokens));
+ok('no translucent halo is left', !/3px rgba\(252, 196, 25, \.42\)/.test(tokens) && !/var\(--tt-accent, #FCC419\) 45%, transparent\)/.test(tokens));
 ok('Tokens.css has one halo rule for TowerTorch controls', !!haloRule);
 for (const c of ['tt-btn', 'tt-b', 'tt-badge', 'tt-actbtn', 'tt-limbtn', 'tt-bulkbtn', 'tt-bulkmode-badge', 'tt-hgear', 'tt-day', 'tt-set-tab', 'tt-in']) {
   ok(`it covers .${c}`, LIST.includes(c));

@@ -28,7 +28,7 @@ html .tt-win .tt-give-sub { color: var(--tt-text-dim); }
   transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
 .tt-give-opt:hover { background: var(--tt-surface-3); }
-.tt-give :is(.tt-give-opt, .tt-give-coin, .tt-give-net):focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+.tt-give :is(.tt-give-opt, .tt-give-coin, .tt-give-net):focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 .tt-give-amounts { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 html .tt-win .tt-win-in.tt-give-amount { width: 144px !important; max-width: 100% !important; height: 32px !important; margin: 0 !important; }
 html .tt-win .tt-win-in.tt-give-amount-ok { box-shadow: inset 0 0 0 1px var(--tt-accent, #FCC419) !important; }

@@ -197,7 +197,7 @@ console.log('\nA settings tile without its badge');
   const tile = { tag: 'a', classes: [], inside: ['#displaybox', '.Panel'] };
   ok('its name is neutral ink, not a blue link', val(tile, 'color') === 'var(--tt-text-chip, #cfcfcf)' && val(tile, 'text-decoration') === 'none');
   ok('the whole tile fills one step up under the pointer', val(Object.assign({}, tile, { states: { hover: true } }), 'background') === 'var(--tt-hover-wash, rgba(128, 128, 128, .18))');
-  ok('keyboard focus is the accent halo', /0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)/.test(val(Object.assign({}, tile, { states: { 'focus-visible': true } }), 'box-shadow') || ''));
+  ok('keyboard focus is the accent halo', /0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)/.test(val(Object.assign({}, tile, { states: { 'focus-visible': true } }), 'box-shadow') || ''));
   ok('with the badges on, the halo sits around the badge', sg.includes('html.tt-settingsgrid-on #displaybox .Panel > a:focus-visible > span,'));
 }
 

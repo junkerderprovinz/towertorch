@@ -9,7 +9,7 @@ html.tt-on-plugins .tt-pluglink {
   color: var(--tt-accent-ink, #FCC419) !important; text-decoration: none !important; cursor: pointer;
 }
 html.tt-on-plugins .tt-pluglink:hover { text-decoration: underline !important; }
-html.tt-on-plugins .tt-pluglink:focus-visible { outline: none; text-decoration: underline !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); border-radius: var(--tt-radius-control); }
+html.tt-on-plugins .tt-pluglink:focus-visible { outline: none; text-decoration: underline !important; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); border-radius: var(--tt-radius-control); }
 
 /* The gear opens the icon colouring of one plugin. It sits in the logo's corner and comes in with
    the pointer or the focus on its row or card; a touch screen has no hover, so there it stays.
@@ -62,7 +62,7 @@ html.tt-on-plugins.tt-plt-on a.tt-plt-name:focus-visible { outline: none; text-d
 html.tt-on-plugins.tt-plt-on .tt-plt-state { flex: none; align-self: flex-start; }
 html.tt-on-plugins.tt-plt-on .tt-plt-upd { cursor: pointer; }
 html.tt-on-plugins.tt-plt-on .tt-plt-upd:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
-html.tt-on-plugins.tt-plt-on .tt-plt-upd:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+html.tt-on-plugins.tt-plt-on .tt-plt-upd:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 html.tt-on-plugins.tt-plt-on .tt-plt-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-height: var(--tt-icon-badge, 26px); }
 html.tt-on-plugins.tt-plt-on .tt-plt-card .tt-b { display: inline-flex; gap: 5px; align-items: center; border-radius: var(--tt-radius-pill); padding: var(--tt-sm-pad, 3px 11px); font-size: var(--tt-sm-fs); }
 html.tt-on-plugins.tt-plt-on .tt-plt-card .tt-b .tt-b-k { opacity: .72; font-weight: 500; }

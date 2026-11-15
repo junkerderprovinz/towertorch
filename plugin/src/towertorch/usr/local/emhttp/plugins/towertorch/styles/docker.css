@@ -269,8 +269,7 @@ html td.ct-name span.tt-pick[aria-checked="true"]::after {
 }
 html td.ct-name span.tt-pick:focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(252, 196, 25, .42) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 /* Unraid's lock makes #docker_list sortable, and then the rows wiggle like icons in an edit mode,
    each a little out of step with its neighbours, and a grip on the logo tile's corner stands in
@@ -363,10 +362,10 @@ html.tt-tools-on .tt-b-del.tt-b-delicon {
 }
 /* The rule above clears box-shadow with more weight than the shared halo in Tokens.css. */
 html.tt-on-plugins .tt-b-del.tt-b-delicon:focus-visible,
-html.tt-tools-on .tt-b-del.tt-b-delicon:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; }
+html.tt-tools-on .tt-b-del.tt-b-delicon:focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 /* A description longer than its window scrolls, which makes it a tab stop in Chrome, so it shows
    focus with the halo rather than the browser's ring. */
-.tt-plug .tt-desc:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); border-radius: var(--tt-radius-control); }
+.tt-plug .tt-desc:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); border-radius: var(--tt-radius-control); }
 /* The glyph is TT_TRASH_SVG, the same can as the Startplan row's delete badge, drawn in
    currentColor so it takes the badge's ink on every fill. */
 .tt-b-delicon svg { width: 15px; height: 15px; display: block; pointer-events: none; }
@@ -993,7 +992,7 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
   transition: color var(--tt-motion-control-dur, 0s);
 }
 .tt-tp-btn:hover, .tt-tp-btn[aria-expanded="true"] { color: #e6e6e6; }
-.tt-tp-btn:focus-visible { outline: none; color: #e6e6e6; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+.tt-tp-btn:focus-visible { outline: none; color: #e6e6e6; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 .tt-sched-time::-webkit-calendar-picker-indicator { display: none !important; }   /* replaced by .tt-timepick */
 .tt-sched-time::-webkit-datetime-edit { padding: 0; color: inherit; }
 .tt-sched-time::-webkit-datetime-edit-fields-wrapper { padding: 0; }
@@ -1015,7 +1014,7 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
 .tt-tp-col { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
 .tt-tp-col .tt-drop-it { justify-content: center; padding: 4px 12px; min-width: 44px; }
 .tt-timepick .tt-drop-on::after { content: none; }   /* a two-character chip has no room for the tick, and the fill already says it is picked */
-.tt-timepick .tt-drop-it:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+.tt-timepick .tt-drop-it:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 .tt-days { display: flex; gap: 3px; flex-wrap: wrap; }
 /* The day chip and the row's delete badge have to be the same size, so they share one geometry
    declaration; two separate ones are equal only until somebody edits one. Only colour, glyph and
@@ -1699,7 +1698,7 @@ div.js-actions input[type=button].tt-bar-primary:hover:not(:disabled) { backgrou
 /* Every button in the bar shows focus with the halo, the natives included, since TowerTorch draws them:
    the bar's own rules clear box-shadow with more weight than the shared halo in Tokens.css, and
    the blanket rule for Unraid's controls would add a brightness step on top. */
-div.js-actions :is(input[type=button], .tt-bulkmode-badge, .tt-allct, .tt-maintbtn):focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; filter: none; }
+div.js-actions :is(input[type=button], .tt-bulkmode-badge, .tt-allct, .tt-maintbtn):focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; filter: none; }
 
 /* ShipLog: where its changelog bubble is on the Docker tab, its buttons and severity pill take the
    TowerTorch look. The .sl-bubble selector matches only once ShipLog has rendered one, so with the plugin
@@ -1738,7 +1737,7 @@ html .sl-bubble .sl-au-track {
 html .sl-bubble .sl-au-track::after { top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--tt-radius-pill); background: #fff; }
 html .sl-bubble .sl-au-cb:checked + .sl-au-track { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
 html .sl-bubble .sl-au-cb:checked + .sl-au-track::after { transform: translateX(20px); background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
-html .sl-bubble .sl-au-cb:focus-visible + .sl-au-track { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+html .sl-bubble .sl-au-cb:focus-visible + .sl-au-track { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 html .sl-bubble .sl-au-row.sl-au-dis > * { opacity: .65; cursor: default; }
 html .sl-bubble .sl-au-state { order: 4; flex-basis: 100%; }
 html .sl-bubble .sl-au-state:empty { display: none; }

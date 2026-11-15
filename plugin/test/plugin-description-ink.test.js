@@ -36,7 +36,7 @@ console.log('\nA long description scrolls, so the keyboard reaches it and it sho
 {
   const el = { tag: 'span', classes: ['tt-desc'], states: { focus: true, 'focus-visible': true }, html: ['tt-on-plugins'], inside: ['.tt-plug'] };
   const w = candidates(page, el, 'box-shadow').pop();
-  ok('the 3px accent halo', !!w && /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)/.test(w.value), w && w.value);
+  ok('the focus ring', !!w && /^0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)/.test(w.value), w && w.value);
   const o = candidates(page, el, 'outline').pop();
   ok('and not the browser\'s ring', !!o && /^none/.test(o.value), o && o.value);
 }

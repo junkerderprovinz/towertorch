@@ -177,7 +177,7 @@ html.tt-forms-on #displaybox :is(input[type="button"], input[type="submit"], inp
   background: var(--tt-fm-btn) !important; color: var(--tt-text-dim, #8a8a8a) !important; opacity: 1 !important; cursor: not-allowed;
 }
 html.tt-forms-on #displaybox :is(input[type="button"], input[type="submit"], input[type="reset"], button:not([role="tab"]), a.button):is(:not([class*="tt-"]), .tt-fm-primary):where(:not(.unapi *, .main-content *)):focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important; outline: none !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; outline: none !important;
 }
 
 /* The (i) on a label: GlimStone's stroke glyph, neutral, carrying Unraid's own help text. */
@@ -188,7 +188,7 @@ html.tt-forms-on #displaybox .tt-toolsinfo {
 }
 html.tt-forms-on #displaybox .tt-toolsinfo svg { width: 15px; height: 15px; display: block; }
 html.tt-forms-on #displaybox .tt-toolsinfo:is(:hover, :focus-visible) { opacity: 1; color: var(--tt-text, #e6e6e6); }
-html.tt-forms-on #displaybox .tt-toolsinfo:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+html.tt-forms-on #displaybox .tt-toolsinfo:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 html.tt-forms-on #displaybox .tt-fm-hinticon { margin-left: 0; }
 html.tt-forms-on #displaybox :is(blockquote.inline_help, .inline-help)[data-tt-help],
 html.tt-forms-on #displaybox .tt-fm-hinted { display: none !important; }
@@ -226,7 +226,7 @@ html.tt-forms-on #displaybox .tt-fm-segbtn.tt-fm-segon {
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616)));
 }
 html.tt-forms-on #displaybox .tt-fm-segbtn.tt-fm-segoff { opacity: .45; cursor: not-allowed; }
-html.tt-forms-on #displaybox .tt-fm-segbtn:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+html.tt-forms-on #displaybox .tt-fm-segbtn:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 
 /* unbalanced (/Settings/unbalanced) brings a label and field grid of its own; it takes the same
    two columns as every other form, its notes read as quiet text under the fields, and its version

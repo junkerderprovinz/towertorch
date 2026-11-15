@@ -1016,7 +1016,7 @@ html.tt-popups-on .sweet-alert:not(.nchan, .tt-only-loader):not(:has(pre)) .sa-b
   background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-hdr-accent, #FCC419))) 85%, #e6e6e6) !important; box-shadow: none !important;
 }
 html.tt-popups-on .sweet-alert:not(.nchan, .tt-only-loader):not(:has(pre)) .sa-button-container button:focus-visible {
-  outline: none !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  outline: none !important; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 /* The close badge keeps its dark-window colours on a light theme, where the tokens it reads turn
    light; it is shown on a confirmation only, since the node also serves the streaming windows. */
@@ -1156,7 +1156,7 @@ html.tt-popups-on .unapi div.fixed.z-50.bg-background [class~="group/item"] svg[
    of Tailwind's offset ring; the list panel, which reka makes focusable, shows none. */
 html.tt-popups-on :is(.unapi div.fixed.z-50.bg-background, .bg-popover) :is(a, button, [role="button"], [role="tab"], [role="menuitem"]):focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 html.tt-popups-on .unapi div.fixed.z-50.bg-background [role="tabpanel"]:focus-visible { outline: none !important; box-shadow: none !important; }
 
@@ -1662,7 +1662,7 @@ html.tt-popups-on .tt-acctmenu .tt-acct-tool {
 html.tt-popups-on .tt-acctmenu .tt-acct-tool:hover {
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616)));
 }
-html.tt-popups-on .tt-acctmenu .tt-acct-tool:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent); }
+html.tt-popups-on .tt-acctmenu .tt-acct-tool:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 html.tt-popups-on .tt-acctmenu .tt-acct-tool > * { color: inherit !important; }
 html.tt-header-on .tt-acctmenu li > span,
 html.tt-header-on .tt-acctmenu li > a { border-radius: var(--tt-radius-control) !important; transition: background .12s, color .12s; }

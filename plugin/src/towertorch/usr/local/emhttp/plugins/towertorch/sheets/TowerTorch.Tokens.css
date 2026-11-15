@@ -446,9 +446,10 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-err-hover:  color-mix(in srgb, var(--tt-err) 85%, var(--tt-text));
   --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
 }
-/* When the system asks for more contrast, the ink takes GlimStone's second step. */
+/* When the system asks for more contrast, the ink takes GlimStone's second step and the focus ring
+   thickens. */
 @media (prefers-contrast: more) {
-  html { --tt-ink-min: 0.84; }
+  html { --tt-focus-ring-width: 3px; --tt-ink-min: 0.84; }
   html.Theme--white,
   html.Theme--azure { --tt-ink-max: 0.40; }
   .tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, html.tt-popups-on #alternateView .tt-av-win,
@@ -658,22 +659,21 @@ html .tt-cpop .tt-set-hexin:focus { background: #383838 !important; }
 html { --tt-radius-card: 20px; --tt-radius-control: 12px; --tt-radius-pill: 9999px; }
 html[data-tt-shape="soft"] { --tt-radius-card: 8px; --tt-radius-control: 5px; --tt-radius-pill: 5px; }
 html[data-tt-shape="square"] { --tt-radius-card: 0px; --tt-radius-control: 0px; --tt-radius-pill: 0px; }
-/* A soft accent halo on keyboard focus on every TowerTorch button, badge and field, distinct from hover: a
-   glow, not a border line. color-mix supplies the alpha, and the fixed-accent line above it is the
-   fallback without color-mix. The blanket no-ring rules in docker.css, Shares.css and VmTab.css
-   leave the same list out, so keep them in step. */
+/* Keyboard focus on every TowerTorch button, badge and field is GlimStone's ring, distinct from hover:
+   opaque and in the accent's ink, so it reaches 3:1 on every ground a control stands on. It is a
+   box-shadow, because Unraid's sheets clear outlines. The blanket no-ring rules in docker.css,
+   Shares.css and VmTab.css leave the same list out, so keep them in step. */
+html { --tt-focus-ring-width: 2px; }
 :is(.tt-b, .tt-badge, .tt-btn, .tt-abtn, .tt-actbtn, .tt-limbtn, .tt-bulkbtn, .tt-bulkmode-badge, .tt-b-copy, .tt-b-del, .tt-badge-toggle, .tt-plan, .tt-card-movebtn, .tt-folder-act, .tt-hgear, .tt-win-btn, .tt-win-x, .tt-seg-btn, .tt-set-tab, .tt-day, .tt-sched-x, .tt-plugsup, .tt-plugicm, .tt-in, .tt-set-toggle, .tt-set-sw, .tt-colpick, .tt-core, .tt-toast):focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(252, 196, 25, .42) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 /* The (i) glyph has no fill of its own, so its opacity step on focus reads exactly like hover and a
-   keyboard user cannot tell it is focused. It takes the same halo, round to follow the ring it
+   keyboard user cannot tell it is focused. It takes the same ring, round to follow the one it
    draws. The area sheets style the glyph through heavier selectors, hence !important. */
 .tt-info:focus-visible {
   outline: none !important; border-radius: 50%; opacity: 1 !important;
-  box-shadow: 0 0 0 3px rgba(252, 196, 25, .42) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 /* the copied pill pulses in place rather than opening a toast in the corner */
 @keyframes tt-copyflash { 0% { filter: brightness(1); transform: scale(1); } 35% { filter: brightness(1.4); transform: scale(1.06); } 100% { filter: brightness(1); transform: scale(1); } }
@@ -1238,8 +1238,7 @@ html.tt-popups-on li.tt-ca-search-li #searchFilter:not(.tt-open):hover {
   color: var(--tt-text, #e6e6e6) !important;
 }
 html.tt-popups-on li.tt-ca-search-li #searchFilter:not(.tt-open):focus-within {
-  box-shadow: 0 0 0 3px rgba(252, 196, 25, .42) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 /* The hidden input still drives the field's height: at width 0 it is invisible, but its 34px box
    would stretch the collapsed field past its 32px. */
@@ -1423,8 +1422,7 @@ html.tt-popups-on li.subCategory > ul.caMenuItem:focus-visible,
 html.tt-popups-on li.tt-ca-perpage-li > .caButton.maxPerPage:focus-visible,
 html.tt-popups-on .tt-ca-search-extras > .dockerSearch:focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(252, 196, 25, .42) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent) !important;
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important;
 }
 /* The link fills its row, so a click anywhere on Support opens it. */
 html.tt-popups-on li.caMenuItem > a.caMenuItem {
@@ -1682,7 +1680,7 @@ html.tt-popups-on .ca_holder .tt-ca-sel::before {
 }
 html.tt-popups-on .ca_holder .tt-ca-sel:has(> input:checked)::before { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
 html.tt-popups-on .ca_holder .tt-ca-sel:has(> input:focus-visible)::before {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-accent, #FCC419) 45%, transparent);
+  box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419);
 }
 html.tt-popups-on .ca_holder .tt-ca-sel svg {
   position: relative; width: 11px; height: 11px; opacity: 0;

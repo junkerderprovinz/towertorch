@@ -77,7 +77,7 @@ console.log('\nThe keyboard reaches it');
   for (const html of [['tt-docker-on', 'tt-shares-on', 'tt-popups-on', 'tt-header-on'], ['tt-docker-on', 'tt-shares-on', 'tt-popups-on', 'tt-header-on', 'tt-shares-rbneutral', 'Theme--white', 'tt-vms-on']]) {
     const el = { tag: 'span', classes: ['hand', 'tt-pick'], attrs: { role: 'checkbox', tabindex: '0' }, states: { focus: true, 'focus-visible': true }, html, inside: ['#displaybox', '#docker_list', '.ct-name', '.outer'] };
     const all = candidates(page, el, 'box-shadow'), w = all[all.length - 1];
-    ok('a focused tile shows the accent halo' + (html.includes('Theme--white') ? ' on white, reactive' : ''), !!w && /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)$/.test(w.value), w && w.sheet + ': ' + w.selector + ' => ' + w.value);
+    ok('a focused tile shows the focus ring' + (html.includes('Theme--white') ? ' on white, reactive' : ''), !!w && /^0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)$/.test(w.value), w && w.sheet + ': ' + w.selector + ' => ' + w.value);
   }
 }
 

@@ -93,7 +93,7 @@ console.log('\nA disabled entry is dimmed by colour and ignores the pointer');
 
 console.log('\nKeyboard focus is the accent halo, never a ring');
 for (const [name, el] of [['a row', row(['categoryMenu'], { focus: true, 'focus-visible': true })], ['the open entry', row(['allApps', 'selectedMenu'], { focus: true, 'focus-visible': true })]]) {
-  ok(`${name}: halo`, /^0 0 0 3px color-mix\(in srgb, var\(--tt-accent, #FCC419\) 45%, transparent\)$/.test(val(el, 'box-shadow')), val(el, 'box-shadow'));
+  ok(`${name}: halo`, /^0 0 0 var\(--tt-focus-ring-width, 2px\) var\(--tt-accent-ink, #FCC419\)$/.test(val(el, 'box-shadow')), val(el, 'box-shadow'));
   ok(`${name}: no outline`, val(el, 'outline') === 'none', val(el, 'outline'));
 }
 

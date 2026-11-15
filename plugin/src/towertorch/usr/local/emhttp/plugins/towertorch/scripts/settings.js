@@ -81,7 +81,7 @@
       "html .tt-win-notes .tt-notes pre code{background:none;padding:0;white-space:pre}" +
       "html .tt-win-notes .tt-notes a,html .tt-win-notes .tt-notes a:visited{color:var(--tt-accent-ink);text-decoration:none;border-radius:calc(var(--tt-radius-control) / 2)}" +
       "html .tt-win-notes .tt-notes a:hover{background:var(--tt-rbaccent,var(--tt-accent));color:var(--tt-rbaccent-text,var(--tt-accent-text))}" +
-      "html .tt-win-notes :is(.tt-notes, .tt-notes a):focus-visible{outline:none!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--tt-accent,#FCC419) 45%,transparent)!important}" +
+      "html .tt-win-notes :is(.tt-notes, .tt-notes a):focus-visible{outline:none!important;box-shadow:0 0 0 var(--tt-focus-ring-width,2px) var(--tt-accent-ink,#FCC419)!important}" +
       "html .tt-win a.tt-win-btn,html .tt-win a.tt-win-btn:visited{color:var(--tt-text);text-decoration:none}" +
       "html .tt-win a.tt-win-btn:hover{color:var(--tt-rb-ct,var(--tt-rbaccent-text,var(--tt-accent-text,#161616)))}" +
       // A row or card that has nothing to act on stays out of the page and out of the search.
@@ -152,7 +152,7 @@
       "#tt-settings .tt-rbtn{position:relative;display:block;flex:none;box-sizing:border-box;width:160px;height:46.6px;padding:0;background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6);text-decoration:none;cursor:pointer}" +
       "#tt-settings .tt-rbtn:hover{text-decoration:none}" +
       // The unit clips at its edge, so the focus halo goes inside the button.
-      "#tt-settings .tt-rbtn:focus-visible{outline:none!important;filter:none!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--tt-accent,#FCC419) 45%,transparent)!important}" +
+      "#tt-settings .tt-rbtn:focus-visible{outline:none!important;filter:none!important;box-shadow:inset 0 0 0 var(--tt-focus-ring-width,2px) var(--tt-accent-ink,#FCC419)!important}" +
       "#tt-settings .tt-rbtn-mark{position:absolute;top:50%;left:14px;width:32px;height:25px;translate:0 -50%;display:flex}" +
       "#tt-settings :is(.tt-rbtn-mark,.tt-rbtn-art) svg{display:block;width:100%;height:100%}" +
       "#tt-settings .tt-rbtn-art{position:absolute;inset:0}" +
