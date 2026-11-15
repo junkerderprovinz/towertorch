@@ -1570,7 +1570,7 @@ html.tt-shares-on.tt-on-browse #displaybox .title input.dfm_filter {
   background-color: var(--tt-surface-3) !important; color: var(--tt-text) !important; border: none !important;
   border-radius: var(--tt-radius-control) !important;
 }
-html.tt-shares-on.tt-on-browse #displaybox .title input.dfm_filter::placeholder { color: var(--tt-text-hint); }
+html.tt-shares-on.tt-on-browse #displaybox .title input.dfm_filter::placeholder { color: var(--tt-field-placeholder, #c6c6c6); }
 html.tt-shares-on.tt-on-browse #displaybox .title i.dfm_filter { color: var(--tt-text-dim) !important; }
 
 /* The action buttons are input[type=button], as on the share-detail page, but they share no class

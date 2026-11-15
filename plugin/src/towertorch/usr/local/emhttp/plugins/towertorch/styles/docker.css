@@ -914,7 +914,7 @@ html .tt-pop .tt-in:focus { background-color: #383838 !important; }
    label's colour, since a hint is furniture and sits at label brightness under the field's own
    value text. opacity:1 because Firefox dims placeholders on top of the colour. */
 html .tt-in::placeholder,
-html .tt-pop input::placeholder, html .tt-menu input::placeholder { color: var(--tt-text-hint, #a3a3a3) !important; opacity: 1 !important; }
+html .tt-pop input::placeholder, html .tt-menu input::placeholder { color: var(--tt-field-placeholder, #c6c6c6) !important; opacity: 1 !important; }
 /* appearance:none takes a select's native arrow, so a caret goes back: the same 8x5 triangle in
    the same grey that .tt-pop .tt-dsel-trigger::after draws with borders, so a native select, a
    wrapped .tt-dsel and the .tt-dropin field below cannot drift into three different arrows. It is

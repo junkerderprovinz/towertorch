@@ -265,8 +265,10 @@ html {
   --tt-text-dim:   #8a8a8a;
   --tt-text-dim2:  #6f6f6f;
   --tt-text-chip:  #cfcfcf;
-  /* a field's label and its placeholder, quieter than the value yet at 4.5:1 on a focused field */
+  /* a field's label, quieter than the value yet at 4.5:1 on a focused field */
   --tt-text-hint:  #a3a3a3;
+  /* a field's placeholder, GlimStone's --field-placeholder, at 4.5:1 on every field fill */
+  --tt-field-placeholder: #c6c6c6;
   /* chip text on Unraid's header bar, whose colour is --header-background-color rather than the
      page's, so the white theme keeps it dark */
   --tt-header-ink: #cfcfcf;
@@ -397,6 +399,7 @@ html.Theme--azure {
   --tt-text-dim2:  #6f6f6f;
   --tt-text-chip:  #303030;
   --tt-text-hint:  #5e5e5e;
+  --tt-field-placeholder: #525252;
   /* Unraid's own ink for its header bar, which is dark on white and light on azure */
   --tt-header-ink: var(--header-text-color, #cfcfcf);
   /* 3:1 against a card and against the knob, so a switch that is off still reads as one */
@@ -430,7 +433,7 @@ html.Theme--azure {
 html.tt-popups-on #alternateView .alternateViewContent {
   --tt-surface-1: #1e1e1e;  --tt-surface-2: #222222;  --tt-surface-3: #2e2e2e;  --tt-surface-base: #161616;
   --tt-surface-4: #262626;  --tt-surface-window: #242424;  --tt-surface-card: #191919;  --tt-surface-deep: #0f0f0f;
-  --tt-text: #e6e6e6;  --tt-text-dim: #8a8a8a;  --tt-text-chip: #cfcfcf;  --tt-text-hint: #a3a3a3;  --tt-header-ink: #cfcfcf;
+  --tt-text: #e6e6e6;  --tt-text-dim: #8a8a8a;  --tt-text-chip: #cfcfcf;  --tt-text-hint: #a3a3a3;  --tt-field-placeholder: #c6c6c6;  --tt-header-ink: #cfcfcf;
   --tt-toggle-track-off: #3a3a3a;  --tt-toggle-knob: #fff;  --tt-line-solid: #2a2a2a;  --tt-badge-neutral: #3c3c3c;
   --tt-ink-min: 0.74;  --tt-ink-max: 1;  --tt-ink-mix: 100%;
   --tt-ok:   #6fdc8c;  --tt-ok-fg:   #161616;  --tt-ok-ink:   #6fdc8c;
@@ -449,11 +452,11 @@ html.tt-popups-on #alternateView .alternateViewContent {
 /* When the system asks for more contrast, the ink takes GlimStone's second step and the focus ring
    thickens. */
 @media (prefers-contrast: more) {
-  html { --tt-focus-ring-width: 3px; --tt-ink-min: 0.84; }
+  html { --tt-focus-ring-width: 3px; --tt-ink-min: 0.84; --tt-field-placeholder: #e0e0e0; }
   html.Theme--white,
-  html.Theme--azure { --tt-ink-max: 0.40; }
+  html.Theme--azure { --tt-ink-max: 0.40; --tt-field-placeholder: #393939; }
   .tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, html.tt-popups-on #alternateView .tt-av-win,
-  html.tt-popups-on #alternateView .alternateViewContent { --tt-ink-min: 0.84; }
+  html.tt-popups-on #alternateView .alternateViewContent { --tt-ink-min: 0.84; --tt-field-placeholder: #e0e0e0; }
 }
 
 /* OLED (GlimStone rule 43): the dark look on true black for OLED and AMOLED screens. data-oled on
@@ -534,7 +537,7 @@ html .tt-win .tt-win-card > .tt-win-in:first-child { margin-top: 0 !important; }
 html .tt-win .tt-win-in:focus { background: #383838 !important; }
 /* Unraid paints every placeholder in the theme's link colour; a window's hint takes the muted ink
    instead, which reads at 4.5:1 on the field at rest and focused. */
-html .tt-win .tt-win-in::placeholder { color: var(--tt-text-hint, #a3a3a3) !important; opacity: 1 !important; }
+html .tt-win .tt-win-in::placeholder { color: var(--tt-field-placeholder, #c6c6c6) !important; opacity: 1 !important; }
 /* GlimStone's number field (TTTheme.numberField): the arrows sit inside the field's box with no
    ground of their own, and the padding keeps the digits from running under them. Firefox draws its
    spinner for any appearance but textfield, so this has to outweigh the appearance: none that

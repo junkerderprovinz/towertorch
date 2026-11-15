@@ -16,7 +16,7 @@ html.tt-tools-on { --tt-tl-surface: #1c1c1c; }
 html.tt-tools-on, html.tt-popups-on { --tt-tl-surface2: var(--tt-surface-3, #2e2e2e); }
 /* A placeholder is a quiet hint, never the link blue Unraid gives it. */
 html.tt-tools-on #displaybox :is(input, textarea)::placeholder,
-html.tt-shares-on.tt-on-share-detail #displaybox :is(input, textarea)::placeholder { color: var(--tt-text-hint, #a3a3a3) !important; opacity: 1; }
+html.tt-shares-on.tt-on-share-detail #displaybox :is(input, textarea)::placeholder { color: var(--tt-field-placeholder, #c6c6c6) !important; opacity: 1; }
 html.tt-tools-on.Theme--white,
 html.tt-tools-on.Theme--azure { --tt-tl-surface: var(--tt-surface-1, #ffffff); }
 

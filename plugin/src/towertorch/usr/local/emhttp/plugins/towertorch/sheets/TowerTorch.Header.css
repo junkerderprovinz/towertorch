@@ -587,7 +587,7 @@ html.tt-popups-on:not(.Theme--sidebar) #guiSearchBox {
   background: #2e2e2e !important; color: #eaeaea !important; font-size: var(--tt-md-fs) !important;
   box-shadow: none !important; outline: none !important;
 }
-html.tt-popups-on:not(.Theme--sidebar) #guiSearchBox::placeholder { color: #a3a3a3 !important; opacity: 1 !important; }
+html.tt-popups-on:not(.Theme--sidebar) #guiSearchBox::placeholder { color: var(--tt-field-placeholder, #c6c6c6) !important; opacity: 1 !important; }
 html.tt-popups-on:not(.Theme--sidebar) #guiSearchBoxSpan:after { color: #8a8a8a !important; }
 html.tt-popups-on:not(.Theme--sidebar) #guiSearchBoxSpan .awesomplete { width: 100% !important; }
 @media (min-width: 768px) {
@@ -1516,7 +1516,7 @@ html.tt-popups-on .upgrade_notice a, html.tt-popups-on .ca_element_notice a { co
 #tt-cmd .tt-cmd-bd { position: absolute; inset: 0; background: var(--tt-backdrop-dim, rgba(0, 0, 0, .55)); backdrop-filter: var(--tt-backdrop-blur, blur(5px)); -webkit-backdrop-filter: var(--tt-backdrop-blur, blur(5px)); }
 #tt-cmd .tt-cmd-box { position: absolute; left: 50%; top: 84px; transform: translateX(-50%); width: min(92vw, 560px); background: #0f0f0f; border-radius: var(--tt-radius-card); box-shadow: 0 24px 60px rgba(0, 0, 0, .6); overflow: hidden; }
 #tt-cmd .tt-cmd-in { width: 100%; box-sizing: border-box; background: #171717 !important; color: #eaeaea !important; border: none !important; outline: none !important; padding: 16px 20px !important; font-size: var(--tt-text-title) !important; border-radius: 0 !important; }
-#tt-cmd .tt-cmd-in::placeholder { color: #8a8a8a; }
+#tt-cmd .tt-cmd-in::placeholder { color: var(--tt-field-placeholder, #c6c6c6); }
 #tt-cmd .tt-cmd-list { max-height: 52vh; overflow-y: auto; padding: 6px; }
 #tt-cmd .tt-cmd-item { display: flex; align-items: baseline; gap: 10px; padding: 10px 14px; border-radius: var(--tt-radius-control); cursor: pointer; }
 #tt-cmd .tt-cmd-item.tt-cmd-on { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }

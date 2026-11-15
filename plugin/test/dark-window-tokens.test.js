@@ -134,7 +134,7 @@ console.log('\nThe field in a question window, such as "Neuer Ordner"');
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
   const rule = parseRules(fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Tokens.css'), 'utf8')).find((x) => /\.tt-win \.tt-win-in::placeholder/.test(x.selector));
   const decl = rule && rule.decls.find((d) => d.prop === 'color');
-  ok('its placeholder takes the muted ink rather than Unraid\'s link colour', decl && decl.important && /--tt-text-hint/.test(decl.value), decl && decl.value);
+  ok('its placeholder takes the placeholder token rather than Unraid\'s link colour', decl && decl.important && /--tt-field-placeholder/.test(decl.value), decl && decl.value);
   for (const [theme, scope] of [['dark', darkWin], ['white', lightWin]]) {
     const p = decl && resolve(decl.value, scope);
     for (const [state, fill] of [['at rest', '#2e2e2e'], ['focused', '#383838']]) {

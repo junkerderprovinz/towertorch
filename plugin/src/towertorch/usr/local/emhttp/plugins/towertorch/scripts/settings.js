@@ -31,7 +31,7 @@
       // Unraid's default-base.css paints every placeholder in the theme's link colour, so a hint
       // reads as a link or as an already filled value. One rule per sheet covers every field; the
       // Docker half of the same guard lives in docker.css.
-      "#tt-settings input::placeholder{color:#8d8d8d;opacity:1}" +
+      "#tt-settings input::placeholder{color:var(--tt-field-placeholder,#c6c6c6);opacity:1}" +
       "#tt-settings .tt-set-search:focus{background:#2e2e2e}" +
       // The search is a grey pill above the cards, like every button in a card, and takes no room
       // while it is closed. Its magnifier closes it again.

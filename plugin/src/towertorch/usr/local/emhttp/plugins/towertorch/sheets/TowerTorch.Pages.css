@@ -66,7 +66,7 @@ html[data-tt-page="vmform"] #vmform :is(input[type="text"], input[type="url"], i
 }
 html[data-tt-page="vmform"] #vmform textarea:not(.xml) { padding: 8px 10px; }
 html[data-tt-page="vmform"] #vmform :is(input, textarea):focus { background: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)) !important; }
-html[data-tt-page="vmform"] #vmform input::placeholder { color: var(--tt-text-hint, #a3a3a3); }
+html[data-tt-page="vmform"] #vmform input::placeholder { color: var(--tt-field-placeholder, #c6c6c6); }
 /* The CPU pinning grid: filled tiles without frames, and the pick a round selection mark that
    fills with the colour mode. */
 html[data-tt-page="vmform"] #vmform .cpu-box {

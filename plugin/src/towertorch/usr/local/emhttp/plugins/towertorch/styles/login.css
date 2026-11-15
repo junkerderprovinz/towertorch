@@ -9,6 +9,7 @@ html {
   --tt-field-hover: #353535;
   --tt-text: #eeeeee;
   --tt-muted: #a8a8a8;
+  --tt-field-placeholder: #c6c6c6;
   --tt-err: #ff8389;
   --tt-err-soft: rgba(255, 131, 137, .14);
   --tt-ok: #6fdc8c;
@@ -31,6 +32,7 @@ html.Theme--azure {
   --tt-field-hover: #e2e6ec;
   --tt-text: #1c1f24;
   --tt-muted: #5d6570;
+  --tt-field-placeholder: #525252;
   --tt-err: #c92a2a;
   --tt-err-soft: rgba(201, 42, 42, .09);
   --tt-ok: #2b8a3e;
@@ -114,7 +116,7 @@ html body #login input[type=text] {
 html body #login input[type=password] {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b93a5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
 }
-html body #login input::placeholder { color: var(--tt-muted); opacity: 1; }
+html body #login input::placeholder { color: var(--tt-field-placeholder, #c6c6c6); opacity: 1; }
 html body #login input[type=text]:hover,
 html body #login input[type=password]:hover { background-color: var(--tt-field-hover); }
 html body #login input[type=text]:focus,
