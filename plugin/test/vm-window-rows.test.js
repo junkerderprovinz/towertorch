@@ -39,7 +39,7 @@ console.log('\nA field stands beside its label');
   ok('the row puts the label at its start and the field at its end', decl(row, 'display') === 'flex' && decl(row, 'justify-content') === 'space-between' && decl(row, 'align-items') === 'center', row);
   const inp = body('#tt-vmlim .tt-vm-row > input');
   ok('a field keeps a width of its own', /^\d+px$/.test(decl(inp, 'width')), decl(inp, 'width'));
-  ok('its placeholder takes the hint ink rather than Unraid\'s link colour', /var\(--tt-text-hint/.test(decl(body('#tt-vmlim .tt-vm-row > input::placeholder'), 'color')));
+  ok('its placeholder takes the placeholder token rather than Unraid\'s link colour', /var\(--tt-field-placeholder/.test(decl(body('#tt-vmlim .tt-vm-row > input::placeholder'), 'color')));
 }
 
 console.log('\nWhat needs the window\'s width keeps its label above');

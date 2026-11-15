@@ -18,7 +18,7 @@ const LIST = haloRule ? /^:is\(([^)]*)\)/.exec(haloRule.selector.replace(/\s+/g,
 
 console.log('\nThe halo rule');
 const tokens = read('sheets/TowerTorch.Tokens.css');
-ok('the ring is 2px, and 3px when the system asks for more contrast', /html \{ --tt-focus-ring-width: 2px; \}/.test(tokens) && /@media \(prefers-contrast: more\) \{\s*html \{ --tt-focus-ring-width: 3px; --tt-ink-min: 0\.84; \}/.test(tokens));
+ok('the ring is 2px, and 3px when the system asks for more contrast', /html \{ --tt-focus-ring-width: 2px; \}/.test(tokens) && /@media \(prefers-contrast: more\) \{\s*html \{ --tt-focus-ring-width: 3px; [^}]*\}/.test(tokens));
 ok('no translucent halo is left', !/3px rgba\(252, 196, 25, \.42\)/.test(tokens) && !/var\(--tt-accent, #FCC419\) 45%, transparent\)/.test(tokens));
 ok('Tokens.css has one halo rule for TowerTorch controls', !!haloRule);
 for (const c of ['tt-btn', 'tt-b', 'tt-badge', 'tt-actbtn', 'tt-limbtn', 'tt-bulkbtn', 'tt-bulkmode-badge', 'tt-hgear', 'tt-day', 'tt-set-tab', 'tt-in']) {

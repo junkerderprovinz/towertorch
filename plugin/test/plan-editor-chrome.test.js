@@ -328,11 +328,11 @@ ok(/i\.closest\("\.tt-pop-plan"\)[\s\S]{0,120}?"flex", "1 1 0"/.test(harden), 'h
 // so a hint reads as a link or as a filled-in value. A guard repeated per field is
 // missing wherever it was not typed.
 console.log('\nPart 10: placeholders are hints, not links');
-ok(/\.tt-in::placeholder[^{]*\{[^}]*color: var\(--tt-text-hint/.test(css), 'every .tt-in placeholder is overridden to the hint token');
+ok(/\.tt-in::placeholder[^{]*\{[^}]*color: var\(--tt-field-placeholder/.test(css), 'every .tt-in placeholder is overridden to the placeholder token');
 ok(/\.tt-pop input::placeholder/.test(css), 'the guard covers every input in a window, not one class at a time');
 ok(/\.tt-in::placeholder[^{]*\{[^}]*opacity: 1/.test(css), 'opacity:1 as well, Firefox dimming placeholders on top of the colour');
 const setjs = fs.readFileSync(path.join(SCRIPTS, 'settings.js'), 'utf8');
-ok(/#tt-settings input::placeholder\{color:#8d8d8d/.test(setjs), 'and the settings panel guards every input, not just its search box');
+ok(/#tt-settings input::placeholder\{color:var\(--tt-field-placeholder/.test(setjs), 'and the settings panel guards every input, not just its search box');
 
 console.log('\nPart 11: the dependency picker has an arrow and an explainer');
 ok(/el\("input", "tt-in tt-dropin"\)/.test(src), 'the dependency field carries .tt-dropin');

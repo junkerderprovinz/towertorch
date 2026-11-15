@@ -50,7 +50,7 @@ ok('--tt-accent-ink moves the accent onto the ramp\'s OKLab step, unless a picke
 ok('the dark themes lift it to GlimStone\'s 0.74 at least', decl(dark, '--tt-ink-min') === '0.74' && decl(dark, '--tt-ink-max') === '1', decl(dark, '--tt-ink-min'));
 ok('the light themes take it down to 0.52 at most', decl(light, '--tt-ink-min') === '0' && decl(light, '--tt-ink-max') === '0.52', decl(light, '--tt-ink-max'));
 ok('the light override reads the light ramp\'s own ink first', decl(light, '--tt-accent-ink') === `var(--tt-accent-ink-light, ${INK('var(--tt-accent)')})`, decl(light, '--tt-accent-ink'));
-ok('more contrast takes GlimStone\'s second step', /@media \(prefers-contrast: more\) \{\s*html \{ [^}]*--tt-ink-min: 0\.84; \}\s*html\.Theme--white,\s*html\.Theme--azure \{ --tt-ink-max: 0\.40; \}/.test(clean(TOKENS)));
+ok('more contrast takes GlimStone\'s second step', /@media \(prefers-contrast: more\) \{\s*html \{ [^}]*--tt-ink-min: 0\.84;[^}]*\}\s*html\.Theme--white,\s*html\.Theme--azure \{ --tt-ink-max: 0\.40;[^}]*\}/.test(clean(TOKENS)));
 ok('a picked hover reads the ramp\'s own first', decl(dark, '--tt-accent-hover') === 'var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)))' && decl(light, '--tt-accent-hover') === 'var(--tt-accent-hover-light, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)))', decl(light, '--tt-accent-hover'));
 {
   const fav = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Favorites.css'), 'utf8');
