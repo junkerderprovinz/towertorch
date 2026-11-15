@@ -373,7 +373,7 @@ html.tt-header-on [data-tt-trig="bell"] { position: relative; }
 html.tt-header-on [data-tt-trig="bell"] [class*="absolute"] { display: none !important; }
 html.tt-header-on [data-tt-trig="bell"][data-tt-bell="alert"] { --tt-bell-c: var(--tt-err-ink, #ff8389); }
 html.tt-header-on [data-tt-trig="bell"][data-tt-bell="warning"] { --tt-bell-c: var(--tt-warn-ink, #ff832b); }
-html.tt-header-on [data-tt-trig="bell"][data-tt-bell="notice"] { --tt-bell-c: color-mix(in srgb, var(--tt-rb-c, var(--tt-hdr-accent, #FCC419)) var(--tt-ink-mix, 100%), black); }
+html.tt-header-on [data-tt-trig="bell"][data-tt-bell="notice"] { --tt-bell-c: oklab(from var(--tt-rb-c, var(--tt-hdr-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))); }
 /* A notice in the accent would vanish on a box filled with the accent, so it is coloured only on
    the grey box. While the pointer fills the grey box, every level gives way to the box's ink, as
    on every other header button. */

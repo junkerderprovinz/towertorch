@@ -130,7 +130,7 @@ html.tt-docker-on table.tt-enh thead tr, html.tt-on-plugins table.tt-plug thead 
 html.tt-docker-on table.tt-enh thead th.tablesorter-headerAsc,
 html.tt-docker-on table.tt-enh thead th.tablesorter-headerDesc { color: var(--tt-accent-ink, #FCC419) !important; }
 html.tt-docker-on table.tt-enh thead th.tablesorter-headerAsc::after,
-html.tt-docker-on table.tt-enh thead th.tablesorter-headerDesc::after { color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black) !important; border-bottom-color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black) !important; border-top-color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black) !important; }
+html.tt-docker-on table.tt-enh thead th.tablesorter-headerDesc::after { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; border-bottom-color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; border-top-color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
 /* Three rows of icon badges, three, three and four with More closing the last, each a real flex
    row. The gap is the one between the badges of the network and limits columns, which follows the
    density, so the three rows line up with their three badges. */
@@ -573,7 +573,7 @@ html .tt-folder-act { -webkit-appearance: none; appearance: none; background: tr
 html .tt-folder-act:hover { background: rgba(128, 128, 128, .18) !important; color: var(--tt-txt); }
 .tt-folder-act .tt-glyph { font-size: var(--tt-text-meta); }
 /* the hide-stopped active state is a shade, never a border line */
-html .tt-folder-act-on { background: rgba(128, 128, 128, .18) !important; color: color-mix(in srgb, var(--tt-rb-c, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black); }
+html .tt-folder-act-on { background: rgba(128, 128, 128, .18) !important; color: oklab(from var(--tt-rb-c, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))); }
 /* collapse and expand, kept in tt.folderCollapsed; a collapsed folder shows its header and child
    count only */
 .tt-folder-collapsed .tt-folder-group-body { display: none; }

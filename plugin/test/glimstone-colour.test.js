@@ -45,10 +45,13 @@ ok('no other sheet redeclares the accent on :root', files(DIR, ['.css']).every((
 }
 
 console.log('\nThe accent as ink: derived from the accent, darker on a light ground');
-ok('--tt-accent-ink mixes the accent toward black by --tt-ink-mix, unless a picked colour brings its own', /^var\(--tt-accent-ink-dark, color-mix\(in srgb, var\(--tt-accent\) var\(--tt-ink-mix\), black\)\)$/.test(decl(dark, '--tt-accent-ink') || ''), decl(dark, '--tt-accent-ink'));
-ok('the dark themes do not darken it', decl(dark, '--tt-ink-mix') === '100%');
-ok('the light themes mix it 55%', decl(light, '--tt-ink-mix') === '55%', decl(light, '--tt-ink-mix'));
-ok('the light override keeps the same mix and reads the light ramp\'s own ink first', decl(light, '--tt-accent-ink') === 'var(--tt-accent-ink-light, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black))', decl(light, '--tt-accent-ink'));
+const INK = (x) => `oklab(from ${x} clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))))`;
+ok('--tt-accent-ink moves the accent onto the ramp\'s OKLab step, unless a picked colour brings its own', decl(dark, '--tt-accent-ink') === `var(--tt-accent-ink-dark, ${INK('var(--tt-accent)')})`, decl(dark, '--tt-accent-ink'));
+ok('the dark themes lift it to GlimStone\'s 0.74 at least', decl(dark, '--tt-ink-min') === '0.74' && decl(dark, '--tt-ink-max') === '1', decl(dark, '--tt-ink-min'));
+ok('the light themes take it down to 0.52 at most', decl(light, '--tt-ink-min') === '0' && decl(light, '--tt-ink-max') === '0.52', decl(light, '--tt-ink-max'));
+ok('the light override reads the light ramp\'s own ink first', decl(light, '--tt-accent-ink') === `var(--tt-accent-ink-light, ${INK('var(--tt-accent)')})`, decl(light, '--tt-accent-ink'));
+ok('more contrast takes GlimStone\'s second step', /@media \(prefers-contrast: more\) \{\s*html \{ --tt-ink-min: 0\.84; \}\s*html\.Theme--white,\s*html\.Theme--azure \{ --tt-ink-max: 0\.40; \}/.test(clean(TOKENS)));
+ok('a picked hover reads the ramp\'s own first', decl(dark, '--tt-accent-hover') === 'var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)))' && decl(light, '--tt-accent-hover') === 'var(--tt-accent-hover-light, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)))', decl(light, '--tt-accent-hover'));
 {
   const fav = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Favorites.css'), 'utf8');
   const tools = fs.readFileSync(path.join(DIR, 'sheets', 'TowerTorch.Tools.css'), 'utf8');
@@ -70,7 +73,7 @@ console.log('\nRainbow colours glyphs, never text');
   const ddText = /\.dropdown-menu li > a \.ca_green \{([^}]*)\}/.exec(clean(TOKENS));
   const ddIcon = /\.dropdown-menu li > a i\.ca_fa-checkmark \{([^}]*)\}/.exec(clean(TOKENS));
   ok('the page-size menu\'s active label is single-accent ink', !!ddText && /var\(--tt-accent-ink,/.test(ddText[1]) && !/--tt-rb-c/.test(ddText[1]));
-  ok('and its tick is the position hue as ink', !!ddIcon && /color-mix\(in srgb, var\(--tt-rb-c,[^;]*var\(--tt-ink-mix/.test(ddIcon[1]));
+  ok('and its tick is the position hue as ink', !!ddIcon && /oklab\(from var\(--tt-rb-c,[^;]*var\(--tt-ink-min/.test(ddIcon[1]));
 }
 
 console.log('\nThe state colours are GlimStone\'s, with light-theme variants');

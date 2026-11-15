@@ -37,12 +37,38 @@ function contrastOn(hex) {
   if (onDark >= 4.5) return '#161616';
   return pushed(rgb('#161616'), [0, 0, 0], fill);
 }
+// GlimStone's oklab.ts: the ink is the accent moved onto a lightness step in OKLab.
+const gamma = (v) => (v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+function oklabOf(hex) {
+  const [r, g, b] = rgb(hex).map(lin);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const q = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
+}
+function srgbOf([L, a, b]) {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3, m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3, q = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+  const c = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * q, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * q, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * q];
+  return '#' + c.map((v) => Math.round(Math.min(1, Math.max(0, gamma(v))) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+const darkenTo = (hex, to) => { const [l, a, b] = oklabOf(hex); return l <= to ? hex.toUpperCase() : srgbOf([to, a * to / l, b * to / l]); };
+const lightenTo = (hex, to) => { const [l, a, b] = oklabOf(hex); return l >= to ? hex.toUpperCase() : srgbOf([to, a * (1 - to) / (1 - l), b * (1 - to) / (1 - l)]); };
+// GlimStone's contrast.ts: the ink holds 4.5:1 on the card and on the accent's 14% wash there.
 function accentInks(hex) {
-  const acc = rgb(hex), light = mix(acc, [0, 0, 0], 0.45);
+  const acc = rgb(hex), light = rgb(darkenTo(hex, 0.52)), dark = rgb(lightenTo(hex, 0.74));
+  const wash = (card) => mix(card, acc, 0.14).map(Math.round);
+  const reads = (ink, card) => Math.min(ratioOf(ink, card), ratioOf(ink, wash(card))) >= 4.5;
   return {
-    light: ratioOf(light, [255, 255, 255]) >= 4.5 ? '' : pushed(light, [0, 0, 0], [255, 255, 255]),
-    dark: ratioOf(acc, [38, 38, 38]) >= 4.5 ? '' : pushed(acc, [255, 255, 255], [38, 38, 38]),
+    light: reads(light, [255, 255, 255]) ? '' : pushed(light, [0, 0, 0], wash([255, 255, 255])),
+    dark: reads(dark, [38, 38, 38]) ? '' : pushed(dark, [255, 255, 255], wash([38, 38, 38])),
   };
+}
+// A fill's hover steps toward the ramp's text, or away from the fill's ink where that would take the ink under 4.5:1.
+function accentHovers(hex, lightText, darkText) {
+  const fill = rgb(hex), ink = rgb(contrastOn(hex) === '#fff' ? '#ffffff' : contrastOn(hex));
+  const away = lum(ink) > lum(fill) ? [0, 0, 0] : [255, 255, 255];
+  const hover = (text) => (ratioOf(ink, mix(fill, rgb(text), 0.15).map(Math.round)) >= 4.5 ? '' : hexOf(mix(fill, away, 0.15)));
+  return { light: hover(lightText), dark: hover(darkText) };
 }
 const inkOf = (ink) => rgb(ink === '#fff' ? '#ffffff' : ink);
 
@@ -85,17 +111,30 @@ console.log('\nEvery ink reaches 4.5:1 on its fill');
 
 console.log('\nThe accent as text reaches 4.5:1 on each ramp\'s card');
 {
-  const fn = new Function(grabFn(fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8'), 'accentInks') + '\nreturn accentInks;')();
+  const theme = fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8');
+  const fn = new Function(['oklabOf', 'srgbOf', 'darkenTo', 'lightenTo', 'accentInks'].map((n) => grabFn(theme, n) || '').join('\n') + '\nreturn accentInks;')();
   const PRESETS = ['#FCC419', '#1D99F3', '#6FDC8C', '#FF8389', '#BE95FF', '#FF832B', '#3DDBD9', '#FF7EB6'];
   ok('no preset needs an ink of its own', PRESETS.every((h) => fn(h).light === '' && fn(h).dark === ''), PRESETS.filter((h) => fn(h).light || fn(h).dark).join(', '));
   const PICKED = ['#0f62fe', '#5a1d8c', '#2b2b2b', '#ffff66', '#e0e0e0', '#00ff00', '#8a5a00', '#a0522d'];
   const off = PICKED.filter((h) => { const a = fn(h), b = accentInks(h); return a.light !== b.light || a.dark !== b.dark; });
   ok('a picked colour gets the inks GlimStone computes', off.length === 0, off.join(', '));
-  ok('a deep blue gets a lighter ink for the dark ramp', fn('#0f62fe').dark !== '' && ratioOf(rgb(fn('#0f62fe').dark), [38, 38, 38]) >= 4.5, fn('#0f62fe').dark);
-  ok('a pale yellow gets a darker ink for the light ramp', fn('#ffff66').light !== '' && ratioOf(rgb(fn('#ffff66').light), [255, 255, 255]) >= 4.5, fn('#ffff66').light);
+  const darkInk = (h) => fn(h).dark || lightenTo(h, 0.74), lightInk = (h) => fn(h).light || darkenTo(h, 0.52);
+  ok('every picked colour reads at 4.5:1 as ink on the dark card', PICKED.every((h) => ratioOf(rgb(darkInk(h)), [38, 38, 38]) >= 4.5), PICKED.map(darkInk).join(', '));
+  ok('and on the light card', PICKED.every((h) => ratioOf(rgb(lightInk(h)), [255, 255, 255]) >= 4.5), PICKED.map(lightInk).join(', '));
+  const steps = new Function(['oklabOf', 'srgbOf', 'darkenTo', 'lightenTo'].map((n) => grabFn(fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8'), n) || '').join('\n') + '\nreturn [darkenTo, lightenTo];')();
+  ok('Sunflower\'s ink on the light ramp is GlimStone\'s #836407', steps[0]('#FCC419', 0.52) === '#836407', steps[0]('#FCC419', 0.52));
+  ok('Blue\'s ink on the dark ramp lifts to GlimStone\'s #62B1F8', steps[1]('#1D99F3', 0.74) === '#62B1F8', steps[1]('#1D99F3', 0.74));
+  ok('and the steps answer like GlimStone\'s for any colour', PICKED.concat(PRESETS).every((h) => steps[0](h, 0.52) === darkenTo(h, 0.52) && steps[1](h, 0.74) === lightenTo(h, 0.74)));
   const css = fs.readFileSync(path.join(DIR, '..', 'sheets', 'TowerTorch.Tokens.css'), 'utf8');
-  ok('the dark ramp reads --tt-accent-ink-dark first', /--tt-accent-ink:\s+var\(--tt-accent-ink-dark, color-mix\(in srgb, var\(--tt-accent\) var\(--tt-ink-mix\), black\)\);/.test(css));
-  ok('the light ramp reads --tt-accent-ink-light first', /--tt-ink-mix: 55%;\s*--tt-accent-ink: var\(--tt-accent-ink-light, /.test(css));
+  const INK = 'oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))))';
+  ok('the dark ramp reads --tt-accent-ink-dark first, then the OKLab step', css.includes('--tt-accent-ink:  var(--tt-accent-ink-dark, ' + INK + ');'));
+  ok('the light ramp reads --tt-accent-ink-light first, then the OKLab step', css.includes('--tt-accent-ink: var(--tt-accent-ink-light, ' + INK + ');'));
+  ok('no ink is mixed toward black in sRGB any more', !/var\(--tt-ink-mix[^)]*\), black\)/.test(css));
+  const hovers = new Function(grabFn(fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8'), 'idealText') + '\n' + (grabFn(fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8'), 'accentHovers') || '') + '\nreturn accentHovers;')();
+  ok('no preset needs a hover of its own', PRESETS.every((h) => { const v = hovers(h); return v.light === '' && v.dark === ''; }));
+  const HOVERED = ['#777777', '#7a7a7a', '#808080', '#0f62fe', '#00a080', '#ffff66', '#5a1d8c'];
+  const offHover = HOVERED.filter((h) => { const a = hovers(h), b = accentHovers(h, '#1c1c1c', '#e6e6e6'); return a.light !== b.light || a.dark !== b.dark; });
+  ok('a mid-tone gets the hover GlimStone computes, away from its ink', offHover.length === 0 && hovers('#777777').light !== '', offHover.join(', ') || JSON.stringify(hovers('#777777')));
   ok('every place that sets the accent also stamps its inks',
     ['header.js', 'docker.js', 'vms.js', 'settings.js'].every((f) => /paintAccentInks\(/.test(fs.readFileSync(path.join(DIR, f), 'utf8'))));
 }

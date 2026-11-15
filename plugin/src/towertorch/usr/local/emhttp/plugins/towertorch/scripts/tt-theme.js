@@ -59,14 +59,33 @@
     while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--;
     return "#" + ("0" + g.toString(16)).slice(-2).repeat(3);
   }
-  // The accent read as text, a link or a line glyph has to reach 4.5:1 on the card of each ramp too.
-  // The sheet derives it from the accent, which holds for every preset; a picked colour that falls
-  // short gets an ink pushed toward black on the light ramp and toward white on the dark one, as far
-  // as it needs and no further. --tt-accent-ink-light and --tt-accent-ink-dark carry the result,
-  // and stay unset while the sheet's own mix is enough.
+  // OKLab, where one lightness step gives every hue nearly the same contrast, as GlimStone's
+  // oklab.ts has it. The sheet moves the accent onto the step itself; these give the same colours
+  // to the checks below.
+  function oklabOf(hex) {
+    var n = parseInt(hex.slice(1), 16), lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    var r = lin(n >> 16 & 255), g = lin(n >> 8 & 255), b = lin(n & 255);
+    var l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    var m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    var q = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
+  }
+  function srgbOf(c) {
+    var l = Math.pow(c[0] + 0.3963377774 * c[1] + 0.2158037573 * c[2], 3), m = Math.pow(c[0] - 0.1055613458 * c[1] - 0.0638541728 * c[2], 3), q = Math.pow(c[0] - 0.0894841775 * c[1] - 1.291485548 * c[2], 3);
+    var gamma = function (v) { return v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055; };
+    return "#" + [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * q, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * q, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * q]
+      .map(function (v) { return ("0" + Math.round(Math.min(1, Math.max(0, gamma(v))) * 255).toString(16)).slice(-2); }).join("").toUpperCase();
+  }
+  function darkenTo(hex, to) { var c = oklabOf(hex); return c[0] <= to ? hex.toUpperCase() : srgbOf([to, c[1] * to / c[0], c[2] * to / c[0]]); }
+  function lightenTo(hex, to) { var c = oklabOf(hex); return c[0] >= to ? hex.toUpperCase() : srgbOf([to, c[1] * (1 - to) / (1 - c[0]), c[2] * (1 - to) / (1 - c[0])]); }
+  // The accent read as text, a link or a line glyph has to reach 4.5:1 on the card of each ramp,
+  // and on the accent's own 14% wash there. The sheet's OKLab step holds for every preset; a picked
+  // colour that falls short gets an ink pushed toward black on the light ramp and toward white on
+  // the dark one, as far as it needs and no further. --tt-accent-ink-light and
+  // --tt-accent-ink-dark carry the result, and stay unset while the sheet's own step is enough.
   function accentInks(hex) {
-    var m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return { light: "", dark: "" };
-    var n = parseInt(m[1], 16), acc = [n >> 16 & 255, n >> 8 & 255, n & 255];
+    if (!/^#[0-9a-f]{6}$/i.test(hex || "")) return { light: "", dark: "" };
+    var rgbOf = function (h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
     var lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
     var lum = function (c) { return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]); };
     var ratio = function (a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
@@ -78,16 +97,35 @@
       for (var i = 0; i < 16; i++) { var mid = (lo + hi) / 2; if (ratio(mix(from, to, mid).map(Math.round), ground) >= 4.5) hi = mid; else lo = mid; }
       return hex6(mix(from, to, hi));
     };
-    var white = [255, 255, 255], black = [0, 0, 0], darkCard = [38, 38, 38], light = mix(acc, black, 0.45);
+    var acc = rgbOf(hex), white = [255, 255, 255], black = [0, 0, 0], darkCard = [38, 38, 38];
+    var wash = function (card) { return mix(card, acc, 0.14).map(Math.round); };
+    var reads = function (ink, card) { return Math.min(ratio(ink, card), ratio(ink, wash(card))) >= 4.5; };
+    var light = rgbOf(darkenTo(hex, 0.52)), dark = rgbOf(lightenTo(hex, 0.74));
     return {
-      light: ratio(light, white) >= 4.5 ? "" : push(light, black, white),
-      dark: ratio(acc, darkCard) >= 4.5 ? "" : push(acc, white, darkCard)
+      light: reads(light, white) ? "" : push(light, black, wash(white)),
+      dark: reads(dark, darkCard) ? "" : push(dark, white, wash(darkCard))
     };
   }
+  // A filled control's hover is one step toward the ramp's text. On a mid-tone that step can take
+  // the fill's own ink under 4.5:1, and there the hover steps away from the ink instead.
+  function accentHovers(hex) {
+    if (!/^#[0-9a-f]{6}$/i.test(hex || "")) return { light: "", dark: "" };
+    var rgbOf = function (h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+    var lin = function (c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    var lum = function (c) { return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]); };
+    var ratio = function (a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+    var mix = function (a, b, t) { return [0, 1, 2].map(function (i) { return a[i] + (b[i] - a[i]) * t; }); };
+    var hex6 = function (c) { return "#" + c.map(function (v) { return ("0" + Math.round(v).toString(16)).slice(-2); }).join(""); };
+    var fill = rgbOf(hex), ink = rgbOf(idealText(hex) === "#fff" ? "#ffffff" : idealText(hex));
+    var away = lum(ink) > lum(fill) ? [0, 0, 0] : [255, 255, 255];
+    var hover = function (text) { return ratio(ink, mix(fill, rgbOf(text), 0.15).map(Math.round)) >= 4.5 ? "" : hex6(mix(fill, away, 0.15)); };
+    return { light: hover("#1c1c1c"), dark: hover("#e6e6e6") };
+  }
   function paintAccentInks(style, hex) {
-    var k = accentInks(hex);
-    if (k.light) style.setProperty("--tt-accent-ink-light", k.light); else style.removeProperty("--tt-accent-ink-light");
-    if (k.dark) style.setProperty("--tt-accent-ink-dark", k.dark); else style.removeProperty("--tt-accent-ink-dark");
+    var k = accentInks(hex), h = accentHovers(hex);
+    [["--tt-accent-ink-light", k.light], ["--tt-accent-ink-dark", k.dark], ["--tt-accent-hover-light", h.light], ["--tt-accent-hover-dark", h.dark]].forEach(function (p) {
+      if (p[1]) style.setProperty(p[0], p[1]); else style.removeProperty(p[0]);
+    });
   }
 
   // tt.anim holds a GlimStone motion level, off, subtle or wild, and subtle when unset. The digits
@@ -1423,7 +1461,7 @@
 
   window.TTTheme = {
     backupWithCurrentKeys: backupWithCurrentKeys,
-    RB: RB, idealText: idealText, accentInks: accentInks, paintAccentInks: paintAccentInks, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
+    RB: RB, idealText: idealText, accentInks: accentInks, accentHovers: accentHovers, darkenTo: darkenTo, lightenTo: lightenTo, paintAccentInks: paintAccentInks, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,
     TT_INFO_SVG: TT_INFO_SVG, infoIcon: infoIcon, TT_TRASH_SVG: TT_TRASH_SVG, delIcon: delIcon,

@@ -596,7 +596,7 @@ html.tt-shares-on.tt-on-main #displaybox :is(div.title.ud :is(span.right.ud, div
   color: inherit; opacity: .85; transition: color .12s, opacity .12s, filter .12s;
 }
 html.tt-shares-on.tt-on-main #displaybox :is(div.title.ud :is(span.right.ud, div.right.ud), .tt-ud-ctrls) a:hover :is(i, img, span[class*="icon"]) {
-  color: color-mix(in srgb, var(--tt-shr-accent, #FCC419) var(--tt-ink-mix, 100%), black); opacity: 1;
+  color: oklab(from var(--tt-shr-accent, #FCC419) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))); opacity: 1;
 }
 /* UD's top heading is hidden, since its sections repeat below; the emptied bar hides once its
    controls moved to the card head (.tt-ud-moved) */
@@ -1038,7 +1038,7 @@ html.tt-shares-on.tt-on-share-detail #displaybox div.title.nocontrol {
   letter-spacing: normal !important; justify-content: flex-start !important;
 }
 html.tt-shares-on.tt-on-share-detail #displaybox div.title.nocontrol span.left {
-  color: color-mix(in srgb, var(--tt-shr-accent, #FCC419) var(--tt-ink-mix, 100%), black) !important; font-weight: 700 !important;
+  color: oklab(from var(--tt-shr-accent, #FCC419) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; font-weight: 700 !important;
   text-transform: uppercase; letter-spacing: .6px; font-size: var(--tt-text-subline) !important;
 }
 html.tt-shares-on.tt-on-share-detail #displaybox div.title.nocontrol span.right {
@@ -1486,7 +1486,7 @@ html.tt-shares-on.tt-on-browse #displaybox table.indexer td[data] { font-variant
    the native sheet gives its type (see 3). */
 html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td > a[href] { color: var(--tt-text); font-weight: 600; text-decoration: none; }
 html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody.tablesorter-infoOnly td > a[href] { color: var(--tt-text-dim); font-weight: 500; }
-html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td > a[href]:hover { color: color-mix(in srgb, var(--tt-shr-accent, #FCC419) var(--tt-ink-mix, 100%), black); }
+html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td > a[href]:hover { color: oklab(from var(--tt-shr-accent, #FCC419) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))); }
 html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td > i:is(.fa-folder-o, .fa-folder-open-o) { color: var(--tt-text-dim); }
 /* The "N objects" summary is a quiet line under the rows. */
 html.tt-shares-on.tt-on-browse #displaybox table.indexer tfoot td {

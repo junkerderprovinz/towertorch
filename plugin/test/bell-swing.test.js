@@ -188,7 +188,7 @@ console.log('\nThe glyph wears the highest level\'s colour');
 {
   const lvl = (l) => { const r = hcss.find((x) => x.sel === `html.tt-header-on [data-tt-trig="bell"][data-tt-bell="${l}"]`); return r ? r.body : ''; };
   ok('alert red, warning orange, notice the bell\'s accent', /--tt-bell-c:\s*var\(--tt-err-ink\b/.test(lvl('alert')) && /--tt-bell-c:\s*var\(--tt-warn-ink\b/.test(lvl('warning')) && /--tt-bell-c:[^;]*var\(--tt-rb-c, var\(--tt-hdr-accent\b/.test(lvl('notice')), [lvl('alert'), lvl('warning'), lvl('notice')].join(' | '));
-  ok('a notice in the ink shade, so it still reads on the light header', /color-mix\(in srgb, [^;]*var\(--tt-ink-mix\b[^;]*black\)/.test(lvl('notice')), lvl('notice'));
+  ok('a notice in the ink shade, so it still reads on the light header', /oklab\(from var\(--tt-rb-c, var\(--tt-hdr-accent[^;]*var\(--tt-ink-max\b/.test(lvl('notice')), lvl('notice'));
   const sels = hcss.filter((x) => /color:\s*var\(--tt-bell-c\)\s*!important/.test(x.body)).flatMap((x) => x.sel.split(/,\s*(?![^()]*\))/).map((s) => s.trim()));
   ok('the colour goes on the glyph and nowhere else', sels.length > 0 && sels.every((s) => /\[data-tt-trig="bell"\]/.test(s) && s.endsWith('svg:not([class*="absolute"])')), sels.join(' | '));
   ok('alert and warning on the filled box', sels.some((s) => s.startsWith('html.tt-header-on:not(.tt-header-rbneutral) [data-tt-trig="bell"]:is([data-tt-bell="alert"], [data-tt-bell="warning"]) ')));

@@ -36,7 +36,7 @@ ok('a colour step is not', hoverBrightness('.a:hover { background: color-mix(in 
 ok('a brightness focus is not a hover', hoverBrightness('.a:focus-visible { filter: brightness(1.18); }').length === 0);
 
 console.log('\nThe hover tokens');
-ok('--tt-accent-hover steps the accent toward the text', /--tt-accent-hover:\s*color-mix\(in srgb, var\(--tt-accent\) 85%, var\(--tt-text\)\);/.test(darkBlock));
+ok('--tt-accent-hover steps the accent toward the text, unless a picked mid-tone brings its own', /--tt-accent-hover:\s*var\(--tt-accent-hover-dark, color-mix\(in srgb, var\(--tt-accent\) 85%, var\(--tt-text\)\)\);/.test(darkBlock));
 for (const s of ['ok', 'warn', 'err']) ok(`--tt-${s}-hover steps the state fill toward the text`, new RegExp(`--tt-${s}-hover:\\s*color-mix\\(in srgb, var\\(--tt-${s}\\) 85%, var\\(--tt-text\\)\\);`).test(darkBlock));
 ok('--tt-hover-wash is the same 15% of the text, laid over a fill', /--tt-hover-wash:\s*color-mix\(in srgb, var\(--tt-text\) 15%, transparent\);/.test(darkBlock));
 

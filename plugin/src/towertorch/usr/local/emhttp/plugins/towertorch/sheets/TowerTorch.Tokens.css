@@ -277,18 +277,22 @@ html {
   --tt-accent-text: #161616;
   --tt-accent-fg:   var(--tt-accent-text, #161616);
   /* The accent as a fill and the accent as something read are two jobs. Text, a link or a line glyph
-     on the page reads --tt-accent-ink, which mixes toward black by --tt-ink-mix: not at all on a
-     dark ground, 45% on a light one, where gold text on white would be unreadable. It derives from
-     --tt-accent, so it follows a picked colour as well as the default. A picked colour that still
-     falls under 4.5:1 on a ramp's card brings its own ink for that ramp, which TTTheme.paintAccentInks
-     stamps as --tt-accent-ink-dark or --tt-accent-ink-light. */
+     on the page reads --tt-accent-ink, the accent moved in OKLab onto the ramp's lightness step,
+     as GlimStone builds its ramps: up to 0.74 at least on a dark ground, down to 0.52 at most on a
+     light one, keeping its hue. One step gives every hue nearly the same contrast, which a mix
+     toward black does not. A rainbow position's ink takes the same step inline. A picked colour
+     that still falls under 4.5:1 on a ramp's card brings its own ink for that ramp, which
+     TTTheme.paintAccentInks stamps as --tt-accent-ink-dark or --tt-accent-ink-light. --tt-ink-mix
+     stays for the sheets of other plugins that still mix with it. */
+  --tt-ink-min:     0.74;
+  --tt-ink-max:     1;
   --tt-ink-mix:     100%;
-  --tt-accent-ink:  var(--tt-accent-ink-dark, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black));
+  --tt-accent-ink:  var(--tt-accent-ink-dark, oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))));
   /* Hover on a filled control is one colour step toward the theme's text, which is lighter on dark
      and darker on light, rather than a brightness filter that also bleaches the ink on top. A fill
      that is not one of these tokens takes the same mix inline. Where the fill is painted inline or
      differs per badge, --tt-hover-wash laid over it as an inset shadow gives the same step. */
-  --tt-accent-hover: color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text));
+  --tt-accent-hover: var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)));
   --tt-hover-wash:   color-mix(in srgb, var(--tt-text) 15%, transparent);
 
   /* The type scale, one size per role: the status line and a tile's one figure, an emphasised
@@ -400,8 +404,11 @@ html.Theme--azure {
   --tt-toggle-knob:      #ffffff;
   --tt-line-solid:  #d0d0d0;
   --tt-badge-neutral: #d8d8d8;      /* light enough for the dark chip text of this theme */
+  --tt-ink-min: 0;
+  --tt-ink-max: 0.52;
   --tt-ink-mix: 55%;
-  --tt-accent-ink: var(--tt-accent-ink-light, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black));
+  --tt-accent-hover: var(--tt-accent-hover-light, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)));
+  --tt-accent-ink: var(--tt-accent-ink-light, oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))));
   --tt-ok:   #198038;  --tt-ok-fg:   #fff;  --tt-ok-ink:   #0e6027;
   --tt-warn: #ba4e00;  --tt-warn-fg: #fff;  --tt-warn-ink: #ba4e00;
   --tt-err:  #da1e28;  --tt-err-fg:  #fff;  --tt-err-ink:  #da1e28;
@@ -425,19 +432,27 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-surface-4: #262626;  --tt-surface-window: #242424;  --tt-surface-card: #191919;  --tt-surface-deep: #0f0f0f;
   --tt-text: #e6e6e6;  --tt-text-dim: #8a8a8a;  --tt-text-chip: #cfcfcf;  --tt-text-hint: #a3a3a3;  --tt-header-ink: #cfcfcf;
   --tt-toggle-track-off: #3a3a3a;  --tt-toggle-knob: #fff;  --tt-line-solid: #2a2a2a;  --tt-badge-neutral: #3c3c3c;
-  --tt-ink-mix: 100%;
+  --tt-ink-min: 0.74;  --tt-ink-max: 1;  --tt-ink-mix: 100%;
   --tt-ok:   #6fdc8c;  --tt-ok-fg:   #161616;  --tt-ok-ink:   #6fdc8c;
   --tt-warn: #ff832b;  --tt-warn-fg: #161616;  --tt-warn-ink: #ff832b;
   --tt-err:  #ff8389;  --tt-err-fg:  #161616;  --tt-err-ink:  #ff8389;
   --tt-backdrop-dim: rgba(0, 0, 0, .72);
   --tt-elev-1: 0 1px 4px rgba(0, 0, 0, .35);  --tt-elev-2: 0 10px 28px rgba(0, 0, 0, .38);  --tt-elev-3: 0 12px 30px rgba(0, 0, 0, .6);
-  --tt-accent-ink:   var(--tt-accent-ink-dark, color-mix(in srgb, var(--tt-accent) var(--tt-ink-mix), black));
-  --tt-accent-hover: color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text));
+  --tt-accent-ink:   var(--tt-accent-ink-dark, oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))));
+  --tt-accent-hover: var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)));
   --tt-hover-wash:   color-mix(in srgb, var(--tt-text) 15%, transparent);
   --tt-ok-hover:   color-mix(in srgb, var(--tt-ok) 85%, var(--tt-text));
   --tt-warn-hover: color-mix(in srgb, var(--tt-warn) 85%, var(--tt-text));
   --tt-err-hover:  color-mix(in srgb, var(--tt-err) 85%, var(--tt-text));
   --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
+}
+/* When the system asks for more contrast, the ink takes GlimStone's second step. */
+@media (prefers-contrast: more) {
+  html { --tt-ink-min: 0.84; }
+  html.Theme--white,
+  html.Theme--azure { --tt-ink-max: 0.40; }
+  .tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, html.tt-popups-on #alternateView .tt-av-win,
+  html.tt-popups-on #alternateView .alternateViewContent { --tt-ink-min: 0.84; }
 }
 
 /* OLED (GlimStone rule 43): the dark look on true black for OLED and AMOLED screens. data-oled on
@@ -684,7 +699,7 @@ html.tt-popups-on div.title > span.left, html.tt-popups-on div.title > span.righ
 }
 html.tt-popups-on div.title span.left i.title,
 html.tt-popups-on div.title span.left i[class*="icon-"],
-html.tt-popups-on div.title span.left i.fa { color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black) !important; }
+html.tt-popups-on div.title span.left i.fa { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
 /* The section badge and the page's action control share a line, so they share the md tier, the same
    one every other section badge in TowerTorch uses. plugins.js stamps this button inline with !important,
    which outranks this rule, so the two have to stay on the same token. */
@@ -834,7 +849,7 @@ html.tt-popups-on div.spinner:not(.fixed).tt-spin-active {
   pointer-events: none !important;
 }
 /* inline busy loaders on the container logo take the accent where no markup is injected */
-html.tt-popups-on i.fa-spin.fa-circle-o-notch, html.tt-popups-on .tt-ct-busy i.fa-spin { color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black) !important; }
+html.tt-popups-on i.fa-spin.fa-circle-o-notch, html.tt-popups-on .tt-ct-busy i.fa-spin { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
 
 
 /* One dim and blur behind every popup overlay: swal (.sweet-overlay), jQuery-UI dialogs
@@ -2666,7 +2681,7 @@ html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a:hover {
    hardcoded hue. The icon slot stays reserved on the other rows, through fa-fw, so the labels
    stay aligned. */
 html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a .ca_green { color: var(--tt-accent-ink, #FCC419) !important; }
-html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a i.ca_fa-checkmark { color: color-mix(in srgb, var(--tt-rb-c, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black) !important; }
+html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a i.ca_fa-checkmark { color: oklab(from var(--tt-rb-c, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
 html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a i { color: var(--tt-text-dim2, #6f6f6f) !important; width: 16px !important; }
 /* The active row's colour is a state, which page size is on, so it stays coloured in every mode;
    a selection indicator never greys out. */

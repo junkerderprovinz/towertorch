@@ -250,7 +250,7 @@ html.tt-dash-on table.dashboard #casing {
   transition: color var(--tt-motion-control-dur, 0s), opacity var(--tt-motion-control-dur, 0s), filter var(--tt-motion-control-dur, 0s);
 }
 html.tt-dash-on table.dashboard #casing:is(:hover, :focus-visible) {
-  color: color-mix(in srgb, var(--tt-rbaccent, var(--tt-accent, #FCC419)) var(--tt-ink-mix, 100%), black);
+  color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))));
 }
 html.tt-dash-on table.dashboard #casing > img[data-tt-case="cut"] {
   background: currentColor; object-position: -99999px 0;
