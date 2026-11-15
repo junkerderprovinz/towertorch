@@ -216,10 +216,11 @@
   function T(d, e) { return de ? d : e; }
   var TT_VER = "@@TTVER@@"; if (TT_VER.indexOf("@@") === 0) TT_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "4.4.1";
+  var GLS_VER = "4.5.2";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var DISCORD = "https://discord.gg/avtvQmvwED";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
+  var GLS_RELEASE_URL = GLS_REPO + "/releases/latest";
   var LATEST_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest";
   var RELEASES_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases";
 
@@ -2470,7 +2471,7 @@
       cVer.appendChild(versionRow("UI", verLink(TT_VER, REPO)));
       var engine = el("span", "tt-set-ver", "…");
       cVer.appendChild(versionRow("Engine", engine));
-      cVer.appendChild(versionRow("GlimStone", verLink(GLS_VER, GLS_REPO)));
+      cVer.appendChild(versionRow("GlimStone", glimstoneLink(GLS_VER)));
       // the version of the daemon that is running, so an update that did not restart it shows
       apiRead("state").then(function (st) {
         if (st && st.version) engine.parentNode.replaceChild(verLink(String(st.version), REPO), engine);
@@ -2594,6 +2595,12 @@
     if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(v)) return el("span", "tt-set-ver", v);
     var a = el("a", "tt-btn tt-set-ver", v);
     a.href = repo + "/releases/tag/v" + v; a.target = "_blank"; a.rel = "noopener noreferrer";
+    return a;
+  }
+  // GlimStone folds its patch tags into the next minor, so its number opens the newest release.
+  function glimstoneLink(ver) {
+    var a = el("a", "tt-btn tt-set-ver", ver);
+    a.href = GLS_RELEASE_URL; a.target = "_blank"; a.rel = "noopener noreferrer";
     return a;
   }
   // The marks on the Info tab's README buttons: Buy Me a Coffee's own artwork, Discord, PayPal and
