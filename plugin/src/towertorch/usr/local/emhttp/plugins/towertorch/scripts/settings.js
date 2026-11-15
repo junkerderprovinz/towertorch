@@ -2483,7 +2483,7 @@
       wrapInfo.appendChild(cVer);
 
       var cHelp = card(T("Hilfe", "Help"));
-      cHelp.appendChild(el("p", "tt-set-prose", T("Probleme, Wünsche oder Vorschläge? Mach gern ein Issue auf GitHub auf, oder schau auf Discord vorbei.", "Problems, wishes or suggestions? You're welcome to open an issue on GitHub, or come say hi on Discord.")));
+      cHelp.appendChild(el("p", "tt-set-prose", T("Probleme, Wünsche oder Verbesserungsvorschläge? Mach gern ein Issue auf GitHub auf, oder schau auf Discord vorbei.", "Problems, wishes or suggestions? You're welcome to open an issue on GitHub, or come say hi on Discord.")));
       var hrow = el("div", "tt-rbtn-rows");
       hrow.appendChild(readmeBtn({ brand: "github", name: "GitHub", mark: BRAND_MARKS.github, href: REPO }));
       hrow.appendChild(readmeBtn({ brand: "discord", name: "Discord", mark: BRAND_MARKS.discord, href: DISCORD }));
