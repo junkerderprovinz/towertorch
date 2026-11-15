@@ -637,7 +637,9 @@
   }
   function onKey(e) {
     var el = e.target;
-    if ((e.key === "Enter" || e.key === " ") && el.getAttribute && el.getAttribute("data-act") && el.tagName !== "INPUT" && el.tagName !== "A") { e.preventDefault(); el.click(); return; }
+    // A checkbox ticks on Space alone, as a native one does.
+    var press = e.key === " " || (e.key === "Enter" && el.getAttribute && el.getAttribute("role") !== "checkbox");
+    if (press && el.getAttribute && el.getAttribute("data-act") && el.tagName !== "INPUT" && el.tagName !== "A") { e.preventDefault(); el.click(); return; }
     if (el.classList && el.classList.contains("tt-mw-time") && e.key === "Enter") { el.blur(); return; }
     if (S.tp && (e.key === "ArrowUp" || e.key === "ArrowDown") && el.closest && el.closest(".tt-mw-tpcol")) {
       e.preventDefault();

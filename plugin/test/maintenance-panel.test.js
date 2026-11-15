@@ -159,5 +159,19 @@ console.log('\nIn the window, a step waiting for the fortress links to the Fortr
   ok('the card follows each step the Fortress tab takes', /window\.TTMaint = \{[^}]*refresh: load/.test(js));
 }
 
+console.log('\nA container to pick is a checkbox, so Space ticks it and Enter does not');
+{
+  const onKey = new Function('S', grab('onKey') + '\nreturn onKey;')({});
+  const press = (key, role) => {
+    let clicked = 0, stopped = false;
+    const el = { tagName: 'SPAN', getAttribute: (k) => (k === 'data-act' ? 'ct' : k === 'role' ? role : null), click: () => { clicked++; }, classList: { contains: () => false }, closest: () => null };
+    onKey({ key, target: el, preventDefault: () => { stopped = true; } });
+    return { clicked, stopped };
+  };
+  ok('Space ticks a container', press(' ', 'checkbox').clicked === 1);
+  ok('Enter leaves it as it is', press('Enter', 'checkbox').clicked === 0);
+  ok('Enter still presses a button', press('Enter', null).clicked === 1);
+}
+
 console.log(fail ? '\nFAIL  ' + fail + ' failed, ' + pass + ' passed' : '\nOK  ' + pass + ' passed');
 process.exit(fail ? 1 : 0);
