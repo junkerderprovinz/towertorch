@@ -100,7 +100,7 @@
     var acc = rgbOf(hex), white = [255, 255, 255], black = [0, 0, 0], darkCard = [38, 38, 38];
     var wash = function (card) { return mix(card, acc, 0.14).map(Math.round); };
     var reads = function (ink, card) { return Math.min(ratio(ink, card), ratio(ink, wash(card))) >= 4.5; };
-    var light = rgbOf(darkenTo(hex, 0.52)), dark = rgbOf(lightenTo(hex, 0.74));
+    var light = rgbOf(darkenTo(hex, 0.5)), dark = rgbOf(lightenTo(hex, 0.74));
     return {
       light: reads(light, white) ? "" : push(light, black, wash(white)),
       dark: reads(dark, darkCard) ? "" : push(dark, white, wash(darkCard))

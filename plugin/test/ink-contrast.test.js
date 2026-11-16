@@ -55,7 +55,7 @@ const darkenTo = (hex, to) => { const [l, a, b] = oklabOf(hex); return l <= to ?
 const lightenTo = (hex, to) => { const [l, a, b] = oklabOf(hex); return l >= to ? hex.toUpperCase() : srgbOf([to, a * (1 - to) / (1 - l), b * (1 - to) / (1 - l)]); };
 // GlimStone's contrast.ts: the ink holds 4.5:1 on the card and on the accent's 14% wash there.
 function accentInks(hex) {
-  const acc = rgb(hex), light = rgb(darkenTo(hex, 0.52)), dark = rgb(lightenTo(hex, 0.74));
+  const acc = rgb(hex), light = rgb(darkenTo(hex, 0.5)), dark = rgb(lightenTo(hex, 0.74));
   const wash = (card) => mix(card, acc, 0.14).map(Math.round);
   const reads = (ink, card) => Math.min(ratioOf(ink, card), ratioOf(ink, wash(card))) >= 4.5;
   return {
@@ -118,13 +118,17 @@ console.log('\nThe accent as text reaches 4.5:1 on each ramp\'s card');
   const PICKED = ['#0f62fe', '#5a1d8c', '#2b2b2b', '#ffff66', '#e0e0e0', '#00ff00', '#8a5a00', '#a0522d'];
   const off = PICKED.filter((h) => { const a = fn(h), b = accentInks(h); return a.light !== b.light || a.dark !== b.dark; });
   ok('a picked colour gets the inks GlimStone computes', off.length === 0, off.join(', '));
-  const darkInk = (h) => fn(h).dark || lightenTo(h, 0.74), lightInk = (h) => fn(h).light || darkenTo(h, 0.52);
+  const darkInk = (h) => fn(h).dark || lightenTo(h, 0.74), lightInk = (h) => fn(h).light || darkenTo(h, 0.5);
   ok('every picked colour reads at 4.5:1 as ink on the dark card', PICKED.every((h) => ratioOf(rgb(darkInk(h)), [38, 38, 38]) >= 4.5), PICKED.map(darkInk).join(', '));
   ok('and on the light card', PICKED.every((h) => ratioOf(rgb(lightInk(h)), [255, 255, 255]) >= 4.5), PICKED.map(lightInk).join(', '));
+  // Surface 4 is the darkest light ground accent text stands on, behind a section title's glyph.
+  const LIGHT_GROUNDS = ['#ffffff', '#f4f4f4', '#f2f2f2', '#ececec', '#e6e6e6'];
+  const low = PRESETS.flatMap((h) => LIGHT_GROUNDS.filter((g) => ratioOf(rgb(darkenTo(h, 0.5)), rgb(g)) < 4.5).map((g) => h + ' on ' + g));
+  ok('every preset reads at 4.5:1 as ink on every light surface', low.length === 0, low.join(', '));
   const steps = new Function(['oklabOf', 'srgbOf', 'darkenTo', 'lightenTo'].map((n) => grabFn(fs.readFileSync(path.join(DIR, 'tt-theme.js'), 'utf8'), n) || '').join('\n') + '\nreturn [darkenTo, lightenTo];')();
-  ok('Sunflower\'s ink on the light ramp is GlimStone\'s #836407', steps[0]('#FCC419', 0.52) === '#836407', steps[0]('#FCC419', 0.52));
+  ok('Sunflower\'s ink on the light ramp is GlimStone\'s #7C5F07', steps[0]('#FCC419', 0.5) === '#7C5F07', steps[0]('#FCC419', 0.5));
   ok('Blue\'s ink on the dark ramp lifts to GlimStone\'s #62B1F8', steps[1]('#1D99F3', 0.74) === '#62B1F8', steps[1]('#1D99F3', 0.74));
-  ok('and the steps answer like GlimStone\'s for any colour', PICKED.concat(PRESETS).every((h) => steps[0](h, 0.52) === darkenTo(h, 0.52) && steps[1](h, 0.74) === lightenTo(h, 0.74)));
+  ok('and the steps answer like GlimStone\'s for any colour', PICKED.concat(PRESETS).every((h) => steps[0](h, 0.5) === darkenTo(h, 0.5) && steps[1](h, 0.74) === lightenTo(h, 0.74)));
   const css = fs.readFileSync(path.join(DIR, '..', 'sheets', 'TowerTorch.Tokens.css'), 'utf8');
   const INK = 'oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))))';
   ok('the dark ramp reads --tt-accent-ink-dark first, then the OKLab step', css.includes('--tt-accent-ink:  var(--tt-accent-ink-dark, ' + INK + ');'));

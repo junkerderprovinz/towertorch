@@ -48,7 +48,7 @@ console.log('\nThe accent as ink: derived from the accent, darker on a light gro
 const INK = (x) => `oklab(from ${x} clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))))`;
 ok('--tt-accent-ink moves the accent onto the ramp\'s OKLab step, unless a picked colour brings its own', decl(dark, '--tt-accent-ink') === `var(--tt-accent-ink-dark, ${INK('var(--tt-accent)')})`, decl(dark, '--tt-accent-ink'));
 ok('the dark themes lift it to GlimStone\'s 0.74 at least', decl(dark, '--tt-ink-min') === '0.74' && decl(dark, '--tt-ink-max') === '1', decl(dark, '--tt-ink-min'));
-ok('the light themes take it down to 0.52 at most', decl(light, '--tt-ink-min') === '0' && decl(light, '--tt-ink-max') === '0.52', decl(light, '--tt-ink-max'));
+ok('the light themes take it down to 0.5 at most', decl(light, '--tt-ink-min') === '0' && decl(light, '--tt-ink-max') === '0.5', decl(light, '--tt-ink-max'));
 ok('the light override reads the light ramp\'s own ink first', decl(light, '--tt-accent-ink') === `var(--tt-accent-ink-light, ${INK('var(--tt-accent)')})`, decl(light, '--tt-accent-ink'));
 ok('more contrast takes GlimStone\'s second step', /@media \(prefers-contrast: more\) \{\s*html \{ [^}]*--tt-ink-min: 0\.84;[^}]*\}\s*html\.Theme--white,\s*html\.Theme--azure \{ --tt-ink-max: 0\.40;[^}]*\}/.test(clean(TOKENS)));
 ok('a picked hover reads the ramp\'s own first', decl(dark, '--tt-accent-hover') === 'var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)))' && decl(light, '--tt-accent-hover') === 'var(--tt-accent-hover-light, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)))', decl(light, '--tt-accent-hover'));
@@ -162,6 +162,43 @@ console.log('\nThe accent presets are the GlimStone eight, all of them offered')
   ok('in GlimStone\'s order', !!m && JSON.stringify(JSON.parse(m[1])) === JSON.stringify(GS_PRESETS), m && m[1]);
   ok('no picker cuts the row short', !/PRESETS\.slice\(/.test(settings));
   ok('the column matrix takes palette positions rather than a list of its own', /window\.TTTheme\.rbColor\(i, accent\)/.test(settings) && !/var RB = \["#1f9d55"/.test(settings));
+}
+
+console.log('\nThe hover is GlimStone\'s --hover: surface3\'s lightness in the accent\'s hue');
+{
+  const HOVER = (l) => `oklab(from var(--tt-rbaccent, var(--tt-accent)) ${l} calc(a * var(--tt-hover-chroma)) calc(b * var(--tt-hover-chroma)))`;
+  const css = clean(TOKENS);
+  const island = (/\.tt-pop, \.tt-menu, \.tt-win, [^{]*\{([^}]*)\}/.exec(css) || [])[1] || '';
+  const oled = (/html\[data-oled\]:is\(\.Theme--black, \.Theme--gray\),[^{]*\{([^}]*)\}/.exec(css) || [])[1] || '';
+  ok('it takes 30% of the accent\'s chroma', decl(dark, '--tt-hover-chroma') === '0.3', decl(dark, '--tt-hover-chroma'));
+  ok('the dark themes sit at 0.432', decl(dark, '--tt-hover-dark') === HOVER('0.432') && decl(dark, '--tt-hover') === 'var(--tt-hover-dark)', decl(dark, '--tt-hover-dark'));
+  ok('the light themes at 0.861', decl(light, '--tt-hover') === HOVER('0.861'), decl(light, '--tt-hover'));
+  ok('the windows that stay dark take the dark one again', decl(island, '--tt-hover') === 'var(--tt-hover-dark)', decl(island, '--tt-hover'));
+  ok('OLED moves it one step down with surface3', decl(oled, '--tt-hover') === 'oklab(from var(--tt-hover-dark) 0.338 a b)', decl(oled, '--tt-hover'));
+
+  const lin = (c) => { const v = c / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const gamma = (v) => Math.round(Math.min(1, Math.max(0, v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055)) * 255);
+  const oklab = (hex) => {
+    const n = parseInt(hex.slice(1), 16), [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(lin);
+    const [l, m, q] = [0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b, 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b, 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b].map(Math.cbrt);
+    return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
+  };
+  const rgbOf = ([L, a, b]) => {
+    const [l, m, q] = [L + 0.3963377774 * a + 0.2158037573 * b, L - 0.1055613458 * a - 0.0638541728 * b, L - 0.0894841775 * a - 1.291485548 * b].map((v) => v ** 3);
+    return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * q, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * q, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * q].map(gamma);
+  };
+  const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+  const ratio = (x, y) => (Math.max(lum(x), lum(y)) + 0.05) / (Math.min(lum(x), lum(y)) + 0.05);
+  const hover = (hex, l) => { const [, a, b] = oklab(hex); return rgbOf([l, a * 0.3, b * 0.3]); };
+  const TEXT = { dark: [230, 230, 230], light: [28, 28, 28], chip: [207, 207, 207] };
+  const low = [];
+  for (const h of GS_PRESETS.concat(GS_RAINBOW, ['#0f62fe', '#00ff00', '#ffff66', '#5a1d8c', '#808080'])) {
+    if (ratio(TEXT.dark, hover(h, 0.432)) < 4.5 || ratio(TEXT.chip, hover(h, 0.432)) < 4.5) low.push(h + ' dark');
+    if (ratio(TEXT.dark, hover(h, 0.338)) < 4.5) low.push(h + ' oled');
+    if (ratio(TEXT.light, hover(h, 0.861)) < 4.5) low.push(h + ' light');
+  }
+  ok('the text on it keeps 4.5:1 for every preset, rainbow position and picked colour', low.length === 0, low.join(', '));
+  ok('a grey accent gives a plain grey', (([r, g, b]) => r === g && g === b)(hover('#808080', 0.432)));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

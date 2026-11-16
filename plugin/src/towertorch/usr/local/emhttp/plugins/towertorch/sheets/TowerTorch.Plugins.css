@@ -37,7 +37,7 @@ html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn {
   transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
 html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
-html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn:hover { background: var(--tt-hover); color: var(--tt-text); }
 html.tt-on-plugins.tt-plt-on .tt-plt-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }
 html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
 html.tt-on-plugins.tt-plt-on.tt-shares-rbneutral .tt-plt-vsw:hover .tt-plt-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }

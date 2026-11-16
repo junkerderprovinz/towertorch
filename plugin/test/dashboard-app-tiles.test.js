@@ -28,7 +28,7 @@ console.log('\nThe items are tiles in a grid');
   const item = rule('span.outer');
   ok('an item is a tile without Unraid\'s float', decl(item, 'display') === 'flex' && decl(item, 'float') === 'none');
   ok('its display never outranks the inline one "Started only" sets', !/display:[^;]*!important/.test(item[1]));
-  ok('it rests on the chip and lightens under the pointer', /var\(--tt-chip\)/.test(decl(item, 'background')) && /var\(--tt-chip-hover\)/.test(decl(rule('span.outer:hover'), 'background')));
+  ok('it rests on the chip and lights in the accent hover under the pointer', /var\(--tt-chip\)/.test(decl(item, 'background')) && /var\(--tt-hover\)/.test(decl(rule('span.outer:hover'), 'background')));
   ok('the corner reads the control radius', decl(item, 'border-radius') === 'var(--tt-radius-control)');
 }
 

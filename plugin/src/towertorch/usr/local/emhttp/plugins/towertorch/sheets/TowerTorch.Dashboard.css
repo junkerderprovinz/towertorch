@@ -144,7 +144,7 @@ html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer {
   float: none; margin: 0; padding: 6px 10px 6px 7px; background: var(--tt-chip); border-radius: var(--tt-radius-control);
   transition: background var(--tt-motion-control-dur, 0s);
 }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--tt-chip-hover); }
+html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--tt-hover); }
 html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started { order: -2; }
 html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.paused { order: -1; }
 html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand { display: flex; flex: none; }

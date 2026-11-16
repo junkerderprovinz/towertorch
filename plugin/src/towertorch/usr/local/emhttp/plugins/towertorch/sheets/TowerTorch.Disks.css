@@ -169,7 +169,7 @@ html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn {
   transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
 html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
-html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn:hover { background: var(--tt-hover); color: var(--tt-text); }
 html.tt-dk-on #displaybox .tt-dk-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616)); }
 html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
 html.tt-dk-on.tt-shares-rbneutral #displaybox .tt-dk-vsw:hover .tt-dk-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-dk-c, var(--tt-shr-accent, #FCC419)); color: var(--tt-dk-ct, var(--tt-shr-accent-text, #161616)); }

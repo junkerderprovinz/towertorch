@@ -443,7 +443,7 @@ html.tt-popups-on #displaybox .tt-tsel-opt-avail {
   color: var(--tt-text-dim, #8a8a8a) !important; justify-content: space-between !important;
 }
 html.tt-popups-on #displaybox .tt-tsel-opt-avail:hover {
-  background: var(--tt-chip, rgba(128, 128, 128, .18)) !important; color: var(--tt-text-chip, #cfcfcf) !important; filter: none !important;
+  background: var(--tt-hover) !important; color: var(--tt-text-chip, #cfcfcf) !important; filter: none !important;
 }
 html.tt-popups-on #displaybox .tt-tsel-avail-dl { opacity: .7; font-size: var(--tt-text-meta); }
 /* The locale flag is a bundled SVG (images/flags/<iso>.svg) because Windows renders flag emoji as
@@ -528,7 +528,7 @@ html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="che
   border-radius: var(--tt-radius-control) !important; font-size: var(--tt-text-meta); margin-top: 4px !important; filter: none !important;
 }
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])):hover {
-  background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
+  background: var(--tt-hover-dark) !important; color: #e4e4e4 !important;
 }
 
 /* TowerTorch turns each inline_help into an (i) bubble and hides the block inline, but the native Help

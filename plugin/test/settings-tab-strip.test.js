@@ -137,7 +137,7 @@ console.log('\nThe tab-strip colour rule');
   ok('the chosen glyph takes the fill ink', decl(body(css, '.tt-set-tab-on .tt-set-tabico'), 'color') === 'inherit');
   ok('reactive rests an idle glyph', decl(body(css, '#tt-settings.tt-set-reactive .tt-set-tab:not(.tt-set-tab-on) .tt-set-tabico'), 'color') === 'inherit');
   ok('reactive shows it again on hover and focus', /^var\(--tt-rb-c/.test(decl(body(css, '#tt-settings.tt-set-reactive .tt-set-tab:not(.tt-set-tab-on):is(:hover, :focus-visible) .tt-set-tabico'), 'color') || ''));
-  ok('an idle tab answers the pointer by a colour step', /color-mix/.test(decl(body(css, '.tt-set-tab:not(.tt-set-tab-on):hover'), 'background') || ''));
+  ok('an idle tab lights in the dark hover under the pointer', /^var\(--tt-hover-dark\) !important$/.test(decl(body(css, '.tt-set-tab:not(.tt-set-tab-on):hover'), 'background') || ''));
   const paint = grabFn(settings, 'paintSetTabs');
   ok('the painter only stamps vars, never an inline fill', !/"background"|"color"/.test(paint));
   ok('the painter takes positions from the shared rbColor, flag palette included', /window\.TTTheme\.rbColor/.test(paint));

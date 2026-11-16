@@ -176,7 +176,7 @@ html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a {
   color: var(--tt-text-chip, #cfcfcf) !important; transition: background-color .12s, color .12s;
 }
 html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a .PanelText { color: inherit !important; text-decoration: none !important; }
-html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a:hover { background: var(--tt-hover-wash, rgba(128, 128, 128, .18)); color: var(--tt-text, #e6e6e6) !important; }
+html.tt-settingsgrid-heads-on:not(.tt-settingsgrid-on) #displaybox .Panel > a:hover { background: var(--tt-hover); color: var(--tt-text, #e6e6e6) !important; }
 
 /* keyboard focus is the accent halo, as on every TowerTorch control: around the badge, or around the
    whole tile when there is none */

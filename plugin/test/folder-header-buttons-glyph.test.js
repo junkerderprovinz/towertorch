@@ -129,9 +129,9 @@ console.log('\nThe hover and active backgrounds are not shadowed by the base rul
   var faHoverBody = (css.match(/\.tt-folder-act:hover\s*\{([^}]*)\}/) || [, ''])[1];
   var faOnBody = (css.match(/\.tt-folder-act-on\s*\{([^}]*)\}/) || [, ''])[1];
   var mbHoverBody = (css.match(/\.tt-card-movebtn:hover\s*\{([^}]*)\}/) || [, ''])[1];
-  ok('.tt-folder-act:hover sets the shade background with !important', /background:\s*rgba\(128, 128, 128, \.18\)\s*!important\s*;/.test(faHoverBody), faHoverBody);
+  ok('.tt-folder-act:hover lights in the accent hover with !important', /background:\s*var\(--tt-hover\)\s*!important\s*;/.test(faHoverBody), faHoverBody);
   ok('.tt-folder-act-on sets the shade background with !important', /background:\s*rgba\(128, 128, 128, \.18\)\s*!important/.test(faOnBody), faOnBody);
-  ok('.tt-card-movebtn:hover sets the shade background with !important', /background:\s*rgba\(128, 128, 128, \.18\)\s*!important\s*;/.test(mbHoverBody), mbHoverBody);
+  ok('.tt-card-movebtn:hover lights in the accent hover with !important', /background:\s*var\(--tt-hover\)\s*!important\s*;/.test(mbHoverBody), mbHoverBody);
   ok('.tt-folder-act-on comes after .tt-folder-act in the file', faOnIdx > faIdx);
 }
 

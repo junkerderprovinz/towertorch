@@ -62,7 +62,7 @@ ok('a sub-entry sits a step in', val({ tag: 'ul', classes: ['caMenuItem'], insid
 console.log('\nHover steps toward the text, the open entry takes the colour mode');
 {
   const hover = row(['categoryMenu'], { hover: true });
-  ok('hover lays the text wash over the row', val(hover, 'background') === 'var(--tt-hover-wash)', val(hover, 'background'));
+  ok('a row lights in the accent hover under the pointer', val(hover, 'background') === 'var(--tt-hover)', val(hover, 'background'));
   ok('hover lifts the ink to the text colour', /^var\(--tt-text,/.test(val(hover, 'color')), val(hover, 'color'));
   const open = row(['categoryMenu', 'selectedMenu']);
   ok('the open entry is filled with the stamped colour', /^var\(--tt-rb-c, var\(--tt-accent/.test(val(open, 'background')), val(open, 'background'));

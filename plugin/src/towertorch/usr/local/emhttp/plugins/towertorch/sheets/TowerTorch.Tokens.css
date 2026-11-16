@@ -280,12 +280,14 @@ html {
   --tt-accent-fg:   var(--tt-accent-text, #161616);
   /* The accent as a fill and the accent as something read are two jobs. Text, a link or a line glyph
      on the page reads --tt-accent-ink, the accent moved in OKLab onto the ramp's lightness step,
-     as GlimStone builds its ramps: up to 0.74 at least on a dark ground, down to 0.52 at most on a
-     light one, keeping its hue. One step gives every hue nearly the same contrast, which a mix
-     toward black does not. A rainbow position's ink takes the same step inline. A picked colour
-     that still falls under 4.5:1 on a ramp's card brings its own ink for that ramp, which
-     TTTheme.paintAccentInks stamps as --tt-accent-ink-dark or --tt-accent-ink-light. --tt-ink-mix
-     stays for the sheets of other plugins that still mix with it. */
+     as GlimStone builds its ramps: up to 0.74 at least on a dark ground, down to 0.5 at most on a
+     light one, keeping its hue. The light step is set on surface 4, the darkest ground accent text
+     stands on in the light themes, where every preset still reads at 4.6:1. One step gives every
+     hue nearly the same contrast, which a mix toward black does not. A rainbow position's ink
+     takes the same step inline. A picked colour that still falls under 4.5:1 on a ramp's card
+     brings its own ink for that ramp, which TTTheme.paintAccentInks stamps as
+     --tt-accent-ink-dark or --tt-accent-ink-light. --tt-ink-mix stays for the sheets of other
+     plugins that still mix with it. */
   --tt-ink-min:     0.74;
   --tt-ink-max:     1;
   --tt-ink-mix:     100%;
@@ -296,6 +298,15 @@ html {
      differs per badge, --tt-hover-wash laid over it as an inset shadow gives the same step. */
   --tt-accent-hover: var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)));
   --tt-hover-wash:   color-mix(in srgb, var(--tt-text) 15%, transparent);
+  /* GlimStone's --hover: the ground of whatever unfilled thing the pointer is over, a quiet
+     button, a row, a menu entry or a dropdown option, in one colour, so two things lit side by
+     side never differ. It keeps the OKLab lightness of GlimStone's surface3 with a share of the
+     accent's chroma, so a grey accent gives a plain grey and the text on it keeps 4.5:1. Under
+     rainbow it takes the one representative colour. FireSquire and ShipLog read it by this name.
+     --tt-hover-dark is the dark value, for a surface that stays dark on every theme. */
+  --tt-hover-chroma: 0.3;
+  --tt-hover-dark: oklab(from var(--tt-rbaccent, var(--tt-accent)) 0.432 calc(a * var(--tt-hover-chroma)) calc(b * var(--tt-hover-chroma)));
+  --tt-hover: var(--tt-hover-dark);
 
   /* The type scale, one size per role: the status line and a tile's one figure, an emphasised
      title, body text, the sub-line beside or under a name, and the meta size for notches, counts
@@ -408,8 +419,9 @@ html.Theme--azure {
   --tt-line-solid:  #d0d0d0;
   --tt-badge-neutral: #d8d8d8;      /* light enough for the dark chip text of this theme */
   --tt-ink-min: 0;
-  --tt-ink-max: 0.52;
+  --tt-ink-max: 0.5;
   --tt-ink-mix: 55%;
+  --tt-hover: oklab(from var(--tt-rbaccent, var(--tt-accent)) 0.861 calc(a * var(--tt-hover-chroma)) calc(b * var(--tt-hover-chroma)));
   --tt-accent-hover: var(--tt-accent-hover-light, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)));
   --tt-accent-ink: var(--tt-accent-ink-light, oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))));
   --tt-ok:   #198038;  --tt-ok-fg:   #fff;  --tt-ok-ink:   #0e6027;
@@ -444,6 +456,7 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-accent-ink:   var(--tt-accent-ink-dark, oklab(from var(--tt-accent) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))));
   --tt-accent-hover: var(--tt-accent-hover-dark, color-mix(in srgb, var(--tt-accent) 85%, var(--tt-text)));
   --tt-hover-wash:   color-mix(in srgb, var(--tt-text) 15%, transparent);
+  --tt-hover: var(--tt-hover-dark);
   --tt-ok-hover:   color-mix(in srgb, var(--tt-ok) 85%, var(--tt-text));
   --tt-warn-hover: color-mix(in srgb, var(--tt-warn) 85%, var(--tt-text));
   --tt-err-hover:  color-mix(in srgb, var(--tt-err) 85%, var(--tt-text));
@@ -461,16 +474,17 @@ html.tt-popups-on #alternateView .alternateViewContent {
 
 /* OLED (GlimStone rule 43): the dark look on true black for OLED and AMOLED screens. data-oled on
    <html> asks for it, and it counts only while Unraid shows a dark theme, so a light theme keeps
-   its own ground. Every surface moves one step down and keeps its order, the page itself goes
-   black, and TowerTorch's windows, which stay dark on every theme, step down with it. The text,
-   the accent, the states, the switch track and the shadows stay: they were measured on darker
-   grounds than they get here, and a ring in place of the shadow would frame every card. ShipLog
-   reads the same attribute for its windows. */
+   its own ground. Every surface moves one step down and keeps its order, the hover with them, the
+   page itself goes black, and TowerTorch's windows, which stay dark on every theme, step down with
+   it. The text, the accent, the states, the switch track and the shadows stay: they were measured
+   on darker grounds than they get here, and a ring in place of the shadow would frame every card.
+   ShipLog reads the same attribute for its windows. */
 html[data-oled]:is(.Theme--black, .Theme--gray),
 html[data-oled]:is(.Theme--black, .Theme--gray) :is(.tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, #alternateView .tt-av-win, #alternateView .alternateViewContent) {
   --tt-surface-1: #161616;  --tt-surface-2: #1a1a1a;  --tt-surface-3: #262626;  --tt-surface-base: #000000;
   --tt-surface-4: #1e1e1e;  --tt-surface-window: #161616;  --tt-surface-card: #111111;  --tt-surface-deep: #000000;
   --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
+  --tt-hover: oklab(from var(--tt-hover-dark) 0.338 a b);
 }
 html.tt-popups-on[data-oled]:is(.Theme--black, .Theme--gray) body { background-color: #000000 !important; }
 
@@ -1237,7 +1251,7 @@ html.tt-popups-on li.tt-ca-search-li #searchFilter:not(.tt-open) {
   box-shadow: none !important;
 }
 html.tt-popups-on li.tt-ca-search-li #searchFilter:not(.tt-open):hover {
-  background: color-mix(in srgb, var(--tt-field-bg, #2e2e2e) 85%, var(--tt-text, #e6e6e6)) !important;
+  background: var(--tt-hover) !important;
   color: var(--tt-text, #e6e6e6) !important;
 }
 html.tt-popups-on li.tt-ca-search-li #searchFilter:not(.tt-open):focus-within {
@@ -1376,7 +1390,7 @@ html.tt-popups-on li.tt-ca-ver-label { order: 90 !important; }
 html.tt-popups-on li.tt-ca-ver-num { order: 91 !important; }
 
 /* One row shape for every entry, sub-entries and the two moved CA buttons included: no fill at
-   rest, a step toward the text on hover, the colour mode's fill on the open entry. */
+   rest, the accent's hover under the pointer, the colour mode's fill on the open entry. */
 html.tt-popups-on :where(.menuItems > ul.caMenu, #category_list > ul.caMenu) > li.caMenuItem,
 html.tt-popups-on li.subCategory > ul.caMenuItem,
 html.tt-popups-on li.tt-ca-perpage-li > .caButton.maxPerPage,
@@ -1399,7 +1413,7 @@ html.tt-popups-on :where(.menuItems > ul.caMenu, #category_list > ul.caMenu) > l
 html.tt-popups-on li.subCategory > ul.caMenuItem:hover:not(.selectedMenu):not(.caMenuDisabled),
 html.tt-popups-on li.tt-ca-perpage-li > .caButton.maxPerPage:hover,
 html.tt-popups-on .tt-ca-search-extras > .dockerSearch:hover {
-  background: var(--tt-hover-wash) !important; color: var(--tt-text, #e6e6e6) !important;
+  background: var(--tt-hover) !important; color: var(--tt-text, #e6e6e6) !important;
 }
 /* ttAppsStamp() writes the open entry's colour, so the rainbow and flag modes fill it with their
    own and the ink is the contrast colour picked for that fill. The open entry is filled in the
@@ -1591,7 +1605,7 @@ html.tt-popups-on .ca_bottomLine .caButton {
      splitting around it, so the label reads high. */
   display: inline-flex !important; align-items: center !important; justify-content: center !important;
 }
-html.tt-popups-on .ca_bottomLine .caButton:hover { background: var(--tt-chip-hover, rgba(128, 128, 128, .30)) !important; color: var(--tt-text, #e6e6e6) !important; }
+html.tt-popups-on .ca_bottomLine .caButton:hover { background: var(--tt-hover) !important; color: var(--tt-text, #e6e6e6) !important; }
 html.tt-popups-on .ca_bottomLine .actionsButton {
   background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important;
   color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important;
@@ -1707,7 +1721,7 @@ html.tt-popups-on .searchArea .caButton {
   background: var(--tt-chip, rgba(128, 128, 128, .18)) !important; color: var(--tt-text, #e6e6e6) !important;
   border-radius: var(--tt-radius-pill) !important; -webkit-mask-image: none !important; mask-image: none !important;
 }
-html.tt-popups-on .searchArea .caButton:hover { background: var(--tt-chip-hover, rgba(128, 128, 128, .30)) !important; }
+html.tt-popups-on .searchArea .caButton:hover { background: var(--tt-hover) !important; }
 
 /* The download and update badges and the primary call to action. CA's card shows no download or
    update data at all, only its Info popup does, so header.js ttAppsStatRow() fetches the catalog
@@ -2676,7 +2690,7 @@ html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a {
   transition: background .12s ease, color .12s ease !important;
 }
 html.tt-popups-on #dropdown-maxPerPage.dropdown-menu li > a:hover {
-  background: var(--tt-chip-hover, rgba(128, 128, 128, .30)) !important; color: var(--tt-text, #e6e6e6) !important;
+  background: var(--tt-hover) !important; color: var(--tt-text, #e6e6e6) !important;
 }
 /* The active row: CA's green span and checkmark icon both take the colour mode instead of a
    hardcoded hue. The icon slot stays reserved on the other rows, through fa-fw, so the labels
@@ -2707,6 +2721,6 @@ html.tt-popups-on #dropdown-supportPopup.dropdown-menu li > a {
   transition: background .12s ease, color .12s ease !important;
 }
 html.tt-popups-on #dropdown-supportPopup.dropdown-menu li > a:hover {
-  background: var(--tt-chip-hover, rgba(128, 128, 128, .30)) !important; color: var(--tt-text, #e6e6e6) !important;
+  background: var(--tt-hover) !important; color: var(--tt-text, #e6e6e6) !important;
 }
 html.tt-popups-on #dropdown-supportPopup.dropdown-menu li > a i { color: var(--tt-text-dim2, #6f6f6f) !important; width: 16px !important; }

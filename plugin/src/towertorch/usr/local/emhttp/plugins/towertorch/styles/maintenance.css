@@ -7,7 +7,7 @@
 
 .tt-mw-seg { display: flex; gap: 4px; padding: 4px; margin: 4px 4px 0; border-radius: var(--tt-radius-pill); background: #262626; }
 .tt-mw-seg [role="tab"] { flex: 1 1 0; height: 30px; border-radius: var(--tt-radius-pill); color: #cfcfcf; cursor: pointer; font-size: var(--tt-text-subline); display: inline-flex; align-items: center; justify-content: center; gap: 6px; user-select: none; transition: background-color .12s; }
-.tt-mw-seg [role="tab"]:hover { background: #333333; }
+.tt-mw-seg [role="tab"]:hover { background: var(--tt-hover); }
 .tt-mw-seg [role="tab"][aria-selected="true"] { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
 .tt-mw-seg [role="tab"][aria-disabled="true"] { color: #949494; cursor: not-allowed; }
 .tt-mw-seg [role="tab"][aria-disabled="true"]:hover { background: transparent; }
@@ -41,7 +41,7 @@
 .tt-mw-muted { color: #a3a3a3; font-size: var(--tt-text-meta); }
 .tt-mw-cts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .tt-mw-ct { display: inline-flex; align-items: center; height: var(--tt-icon-badge, 26px); padding: 0 11px; border-radius: var(--tt-radius-pill); background: #2e2e2e; color: #cfcfcf; font-size: var(--tt-text-meta); cursor: pointer; user-select: none; transition: background-color .12s; }
-.tt-mw-ct:hover { background: color-mix(in srgb, #2e2e2e 85%, #e6e6e6); }
+.tt-mw-ct:hover { background: var(--tt-hover); }
 .tt-mw-ct[aria-checked="true"] { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
 .tt-mw .tt-days { display: flex; gap: 4px; flex-wrap: wrap; }
 .tt-mw .tt-day { display: inline-flex; align-items: center; justify-content: center; width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); border-radius: var(--tt-radius-pill); cursor: pointer; user-select: none; }
@@ -51,11 +51,12 @@ html .tt-mw .tt-mw-time { height: 30px; width: 100px; margin: 0; padding: 0 30px
 html .tt-mw .tt-mw-time:focus { background: #383838 !important; outline: none; }
 .tt-mw-tpbtn { position: absolute; right: 3px; top: 2px; width: 26px; height: 26px; border-radius: var(--tt-radius-pill); color: #cfcfcf; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: var(--tt-text-body); }
 .tt-mw-tpbtn:hover { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
-/* The hour list hangs on the page layer, so the window's scroll box never cuts it off. */
-.tt-mw-tppanel { position: fixed; z-index: 100000; display: flex; gap: 4px; padding: 6px; background: #2e2e2e; border-radius: var(--tt-radius-control); box-shadow: 0 10px 28px rgba(0, 0, 0, .45); }
+/* The hour list hangs on the page layer, so the window's scroll box never cuts it off. Outside
+   the window it would take the theme's hover, so it sets the island's dark one itself. */
+.tt-mw-tppanel { --tt-hover: var(--tt-hover-dark); position: fixed; z-index: 100000; display: flex; gap: 4px; padding: 6px; background: #2e2e2e; border-radius: var(--tt-radius-control); box-shadow: 0 10px 28px rgba(0, 0, 0, .45); }
 .tt-mw-tpcol { height: 168px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: #4a4a4a transparent; }
 .tt-mw-tpcol [role="option"] { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; min-height: 28px; border-radius: var(--tt-radius-pill); color: #e6e6e6; cursor: pointer; font-variant-numeric: tabular-nums; font-size: var(--tt-text-subline); }
-.tt-mw-tpcol [role="option"]:hover { background: #3a3a3a; }
+.tt-mw-tpcol [role="option"]:hover { background: var(--tt-hover); }
 .tt-mw-tpcol [role="option"][aria-selected="true"] { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
 
 .tt-mw-locked :is(.tt-set-toggle, .tt-mw-ct, .tt-day, .tt-mw-time, .tt-mw-tpbtn, .tt-mw-seg [role="tab"]) { opacity: .55; cursor: not-allowed; }

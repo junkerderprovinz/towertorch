@@ -104,7 +104,7 @@ html.tt-vms-on.tt-vm-rainbow #kvm_list .tt-limbtn-set { background: var(--tt-rb-
 #tt-vmlim .tt-corebox-p .tt-corebox-tag { color: var(--tt-accent-ink, #FCC419); }
 #tt-vmlim .tt-corebox-e .tt-corebox-tag { color: var(--tt-warn, #ff832b); }
 #tt-vmlim .tt-core { width: 34px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text-dim, #9a9a9a); border: none; border-radius: var(--tt-radius-pill); font-size: var(--tt-text-meta); cursor: pointer; user-select: none; box-sizing: border-box; transition: background .1s, color .1s; }
-#tt-vmlim .tt-core:hover { background: #3a3a3a; color: var(--tt-text, #e6e6e6); }
+#tt-vmlim .tt-core:hover { background: var(--tt-hover); color: var(--tt-text, #e6e6e6); }
 #tt-vmlim .tt-core-on { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }
 /* rainbow: colour each selected core by its physical-core group, as in docker.css */
 html.tt-vm-rainbow #tt-vmlim .tt-core-on.tt-rb-0 { background: #FF8389; color: #161616; }
@@ -335,7 +335,7 @@ html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn {
   transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
 html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
-html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn:hover { background: var(--tt-hover); color: var(--tt-text); }
 html.tt-vms-on #displaybox .tt-vm-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
 html.tt-vms-on.tt-vm-rbneutral #displaybox .tt-vm-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
 html.tt-vms-on.tt-vm-rbneutral #displaybox .tt-vm-vsw:hover .tt-vm-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
@@ -482,7 +482,7 @@ html.tt-vms-on #kvm_list .switch-button-background .switch-button-button {
   border: 0; border-radius: var(--tt-radius-control); padding: 0 12px; font-size: var(--tt-text-subline); font-weight: 600;
   cursor: pointer; transition: background-color .12s;
 }
-#tt-vmlim .tt-dsel-trigger:hover { background-color: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)); }
+#tt-vmlim .tt-dsel-trigger:hover { background-color: var(--tt-hover); }
 #tt-vmlim .tt-dsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 8px;
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--tt-text, #e6e6e6);

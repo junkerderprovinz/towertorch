@@ -151,7 +151,7 @@ html.tt-docker-on .tt-actbar.tt-act-flash { opacity: 1; }
 .tt-enh #docker_list tr:is(.sortable, .folder-element) > td:nth-child(2) { max-width: calc(4 * var(--tt-icon-badge, 26px) + 3 * var(--tt-badge-gap, 5px)); }
 .tt-hgear-home { border: none !important; box-shadow: none !important; cursor: pointer; line-height: 1; align-self: center; }
 nav.tabs .tabs-container .tt-hgear-home { background: #2a2a2a !important; color: #b5b5b5 !important; padding: 4px 12px !important; margin-left: 6px; font-size: var(--tt-text-body); }
-nav.tabs .tabs-container .tt-hgear-home:hover { background: #3a3a3a !important; color: #fff !important; }
+nav.tabs .tabs-container .tt-hgear-home:hover { background: var(--tt-hover-dark) !important; color: #fff !important; }
 /* card view: the same action block the list rows carry, its three rows laid out as one */
 .tt-card-actbar .tt-actbar { flex-direction: row; flex-wrap: wrap; }
 .tt-card-actbar .tt-actrow { display: contents; }
@@ -343,7 +343,7 @@ html.tt-docker-on #tt-toasts { bottom: calc(var(--tt-footer-h, 0px) + var(--tt-a
   background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }
 .tt-bulkbtn:not(.tt-bulkbtn-clear):hover { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
-.tt-bulkbtn-clear:hover { background: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)) !important; color: var(--tt-text, #e6e6e6) !important; }
+.tt-bulkbtn-clear:hover { background: var(--tt-hover) !important; color: var(--tt-text, #e6e6e6) !important; }
 /* On the Plugins page the per-row uninstall is a trash icon with a TowerTorch confirmation, since
    plugins.js gates the native openInstall behind ttPluginConfirm, so Unraid's separate confirm
    checkbox is hidden and the text badge collapses to an icon. The html.tt-on-plugins scope beats
@@ -549,7 +549,7 @@ html .tt-b.tt-plan.tt-plan-failed  { background: var(--tt-err, #ff8389) !importa
 /* a folded folder's members, the stopped ones in grey */
 .tt-folder-peek { display: flex; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
 .tt-peek { flex: none; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--tt-radius-control); background: rgba(128, 128, 128, .18); cursor: pointer; transition: background .12s; }
-.tt-peek:hover { background: rgba(128, 128, 128, .3); }
+.tt-peek:hover { background: var(--tt-hover); }
 .tt-peek img { width: 18px; height: 18px; object-fit: contain; }
 .tt-peek-off img { filter: grayscale(1); opacity: .55; }
 .tt-peek-more { flex: none; color: var(--tt-dim); font-size: var(--tt-text-meta); font-weight: 500; }
@@ -569,7 +569,7 @@ html .tt-b.tt-plan.tt-plan-failed  { background: var(--tt-err, #ff8389) !importa
    background-color. Marking the base, the hover and the on-state alike puts them all at the same
    priority, where ordinary specificity and source order decide again. */
 html .tt-folder-act { -webkit-appearance: none; appearance: none; background: transparent !important; border: none; outline: none; box-shadow: none !important; color: var(--tt-dim, #8a8a8a); cursor: pointer; font-size: var(--tt-text-subline); line-height: 1; padding: 4px 6px; border-radius: var(--tt-radius-pill); transition: background .12s, color .12s; }
-html .tt-folder-act:hover { background: rgba(128, 128, 128, .18) !important; color: var(--tt-txt); }
+html .tt-folder-act:hover { background: var(--tt-hover) !important; color: var(--tt-txt); }
 .tt-folder-act .tt-glyph { font-size: var(--tt-text-meta); }
 /* the hide-stopped active state is a shade, never a border line */
 html .tt-folder-act-on { background: rgba(128, 128, 128, .18) !important; color: oklab(from var(--tt-rb-c, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))); }
@@ -587,7 +587,7 @@ html .tt-folder-act-on { background: rgba(128, 128, 128, .18) !important; color:
    keyboard where dragging is not. Its backgrounds need !important for the same reason as
    .tt-folder-act above. */
 html .tt-card-movebtn { -webkit-appearance: none; appearance: none; background: transparent !important; border: none; outline: none; box-shadow: none !important; color: var(--tt-dim, #8a8a8a); cursor: pointer; font-size: var(--tt-text-subline); line-height: 1; padding: 3px 5px; border-radius: var(--tt-radius-pill); flex: none; transition: background .12s, color .12s; }
-html .tt-card-movebtn:hover { background: rgba(128, 128, 128, .18) !important; color: var(--tt-txt); }
+html .tt-card-movebtn:hover { background: var(--tt-hover) !important; color: var(--tt-txt); }
 .tt-menu-link-current { background: rgba(128, 128, 128, .18); }
 .tt-card { background: var(--tt-bg2); border: none; border-radius: var(--tt-radius-card); padding: var(--tt-card-space); display: flex; flex-direction: column; gap: var(--tt-card-space); transition: transform .12s, box-shadow .12s; }
 .tt-card:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,.35); } /* elevation, not a border tint; the background contrast separates the card */
@@ -630,7 +630,7 @@ html .tt-card-movebtn:hover { background: rgba(128, 128, 128, .18) !important; c
 .tt-card-res .tt-resline > .tt-b { margin: 0; padding-inline: 8px; gap: 4px; }
 .tt-life { display: inline-flex; gap: 6px; }
 html .tt-abtn { background: var(--tt-bg3); color: var(--tt-txt); border: 1px solid var(--tt-line); border-radius: var(--tt-radius-pill); padding: 4px 10px; font-size: var(--tt-text-meta); cursor: pointer; transition: background .12s; }
-html .tt-abtn:hover { background: #333; }
+html .tt-abtn:hover { background: var(--tt-hover); }
 html .tt-abtn-primary { color: var(--tt-ok-ink, #6fdc8c); border-color: rgba(63,174,106,.4); }
 /* the tile's action group; the actions themselves are the ordinary .tt-actbtn */
 .tt-mrow-act { flex: none; display: flex; gap: var(--tt-badge-gap, 5px); }
@@ -711,7 +711,7 @@ html .tt-seg-btn:hover { color: var(--tt-txt); }
 .tt-menu .tt-seg.tt-set-mode { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; padding: 3px; background: var(--tt-surface-2, #222222); }
 html .tt-menu .tt-set-mode .tt-seg-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 12px; border-radius: var(--tt-radius-pill); white-space: nowrap; font-size: var(--tt-text-subline); }
 html .tt-menu .tt-set-mode .tt-seg-btn:not(.tt-seg-on) { background: transparent; color: var(--tt-text-chip, #cfcfcf); }
-html .tt-menu .tt-set-mode .tt-seg-btn:not(.tt-seg-on):hover { background: var(--tt-surface-3, #2e2e2e); color: var(--tt-text, #e6e6e6); }
+html .tt-menu .tt-set-mode .tt-seg-btn:not(.tt-seg-on):hover { background: var(--tt-hover); color: var(--tt-text, #e6e6e6); }
 
 .tt-menu { position: absolute; z-index: 99999; min-width: 190px; background: var(--tt-bg, #161616); border: none; border-radius: var(--tt-radius-card); box-shadow: 0 14px 40px rgba(0,0,0,.55); padding: 6px; font-size: var(--tt-text-subline); line-height: 1.5; font-family: inherit; color: #e6e6e6; }
 .tt-menu-wide { min-width: 240px; max-width: calc(100vw - 2 * var(--tt-edge)); }
@@ -1049,7 +1049,7 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
 .tt-corebox-p .tt-corebox-tag { color: var(--tt-accent-ink, #FCC419); }   /* the tag carries the colour, not a border line */
 .tt-corebox-e .tt-corebox-tag { color: var(--tt-warn, #ff832b); }
 .tt-core { width: 34px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: #2e2e2e; color: #9a9a9a; border: none; border-radius: var(--tt-radius-pill); font-size: var(--tt-text-meta); cursor: pointer; user-select: none; box-sizing: border-box; transition: background .1s, color .1s; }
-.tt-core:hover { background: #3a3a3a; color: #e6e6e6; }
+.tt-core:hover { background: var(--tt-hover); color: #e6e6e6; }
 .tt-core-on { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }
 /* rainbow mode: selected cores wear their physical-core group's palette position, never a state colour */
 .tt-pop.tt-rainbow .tt-core-on.tt-rb-0 { background: #FF8389; border-color: #FF8389; color: #161616; }
@@ -1407,7 +1407,7 @@ html.tt-on-plugins input.tt-plugbar-btn:hover:not(:disabled) { background: var(-
   .tt-set-tab { justify-content: center; padding: 0 !important; }
   .tt-set-tablbl { display: none; }
 }
-.tt-set-tab:not(.tt-set-tab-on):hover { background: color-mix(in srgb, #2a2a2a 85%, var(--tt-text, #e6e6e6)) !important; }
+.tt-set-tab:not(.tt-set-tab-on):hover { background: var(--tt-hover-dark) !important; color: #e6e6e6 !important; }
 .tt-set-tab-on { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 /* GlimStone's tab-strip colour rule: an idle tab's glyph carries the tab's colour, the chosen tab
    carries it as its fill with the glyph in its ink, and in reactive mode an idle glyph rests in the
@@ -1418,10 +1418,11 @@ html.tt-on-plugins input.tt-plugbar-btn:hover:not(:disabled) { background: var(-
 #tt-settings.tt-set-reactive .tt-set-tab:not(.tt-set-tab-on):is(:hover, :focus-visible) .tt-set-tabico { color: var(--tt-rb-c, var(--tt-accent, #FCC419)); }
 /* The cards stay dark on the light themes, so the quiet tokens inside one keep their dark-theme
    values: a grey chip such as an idle tab in an area's preview, a lock line's "Folgt", a hint, the
-   colour mode's groove and an off switch's track. */
+   colour mode's groove, an off switch's track and the hover. */
 html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
   --tt-text-chip: #cfcfcf; --tt-text-dim: #8a8a8a; --tt-text-hint: #a3a3a3;
   --tt-surface-base: #161616; --tt-surface-3: #2e2e2e; --tt-toggle-track-off: #3a3a3a;
+  --tt-hover: var(--tt-hover-dark);
 }
 /* The cards stand under each other at the width of their column. A row keeps its name at the start
    and its control at the end, and a field, a picker or a slider keeps a width of its own rather
@@ -1472,7 +1473,7 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
 /* A native <select> styled as a readable control: a fill light enough to stand out from the card,
    so it does not read as underlined text, and a bright caret so it reads as a dropdown. */
 #tt-settings .tt-set-sel { flex: 1; min-width: 0; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-color: var(--tt-surface-chip, #383838) !important; color: var(--txt, #eaeaea) !important; border: 0 !important; border-radius: var(--tt-radius-control) !important; padding: 0 36px 0 13px !important; font-size: var(--tt-text-subline); font-weight: 600; cursor: pointer; box-sizing: border-box; height: 36px; min-height: 36px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke="%23eaeaea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>') !important; background-repeat: no-repeat !important; background-position: right 12px center !important; transition: background-color .12s, filter .12s; }
-#tt-settings .tt-set-sel:hover { background-color: color-mix(in srgb, var(--tt-surface-chip, #383838) 85%, var(--tt-text, #e6e6e6)) !important; }
+#tt-settings .tt-set-sel:hover { background-color: var(--tt-hover) !important; }
 /* focus is a brighter surface, not a ring */
 #tt-settings .tt-set-sel:focus, #tt-settings .tt-set-sel:focus-visible { outline: none !important; box-shadow: none !important; background-color: var(--tt-surface-chip-hi, color-mix(in srgb, var(--tt-surface-chip, #383838) 82%, #ffffff)) !important; filter: brightness(1.18); }
 /* The open option list takes a TowerTorch surface and the selected item the accent. A native <option>
@@ -1493,7 +1494,7 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
   border: 0; border-radius: var(--tt-radius-control); padding: 0 13px; font-size: var(--tt-text-subline); font-weight: 600;
   cursor: pointer; transition: background-color .12s, filter .12s;
 }
-#tt-settings .tt-dsel-trigger:hover { background-color: color-mix(in srgb, var(--tt-surface-chip, #383838) 85%, var(--tt-text, #e6e6e6)); }
+#tt-settings .tt-dsel-trigger:hover { background-color: var(--tt-hover); }
 #tt-settings .tt-dsel.tt-open .tt-dsel-trigger { background-color: var(--tt-surface-chip-hi, color-mix(in srgb, var(--tt-surface-chip, #383838) 82%, #ffffff)); }
 #tt-settings .tt-dsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 8px;

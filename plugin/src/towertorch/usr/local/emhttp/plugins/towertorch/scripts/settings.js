@@ -48,14 +48,14 @@
       // The country picker stands at the end of its row, wide enough for "Bosnien und Herzegowina".
       "#tt-settings .tt-flag-row .tt-flag-picker{position:relative;margin-left:auto;flex:0 1 300px;min-width:0}" +
       "#tt-settings .tt-flag-trigger{display:flex;align-items:center;gap:9px;background:var(--tt-surface-chip,#383838);border-radius:var(--tt-radius-control);padding:7px 12px;cursor:pointer;user-select:none}" +
-      "#tt-settings .tt-flag-trigger:hover{background:color-mix(in srgb,var(--tt-surface-chip,#383838) 85%,var(--tt-text,#e6e6e6))}" +
+      "#tt-settings .tt-flag-trigger:hover{background:var(--tt-hover)}" +
       "#tt-settings .tt-flag-name{font-size:var(--tt-text-subline);color:#eaeaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
       // The trigger reads as a button, with no caret, and openPanel pins the panel fixed.
       "#tt-settings .tt-flag-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:9999;background:#1c1c1c;border-radius:var(--tt-radius-card);box-shadow:0 12px 34px rgba(0,0,0,.6);overflow:hidden}" +
       "#tt-settings .tt-flag-search{box-sizing:border-box;background:#232323;color:#eaeaea;border:none;outline:none;border-radius:var(--tt-radius-control);padding:8px 10px;margin:8px;width:calc(100% - 16px);font-size:var(--tt-text-subline)}" +
       "#tt-settings .tt-flag-list{max-height:260px;overflow-y:auto;padding:0 6px 6px}" +
       "#tt-settings .tt-flag-item{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:var(--tt-radius-control);cursor:pointer}" +
-      "#tt-settings .tt-flag-item:hover,#tt-settings .tt-flag-item.tt-sel{background:rgba(255,255,255,.09)}" +   // the keyboard highlight too
+      "#tt-settings .tt-flag-item:hover,#tt-settings .tt-flag-item.tt-sel{background:var(--tt-hover)}" +   // the keyboard highlight too
       // The logo preview tile. Its coloured badge is this box, a real element with a radius and
       // overflow hidden, never an feFlood inside the filter: an feFlood fills the whole filter
       // region and ignores the radius, rendering a hard square where the live tab shows a rounded
@@ -135,7 +135,7 @@
       "@media (hover:none){#tt-settings .tt-set-refused .tt-set-why{display:block}}" +
       "#tt-settings .tt-set-disabled input{pointer-events:none}" +
       "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on){background:transparent;color:var(--tt-text-chip,#cfcfcf)}" +
-      "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on):not([aria-disabled=true]):hover{background:var(--tt-surface-3,#2e2e2e);color:var(--tt-text,#e6e6e6)}" +
+      "#tt-settings .tt-set-mode .tt-seg-btn:not(.tt-seg-on):not([aria-disabled=true]):hover{background:var(--tt-hover);color:var(--tt-text,#e6e6e6)}" +
       "#tt-settings .tt-set-disabled .tt-set-mode .tt-seg-btn:not(.tt-seg-on):hover{background:transparent;color:var(--tt-text-chip,#cfcfcf)}" +
       "#tt-settings .tt-set-mode .tt-seg-btn[aria-disabled=true]{opacity:.45;cursor:not-allowed}" +
       "#tt-settings .tt-set-locked .tt-set-lockby{cursor:not-allowed}" +
@@ -216,7 +216,7 @@
   function T(d, e) { return de ? d : e; }
   var TT_VER = "@@TTVER@@"; if (TT_VER.indexOf("@@") === 0) TT_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "4.5.2";
+  var GLS_VER = "4.5.4";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var DISCORD = "https://discord.gg/avtvQmvwED";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";

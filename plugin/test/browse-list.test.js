@@ -53,7 +53,7 @@ console.log('\nThe look');
   ok('the listing is a card on the surface tokens', /background-color: var\(--tt-fm-list\)/.test(rule('.TableContainer')) && /border-radius: var\(--tt-radius-card\)/.test(rule('.TableContainer')));
   ok('the head is the eyebrow of the other tables', /color: var\(--tt-text-dim\)/.test(rule('thead th')) && /text-transform: uppercase; letter-spacing: 1\.2px/.test(rule('thead th')));
   ok('a name reads in the text ink, not as a blue link', /color: var\(--tt-text\); font-weight: 600; text-decoration: none/.test(rule('tbody td > a[href]')));
-  ok('a row takes the chip shade under the pointer', /background-color: var\(--tt-chip\)/.test(rule('tbody tr:hover > td')));
+  ok('a row lights in the accent hover under the pointer', /background-color: var\(--tt-hover\)/.test(rule('tbody tr:hover > td')));
   ok('the row action is an icon badge with the three dots, shown with its row', /width: var\(--tt-icon-badge, 26px\); height: var\(--tt-icon-badge, 26px\)/.test(rule('i[id^="row_"]')) && /content: "\\f141"/.test(rule('i[id^="row_"]::before')) && /opacity: 1/.test(rule('tr:hover i[id^="row_"]')));
   const btn = browse.find((r) => /#buttons input\[type="button"\]$/.test(r.sel.trim()));
   ok('the buttons rest neutral and take the accent only under the pointer', !!btn && /background: var\(--tt-surface-3\) !important/.test(btn.body) && /--tt-shr-accent/.test(rule(':hover:not(:disabled)')));

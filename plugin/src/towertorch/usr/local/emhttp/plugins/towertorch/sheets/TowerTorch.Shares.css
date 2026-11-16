@@ -1479,7 +1479,7 @@ html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td {
 }
 html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td:first-child { border-top-left-radius: var(--tt-radius-control); border-bottom-left-radius: var(--tt-radius-control); }
 html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody td:last-child { border-top-right-radius: var(--tt-radius-control); border-bottom-right-radius: var(--tt-radius-control); }
-html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody tr:hover > td { background-color: var(--tt-chip); }
+html.tt-shares-on.tt-on-browse #displaybox table.indexer tbody tr:hover > td { background-color: var(--tt-hover); }
 html.tt-shares-on.tt-on-browse #displaybox table.indexer td[data] { font-variant-numeric: tabular-nums; }
 /* A name is the row's text in its own ink, and only the pointer gives it the accent; the parent
    folder's link above the list stays quiet. A folder icon rests dim, a file's icon keeps the colour
@@ -1728,10 +1728,9 @@ html.tt-shares-on.tt-on-share-detail .clone-settings .tt-sel { min-width: 0 !imp
 /* The share tiles (scripts/sharetiles.js), gated on html.tt-sht-on, which the script sets only
    while this area styles /Shares. A card takes its colour from --tt-sht-c, stamped per card in the
    rainbow and flag modes, and otherwise the Freigaben accent. */
-html.tt-shares-on.tt-sht-on { --tt-sht-card: var(--tt-surface-4); --tt-sht-card-hover: var(--tt-surface-3); --tt-sht-inset: var(--tt-surface-base); }
+html.tt-shares-on.tt-sht-on { --tt-sht-card: var(--tt-surface-4); --tt-sht-card-hover: var(--tt-hover); --tt-sht-inset: var(--tt-surface-base); }
 html.tt-shares-on.tt-sht-on:is(.Theme--white, .Theme--azure) {
   --tt-sht-card: var(--tt-surface-1);
-  --tt-sht-card-hover: color-mix(in srgb, var(--tt-surface-1) 94%, var(--tt-text));
   --tt-sht-inset: var(--tt-surface-4);
 }
 html.tt-shares-on.tt-sht-on #displaybox .tt-sht-hidden { display: none !important; }
@@ -1748,7 +1747,7 @@ html.tt-shares-on.tt-sht-on #displaybox .tt-sht-seg .tt-seg-btn {
   transition: background-color var(--tt-motion-control-dur, 0s), color var(--tt-motion-control-dur, 0s);
 }
 html.tt-shares-on.tt-sht-on #displaybox .tt-sht-seg .tt-seg-btn .tt-glyph { width: 1em; height: 1em; flex: none; }
-html.tt-shares-on.tt-sht-on #displaybox .tt-sht-seg .tt-seg-btn:hover { background: var(--tt-chip); color: var(--tt-text); }
+html.tt-shares-on.tt-sht-on #displaybox .tt-sht-seg .tt-seg-btn:hover { background: var(--tt-hover); color: var(--tt-text); }
 html.tt-shares-on.tt-sht-on #displaybox .tt-sht-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-shr-accent, #FCC419); color: var(--tt-shr-accent-text, #161616); }
 html.tt-shares-on.tt-sht-on.tt-shares-rbneutral #displaybox .tt-sht-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-surface-3); color: var(--tt-text); }
 html.tt-shares-on.tt-sht-on.tt-shares-rbneutral #displaybox .tt-sht-vsw:hover .tt-sht-seg .tt-seg-btn[aria-pressed="true"] { background: var(--tt-shr-accent, #FCC419); color: var(--tt-shr-accent-text, #161616); }

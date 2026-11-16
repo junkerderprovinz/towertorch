@@ -13,7 +13,7 @@ html.tt-tools-on[data-tt-page="useredit"] #displaybox #dropbox img {
   border: none !important; outline: none !important; box-shadow: none !important; padding: 6px;
   background: var(--tt-chip); border-radius: var(--tt-radius-control);
 }
-html.tt-tools-on[data-tt-page="useredit"] #displaybox #dropbox img:hover { background: var(--tt-chip-hover); }
+html.tt-tools-on[data-tt-page="useredit"] #displaybox #dropbox img:hover { background: var(--tt-hover); }
 html.tt-tools-on[data-tt-page="useredit"] #displaybox em.tt-hint-moved { display: none; }
 
 /* The VM editor (/VMs/UpdateVM, /VMs/AddVM) is a stack of two- and three-column tables rather
@@ -174,7 +174,7 @@ html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a > span {
 }
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate img { width: 48px; height: 48px; object-fit: contain; }
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate p { margin: 0; font-size: var(--tt-text-subline); line-height: 1.3; text-align: center; color: inherit; }
-html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) { background: var(--tt-chip); }
+html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) { background: var(--tt-hover); }
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:is(:hover, :focus-visible) > span { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
 html[data-tt-page="vmtemplates"] #displaybox .vmtemplate > a:focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 /* three tiles to a row on a phone */
@@ -257,7 +257,7 @@ html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts :is(t
   border: none !important; box-shadow: none !important; background: none !important; background-image: none !important;
 }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:hover { background: none !important; background-image: none !important; }
-html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:hover > td { background: var(--tt-hover-wash) !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:hover > td { background: var(--tt-hover) !important; }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr > td:first-child { border-start-start-radius: var(--tt-radius-control); border-end-start-radius: var(--tt-radius-control); }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr > td:last-child { border-start-end-radius: var(--tt-radius-control); border-end-end-radius: var(--tt-radius-control); }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts b > span[style*="color"] { color: var(--tt-text, #e6e6e6) !important; }
