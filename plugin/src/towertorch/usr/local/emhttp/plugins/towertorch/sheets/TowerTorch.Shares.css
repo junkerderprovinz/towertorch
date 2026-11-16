@@ -1781,7 +1781,7 @@ html.tt-shares-on.tt-sht-on #displaybox .tt-sht-pic {
   width: var(--tt-logo-box, 78px); height: var(--tt-logo-box, 78px); border-radius: var(--tt-radius-control); background: var(--tt-sht-inset);
 }
 html.tt-shares-on.tt-sht-on #displaybox .tt-sht-folder { display: block; width: var(--tt-logo-img, 62px); height: var(--tt-logo-img, 62px); }
-html.tt-shares-on.tt-sht-on #displaybox .tt-sht-folder rect { rx: var(--tt-pic-corner, 6px); transition: fill var(--tt-motion-control-dur, 0s); }
+html.tt-shares-on.tt-sht-on #displaybox .tt-sht-folder rect { rx: var(--tt-pic-corner, 3px); transition: fill var(--tt-motion-control-dur, 0s); }
 html.tt-shares-on.tt-sht-on #displaybox .tt-sht-ffront {
   fill: var(--tt-sht-fold);
   transition: fill var(--tt-motion-control-dur, 0s), y var(--tt-motion-control-dur, 0s), height var(--tt-motion-control-dur, 0s);

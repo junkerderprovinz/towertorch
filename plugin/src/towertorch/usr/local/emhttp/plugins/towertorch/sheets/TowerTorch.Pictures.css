@@ -196,8 +196,8 @@ html[data-tt-shape="square"] { --tt-pic-corner: 0px; }
 .tt-vessel-back { fill-opacity: .45; }
 /* A wash of the text colour rather than a surface step, since a vessel stands on cards and in wells alike. */
 .tt-vessel-wash { fill: var(--tt-text-dim, #8a8a8a); fill-opacity: .18; }
-.tt-vessel-wall { fill: none; stroke: var(--tt-text-dim, #8a8a8a); stroke-width: 1.6; rx: var(--tt-pic-corner, 6px); }
-.tt-vessel-in { rx: max(0px, calc(var(--tt-pic-corner, 6px) - 1.5px)); }
+.tt-vessel-wall { fill: none; stroke: var(--tt-text-dim, #8a8a8a); stroke-width: 1.6; rx: var(--tt-pic-corner, 3px); }
+.tt-vessel-in { rx: max(0px, calc(var(--tt-pic-corner, 3px) - 1.5px)); }
 .tt-vessel-brim { stroke: var(--tt-text-hint, #a3a3a3); stroke-width: 1.2; stroke-dasharray: 2.5 2.5; }
 .tt-vessel-bubble { fill: #fff; }
 .tt-vessel-pop-bubble { fill: #fff; stroke: var(--tt-vessel-liquid); stroke-width: .25; }

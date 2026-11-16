@@ -171,7 +171,7 @@ console.log('\nThe folder looks like the logo tiles of Docker and Plugins');
   ok('the tile is the logo box, the drawing the logo size', /\.tt-sht-pic \{[^}]*width: var\(--tt-logo-box, 78px\); height: var\(--tt-logo-box, 78px\);/.test(css) && /\.tt-sht-folder \{[^}]*width: var\(--tt-logo-img, 62px\); height: var\(--tt-logo-img, 62px\);/.test(css));
   ok('the tile size follows tt.sgsize like the other areas', /function logoSizes\(\) \{ return \(\{ s: \["48px", "62px"\], m: \["62px", "78px"\], l: \["76px", "94px"\] \}\)\[g\("tt\.sgsize", "m"\)\]/.test(js));
   ok('the folder takes the card\'s colour and rests grey in the reactive mode', /--tt-sht-fold: var\(--tt-sht-c, var\(--tt-shr-accent, #FCC419\)\);/.test(css) && /\.tt-shares-rbneutral #displaybox \.tt-sht-card:not\(:hover\):not\(:focus-within\) \.tt-sht-pic \{ --tt-sht-fold: var\(--tt-text-dim\); \}/.test(css));
-  ok('its corners follow the shape setting', /\.tt-sht-folder rect \{ rx: var\(--tt-pic-corner, 6px\);/.test(css));
+  ok('its corners follow the shape setting', /\.tt-sht-folder rect \{ rx: var\(--tt-pic-corner, 3px\);/.test(css));
   ok('the folder rests closed and opens while the card has the pointer or the focus', /tt-sht-ffront" x="6" y="14" width="52" height="38"/.test(js) && /\.tt-sht-card:is\(:hover, :focus-within\) \.tt-sht-ffront \{ y: 24px; height: 28px; \}/.test(css));
 }
 

@@ -129,7 +129,7 @@ console.log('\nThe vessel');
   ok('anything else is the accent, the picture colour', v.el.getAttribute('data-tone') === 'accent' && /\.tt-vessel \{ --tt-vessel-liquid: var\(--tt-pic-c, var\(--tt-accent, #FCC419\)\);/.test(css));
   v.splash();
   ok('a splash puts the class on the svg', svg.classList.contains('tt-vessel-splashing'));
-  ok('its corners follow the shape setting', /\.tt-vessel-wall \{[^}]*rx: var\(--tt-pic-corner, 6px\);/.test(css) && /html\[data-tt-shape="square"\] \{ --tt-pic-corner: 0px; \}/.test(css) && /html\[data-tt-shape="soft"\] \{ --tt-pic-corner: 3px; \}/.test(css));
+  ok('its corners follow the shape setting', /\.tt-vessel-wall \{[^}]*rx: var\(--tt-pic-corner, 3px\);/.test(css) && /html\[data-tt-shape="square"\] \{ --tt-pic-corner: 0px; \}/.test(css) && /html\[data-tt-shape="round"\] \{ --tt-pic-corner: 6px; \}/.test(css));
   const w = P.vessel({ share: 0.5 });
   ok('every vessel has a clip of its own', w.el.querySelectorAll('g')[0].getAttribute('clip-path') !== v.el.querySelectorAll('g')[0].getAttribute('clip-path'));
 }
