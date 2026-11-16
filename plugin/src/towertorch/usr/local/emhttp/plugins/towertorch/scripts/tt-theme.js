@@ -1127,6 +1127,39 @@
 
   // A span that acts as a button: reachable with Tab, pressed with Enter or Space. TowerTorch draws its
   // buttons as spans because Unraid's global button rules would restyle a real one.
+  // The keyboard of a dropdown built from a hidden <select>, as GlimStone's Select has it: Home and
+  // End open a closed one on its first or last option, and the open list answers the arrows, Home,
+  // End, Enter, Space and Escape. A disabled option is passed over, and the builder's own click
+  // handlers open, pick and close, so a key does what the pointer does.
+  function listKeys(sel, wrap, trig, panel, opt) {
+    panel.setAttribute("role", "listbox");
+    Array.prototype.forEach.call(panel.querySelectorAll(opt), function (c) { c.setAttribute("role", "option"); c.setAttribute("tabindex", "-1"); });
+    function choices() {
+      return Array.prototype.filter.call(panel.querySelectorAll(opt), function (c) { var o = sel.options[+c.getAttribute("data-i")]; return o && !o.disabled; });
+    }
+    function openAt(last) {
+      if (!wrap.classList.contains("tt-open")) trig.click();
+      var c = choices(), to = last ? c[c.length - 1] : c[0];
+      if (to) to.focus();
+    }
+    trig.addEventListener("keydown", function (e) {
+      if ((e.key !== "Home" && e.key !== "End") || sel.disabled) return;
+      e.preventDefault();
+      openAt(e.key === "End");
+    });
+    panel.addEventListener("keydown", function (e) {
+      var c = choices(), at = c.indexOf(document.activeElement), to = -1;
+      if (e.key === "ArrowDown") to = Math.min(c.length - 1, at + 1);
+      else if (e.key === "ArrowUp") to = Math.max(0, at - 1);
+      else if (e.key === "Home") to = 0;
+      else if (e.key === "End") to = c.length - 1;
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); if (at >= 0) c[at].click(); return; }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (wrap.classList.contains("tt-open")) trig.click(); trig.focus(); return; }
+      else return;
+      e.preventDefault();
+      if (c[to]) c[to].focus();
+    });
+  }
   function pressable(el) {
     if (!el || el.ttPressable) return el;
     el.ttPressable = true;
@@ -1467,7 +1500,7 @@
     TT_INFO_SVG: TT_INFO_SVG, infoIcon: infoIcon, TT_TRASH_SVG: TT_TRASH_SVG, delIcon: delIcon,
     lumOf: lumOf, LUM_FLOOR: LUM_FLOOR, liftDark: liftDark, liftLight: liftLight, lightTheme: lightTheme,
     liftSurface: liftSurface, surfacePalette: surfacePalette, isRed: isRed, deleteSlot: deleteSlot, toast: toast, shake: shake, fail: fail, deny: deny,
-    pressable: pressable, numberField: numberField, modal: modal, closeBadge: closeBadge,
+    pressable: pressable, listKeys: listKeys, numberField: numberField, modal: modal, closeBadge: closeBadge,
     PRESETS: PRESETS, colorPicker: colorPicker, colorSwatch: colorSwatch, swMark: swMark, swMarkRow: swMarkRow, refind: refind, paintWin: paintWin, ask: ask, glyph: glyph, labelled: labelled, labelTip: labelTip, menu: menu, slosh: slosh,
     edge: edge, placeAt: placeAt,
     icons: {

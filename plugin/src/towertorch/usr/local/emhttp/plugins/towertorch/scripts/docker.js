@@ -4511,6 +4511,7 @@
       var open = wrap.classList.toggle("tt-open");
       if (open) { var o2 = document.querySelectorAll(".tt-dsel.tt-open"); for (var j = 0; j < o2.length; j++) if (o2[j] !== wrap) o2[j].classList.remove("tt-open"); ttPositionDsel(trig, panel); }
     });
+    if (window.TTTheme && window.TTTheme.listKeys) window.TTTheme.listKeys(sel, wrap, trig, panel, ".tt-dsel-opt");
     ctSyncOne(sel);
   }
   // As position:absolute the tt-dsel panel is clipped by the #canvas div.content it lives in,

@@ -456,6 +456,7 @@
       vmDselSync(sel);
       if (wrap.classList.toggle("tt-open")) vmDselPosition(trig, panel);
     });
+    if (window.TTTheme && window.TTTheme.listKeys) window.TTTheme.listKeys(sel, wrap, trig, panel, ".tt-dsel-opt");
     vmDselSync(sel);
     return wrap;
   }

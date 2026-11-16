@@ -1978,7 +1978,7 @@
       chip.setAttribute("role", "option"); chip.setAttribute("aria-selected", o.selected ? "true" : "false"); chip.setAttribute("tabindex", "-1");
       var pick = (function (idx) { return function (ev) { ev.stopPropagation(); if (sel.options[idx].disabled) return; sel.selectedIndex = idx; sel.dispatchEvent(new Event("change", { bubbles: true })); ttToolsSyncSel(sel); wrap.classList.remove("tt-open"); trig.setAttribute("aria-expanded", "false"); trig.focus(); }; })(k);
       chip.addEventListener("click", pick);
-      chip.addEventListener("keydown", (function (fn) { return function (e2) { if (e2.key === "Enter" || e2.key === " ") { e2.preventDefault(); fn(e2); } else if (e2.key === "ArrowDown" || e2.key === "ArrowUp") { e2.preventDefault(); ttTselMove(panel, e2.target, e2.key === "ArrowDown" ? 1 : -1); } else if (e2.key === "Escape") { wrap.classList.remove("tt-open"); trig.setAttribute("aria-expanded", "false"); trig.focus(); } }; })(pick));
+      chip.addEventListener("keydown", (function (fn) { return function (e2) { if (e2.key === "Enter" || e2.key === " ") { e2.preventDefault(); fn(e2); } else if (e2.key === "ArrowDown" || e2.key === "ArrowUp") { e2.preventDefault(); ttTselMove(panel, e2.target, e2.key === "ArrowDown" ? 1 : -1); } else if (e2.key === "Home" || e2.key === "End") { e2.preventDefault(); ttTselEnd(panel, e2.key === "End"); } else if (e2.key === "Escape") { wrap.classList.remove("tt-open"); trig.setAttribute("aria-expanded", "false"); trig.focus(); } }; })(pick));
       panel.appendChild(chip);
     }
     if (sel.name === "locale") ttLangAugmentPanel(sel, panel);
@@ -1987,6 +1987,7 @@
     trig.addEventListener("keydown", function (e2) {
       if (sel.disabled) return;
       if (e2.key === "Enter" || e2.key === " " || e2.key === "ArrowDown") { e2.preventDefault(); ttToolsSyncSel(sel); openPanel(); var first = panel.querySelector(".tt-tsel-opt.is-selected") || panel.querySelector(".tt-tsel-opt:not(.is-disabled)"); if (first) first.focus(); }
+      else if (e2.key === "Home" || e2.key === "End") { e2.preventDefault(); ttToolsSyncSel(sel); openPanel(); ttTselEnd(panel, e2.key === "End"); }
       else if (e2.key === "Escape") { wrap.classList.remove("tt-open"); trig.setAttribute("aria-expanded", "false"); }
     });
     ttToolsSyncSel(sel);
@@ -2038,6 +2039,12 @@
     } catch (e) {}
   }
   // roving focus between option chips, skipping group headers and disabled ones
+  // Home and End reach the first or last option that can be picked, from the closed trigger too.
+  function ttTselEnd(panel, last) {
+    var opts = Array.prototype.filter.call(panel.querySelectorAll(".tt-tsel-opt"), function (o) { return !o.classList.contains("is-disabled"); });
+    var to = last ? opts[opts.length - 1] : opts[0];
+    if (to) to.focus();
+  }
   function ttTselMove(panel, cur, dir) {
     var opts = Array.prototype.filter.call(panel.querySelectorAll(".tt-tsel-opt"), function (o) { return !o.classList.contains("is-disabled"); });
     var i = opts.indexOf(cur); if (i < 0) i = 0; else i = (i + dir + opts.length) % opts.length;

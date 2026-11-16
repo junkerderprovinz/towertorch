@@ -483,6 +483,7 @@
       var open = wrap.classList.toggle("tt-open");
       if (open) { var o = document.querySelectorAll(".tt-sel.tt-open"); for (var j = 0; j < o.length; j++) if (o[j] !== wrap) o[j].classList.remove("tt-open"); }
     });
+    if (window.TTTheme && window.TTTheme.listKeys) window.TTTheme.listKeys(sel, wrap, trig, panel, ".tt-sel-opt");
     ttSyncOne(sel);
   }
   function ttSyncOne(sel) {
