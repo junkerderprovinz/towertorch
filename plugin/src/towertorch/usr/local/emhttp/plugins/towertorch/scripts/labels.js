@@ -252,11 +252,39 @@
   }
 
   var stamped = [];
+  // TowerTorch's own buttons draw glyph and words as two spans. In reactive mode each keeps the
+  // width it has with its words open, as GlimStone's reactive buttons keep their width stage, so
+  // the words open inside it and a row that wraps never moves it out from under the pointer. The
+  // width is read with the words open and no transition running, and held as --tt-lb-w.
+  function holdWidth(el, reactive) {
+    if (!reactive) { el.style.removeProperty("--tt-lb-w"); el.removeAttribute("data-tt-lb-fit"); return; }
+    if (!el.isConnected || !el.getClientRects().length) return;
+    el.setAttribute("data-tt-lb-still", "");
+    el.style.removeProperty("--tt-lb-w");
+    el.setAttribute("data-tt-lb-measure", "");
+    var open = el.offsetWidth;
+    el.removeAttribute("data-tt-lb-measure");
+    var rest = el.offsetWidth, cs = getComputedStyle(el), w = open;
+    if (cs.boxSizing !== "border-box") {
+      w -= (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0);
+    }
+    el.style.setProperty("--tt-lb-w", Math.ceil(w) + "px");
+    if (open > rest) el.setAttribute("data-tt-lb-fit", ""); else el.removeAttribute("data-tt-lb-fit");
+    // The still mark goes once the button has its resting style, or its words would fade out.
+    void el.offsetWidth;
+    el.removeAttribute("data-tt-lb-still");
+  }
   function sweep() {
     var m = enabled() ? mode() : null;
     if (m) { if (root.getAttribute(ATTR) !== m) root.setAttribute(ATTR, m); } else root.removeAttribute(ATTR);
-    // TowerTorch's own buttons draw their glyph themselves and only take the bubble from here.
-    if (window.TTTheme && window.TTTheme.labelTip) document.querySelectorAll(".tt-lb").forEach(window.TTTheme.labelTip);
+    // TowerTorch's own buttons draw their glyph themselves and take the bubble and, in reactive
+    // mode, their held width from here.
+    document.querySelectorAll(".tt-lb").forEach(function (el) {
+      if (window.TTTheme && window.TTTheme.labelTip) window.TTTheme.labelTip(el);
+      if (ro && !el.ttLbSeen) { el.ttLbSeen = true; ro.observe(el); }
+      var key = [m, epoch, el.textContent].join("\n");
+      if (el.ttLbKey !== key && (m !== "reactive" || el.getClientRects().length)) { el.ttLbKey = key; holdWidth(el, m === "reactive"); }
+    });
     var keep = [];
     if (m) {
       var els = document.querySelectorAll(IN_SCOPE);
@@ -298,13 +326,13 @@
       for (var p in LAYER) if (t.style.getPropertyValue(p) !== LAYER[p]) return true;
       return false;
     }
-    if (r.type === "characterData") return !!(t.parentElement && t.parentElement.closest(TEXTUAL));
-    if (t.closest && t.closest(TEXTUAL)) return true;
+    if (r.type === "characterData") return !!(t.parentElement && t.parentElement.closest(TEXTUAL + ", .tt-lb"));
+    if (t.closest && t.closest(TEXTUAL + ", .tt-lb")) return true;
     var lists = [r.addedNodes, r.removedNodes];
     for (var l = 0; l < 2; l++) {
       for (var i = 0; i < lists[l].length; i++) {
         var n = lists[l][i];
-        if (n.nodeType === 1 && (n.matches(CONTROL) || n.querySelector(CONTROL))) return true;
+        if (n.nodeType === 1 && (n.matches(CONTROL) || n.querySelector(CONTROL) || n.matches(".tt-lb") || n.querySelector(".tt-lb"))) return true;
       }
     }
     return false;
@@ -315,6 +343,8 @@
       for (var i = 0; i < entries.length; i++) {
         var el = entries[i].target, r = entries[i].contentRect;
         if (el.hasAttribute("data-tt-lbl") && (r.width > 0 || r.height > 0) !== el.ttLblShown) { later(); return; }
+        // An own button measured while it was not shown is measured once it is.
+        if (el.ttLbSeen && (r.width > 0 || r.height > 0) && root.getAttribute(ATTR) === "reactive" && !el.style.getPropertyValue("--tt-lb-w")) { later(); return; }
       }
     });
     try { sweep(); } catch (e) {}

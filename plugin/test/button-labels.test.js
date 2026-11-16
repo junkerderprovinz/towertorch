@@ -97,7 +97,7 @@ console.log('\nThe glyph follows a caption change');
   api.unhookAll();
   ok('with the engine off the input is the browser\'s own again', !Object.getOwnPropertyDescriptor(b, 'value') && b.value === 'Löschen');
   const rel = grab(js, 'function relevant(');
-  ok('a <button> renamed through its text is seen by the observer', /r\.type === "characterData"\) return !!\(t\.parentElement && t\.parentElement\.closest\(TEXTUAL\)\)/.test(rel) && /attributeFilter: \["value", "class", "style", "disabled", "hidden", "title"\]/.test(js));
+  ok('a <button> renamed through its text is seen by the observer', /r\.type === "characterData"\) return !!\(t\.parentElement && t\.parentElement\.closest\(TEXTUAL \+ ", \.tt-lb"\)\)/.test(rel) && /attributeFilter: \["value", "class", "style", "disabled", "hidden", "title"\]/.test(js));
   ok('a caption change measures the button again', /var key = \[el\.ttLblCap, epoch, el\.className, el\.ttLblShown\]\.join/.test(js));
 }
 
@@ -122,14 +122,59 @@ console.log('\nThe four modes');
   ok('glyph and text: the caption moves over by the glyph and the gap',
     /--tt-lbl-ps: calc\(var\(--tt-lbl-pl\) \+ var\(--tt-lbl-gs\) \+ var\(--tt-lbl-gap\)\);/.test(css) && /--tt-lbl-bp: calc\(50% \+ \(var\(--tt-lbl-pl\) - var\(--tt-lbl-pr\) - var\(--tt-lbl-gap\) - var\(--tt-lbl-tw\)\) \/ 2\) center;/.test(css));
   ok('glyph: a square on the button\'s own height with the glyph at half of it',
-    /\[data-tt-labels-buttons="glyph"\], \[data-tt-labels-buttons="reactive"\]\) \[data-tt-lbl\]:not\(\[data-tt-lbl-off\]\) \{\s*width: var\(--tt-lbl-h\) !important;/.test(css) && /--tt-lbl-bs: calc\(var\(--tt-lbl-h\) \/ 2\) calc\(var\(--tt-lbl-h\) \/ 2\);/.test(css));
+    /html\[data-tt-labels-buttons="glyph"\] \[data-tt-lbl\]:not\(\[data-tt-lbl-off\]\) \{\s*width: var\(--tt-lbl-h\) !important;/.test(css) && /--tt-lbl-bs: calc\(var\(--tt-lbl-h\) \/ 2\) calc\(var\(--tt-lbl-h\) \/ 2\);/.test(css));
   ok('the caption is only not painted, never removed', /-webkit-text-fill-color: transparent !important;/.test(css) && !/font-size/.test(css));
-  ok('reactive: the words open under the pointer and on keyboard focus, never on a disabled button',
-    /\[data-tt-labels-buttons="reactive"\] \[data-tt-lbl\]:not\(\[data-tt-lbl-off\]\):is\(:hover, :focus-visible\):not\(:disabled\) \{\s*width: var\(--tt-lbl-w\) !important; -webkit-text-fill-color: currentColor !important;/.test(css));
+  ok('reactive: a button rests as wide as with glyph and words, its glyph alone in the middle',
+    /html\[data-tt-labels-buttons="reactive"\] \[data-tt-lbl\]:not\(\[data-tt-lbl-off\]\) \{\s*width: var\(--tt-lbl-w\) !important;[^}]*-webkit-text-fill-color: transparent !important;/.test(css));
+  ok('reactive: the words open inside that width under the pointer and on keyboard focus, never on a disabled button',
+    /html\[data-tt-labels-buttons="reactive"\] \[data-tt-lbl\]:not\(\[data-tt-lbl-off\]\):is\(:hover, :focus-visible\):not\(:disabled\) \{\s*-webkit-text-fill-color: currentColor !important;\s*\}/.test(css));
+  ok('reactive: nothing in the sheet changes a button\'s width under the pointer', !/:hover[^{]*\{[^}]*(?<![-\w])width:/.test(css.replace(/\/\*[\s\S]*?\*\//g, '')) && !/transition:[^;]*(?<![-\w])width\b/.test(css));
   ok('reactive opens on the motion engine and at once under reduced motion',
-    /^html \{ --tt-motion-label-dur: 0s;/m.test(css) && /@media \(prefers-reduced-motion: no-preference\)/.test(css) && /html\[data-tt-motion="off"\] \{ --tt-motion-label-dur: 0s; \}/.test(css) && /transition: width var\(--tt-motion-label-dur\)/.test(css));
+    /^html \{ --tt-motion-label-dur: 0s;/m.test(css) && /@media \(prefers-reduced-motion: no-preference\)/.test(css) && /html\[data-tt-motion="off"\] \{ --tt-motion-label-dur: 0s; \}/.test(css) && /transition: padding var\(--tt-motion-label-dur\)/.test(css));
   ok('a measurement never replays the opening', /\[data-tt-lbl-still\] \{ transition: none !important; \}/.test(css) && /function settle\(/.test(js));
   ok('glyph mode puts the caption into the bubble, reactive only on a disabled button', /var want = m === "glyph" \|\| \(m === "reactive" && el\.disabled\);/.test(js));
+}
+
+console.log('\nTowerTorch\'s own buttons keep their width in reactive mode');
+{
+  ok('the sheet holds the measured width', /html\[data-tt-labels-buttons="reactive"\] \.tt-lb \{ min-width: var\(--tt-lb-w, auto\); \}/.test(css));
+  ok('a button sized by its words centres its glyph at rest', /html\[data-tt-labels-buttons="reactive"\] \.tt-lb\[data-tt-lb-fit\] \{ justify-content: center; text-align: center; \}/.test(css));
+  ok('measuring opens the words without a transition', /html\[data-tt-labels-buttons="reactive"\] \.tt-lb\[data-tt-lb-measure\] \.tt-lb-l \{ max-width: none; opacity: 1; \}/.test(css)
+    && /html\[data-tt-labels-buttons\] \.tt-lb\[data-tt-lb-still\] :is\(\.tt-lb-g, \.tt-lb-l\) \{ transition: none !important; \}/.test(css));
+  ok('and the buttons that space glyph and words with a gap keep it while measured', /:is\(\.tt-seg-btn, \.tt-tile-new, \.tt-menu-newfolder, \.tt-menu-settings\)\.tt-lb:not\(:hover, :focus-visible, \[data-tt-lb-measure\]\) \{ gap: 0 !important; \}/.test(css));
+
+  const holdWidth = new Function('getComputedStyle', grab(js, 'function holdWidth(') + '\nreturn holdWidth;');
+  const button = ({ open, rest, shown = true, sizing = 'content-box' }) => {
+    const attrs = {}, props = {}, seen = [];
+    return {
+      attrs, props, seen,
+      isConnected: true,
+      getClientRects: () => (shown ? [{}] : []),
+      setAttribute(k, v) { attrs[k] = v; if (k === 'data-tt-lb-measure') seen.push('measure'); },
+      removeAttribute(k) { delete attrs[k]; },
+      hasAttribute(k) { return k in attrs; },
+      get offsetWidth() { return 'data-tt-lb-measure' in attrs ? open : rest; },
+      style: { setProperty(k, v) { props[k] = v; }, removeProperty(k) { delete props[k]; }, getPropertyValue(k) { return props[k] || ''; } },
+      cs: { boxSizing: sizing, paddingLeft: '10px', paddingRight: '10px', borderLeftWidth: '1px', borderRightWidth: '1px' },
+    };
+  };
+  const run = (b, reactive) => { holdWidth((el) => el.cs)(b, reactive); return b; };
+  let b = run(button({ open: 120.4, rest: 34 }), true);
+  ok('it measures the button with its words open, less padding and border on a content box', b.props['--tt-lb-w'] === '99px', JSON.stringify(b.props));
+  ok('marks a button that grew with its words as sized by them', 'data-tt-lb-fit' in b.attrs);
+  ok('and leaves no measuring or still mark behind', !('data-tt-lb-measure' in b.attrs) && !('data-tt-lb-still' in b.attrs), JSON.stringify(b.attrs));
+  b = run(button({ open: 120, rest: 34, sizing: 'border-box' }), true);
+  ok('a border box keeps its full width', b.props['--tt-lb-w'] === '120px', JSON.stringify(b.props));
+  b = run(button({ open: 300, rest: 300 }), true);
+  ok('a row that is as wide either way is not centred', b.props['--tt-lb-w'] === '278px' && !('data-tt-lb-fit' in b.attrs));
+  b = run(button({ open: 120, rest: 34, shown: false }), true);
+  ok('a button that is not shown waits until it is', !('--tt-lb-w' in b.props) && b.seen.length === 0);
+  b = button({ open: 120, rest: 34 }); b.props['--tt-lb-w'] = '99px'; b.attrs['data-tt-lb-fit'] = '';
+  run(b, false);
+  ok('outside reactive the width and the mark go', !('--tt-lb-w' in b.props) && !('data-tt-lb-fit' in b.attrs));
+  ok('the sweep holds every own button, measured once per caption, mode and font load',
+    /holdWidth\(el, m === "reactive"\)/.test(js) && /el\.ttLbKey !== key/.test(js) && /var key = \[m, epoch, el\.textContent\]\.join\("\\n"\);/.test(js));
+  ok('a new own button or a changed caption on one brings the sweep', /n\.matches\("\.tt-lb"\) \|\| n\.querySelector\("\.tt-lb"\)/.test(js) && /t\.parentElement\.closest\(TEXTUAL \+ ", \.tt-lb"\)/.test(js));
 }
 
 console.log('\nThe off switch');

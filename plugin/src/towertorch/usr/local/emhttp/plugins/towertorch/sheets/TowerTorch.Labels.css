@@ -9,7 +9,7 @@
  *   --tt-lbl-tw               the width of its caption
  *   --tt-lbl-gs               the glyph beside a caption, as tall as the caption's text
  *   --tt-lbl-h                the button's height, the side of its square in glyph mode
- *   --tt-lbl-w                its width with glyph and caption, which reactive opens to
+ *   --tt-lbl-w                its width with glyph and caption, which reactive keeps
  *   --tt-lbl-gap              the gap between glyph and caption
  * The rules that size the square sit in a cascade layer: an important declaration in a layer
  * outranks every unlayered important one, and the area sheets reach these buttons through one or
@@ -42,18 +42,25 @@ html[data-tt-labels-buttons="glyph"] [data-tt-lbl] { --tt-lbl-bs: calc(var(--tt-
 
 @layer tt-labels {
   /* The square. The caption stays the button's value and accessible name and is only not painted. */
-  html:is([data-tt-labels-buttons="glyph"], [data-tt-labels-buttons="reactive"]) [data-tt-lbl]:not([data-tt-lbl-off]) {
+  html[data-tt-labels-buttons="glyph"] [data-tt-lbl]:not([data-tt-lbl-off]) {
     width: var(--tt-lbl-h) !important; min-width: 0 !important; max-width: none !important;
     overflow: hidden !important; -webkit-text-fill-color: transparent !important;
   }
-  /* Reactive: the caption opens under the pointer and on keyboard focus. A disabled button never
-     opens; its caption is in its bubble instead. */
+  /* Reactive keeps the width the button has with glyph and caption, as GlimStone's reactive buttons
+     keep their width stage, so the caption opens inside it and a row that wraps never moves the
+     button out from under the pointer. At rest the glyph sits alone in the middle. */
+  html[data-tt-labels-buttons="reactive"] [data-tt-lbl]:not([data-tt-lbl-off]) {
+    width: var(--tt-lbl-w) !important; min-width: 0 !important; max-width: none !important;
+    overflow: hidden !important; -webkit-text-fill-color: transparent !important;
+  }
+  /* The caption opens under the pointer and on keyboard focus. A disabled button never opens; its
+     caption is in its bubble instead. */
   html[data-tt-labels-buttons="reactive"] [data-tt-lbl]:not([data-tt-lbl-off]):is(:hover, :focus-visible):not(:disabled) {
-    width: var(--tt-lbl-w) !important; -webkit-text-fill-color: currentColor !important;
+    -webkit-text-fill-color: currentColor !important;
   }
   /* The area sheets' own colour transitions are named again, since this one replaces them. */
   html[data-tt-labels-buttons="reactive"] [data-tt-lbl]:not([data-tt-lbl-off], [data-tt-lbl-still]) {
-    transition: width var(--tt-motion-label-dur) var(--tt-motion-label-ease), padding var(--tt-motion-label-dur) var(--tt-motion-label-ease),
+    transition: padding var(--tt-motion-label-dur) var(--tt-motion-label-ease),
       background-position var(--tt-motion-label-dur) var(--tt-motion-label-ease), -webkit-text-fill-color calc(var(--tt-motion-label-dur) * .6) ease-out,
       background-color .12s, color .12s, filter .12s !important;
   }
@@ -78,9 +85,17 @@ html[data-tt-labels-buttons="reactive"] .tt-lb-g {
 html[data-tt-labels-buttons="reactive"] .tt-lb-l {
   transition: max-width var(--tt-motion-label-dur) var(--tt-motion-label-ease), opacity calc(var(--tt-motion-label-dur) * .6) ease-out;
 }
+/* Reactive holds each of them at the width it has with glyph and words, which labels.js measures
+   once per caption, so the words open inside it. One that its words widened rests with its glyph
+   in the middle; a row as wide as its container keeps its own alignment. */
+html[data-tt-labels-buttons="reactive"] .tt-lb { min-width: var(--tt-lb-w, auto); }
+html[data-tt-labels-buttons="reactive"] .tt-lb[data-tt-lb-fit] { justify-content: center; text-align: center; }
+html[data-tt-labels-buttons="reactive"] .tt-lb[data-tt-lb-measure] .tt-lb-l { max-width: none; opacity: 1; }
+html[data-tt-labels-buttons="reactive"] .tt-lb[data-tt-lb-measure]:not(:is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings)) .tt-lb-g { margin-inline-end: .45em; }
+html[data-tt-labels-buttons] .tt-lb[data-tt-lb-still] :is(.tt-lb-g, .tt-lb-l) { transition: none !important; }
 /* The view switches, the New folder tile and the menu's buttons set the space between glyph and
    words with their own gap, which goes while the words are hidden so the glyph sits in the middle. */
 html[data-tt-labels-buttons] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings) > .tt-lb-g,
 html[data-tt-labels-buttons="reactive"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb:is(:hover, :focus-visible) > .tt-lb-g { margin-inline-end: 0; }
 html[data-tt-labels-buttons="glyph"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb,
-html[data-tt-labels-buttons="reactive"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb:not(:hover, :focus-visible) { gap: 0 !important; }
+html[data-tt-labels-buttons="reactive"] :is(.tt-seg-btn, .tt-tile-new, .tt-menu-newfolder, .tt-menu-settings).tt-lb:not(:hover, :focus-visible, [data-tt-lb-measure]) { gap: 0 !important; }
