@@ -28,9 +28,9 @@ html {
   --tt-motion-vessel-splash-run: 0;
   --tt-motion-vessel-splash-ripple: 0;
   /* A picture's corners follow the shape setting like a card's. */
-  --tt-pic-corner: 6px;
+  --tt-pic-corner: 3px;
 }
-html[data-tt-shape="soft"] { --tt-pic-corner: 3px; }
+html[data-tt-shape="round"] { --tt-pic-corner: 6px; }
 html[data-tt-shape="square"] { --tt-pic-corner: 0px; }
 @media (prefers-reduced-motion: no-preference) {
   html {

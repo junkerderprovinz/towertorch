@@ -19,9 +19,9 @@ html {
   --tt-text-body: 14px;
   --tt-accent: #FCC419;
   --tt-accent-ink: #161616;
-  --tt-radius-card: 20px;
-  --tt-radius-control: 12px;
-  --tt-radius-pill: 9999px;
+  --tt-radius-card: 8px;
+  --tt-radius-control: 5px;
+  --tt-radius-pill: 5px;
   color-scheme: dark;
 }
 html.Theme--white,
@@ -40,7 +40,7 @@ html.Theme--azure {
   --tt-shadow: 0 24px 60px rgba(30, 40, 60, .18);
   color-scheme: light;
 }
-html[data-tt-shape="soft"] { --tt-radius-card: 8px; --tt-radius-control: 5px; --tt-radius-pill: 5px; }
+html[data-tt-shape="round"] { --tt-radius-card: 20px; --tt-radius-control: 12px; --tt-radius-pill: 9999px; }
 html[data-tt-shape="square"] { --tt-radius-card: 0px; --tt-radius-control: 0px; --tt-radius-pill: 0px; }
 
 html body {

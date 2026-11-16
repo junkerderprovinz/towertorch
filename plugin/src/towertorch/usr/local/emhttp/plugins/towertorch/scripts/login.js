@@ -28,8 +28,8 @@
   if (!/^#[0-9a-f]{6}$/i.test(accent)) accent = "#FCC419";
   root.style.setProperty("--tt-accent", accent);
   root.style.setProperty("--tt-accent-ink", idealText(accent));
-  var shape = g("tt.badgeshape", "round");
-  root.setAttribute("data-tt-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
+  var shape = g("tt.badgeshape", "soft");
+  root.setAttribute("data-tt-shape", /^(round|pill|circle)$/.test(shape) ? "round" : shape === "square" ? "square" : "soft");
   // The reactive colour mode (stored as "active") rests the button grey until it has the pointer.
   root.classList.toggle("tt-reactive", g("tt.rbmode", "all") === "active");
   var labels = g("tt.labels.buttons", "textGlyph");

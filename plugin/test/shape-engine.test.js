@@ -76,12 +76,12 @@ console.log('\nThe three tokens, and every shape answers all three');
   const tokens = decls(read('sheets/TowerTorch.Tokens.css'));
   const block = (sel) => Object.fromEntries(tokens.filter((d) => d.sel === sel && /^--tt-radius-/.test(d.decl)).map((d) => d.decl.split(/:\s*/)));
   const want = {
-    html: { '--tt-radius-card': '20px', '--tt-radius-control': '12px', '--tt-radius-pill': '9999px' },
-    'html[data-tt-shape="soft"]': { '--tt-radius-card': '8px', '--tt-radius-control': '5px', '--tt-radius-pill': '5px' },
+    html: { '--tt-radius-card': '8px', '--tt-radius-control': '5px', '--tt-radius-pill': '5px' },
+    'html[data-tt-shape="round"]': { '--tt-radius-card': '20px', '--tt-radius-control': '12px', '--tt-radius-pill': '9999px' },
     'html[data-tt-shape="square"]': { '--tt-radius-card': '0px', '--tt-radius-control': '0px', '--tt-radius-pill': '0px' },
   };
   for (const [sel, vals] of Object.entries(want)) ok(sel + ' sets card, control and pill', JSON.stringify(block(sel)) === JSON.stringify(vals), JSON.stringify(block(sel)));
-  ok('no rule keys on a round shape by name, round is the bare html', !/data-tt-shape="round"\]/.test(read('sheets/TowerTorch.Tokens.css')));
+  ok('no rule keys on a soft shape by name, soft is the bare html, as in GlimStone', !/data-tt-shape="soft"\]/.test(read('sheets/TowerTorch.Tokens.css')));
 }
 
 console.log('\nThe shape names, and the names from before them, in every copy');
@@ -92,10 +92,10 @@ console.log('\nThe shape names, and the names from before them, in every copy');
     'header.js': new Function(grabFn(header, 'shapeName') + '\nreturn shapeName;')(),
     'settings.js': new Function('window', grabFn(settings, 'shapeName') + '\nreturn shapeName;')({}),
   };
-  const inline = /var shape = g\("tt\.badgeshape", "round"\);[^\n]*\n\s*r\.setAttribute\("data-tt-shape", ([^;]+)\);/.exec(read('TowerTorch.Header.page'));
+  const inline = /var shape = g\("tt\.badgeshape", "soft"\);[^\n]*\n\s*r\.setAttribute\("data-tt-shape", ([^;]+)\);/.exec(read('TowerTorch.Header.page'));
   ok('the Header.page first paint stamps the shape', !!inline);
   if (inline) copies['Header.page'] = new Function('shape', 'return ' + inline[1] + ';');
-  const want = { pill: 'round', rounded: 'soft', square: 'square', circle: 'round', round: 'round', soft: 'soft', leaf: 'round', '': 'round' };
+  const want = { pill: 'round', rounded: 'soft', square: 'square', circle: 'round', round: 'round', soft: 'soft', leaf: 'soft', '': 'soft' };
   for (const [file, fn] of Object.entries(copies)) {
     const bad = Object.entries(want).filter(([v, s]) => fn(v) !== s).map(([v, s]) => `${v} -> ${fn(v)}, want ${s}`);
     ok(file + ' reads every stored value as its shape', bad.length === 0, bad.join(' | '));
@@ -105,7 +105,7 @@ console.log('\nThe shape names, and the names from before them, in every copy');
 console.log('\nheader.js rewrites an old name once and stamps the shape');
 {
   const header = read('scripts/header.js');
-  const m = /var shp = g\("tt\.badgeshape", "round"\), shpName = shapeName\(shp\);[\s\S]*?root\.setAttribute\("data-tt-shape", shpName\);/.exec(header);
+  const m = /var shp = g\("tt\.badgeshape", "soft"\), shpName = shapeName\(shp\);[\s\S]*?root\.setAttribute\("data-tt-shape", shpName\);/.exec(header);
   ok('the stamp is found in apply()', !!m);
   const run = (stored) => {
     const store = {}; if (stored != null) store['tt.badgeshape'] = stored;
@@ -127,7 +127,7 @@ console.log('\nheader.js rewrites an old name once and stamps the shape');
       ok(`"${name}" is left alone`, r.attr === name && r.writes.length === 0, JSON.stringify(r));
     }
     const unset = run(null);
-    ok('unset stamps round and writes nothing', unset.attr === 'round' && unset.writes.length === 0, JSON.stringify(unset));
+    ok('unset stamps GlimStone\'s soft and writes nothing', unset.attr === 'soft' && unset.writes.length === 0, JSON.stringify(unset));
   }
 }
 
@@ -136,8 +136,8 @@ console.log('\nThe settings picker offers the three shapes');
   const settings = read('scripts/settings.js');
   ok('round, soft and square, as Rund, Weich and Eckig', /\[\["round", T\("Rund", "Round"\), "IconCornerRound"\], \["soft", T\("Weich", "Soft"\), "IconCornerSoft"\], \["square", T\("Eckig", "Square"\), "IconCornerSquare"\]\]/.test(settings));
   ok('circle is no longer offered', !/\["circle",/.test(settings));
-  ok('the picker shows the stored shape, old names included', /shapeName\(get\("tt\.badgeshape", "round"\)\), function \(v\) \{ set\("tt\.badgeshape", v\); applyShape\(\);/.test(settings));
-  ok('a change stamps the attribute at once', /function applyShape\(\) \{ document\.documentElement\.setAttribute\("data-tt-shape", shapeName\(get\("tt\.badgeshape", "round"\)\)\); \}/.test(settings));
+  ok('the picker shows the stored shape, old names included', /shapeName\(get\("tt\.badgeshape", "soft"\)\), function \(v\) \{ set\("tt\.badgeshape", v\); applyShape\(\);/.test(settings));
+  ok('a change stamps the attribute at once', /function applyShape\(\) \{ document\.documentElement\.setAttribute\("data-tt-shape", shapeName\(get\("tt\.badgeshape", "soft"\)\)\); \}/.test(settings));
 }
 
 console.log('\nThe engine mirror renames the old shapes too');
@@ -178,7 +178,7 @@ for (const f of files(path.join(DIR, 'scripts'), ['.js'])) {
 }
 {
   const header = read('scripts/header.js');
-  ok('the iframe sheet reads the control and pill tokens off the page', /rCtl = tok\("--tt-radius-control", "12px"\), rPill = tok\("--tt-radius-pill", "9999px"\)/.test(header));
+  ok('the iframe sheet reads the control and pill tokens off the page', /rCtl = tok\("--tt-radius-control", "5px"\), rPill = tok\("--tt-radius-pill", "5px"\)/.test(header));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

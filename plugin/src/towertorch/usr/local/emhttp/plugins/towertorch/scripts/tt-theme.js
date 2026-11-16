@@ -137,13 +137,13 @@
     return "subtle";
   }
 
-  // tt.badgeshape holds a GlimStone shape, round, soft or square, and round when unset. The names
-  // stored before, pill, rounded, square and circle, read as the nearest of the three, so nobody's
-  // choice is lost; header.js rewrites them to the new names.
+  // tt.badgeshape holds a GlimStone shape, round, soft or square, and soft when unset, GlimStone's
+  // default. The names stored before, pill, rounded, square and circle, read as the nearest of the
+  // three, so nobody's choice is lost; header.js rewrites them to the new names.
   function shapeName(v) {
-    if (v === "soft" || v === "rounded") return "soft";
+    if (v === "round" || v === "pill" || v === "circle") return "round";
     if (v === "square") return "square";
-    return "round";
+    return "soft";
   }
   // One seed, picked at random once and kept in tt.rbseed, so seed % len gives the same rotation
   // in every area and on every reload.

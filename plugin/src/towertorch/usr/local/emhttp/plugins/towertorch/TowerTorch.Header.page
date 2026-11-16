@@ -23,8 +23,8 @@ Link="tt-hdr-hook"
     var theming = g("tt.theming", "1") !== "0";
     var on = g("tt.enable.header", "0") !== "0" && theming;
     r.classList.toggle("tt-header-on", on);
-    var shape = g("tt.badgeshape", "round");   // TTTheme.shapeName, the names from before GlimStone's shapes included
-    r.setAttribute("data-tt-shape", shape === "soft" || shape === "rounded" ? "soft" : shape === "square" ? "square" : "round");
+    var shape = g("tt.badgeshape", "soft");   // TTTheme.shapeName, the names from before GlimStone's shapes included
+    r.setAttribute("data-tt-shape", /^(round|pill|circle)$/.test(shape) ? "round" : shape === "square" ? "square" : "soft");
     var anim = g("tt.anim", "subtle");   // TTTheme.motionLevel, digits from before the names included
     r.setAttribute("data-tt-motion", anim === "off" || anim === "0" ? "off" : anim === "wild" || anim === "2" ? "wild" : "subtle");
     r.classList.toggle("tt-badge-glass", g("tt.badgeglass", "0") === "1" && theming);

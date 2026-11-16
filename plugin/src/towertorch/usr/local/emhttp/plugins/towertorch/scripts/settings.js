@@ -1627,7 +1627,7 @@
       }
     }
     // GlimStone's three shapes, in its order. A name stored before them shows as the shape it reads as.
-    themingCard.appendChild(segRow(T("Form", "Shape"), [["round", T("Rund", "Round"), "IconCornerRound"], ["soft", T("Weich", "Soft"), "IconCornerSoft"], ["square", T("Eckig", "Square"), "IconCornerSquare"]], shapeName(get("tt.badgeshape", "round")), function (v) { set("tt.badgeshape", v); applyShape(); syncHeaderBar(); syncSharesBar(); },
+    themingCard.appendChild(segRow(T("Form", "Shape"), [["round", T("Rund", "Round"), "IconCornerRound"], ["soft", T("Weich", "Soft"), "IconCornerSoft"], ["square", T("Eckig", "Square"), "IconCornerSquare"]], shapeName(get("tt.badgeshape", "soft")), function (v) { set("tt.badgeshape", v); applyShape(); syncHeaderBar(); syncSharesBar(); },
       T("Karten, Felder und Knöpfe ändern ihre Ecken gemeinsam.", "Cards, fields and buttons change their corners together.")));
     // One global badge style: glass adds a sheen to every badge at once, flat is the solid look.
     themingCard.appendChild(segRow(T("Badge-Stil", "Badge style"), [["flat", T("Flach", "Flat"), "IconBadgeFlat"], ["glass", T("Glas", "Glass"), "IconBadgeGlass"]], get("tt.badgeglass", "0") === "1" ? "glass" : "flat", function (v) { set("tt.badgeglass", v === "glass" ? "1" : "0"); document.documentElement.classList.toggle("tt-badge-glass", v === "glass" && get("tt.theming", "1") !== "0"); syncHeaderBar(); syncSharesBar(); },
@@ -1917,8 +1917,8 @@
     c3.appendChild(tbl);
     wrap.appendChild(c3);
 
-    function shapeName(v) { return window.TTTheme ? window.TTTheme.shapeName(v) : (v === "soft" || v === "rounded" ? "soft" : v === "square" ? "square" : "round"); }
-    function applyShape() { document.documentElement.setAttribute("data-tt-shape", shapeName(get("tt.badgeshape", "round"))); }
+    function shapeName(v) { return window.TTTheme ? window.TTTheme.shapeName(v) : (/^(round|pill|circle)$/.test(v) ? "round" : v === "square" ? "square" : "soft"); }
+    function applyShape() { document.documentElement.setAttribute("data-tt-shape", shapeName(get("tt.badgeshape", "soft"))); }
     applyShape();
 
     // Notifications are engine-side and saved to the flash.

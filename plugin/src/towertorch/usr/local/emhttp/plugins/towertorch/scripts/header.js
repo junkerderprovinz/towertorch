@@ -19,7 +19,7 @@
     var L = 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255), w = 1.05 / (L + 0.05), g = 22; if (w > (L + 0.05) / (lin(g) + 0.05) && w >= 4.5) return "#fff"; while ((L + 0.05) / (lin(g) + 0.05) < 4.5) g--; return "#" + ("0" + g.toString(16)).slice(-2).repeat(3);
   }
   function motionLevel(v) { return v === "off" || v === "0" ? "off" : v === "wild" || v === "2" ? "wild" : "subtle"; }
-  function shapeName(v) { return v === "soft" || v === "rounded" ? "soft" : v === "square" ? "square" : "round"; }
+  function shapeName(v) { return /^(round|pill|circle)$/.test(v) ? "round" : v === "square" ? "square" : "soft"; }
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
   function T(d, e) { return LANG === "de" ? d : e; }
   function eff(k, d) { return g("tt.styleheader", "1") !== "0" ? g("tt." + k, d) : g("tth." + k, d); }
@@ -441,7 +441,7 @@
       var rootCS = getComputedStyle(document.documentElement);
       var tok = function (name, d) { return (rootCS.getPropertyValue(name) || "").trim() || d; };
       var acc = tok("--tt-hdr-accent", "#FCC419");
-      var rCtl = tok("--tt-radius-control", "12px"), rPill = tok("--tt-radius-pill", "9999px");
+      var rCtl = tok("--tt-radius-control", "5px"), rPill = tok("--tt-radius-pill", "5px");
       var fsBody = tok("--tt-text-body", "14px"), fsMeta = tok("--tt-text-meta", "12px");
       var ifr = document.querySelectorAll(".ui-dialog iframe");
       for (var i = 0; i < ifr.length; i++) {
@@ -2649,7 +2649,7 @@
       // in Tokens.css. tt.badgeshape is read directly, since through eff() it would fall back to an
       // unset tth.badgeshape while the adopt toggle is off. A name from before GlimStone's three
       // shapes is rewritten once, and the engine's mirror follows.
-      var shp = g("tt.badgeshape", "round"), shpName = shapeName(shp);
+      var shp = g("tt.badgeshape", "soft"), shpName = shapeName(shp);
       if (/^(pill|rounded|circle)$/.test(shp)) syncedSet("tt.badgeshape", shpName);
       root.setAttribute("data-tt-shape", shpName);
       // The motion level is global too. The sheets read it from data-tt-motion, and the OS

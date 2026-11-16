@@ -659,8 +659,8 @@ html .tt-cpop .tt-set-hexin:focus { background: #383838 !important; }
    pill for everything somebody presses. header.js stamps tt.badgeshape as data-tt-shape. Use the
    raw token even on a short element; the browser scales an oversized radius down evenly, while a
    cap such as min(var(--tt-radius-pill), 50%) resolves per axis and draws an ellipse. */
-html { --tt-radius-card: 20px; --tt-radius-control: 12px; --tt-radius-pill: 9999px; }
-html[data-tt-shape="soft"] { --tt-radius-card: 8px; --tt-radius-control: 5px; --tt-radius-pill: 5px; }
+html { --tt-radius-card: 8px; --tt-radius-control: 5px; --tt-radius-pill: 5px; }
+html[data-tt-shape="round"] { --tt-radius-card: 20px; --tt-radius-control: 12px; --tt-radius-pill: 9999px; }
 html[data-tt-shape="square"] { --tt-radius-card: 0px; --tt-radius-control: 0px; --tt-radius-pill: 0px; }
 /* Keyboard focus on every TowerTorch button, badge and field is GlimStone's ring, distinct from hover:
    opaque and in the accent's ink, so it reaches 3:1 on every ground a control stands on. It is a
