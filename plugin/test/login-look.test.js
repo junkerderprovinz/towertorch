@@ -50,6 +50,13 @@ console.log('\nThe page carries the engine\'s settings');
   ok('the label mode decides what the button shows', /root\.setAttribute\("data-tt-labels"/.test(js) && /html\[data-tt-labels="text"\] body #login \.tt-lb-g \{ display: none; \}/.test(read('styles/login.css')));
   const css = read('styles/login.css');
   ok('the sheet rests the reactive button on the field colour', /html\.tt-reactive body #login \.form button:not\(:hover\):not\(:focus-visible\) \{ background: var\(--tt-field\); color: var\(--tt-text\); \}/.test(css));
+  // As everywhere else, a reactive button keeps its width and its words open inside it. The login
+  // button fills the form in every mode, so only its words and glyph move.
+  ok('the button fills the form in every label mode', /html body #login \.form button \{[^}]*display: block;[^}]*width: 100%;/.test(css));
+  const plain = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const onButton = [...plain.matchAll(/([^{}]+)\{([^}]*)\}/g)].filter(([, sel]) => /:hover|data-tt-labels/.test(sel) && /#login/.test(sel) && !/\.tt-lb-[gl]\b[^,]*$/.test(sel.trim()));
+  const sized = onButton.filter(([, , body]) => /(?<![-\w])(min-|max-)?width:/.test(body)).map(([, sel]) => sel.trim());
+  ok('and nothing changes its width under the pointer or by mode', onButton.length > 0 && sized.length === 0, sized.join(' | '));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
