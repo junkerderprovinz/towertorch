@@ -16,9 +16,18 @@ const sendLimit = 2 * time.Minute
 // them for every alert, so a change on the settings page counts at once.
 type Alerts struct {
 	Channels func() ([]notify.Channel, error)
+	// Hub hands an alert to TollRoll when one in the fortress takes the
+	// notifications of its apps. Nil, or a TollRoll that does not, leaves
+	// every alert to the channels.
+	Hub Handoff
 	// Unraid runs Unraid's notify script. Nil runs it on this host.
 	Unraid notify.Runner
 	HTTP   *http.Client
+}
+
+// Handoff hands an alert on and reports whether it was taken.
+type Handoff interface {
+	Hand(ctx context.Context, subject, desc, importance string) bool
 }
 
 // Notify sends the alert in the background, since a channel that keeps failing
@@ -29,8 +38,12 @@ func (a Alerts) Notify(ctx context.Context, subject, desc, importance string) {
 }
 
 // Send delivers the alert and waits for every channel, retries included. It
-// returns how many channels took it and the names of those that did not.
+// returns how many channels took it and the names of those that did not. An
+// alert TollRoll takes counts as sent to one.
 func (a Alerts) Send(ctx context.Context, subject, desc, importance string) (sent int, failed []string) {
+	if a.Hub != nil && a.Hub.Hand(ctx, subject, desc, importance) {
+		return 1, nil
+	}
 	channels, err := a.Channels()
 	if err != nil {
 		log.Printf("notify: channels unreadable, %q not sent: %v", subject, err)

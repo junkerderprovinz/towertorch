@@ -176,6 +176,10 @@ Every picture uses a different accent colour. The server and its apps, shares an
   not come up and why, and the watchdog's restarts. At home they reach
   TowerTorch directly, relay or not, on a port that lets in fortress members
   and nobody else.
+- When a TollRoll in your fortress takes over the notifications of your apps,
+  TowerTorch hands its alerts and the plan's summary to it, so TollRoll's quiet
+  hours, daily summary and limits hold for them as well. Without TollRoll, or
+  with that switch off there, TowerTorch sends to its own channels as before.
 
 **Resource limits**
 - Live CPU limit, CPU pinning (topology-aware, with P/E-core detection on Intel

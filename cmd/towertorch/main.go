@@ -118,8 +118,6 @@ func serve() {
 	tmplDir := env("TT_TEMPLATES_DIR", unraidtmpl.DefaultDir)
 	tmplIcons := tmplicon.New(dataDir, tmplDir, tmplicon.DefaultCACache)
 	defer tmplIcons.Close()
-	notifier := monitor.Alerts{Channels: st.LoadChannels}
-
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		log.Fatalf("towertorch: mkdir %s: %v", dataDir, err)
 	}
@@ -128,6 +126,9 @@ func serve() {
 		log.Printf("towertorch: notification channels unreadable: %v", err)
 	}
 	board := &fortress.Board{App: app(version), Instance: instance(st), Docker: docker}
+	host, _ := os.Hostname()
+	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name, Host: host}
+	notifier := monitor.Alerts{Channels: st.LoadChannels, Hub: fortress.Hub{Fortress: door}}
 	engine := &maint.Engine{
 		Check:    maint.FireSquire{Script: env("TT_FIRESQUIRE", maint.DefaultFireSquire)},
 		Reboot:   reboot,
@@ -138,8 +139,6 @@ func serve() {
 		Server:   board.Instance.Name,
 	}
 	board.NextMaintenance = engine.NextRun
-	host, _ := os.Hostname()
-	door := &fortress.Door{Dir: env("TT_FORTRESS_DIR", filepath.Join(dataDir, "fortress")), App: board.App, Src: board, Device: board.Instance.Name, Host: host}
 	door.Changed = func(m *fortress.Membership) {
 		if m == nil {
 			engine.SetJobs(nil, "")
