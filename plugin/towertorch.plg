@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.5.0">
+  <!ENTITY version   "1.5.1">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,6 +28,24 @@
 </ICON>
 
 <CHANGES>
+### 1.5.1
+GlimStone 4.5.4 lights whatever you point at in a soft tint of your accent, the Help card leads to Discord, and a new setup starts on soft corners.
+
+✨ **Added**
+- **Home and End open a dropdown at either end.** On a closed dropdown they open it on its first or last option. The dropdowns in the container form, on the share pages, in the limits window and on the settings page also take the arrow keys, Enter, Space and Escape once open.
+- **Discord on the Help card.** The card offers GitHub, the TowerTorch Discord server and the bug report. The mail button is gone, and the sentence names GitHub and Discord in both languages.
+
+🎨 **Design**
+- **GlimStone 4.5.4.** Quiet buttons, segments, rows, menu entries and dropdown options light in a soft tint of your accent when the pointer reaches them, where they used to step to grey. FireSquire, ShipLog and TollRoll read the same hover colour from TowerTorch, so all four light alike.
+- **A deeper accent ink on the light themes.** Text, links and glyphs in the accent reach 4.5:1 on every card, and a colour you picked yourself still gets its own ink where it would be too faint.
+- **Soft corners from the start.** If you never picked a shape, TowerTorch starts on GlimStone's soft corners, pictures included, and FireSquire and ShipLog follow. Round stays a choice of its own, and a shape you picked is kept.
+- **A focus ring you can see.** Keyboard focus is a solid ring in the accent's ink instead of a faint halo, 2px wide and 3px when your system asks for more contrast.
+- **Placeholders you can read.** The hint in an empty field reaches 4.5:1 on every background.
+- **Reactive buttons keep their width.** In reactive mode a button is as wide as with its glyph and words, and the words open inside it. It used to rest as a square and grow under the pointer, so in a wrapping row it could slip away from the pointer. The login button keeps one width in every label mode.
+
+⚡ **Improved**
+- **Space ticks a container in a plan, Enter no longer does**, the way a native checkbox behaves.
+
 ### 1.5.0
 TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks and restarts your server in one go, and the look moves to GlimStone 4.4.1, true black included. Please update ShipLog to 3.8.0 along with it, so the two share one look and can hand each other the work.
 
