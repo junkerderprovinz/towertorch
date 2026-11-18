@@ -1,0 +1,19 @@
+{
+  "S9deYJyJjG5Ou7cxF1XIr": {
+    "name": "Audiobooks",
+    "icon": "/plugins/folder.view3/images/folder-icon.png",
+    "regex": "",
+    "containers": ["audiobookshelf", "audiobookshelf-temp"],
+    "hidden_preview": [],
+    "settings": {"preview": 1, "preview_border": true, "preview_border_color": "#afa89e"},
+    "actions": []
+  },
+  "R9eTAjGfUJyUPIV6b7H5": {
+    "name": "Torrents",
+    "icon": "",
+    "regex": "^(qbit|radarr|sonarr)",
+    "containers": [],
+    "settings": {"preview": 2},
+    "actions": []
+  }
+}

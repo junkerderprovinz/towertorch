@@ -87,13 +87,14 @@ type apiMount struct {
 }
 
 type apiContainer struct {
-	ID              string     `json:"Id"`
-	Names           []string   `json:"Names"`
-	Image           string     `json:"Image"`
-	State           string     `json:"State"`
-	Status          string     `json:"Status"`
-	Ports           []apiPort  `json:"Ports"`
-	Mounts          []apiMount `json:"Mounts"`
+	ID              string            `json:"Id"`
+	Names           []string          `json:"Names"`
+	Image           string            `json:"Image"`
+	State           string            `json:"State"`
+	Status          string            `json:"Status"`
+	Ports           []apiPort         `json:"Ports"`
+	Mounts          []apiMount        `json:"Mounts"`
+	Labels          map[string]string `json:"Labels"`
 	NetworkSettings struct {
 		Networks map[string]apiNetwork `json:"Networks"`
 	} `json:"NetworkSettings"`
@@ -132,6 +133,7 @@ func (c *Client) List(ctx context.Context) ([]model.Container, error) {
 			IP:       ip,
 			Ports:    ports,
 			Mounts:   formatMounts(r.Mounts),
+			Labels:   r.Labels,
 		})
 	}
 	return out, nil

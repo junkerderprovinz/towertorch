@@ -690,6 +690,13 @@ html.tt-state-native .tt-tile-up { background: var(--tt-warn, #ff832b); color: v
 .tt-fmember-ico img { width: 20px; height: 20px; object-fit: contain; }
 .tt-fmember-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--tt-text-meta); }
 .tt-fmember-in { margin-left: 6px; color: var(--tt-dim); }
+/* The folder import's preview: one line per folder, indented by its depth, what it takes in
+   under its name, and a folder left alone in the dimmed ink. */
+.tt-fimp { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.tt-fimp-row { padding: 6px 10px; padding-inline-start: calc(10px + var(--tt-fimp-depth, 0) * 18px); background: var(--tt-surface-3); border-radius: var(--tt-radius-control); }
+.tt-fimp-name { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--tt-text); overflow-wrap: anywhere; }
+.tt-fimp-note { margin-inline-start: calc(1em + 6px); color: var(--tt-text-hint); font-size: var(--tt-text-meta); overflow-wrap: anywhere; }
+.tt-fimp-skip .tt-fimp-name { color: var(--tt-text-dim); }
 
 /* Buttons are filled, with no borders anywhere: a neutral fill for a secondary, the accent for a
    primary, and fills and shadows for separation. Every TowerTorch button rule carries the html prefix,

@@ -1350,12 +1350,13 @@
   // name, which Enter takes and an empty one refuses; o.danger marks a deleting answer, which looks
   // like Cancel rather than red and leaves the focus on Cancel, the safe choice. o.onOk gets the
   // trimmed name. o.glyph is the answer's glyph and o.cancelGlyph the other one's. Without
-  // o.cancel the answer stands alone.
+  // o.cancel the answer stands alone. o.body is a node shown under the text, such as a preview.
   function ask(o) {
     var win = document.createElement("div"); win.className = "tt-win tt-dlg";
     var title = document.createElement("div"); title.className = "tt-win-title"; title.textContent = o.title; win.appendChild(title);
     var card = document.createElement("div"); card.className = "tt-win-card";
     if (o.text) { var p = document.createElement("p"); p.className = "tt-win-text"; p.textContent = o.text; card.appendChild(p); }
+    if (o.body) card.appendChild(o.body);
     var input = null;
     if (o.input) {
       input = document.createElement("input"); input.type = "text"; input.className = "tt-win-in";

@@ -17,7 +17,7 @@ func testServer(t *testing.T) (*Client, *httptest.Server) {
 	mux.HandleFunc("/v1.44/containers/json", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`[
-			{"Id":"aaa","Names":["/gluetun"],"Image":"qmcgaw/gluetun","State":"running","Status":"Up 2 hours (healthy)",
+			{"Id":"aaa","Names":["/gluetun"],"Image":"qmcgaw/gluetun","State":"running","Status":"Up 2 hours (healthy)","Labels":{"folder.view3":"VPN"},
 			 "Ports":[{"PrivatePort":8000,"PublicPort":8888,"Type":"tcp"},{"PrivatePort":8000,"PublicPort":8888,"Type":"tcp"}],
 			 "NetworkSettings":{"Networks":{"br0.20":{"IPAddress":"192.168.20.51"}}}},
 			{"Id":"bbb","Names":["/sonarr"],"Image":"lscr.io/linuxserver/sonarr","State":"exited","Status":"Exited (0) 5 minutes ago","Mounts":[{"Type":"bind","Source":"/mnt/user/appdata/sonarr","Destination":"/config","RW":true},{"Type":"bind","Source":"/mnt/user/media","Destination":"/tv","RW":false},{"Type":"tmpfs","Source":"","Destination":""}],"NetworkSettings":{"Networks":{"br0.20":{"IPAddress":"","IPAMConfig":{"IPv4Address":"192.168.20.9"}}}}}
@@ -66,6 +66,9 @@ func TestList(t *testing.T) {
 	}
 	if g.Network != "br0.20" || g.IP != "192.168.20.51" {
 		t.Fatalf("gluetun network/ip parsed wrong: %+v", g)
+	}
+	if g.Labels["folder.view3"] != "VPN" {
+		t.Fatalf("gluetun labels parsed wrong: %v", g.Labels)
 	}
 	if len(g.Ports) != 1 || g.Ports[0] != "8888:8000/tcp" {
 		t.Fatalf("gluetun ports parsed/deduped wrong: %v", g.Ports)
