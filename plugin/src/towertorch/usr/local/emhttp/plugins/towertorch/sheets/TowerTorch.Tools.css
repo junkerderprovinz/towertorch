@@ -287,6 +287,9 @@ html.tt-tools-on #displaybox div.title {
   font-size: var(--tt-sec-fs) !important; font-weight: var(--tt-sec-fw, 500) !important; text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px);
   box-shadow: none !important; min-height: var(--tt-sec-h, 22px) !important; box-sizing: border-box !important;
 }
+/* Tokens.css gives the name in every section bar the page's text colour, which on the dark themes
+   is near white on the badge's accent. */
+html.tt-tools-on #displaybox div.title > span.left { color: inherit !important; }
 /* When the heading carries a status (the Docker settings page) the title row goes transparent, the
    badge wraps only the name (.left), and the state dot sits to its right with the "Status:" label
    hidden, like a disk chip. Pages without a status keep the whole-title badge. */
