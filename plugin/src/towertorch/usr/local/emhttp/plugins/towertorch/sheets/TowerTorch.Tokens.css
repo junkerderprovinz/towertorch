@@ -307,6 +307,11 @@ html {
   --tt-hover-chroma: 0.3;
   --tt-hover-dark: oklab(from var(--tt-rbaccent, var(--tt-accent)) 0.432 calc(a * var(--tt-hover-chroma)) calc(b * var(--tt-hover-chroma)));
   --tt-hover: var(--tt-hover-dark);
+  /* GlimStone's check mark, which marks the chosen entry of an open dropdown, as a mask so it takes
+     the dropdown's colour. Most dropdown panels stay dark on every theme, so the mark there reads
+     in the dark ramp's ink, which the light themes leave alone. */
+  --tt-check-mark: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0.3 0.549 13.399 13.399'><path fill-rule='evenodd' d='M4.381 12.219 L4.574 12.378 L4.793 12.497 L5.032 12.572 L5.155 12.592 L5.405 12.596 L5.651 12.552 L5.884 12.461 L6.096 12.328 L6.278 12.157 L13.457 3.957 L13.584 3.736 L13.666 3.495 L13.699 3.242 L13.683 2.988 L13.656 2.863 L13.566 2.625 L13.431 2.408 L13.257 2.222 L13.05 2.074 L12.936 2.016 L12.695 1.934 L12.442 1.901 L12.188 1.917 L11.942 1.983 L11.713 2.096 L11.511 2.251 L5.238 9.399 L2.519 6.681 L2.425 6.595 L2.213 6.454 L1.977 6.356 L1.854 6.325 L1.6 6.3 L1.346 6.325 L1.223 6.356 L0.987 6.454 L0.775 6.595 L0.595 6.775 L0.454 6.987 L0.399 7.103 L0.325 7.346 L0.3 7.6 L0.306 7.727 L0.356 7.977 L0.399 8.097 L0.519 8.322 L0.681 8.519Z'/></svg>");
+  --tt-ink-on-dark: var(--tt-accent-ink-dark, oklab(from var(--tt-accent) clamp(0.74, l, 1) calc(a * min(1, 1 / l, 0.26 / (1 - l))) calc(b * min(1, 1 / l, 0.26 / (1 - l)))));
 
   /* The type scale, one size per role: the status line and a tile's one figure, an emphasised
      title, body text, the sub-line beside or under a name, and the meta size for notches, counts

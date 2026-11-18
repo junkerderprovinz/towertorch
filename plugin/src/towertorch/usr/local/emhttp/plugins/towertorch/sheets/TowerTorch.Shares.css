@@ -1115,9 +1115,9 @@ html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-text { co
    the item div and one click toggles. Only the inner list is restyled; the dropcontainer wrapper's
    position is widget-managed. */
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-dropcontainer {
-  display: flex !important; flex-direction: column !important; align-items: flex-start !important;  /* pills hug their label, not full width */
-  gap: 6px !important; padding: 8px !important;
-  width: max-content !important; min-width: 160px !important; max-width: min(92vw, 420px) !important;  /* panel hugs the widest pill, not the widget's inline 300px */
+  display: flex !important; flex-direction: column !important; align-items: stretch !important;  /* rows span the panel, so the hover and the check line up */
+  gap: 0 !important; padding: 8px !important;
+  width: max-content !important; min-width: 160px !important; max-width: min(92vw, 420px) !important;  /* panel hugs the widest row, not the widget's inline 300px */
   height: auto !important; max-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important;  /* the list is the only scroll container */
   background: #303030 !important; border: none !important; border-radius: var(--tt-radius-card) !important;
   box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important;   /* no border line; the fill and shadow carry the depth off the #222 card */
@@ -1129,27 +1129,33 @@ html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-dropconta
   height: auto !important; width: auto !important; overflow: visible !important;
   border: none !important; box-shadow: none !important; background: transparent !important; padding: 0 !important;  /* strip jQuery-UI's translucent .ui-widget-content frame; the inner dropcontainer carries the fill and shadow */
 }
-/* Same contract as .tt-tsel-opt and .tt-dsel-opt: neutral at rest, and the list's one colour on
-   hover and when picked, stamped by tt-theme.js paintSelects on the wrapper and falling back
-   through --tt-rbaccent to this area's --tt-shr-accent in accent mode. */
+/* Same contract as .tt-tsel-opt and .tt-dsel-opt: plain rows, the hover colour under the pointer,
+   and the picked ones in bold with the check. The check wears the list's one colour, stamped by
+   tt-theme.js paintSelects on the wrapper and falling back through --tt-rbaccent to this area's
+   --tt-shr-accent in accent mode. */
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item,
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt {
   display: flex !important; align-items: center; gap: 8px; justify-content: flex-start;
   height: auto !important; line-height: 1.3 !important; margin: 0 !important;
-  padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
-  background: rgba(128, 128, 128, .16) !important;
+  padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
+  background: transparent !important;
   border: none !important; color: #e4e4e4 !important; white-space: nowrap;
-  transition: background .12s, color .12s, filter .12s;
+  transition: background .12s;
 }
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:hover,
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:focus-visible,
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt:hover,
-html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked) {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419))) !important;
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-shr-accent-text, #161616))) !important;
-  box-shadow: none !important;   /* no frames or rings, on selected badges either */
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt:focus-visible { background: var(--tt-hover-dark) !important; box-shadow: none !important; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item::after,
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419)));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
-html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked):hover,
-html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)) !important; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked) { font-weight: 600; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked)::after,
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected::after { visibility: visible; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"]))::after { display: none; }
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item label,
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-text {
@@ -1306,7 +1312,7 @@ html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-open .tt-sel-trigger
 }
 /* the open panel is the same floating vertical list as the disk dropdown */
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-panel {
-  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 6px;
+  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 0;
   padding: 8px; width: max-content; min-width: 160px; max-width: min(92vw, 420px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   background: #303030; border: none; border-radius: var(--tt-radius-card);
@@ -1314,12 +1320,7 @@ html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-panel {
 }
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-open .tt-sel-panel { display: flex; }
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-sel-disabled .tt-sel-trigger { opacity: .5; cursor: not-allowed; }
-/* the picked chip wears the list's colour, read through the same chain as every other option */
-html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419))) !important;
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-shr-accent-text, #161616))) !important;
-  box-shadow: none !important;   /* no frames or rings, on selected badges either */
-}
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected { font-weight: 600; }
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-disabled { opacity: .4; pointer-events: none; }
 
 /* In rainbow mode shares.js paintTabs() colours every sub-tab pill, on the /Shares list and the
