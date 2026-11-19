@@ -249,6 +249,9 @@ html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-header {
   font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw); letter-spacing: var(--tt-sec-ls); text-transform: uppercase; cursor: pointer;
 }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-header * { color: inherit !important; font: inherit; }
+/* The plugin draws the open/shut arrow as a border triangle in a fixed near-white, which vanished
+   on a light accent. */
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-header::before { border-top-color: currentColor !important; border-bottom-color: currentColor !important; }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox :is(.category, .category-content) { border: none !important; box-shadow: none !important; background: none !important; }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts {
   background: var(--tt-surface-2, #222222) !important; border: none !important; border-radius: var(--tt-radius-card); padding: 18px 12px 8px; box-shadow: var(--tt-elev-1);
@@ -273,6 +276,39 @@ html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts tr:is
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox :is(input[type="button"], input[type="submit"]) { text-transform: none !important; letter-spacing: normal !important; }
 html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-search-input {
   background: var(--tt-surface-3, #2e2e2e) !important; border: none !important; border-radius: var(--tt-radius-control) !important; color: var(--tt-text, #e6e6e6) !important;
+}
+/* The list view: the plugin pins every cell to a fixed width, the name and description to 300px,
+   and leaves the rest of a wide screen empty. Each row becomes a grid whose first column takes the
+   free width, the controls keep fixed columns so they line up from row to row, and a hairline
+   parts the rows in place of the plugin's gradient rule. */
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list { overflow-x: visible; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr {
+  display: grid !important; grid-template-columns: minmax(280px, 1fr) 120px 170px 200px 170px 96px 180px;
+  align-items: center; column-gap: 16px; width: auto !important; min-width: 0 !important;
+  padding: 12px 14px; border-radius: var(--tt-radius-control);
+}
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr + tr {
+  border-top: 1px solid var(--tt-shade-line, rgba(128,128,128,.14)) !important; border-image: none !important;
+}
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td {
+  min-width: 0 !important; max-width: none !important; width: auto !important; padding: 0 !important; margin: 0 !important;
+}
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td:first-child > font { margin: 0 0 4px; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td :is(input[type="button"], select, input[type="text"]) { max-width: 100%; box-sizing: border-box; margin: 0 !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td:nth-child(6) { display: flex; gap: 14px; font-size: 0; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td:last-child { display: flex; align-items: center; gap: 10px; }
+/* The hover fills the whole row: with a gap between the grid's cells, a fill per cell would leave
+   unfilled stripes, and the plugin's own gradient wash goes. */
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr:hover { background: var(--tt-hover) !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr:hover > td { background: none !important; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr::after { display: none; }
+html.tt-tools-on[data-tt-page="userscripts"] #displaybox .ca_descEdit { display: block; max-width: 90ch; line-height: 1.45; }
+@media (max-width: 1280px) {
+  html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr {
+    grid-template-columns: 1fr; row-gap: 10px;
+  }
+  html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td:not(:first-child) { justify-self: start; }
+  html.tt-tools-on[data-tt-page="userscripts"] #displaybox .category-scripts.vm-list tr > td:empty { display: none; }
 }
 
 /* Appdata Cleanup Plus (/Settings/AppdataCleanupPlus): the plugin's own cards drop their frames
