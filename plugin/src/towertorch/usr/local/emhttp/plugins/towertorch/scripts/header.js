@@ -370,6 +370,10 @@
             done = finishTxt && (Date.now() - (sa.__ttGrow || 0)) > 700;
             if (!done && finishTxt) { clearTimeout(sa.__ttSettleT); sa.__ttSettleT = setTimeout(function () { try { ttNchanStyle(); paintPopups(); } catch (e) {} }, 750); }
           }
+          // SweetAlert writes each dialog's title and log afresh, so a new progress span or log marks a
+          // new job, which must not inherit the finish of the one before it in the reused node.
+          var job = progT || sa.querySelector("pre");
+          if (sa.__ttJob !== job) { sa.__ttJob = job; sa.__ttDone = false; }
           if (done) sa.__ttDone = true;                  // once finished it never goes back to running
           sa.dataset.ttState = (done || sa.__ttDone) ? "done" : "run";
           sa.classList.toggle("tt-nchan-err", (done || sa.__ttDone) && /error|fehler/i.test((progT ? progT.textContent : (cb0 && cb0.textContent)) || ""));
