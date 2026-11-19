@@ -759,17 +759,16 @@
   // tt.imagelogos, on by default: the pipeline looks a container up as the app its image runs, or
   // its name when the image says nothing, and a row on Unraid's placeholder shows that app's logo.
   function imageLogosOn() { return localStorage.getItem("tt.imagelogos") !== "0" && !!window.TTContainerApps; }
-  var rowAppMemo = {};
-  // name -> app for the rows given, from the image in each row's context menu. The menu call is
-  // part of the memo's key, so a pass over unchanged rows parses nothing.
-  function rowApps(rows) {
+  var appMemo = {};
+  // name -> app for the engine's container list. Unraid's row names only the image's id, so the
+  // repository comes from the engine.
+  function containerApps(list) {
     var out = {};
     if (!imageLogosOn()) return out;
-    for (var i = 0; i < rows.length; i++) {
-      var name = rowName(rows[i]), hand = rows[i].querySelector("td.ct-name span.hand[onclick]");
-      var key = name + "\n" + (hand ? hand.getAttribute("onclick") : "");
-      if (!Object.prototype.hasOwnProperty.call(rowAppMemo, key)) rowAppMemo[key] = window.TTContainerApps.appFor(ctxFor(name, rows[i]).image, name);
-      if (rowAppMemo[key]) out[name] = rowAppMemo[key];
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i], key = c.name + "\n" + (c.image || "");
+      if (!Object.prototype.hasOwnProperty.call(appMemo, key)) appMemo[key] = window.TTContainerApps.appFor(c.image, c.name);
+      if (appMemo[key]) out[c.name] = appMemo[key];
     }
     return out;
   }
@@ -867,7 +866,7 @@
       // without blocking. A name it has not looked up yet stays native for this pass and repaints
       // through the callback init() wires.
       var CI = window.TTTheme && window.TTTheme.icons;
-      var apps = rowApps(findRows());
+      var apps = containerApps(containers);
       if (CI) CI.want(named.map(function (x) { return x.name; }), apps);
       // The same size contract as applySettings()'s --tt-logo-img: tt.sgsize through the shared
       // map, not a literal, because the inline !important write below outranks docker.css's own

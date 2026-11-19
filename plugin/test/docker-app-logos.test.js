@@ -63,23 +63,20 @@ console.log('\nA glyph nobody inks is no improvement');
   ok('so does a card', /setIconSrc\(g\[j\], gp\.glyph && !gWant \? gp\.stand : gp\.url\)/.test(loop));
 }
 
-console.log('\nEach row is known by its image, then by its name');
+console.log('\nEach container is known by its image, then by its name');
 {
-  const row = (name, image) => {
-    const hand = { getAttribute: (k) => (k === 'onclick' ? "addDockerContainerContext('" + name + "','" + image + "','/boot/x.xml','#','','sh','abc123','','','','','',0,0)" : null) };
-    const app = { textContent: name };
-    return { id: '', querySelector: (s) => (s === 'td.ct-name .appname' ? app : s === 'td.ct-name span.hand[onclick]' ? hand : null) };
-  };
-  const rowApps = new Function('window', 'localStorage', 'LANG', grabFn('imageLogosOn') + '\n' + grabFn('rowName') + '\n' + grabFn('ctxFor') + '\nvar rowAppMemo = {};\n' + grabFn('rowApps') + '\nreturn rowApps;')(global.window, global.localStorage, 'en');
-  const rows = [row('Films', 'lscr.io/linuxserver/radarr:latest'), row('sonarr', 'someone/mystery:1'), row('tt-logo-test-mystery', 'someone/mystery:1')];
-  let apps = rowApps(rows);
+  // Unraid's row carries only the image id, so the image comes from the engine's container list.
+  const containerApps = new Function('window', 'localStorage', grabFn('imageLogosOn') + '\nvar appMemo = {};\n' + grabFn('containerApps') + '\nreturn containerApps;')(global.window, global.localStorage);
+  const list = [{ name: 'Films', image: 'lscr.io/linuxserver/radarr:latest' }, { name: 'sonarr', image: 'someone/mystery:1' }, { name: 'tt-logo-test-mystery', image: 'someone/mystery:1' }, { name: 'gone' }];
+  let apps = containerApps(list);
   ok('the image names the app', apps.Films === 'radarr', JSON.stringify(apps));
   ok('the name speaks when the image says nothing', apps.sonarr === 'sonarr', JSON.stringify(apps));
-  ok('a container neither knows is left out', !('tt-logo-test-mystery' in apps), JSON.stringify(apps));
+  ok('a container neither knows is left out', !('tt-logo-test-mystery' in apps) && !('gone' in apps), JSON.stringify(apps));
   store['tt.imagelogos'] = '0';
-  apps = rowApps(rows);
+  apps = containerApps(list);
   ok('the switch turns it off', Object.keys(apps).length === 0, JSON.stringify(apps));
   delete store['tt.imagelogos'];
+  ok('the Docker tab hands it the engine\'s list', /var apps = containerApps\(containers\);/.test(grabFn('applyIconTint')));
   const logo = new Function('window', grabFn('appLogo') + '\nreturn appLogo;')(global.window);
   ok('a dark page takes the logo drawn for it', logo('plex') === '/plugins/towertorch/container-app-marks/plex.dark.svg', logo('plex'));
   ok('no app, no logo', logo('') === '');
