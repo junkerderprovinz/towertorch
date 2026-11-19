@@ -212,7 +212,9 @@ Every picture uses a different accent colour. The server and its apps, shares an
   pencil edits a folder's name, colour, icon and members, a tile at the end
   creates a new one, and a container dragged onto a folder moves into it. The
   live search opens any folder with a match, and the scroll position is kept
-  across every folder action.
+  across every folder action. Folders from another folder plugin can be taken
+  over from the gear menu: a preview shows which containers land in which
+  folder, and folders that already exist stay as they are.
 - Theming: one accent colour for everything, or rainbow mode with an editable
   palette; icon colours toggleable; settings sync across origins (IP, hostname,
   domain) via the engine, and they survive cleared browser data.

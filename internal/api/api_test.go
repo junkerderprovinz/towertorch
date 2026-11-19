@@ -689,3 +689,35 @@ func TestIconsCarryTheUsersOwnIcon(t *testing.T) {
 		t.Errorf("only the own icon carries the field: %s", rec.Body.String())
 	}
 }
+
+func TestFolderImportResolvesAgainstTheLiveContainers(t *testing.T) {
+	s, h := newServer()
+	s.FolderRoot = t.TempDir()
+	dir := filepath.Join(s.FolderRoot, "folder.view3")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	cfg := `{"f1":{"name":"VPN","regex":"","containers":["gluetun","gone"],"settings":{},"actions":[]}}`
+	if err := os.WriteFile(filepath.Join(dir, "docker.json"), []byte(cfg), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("GET", "/api/folderimport", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("code = %d: %s", rec.Code, rec.Body.String())
+	}
+	want := `{"folders":[{"id":"f1","name":"VPN","members":["gluetun"],"gone":["gone"]}]}`
+	if got := strings.TrimSpace(rec.Body.String()); got != want {
+		t.Fatalf("body = %s, want %s", got, want)
+	}
+}
+
+func TestFolderImportWithNothingToTakeOverIsAnEmptyList(t *testing.T) {
+	s, h := newServer()
+	s.FolderRoot = t.TempDir()
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("GET", "/api/folderimport", nil))
+	if rec.Code != http.StatusOK || strings.TrimSpace(rec.Body.String()) != `{"folders":[]}` {
+		t.Fatalf("code = %d, body = %s", rec.Code, rec.Body.String())
+	}
+}

@@ -20,6 +20,7 @@ import (
 	"github.com/junkerderprovinz/parleyport/kit/status"
 
 	"github.com/junkerderprovinz/towertorch/internal/bugreport"
+	"github.com/junkerderprovinz/towertorch/internal/folderimport"
 	"github.com/junkerderprovinz/towertorch/internal/hostcpu"
 	"github.com/junkerderprovinz/towertorch/internal/hostnet"
 	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
@@ -127,7 +128,10 @@ type Server struct {
 	Maintenance   Maintenance
 	Door          Door
 	TemplatesDir  string
-	Version       string
+	// FolderRoot is where the folder import looks for another plugin's
+	// folders; empty is the flash drive's plugin config.
+	FolderRoot string
+	Version    string
 	// Diag names the host files the bug report reads.
 	Diag bugreport.Sources
 
@@ -170,6 +174,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/icons", s.handleIcons)
 	mux.HandleFunc("GET /api/iconsvg", s.handleIconSVG)
 	mux.HandleFunc("GET /api/bugreport", s.handleBugReport)
+	mux.HandleFunc("GET /api/folderimport", s.handleFolderImport)
 	if s.Fortress != nil {
 		h := status.Handler(s.Fortress, fromSocket)
 		mux.Handle(status.StatusPath, h)
@@ -300,6 +305,32 @@ func (s *Server) handleIconSVG(w http.ResponseWriter, r *http.Request) {
 
 // handleGetVMs lists every libvirt domain with its limits. Without a working
 // libvirt the list is empty rather than an error, so the VM tab shows no controls.
+// handleFolderImport lists the folders another folder plugin keeps, as they
+// would land in the organizer today. The page does the writing, through the
+// organizer's own API.
+func (s *Server) handleFolderImport(w http.ResponseWriter, r *http.Request) {
+	cts, err := s.Docker.List(r.Context())
+	if err != nil {
+		writeErr(w, http.StatusBadGateway, err)
+		return
+	}
+	live := make([]folderimport.Container, len(cts))
+	for i, c := range cts {
+		live[i] = folderimport.Container{Name: c.Name, Labels: c.Labels}
+	}
+	root := s.FolderRoot
+	if root == "" {
+		root = folderimport.DefaultRoot
+	}
+	folders, err := folderimport.Read(root, live)
+	if err != nil {
+		log.Printf("folderimport: %v", err)
+		writeErr(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string][]folderimport.Folder{"folders": folders})
+}
+
 func (s *Server) handleGetVMs(w http.ResponseWriter, r *http.Request) {
 	if s.VMs == nil {
 		writeJSON(w, http.StatusOK, []vmctl.VM{})
