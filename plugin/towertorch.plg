@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.5.1">
+  <!ENTITY version   "1.6.0">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,15 +28,17 @@
 </ICON>
 
 <CHANGES>
-### 1.5.1
-GlimStone 4.5.4 lights whatever you point at in a soft tint of your accent, the Help card leads to Discord, and a new setup starts on soft corners.
+### 1.6.0
+TowerTorch takes over the Docker folders of another folder plugin, and open dropdowns are plain rows that light in a soft tint of your accent.
 
 ✨ **Added**
+- **Take over the folders of another folder plugin.** When another folder plugin keeps Docker folders, the gear menu on the Docker tab offers Take over folders. A preview shows which containers land in which folder before anything is created, and each folder keeps its colour. Folders that already exist and containers already in a folder stay as they are, so a second run changes nothing. The other plugin's files are left untouched.
 - **Home and End open a dropdown at either end.** On a closed dropdown they open it on its first or last option. The dropdowns in the container form, on the share pages, in the limits window and on the settings page also take the arrow keys, Enter, Space and Escape once open.
 - **Discord on the Help card.** The card offers GitHub, the TowerTorch Discord server and the bug report. The mail button is gone, and the sentence names GitHub and Discord in both languages.
 
 🎨 **Design**
-- **GlimStone 4.5.4.** Quiet buttons, segments, rows, menu entries and dropdown options light in a soft tint of your accent when the pointer reaches them, where they used to step to grey. FireSquire, ShipLog and TollRoll read the same hover colour from TowerTorch, so all four light alike.
+- **GlimStone 4.5.8.** Quiet buttons, segments, rows, menu entries and dropdown options light in a soft tint of your accent when the pointer reaches them, where they used to step to grey. FireSquire, ShipLog and TollRoll read the same hover colour from TowerTorch, so all four light alike.
+- **Open dropdowns are plain rows.** Their entries are no longer chips filled with the accent. The entry under the pointer or the keyboard gets the soft tint, and the chosen one stands in bold with GlimStone's check.
 - **A deeper accent ink on the light themes.** Text, links and glyphs in the accent reach 4.5:1 on every card, and a colour you picked yourself still gets its own ink where it would be too faint.
 - **Soft corners from the start.** If you never picked a shape, TowerTorch starts on GlimStone's soft corners, pictures included, and FireSquire and ShipLog follow. Round stays a choice of its own, and a shape you picked is kept.
 - **A focus ring you can see.** Keyboard focus is a solid ring in the accent's ink instead of a faint halo, 2px wide and 3px when your system asks for more contrast.
@@ -45,6 +47,14 @@ GlimStone 4.5.4 lights whatever you point at in a soft tint of your accent, the 
 
 ⚡ **Improved**
 - **Space ticks a container in a plan, Enter no longer does**, the way a native checkbox behaves.
+
+🐛 **Fixed**
+- **The heading on the Settings and Tools pages reads on the dark themes.** The page name in the accent badge was nearly white on the accent. It takes the badge's dark ink now, and the page's own symbol, which vanished in the accent, shows in front of it again.
+- **The dropdown on the settings page reads on the light themes.** Its list was dark text on a dark panel.
+- **Apps of your fortress on a server with a single network find each other at home directly** instead of only through the relay.
+- **A phrase change counts every app that took it.** An app whose answer got lost on the way back was listed as gone, although it had the new phrase.
+- **A restart no longer keeps two apps apart.** If an app of your fortress restarted while a new one was joining, the two never learned which app the other was. The newcomer now asks again.
+- **Security fixes for the fortress.** A member's direct call can no longer be steered to another page on a host it reaches, oversized messages are turned away before they take up memory, and golang.org/x/net 0.63.0 brings the latest fixes to Go's network library.
 
 ### 1.5.0
 TowerTorch joins your fortress. A maintenance plan now backs up, updates, checks and restarts your server in one go, and the look moves to GlimStone 4.4.1, true black included. Please update ShipLog to 3.8.0 along with it, so the two share one look and can hand each other the work.
