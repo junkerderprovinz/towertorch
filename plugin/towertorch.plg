@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.6.0">
+  <!ENTITY version   "1.5.3">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,7 +28,7 @@
 </ICON>
 
 <CHANGES>
-### 1.6.0
+### 1.5.3
 A container without an icon of its own shows the logo of the app it runs, and update windows wait for the download before they say done.
 
 ✨ **Added**
