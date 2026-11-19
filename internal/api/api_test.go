@@ -690,6 +690,34 @@ func TestIconsCarryTheUsersOwnIcon(t *testing.T) {
 	}
 }
 
+// A container whose image the browser knows is looked up as that app, while the
+// check for an icon its user set still goes by the container's own name.
+func TestIconsLookUpTheAppTheImageRuns(t *testing.T) {
+	s, h := newServer()
+	jelly := iconsrc.Result{Kind: iconsrc.KindGlyph, Source: iconsrc.SrcSimple, Slug: "jellyfin"}
+	s.Icons = cachedIcons{"jellyfin": jelly, "films": {Kind: iconsrc.KindNone}, "backup": {Kind: iconsrc.KindNone}}
+	s.TemplateIcons = fakeOwners{"films": tmplicon.Own}
+	rec := httptest.NewRecorder()
+	body := `{"names":["films","media","backup"],"apps":{"films":"jellyfin","media":"jellyfin"}}`
+	h.ServeHTTP(rec, httptest.NewRequest("POST", "/api/icons", strings.NewReader(body)))
+	var got map[string]iconsrc.Result
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+		t.Fatalf("decode: %v (%s)", err, rec.Body.String())
+	}
+	if r := got["media"]; r != jelly {
+		t.Errorf("media = %+v, want the app's answer", r)
+	}
+	if r := got["films"]; !r.Own || r.Kind != iconsrc.KindGlyph {
+		t.Errorf("films = %+v, want the app's answer marked own by its name", r)
+	}
+	if r := got["backup"]; r.Kind != iconsrc.KindNone {
+		t.Errorf("backup = %+v, want its own name looked up", r)
+	}
+	if _, ok := got["jellyfin"]; ok || len(got) != 3 {
+		t.Errorf("the answer is keyed by the names asked for: %s", rec.Body.String())
+	}
+}
+
 func TestFolderImportResolvesAgainstTheLiveContainers(t *testing.T) {
 	s, h := newServer()
 	s.FolderRoot = t.TempDir()

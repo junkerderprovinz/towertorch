@@ -1852,6 +1852,10 @@
     showC2(localStorage.getItem("tt.styledocker") === "0");
     (areaSync["tt.styledocker"] = areaSync["tt.styledocker"] || []).push(showC2);
 
+    var cApps = card(T("App-Logos", "App logos"));
+    imageLogosRow(cApps);
+    wrap.appendChild(cApps);
+
     // The containers pinned to their original logo, the same pin their Startplan window sets. It
     // stands outside the Logos card, which hides while Docker follows the global colour.
     var cOrig = card(T("Original-Logos", "Original logos"));
@@ -2851,6 +2855,17 @@
       paintToggles();
     }
     return { el: box, mark: mark };
+  }
+  // tt.imagelogos, which docker.js reads on the Docker tab. With theming off that tab shows no
+  // logos at all, so the row points to Theming instead.
+  function imageLogosRow(c) {
+    var label = T("Logos für Container ohne Icon", "Logos for containers without an icon");
+    var help = T("Ein Container ohne eigenes Icon bekommt das Logo der App, die er ausführt. TowerTorch erkennt die App am Image und nur, wenn das nichts verrät, am Namen des Containers. Gefärbt wird das Logo wie jedes andere Icon. Das Template des Containers bleibt unverändert, es ändert sich nur die Anzeige.", "A container without an icon of its own gets the logo of the app it runs. TowerTorch knows the app by its image, and by the container's name only when the image gives nothing away. The logo is coloured like every other icon. The container's template stays as it is, only the display changes.");
+    if (get("tt.theming", "1") === "0") {
+      c.appendChild(lockRow(label, T("Folgt dem Theming, das aus ist", "Follows Theming, which is off"), T("Zum Theming", "Go to Theming"), function () { jumpTo("general", "Theming"); }, help));
+      return;
+    }
+    c.appendChild(toggleRow(label, help, get("tt.imagelogos", "1") !== "0", function (v) { set("tt.imagelogos", v ? "1" : "0"); }));
   }
   function viewRow(c) {
     var label = T("Ansicht", "View");
