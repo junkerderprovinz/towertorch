@@ -540,6 +540,7 @@
   var ICON_SIMPLE_MAX = 12;
   var ICON_ALPHA_MIN = 20;    // a pixel counts as "content" above this alpha
   var icoRes = {};            // normalised name -> {kind, source, slug}
+  var icoApp = {};            // normalised name -> the app the engine looks it up as
   var icoWant = {};           // names asked for but not yet answered
   var icoInflight = false, icoTimer = null, icoLast = 0;
   var icoListeners = [];
@@ -564,12 +565,20 @@
   function iconMode(scope, name) { return iconOverride(scope, name) || iconGlobalMode(); }
 
   // Steps 2 and 3: one batched POST per page, answered from the engine's cache. Names still being
-  // looked up come back "pending" and are asked for again later.
-  function iconWant(names) {
+  // looked up come back "pending" and are asked for again later. apps maps a name to the app its
+  // container's image runs, which the engine looks up in the name's place. A caller that passes no
+  // apps leaves the ones it has alone.
+  function iconWant(names, apps) {
     var fresh = false;
     for (var i = 0; i < (names || []).length; i++) {
       var k = icoNorm(names[i]);
-      if (!k || icoRes[k] || icoWant[k]) continue;
+      if (!k) continue;
+      var app = apps ? icoNorm(apps[names[i]]) : icoApp[k] || "";
+      if ((icoApp[k] || "") !== app) {
+        if (app) icoApp[k] = app; else delete icoApp[k];
+        delete icoRes[k];
+      }
+      if (icoRes[k] || icoWant[k]) continue;
       icoWant[k] = 1; fresh = true;
     }
     // Pending names are asked for at most every 6s, so a page full of them does not hammer the
@@ -580,10 +589,11 @@
   }
   function icoFlush() {
     if (icoInflight) return;
-    var names = [], k;
+    var names = [], apps = {}, k;
     for (k in icoWant) names.push(k);
     for (k in icoRes) { if (icoRes[k] && icoRes[k].kind === "pending") names.push(k); }
     if (!names.length) return;
+    names.forEach(function (n) { if (icoApp[n]) apps[n] = icoApp[n]; });
     icoInflight = true; icoLast = Date.now();
     var tok = "";
     try {
@@ -592,7 +602,7 @@
     } catch (e) {}
     fetch(ICON_PROXY + "?path=icons", {
       method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-      body: (tok ? "csrf_token=" + encodeURIComponent(tok) + "&" : "") + "data=" + encodeURIComponent(JSON.stringify({ names: names }))
+      body: (tok ? "csrf_token=" + encodeURIComponent(tok) + "&" : "") + "data=" + encodeURIComponent(JSON.stringify({ names: names, apps: apps }))
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       icoInflight = false;
       // A 502 from the proxy (engine stopped) or an engine without the icons endpoint: settle
@@ -650,7 +660,7 @@
   function iconResult(name) { return icoRes[icoNorm(name)] || null; }
   // The engine serves its cached artwork as image/svg+xml through the same-origin proxy, so an
   // <img> can point at it and the canvas heuristic can read it back without tainting.
-  function iconSvgUrl(name) { return ICON_PROXY + "?path=iconsvg&name=" + encodeURIComponent(icoNorm(name)); }
+  function iconSvgUrl(name) { var k = icoNorm(name); return ICON_PROXY + "?path=iconsvg&name=" + encodeURIComponent(icoApp[k] || k); }
 
   // Step 1: draw the icon small and take the standard deviation of luminance over its opaque
   // pixels, cached per URL. Until a measurement lands the caller uses the safe tint, and the
@@ -802,10 +812,11 @@
 
   // Unraid's stand-in for a container without an icon is a grey disc with a question mark, which
   // reads as an error and flattens to a blank disc. TowerTorch shows GlimStone's container glyph instead,
-  // in a neutral grey that the tint and the flat filter recolour like any other one-tone icon.
+  // in a neutral grey that the tint and the flat filter recolour like any other one-tone icon, or
+  // the logo of the app the container runs when the caller knows one.
   var ICON_PLACEHOLDER = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + GLYPHS.Containers[0] + '" width="96" height="96" fill="#8a8a8a">' + GLYPHS.Containers[1] + "</svg>");
-  function iconPlaceholder(src) {
-    return /\/dynamix\.docker\.manager\/images\/question\.png(\?|$)/.test(String(src || "")) ? ICON_PLACEHOLDER : "";
+  function iconPlaceholder(src, logo) {
+    return /\/dynamix\.docker\.manager\/images\/question\.png(\?|$)/.test(String(src || "")) ? logo || ICON_PLACEHOLDER : "";
   }
 
   // The room every window, menu and bubble keeps from the viewport's edges, 16px and 24px on a wide

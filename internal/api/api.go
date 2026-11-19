@@ -243,10 +243,12 @@ func (s *Server) handleBugReport(w http.ResponseWriter, _ *http.Request) {
 // handleIcons answers a batch of names from the icon cache. Unknown names come
 // back as pending and are fetched in the background, so a slow CDN cannot hold
 // up a Docker tab render. Without a resolver the answer is an empty map and the
-// frontend keeps the native icons.
+// frontend keeps the native icons. A name the browser maps to the app its
+// container's image runs is looked up as that app.
 func (s *Server) handleIcons(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Names []string `json:"names"`
+		Names []string          `json:"names"`
+		Apps  map[string]string `json:"apps"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeErr(w, http.StatusBadRequest, err)
@@ -260,7 +262,20 @@ func (s *Server) handleIcons(w http.ResponseWriter, r *http.Request) {
 	if len(req.Names) > 512 {
 		req.Names = req.Names[:512]
 	}
-	res := s.Icons.Resolve(req.Names)
+	keys := make([]string, len(req.Names))
+	for i, n := range req.Names {
+		keys[i] = n
+		if app := req.Apps[n]; app != "" {
+			keys[i] = app
+		}
+	}
+	found := s.Icons.Resolve(keys)
+	res := make(map[string]iconsrc.Result, len(req.Names))
+	for i, n := range req.Names {
+		if v, ok := found[keys[i]]; ok {
+			res[n] = v
+		}
+	}
 	if s.TemplateIcons != nil {
 		for name, st := range s.TemplateIcons.Check(req.Names) {
 			r, ok := res[name]

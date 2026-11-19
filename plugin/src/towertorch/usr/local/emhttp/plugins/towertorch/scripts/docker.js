@@ -756,6 +756,27 @@
     return out;
   }
   function tintTargets() { return tintTargetsNamed().map(function (t) { return t.el; }); }
+  // tt.imagelogos, on by default: the pipeline looks a container up as the app its image runs, or
+  // its name when the image says nothing, and a row on Unraid's placeholder shows that app's logo.
+  function imageLogosOn() { return localStorage.getItem("tt.imagelogos") !== "0" && !!window.TTContainerApps; }
+  var appMemo = {};
+  // name -> app for the engine's container list. Unraid's row names only the image's id, so the
+  // repository comes from the engine.
+  function containerApps(list) {
+    var out = {};
+    if (!imageLogosOn()) return out;
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i], key = c.name + "\n" + (c.image || "");
+      if (!Object.prototype.hasOwnProperty.call(appMemo, key)) appMemo[key] = window.TTContainerApps.appFor(c.image, c.name);
+      if (appMemo[key]) out[c.name] = appMemo[key];
+    }
+    return out;
+  }
+  function appLogo(app) {
+    if (!app) return "";
+    var light = window.TTTheme && window.TTTheme.lightTheme && window.TTTheme.lightTheme();
+    return "/plugins/towertorch/container-app-marks/" + window.TTContainerApps.markFile(app, !light);
+  }
   // Swaps an <img>'s source to a resolved icon, or back to the one it shipped with. The native
   // src is remembered once and the write is guarded on data-tt-isrc, so a repaint that changes
   // nothing writes no attribute.
@@ -778,26 +799,28 @@
     if (ink) return { color: ink, filter: "" };
     return { color: "", filter: want };
   }
-  // Resolve ONE item to {filter, srcUrl}. `scope` namespaces the per-item pins so a
-  // container and a VM of the same name keep separate settings.
-  //  · a font glyph (<i>) is a glyph already: it inks, and it has no src to swap.
-  //  · treat "flat"/"tint" fall back to native when there is no ink colour at all, which
-  //    is how a user who never enabled the tint keeps untouched icons.
-  function iconTreatment(scope, name, isGlyphEl, nativeSrc) {
+  // The plan for one item. `scope` namespaces the per-item pins so a container and a VM of the
+  // same name keep separate settings, and logo is the app's logo, which takes the placeholder's
+  // place. A font glyph (<i>) is a glyph already: it inks, and it has no src to swap. Without an
+  // ink colour the caller keeps the item's own picture, so a user who never enabled the tint
+  // keeps untouched icons.
+  function iconTreatment(scope, name, isGlyphEl, nativeSrc, logo) {
     var CI = window.TTTheme && window.TTTheme.icons;
     if (!CI) return { treat: "tint", url: "" };
     var res = CI.result(name), kind = res ? res.kind : "";
     var mode = CI.mode(scope, name);
     // Unraid's question-mark stand-in is replaced before anything is measured, so the plan is made
     // for the picture that will show.
-    var stand = isGlyphEl ? "" : CI.placeholder(nativeSrc);
+    var stand = isGlyphEl ? "" : CI.placeholder(nativeSrc, logo);
     if (stand) nativeSrc = stand;
     // A font glyph is monochrome by construction: measure nothing, fetch nothing, ink it.
     var spread = isGlyphEl ? 0 : CI.spread(nativeSrc);
     var plan = CI.plan(mode, kind === "pending" ? "" : kind, spread, isGlyphEl ? null : CI.tile(nativeSrc), !!(res && res.own));
     var url = stand;
-    if (!isGlyphEl && (plan.src === "glyph" || plan.src === "color")) url = CI.svgUrl(name);
-    return { treat: plan.treat, url: url, tile: plan.tile, why: plan.why };
+    // The app's logo is the curated colour artwork already, in the variant drawn for this page.
+    var isLogo = !!logo && stand === logo;
+    if (!isGlyphEl && (plan.src === "glyph" || (plan.src === "color" && !isLogo))) url = CI.svgUrl(name);
+    return { treat: plan.treat, url: url, stand: stand, glyph: !isGlyphEl && plan.src === "glyph", tile: plan.tile, why: plan.why };
   }
   function applyIconTint() {
     try {
@@ -843,7 +866,8 @@
       // without blocking. A name it has not looked up yet stays native for this pass and repaints
       // through the callback init() wires.
       var CI = window.TTTheme && window.TTTheme.icons;
-      if (CI) CI.want(named.map(function (x) { return x.name; }));
+      var apps = containerApps(containers);
+      if (CI) CI.want(named.map(function (x) { return x.name; }), apps);
       // The same size contract as applySettings()'s --tt-logo-img: tt.sgsize through the shared
       // map, not a literal, because the inline !important write below outranks docker.css's own
       // --tt-logo-img rules.
@@ -851,8 +875,7 @@
       for (var i = 0; i < imgs.length; i++) {
         var n = imgs[i];
         var isGlyphEl = n.tagName !== "IMG";
-        var plan = CI ? iconTreatment("docker", named[i].name, isGlyphEl, isGlyphEl ? "" : nativeIconSrc(n)) : { treat: "tint", url: "" };
-        if (!isGlyphEl) setIconSrc(n, plan.url);
+        var plan = CI ? iconTreatment("docker", named[i].name, isGlyphEl, isGlyphEl ? "" : nativeIconSrc(n), appLogo(apps[named[i].name])) : { treat: "tint", url: "" };
         // While adopting, this row's own ink and filters; otherwise the page-wide values.
         var thisFlat = flat, thisTint = f, thisInk = ink;
         if (adopt) {
@@ -864,6 +887,8 @@
         }
         // "native", or no ink colour at all, leaves the pixels alone
         var want = plan.treat === "native" ? "" : plan.treat === "flat" ? thisFlat : plan.treat === "knock" ? CI.knock(thisInk, plan.tile, str) : thisTint;
+        // A glyph is drawn black, so without a filter to ink it the row keeps its own picture.
+        if (!isGlyphEl) setIconSrc(n, plan.glyph && !want ? plan.stand : plan.url);
         if (n.tagName === "IMG") { n.style.filter = want; }
         else {
           var gif = glyphInkAndFilter(plan, ibgOn, ibgAcc, thisInk, want);
@@ -890,8 +915,7 @@
         for (var j = 0; j < g.length; j++) {
           var gn = g[j].getAttribute("data-tt-name") || "";
           gnames.push(gn);
-          var gp = CI ? iconTreatment("docker", gn, false, nativeIconSrc(g[j])) : { treat: "tint", url: "" };
-          setIconSrc(g[j], gp.url);
+          var gp = CI ? iconTreatment("docker", gn, false, nativeIconSrc(g[j]), appLogo(apps[gn])) : { treat: "tint", url: "" };
           var gFlat = flat, gTint = f, gInk = ink;
           if (adopt) {
             gInk = itemAdoptInk(g[j].closest(".tt-card, .tt-sn"));
@@ -899,9 +923,11 @@
             gFlat = cardBlk ? flatBlk : flatWht;
             gTint = cardBlk ? fBlk : fWht;
           }
-          g[j].style.filter = gp.treat === "native" ? "" : gp.treat === "flat" ? gFlat : gp.treat === "knock" ? CI.knock(gInk, gp.tile, str) : gTint;
+          var gWant = gp.treat === "native" ? "" : gp.treat === "flat" ? gFlat : gp.treat === "knock" ? CI.knock(gInk, gp.tile, str) : gTint;
+          setIconSrc(g[j], gp.glyph && !gWant ? gp.stand : gp.url);
+          g[j].style.filter = gWant;
         }
-        if (CI && gnames.length) CI.want(gnames);
+        if (CI && gnames.length) CI.want(gnames, apps);
       });
     } catch (e) {}
   }

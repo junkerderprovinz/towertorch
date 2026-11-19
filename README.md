@@ -228,6 +228,11 @@ Every picture uses a different accent colour. The server and its apps, shares an
   background, so the browser never waits on a CDN and a box with no internet simply
   keeps the icons it shipped with. A container icon you set yourself, one that differs
   from the icon its template ships, is never swapped for a curated one, only coloured.
+  A container without an icon of its own shows the logo of the app it runs, known by
+  its image and by its name only when the image gives nothing away. About seventy of
+  these logos ship with the plugin (from dashboard-icons, listed in
+  `container-app-marks/README.md`), so they show without internet too, and the
+  **App logos** card on the Docker tab of the settings turns them off.
   Choose the treatment globally under **Logos & Icons**, or pin it per container / VM /
   plugin in that item's own window. That card
   previews the choice on real Docker, VM and Plugin icons from this box, through the

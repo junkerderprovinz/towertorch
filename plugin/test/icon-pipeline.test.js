@@ -599,7 +599,7 @@ console.log('\nA container without an icon shows the container glyph, not Unraid
   ok('by the container glyph in a neutral grey the filters can recolour', decodeURIComponent(q).indexOf('fill="#8a8a8a"') > 0);
   ok('a real icon is left alone', CI.placeholder('/state/plugins/dynamix.docker.manager/images/Plex-icon.png') === '');
   const dsrc = fs.readFileSync(DOCKER, 'utf8');
-  ok('docker.js plans the placeholder before it measures anything', /var stand = isGlyphEl \? "" : CI\.placeholder\(nativeSrc\);\s*if \(stand\) nativeSrc = stand;/.test(dsrc));
+  ok('docker.js plans the placeholder before it measures anything', /var stand = isGlyphEl \? "" : CI\.placeholder\(nativeSrc, logo\);\s*if \(stand\) nativeSrc = stand;/.test(dsrc));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));
