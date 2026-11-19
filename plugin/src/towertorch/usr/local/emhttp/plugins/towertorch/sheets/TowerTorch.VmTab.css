@@ -488,15 +488,22 @@ html.tt-vms-on #kvm_list .switch-button-background .switch-button-button {
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--tt-text, #e6e6e6);
 }
 #tt-vmlim .tt-dsel-panel {
-  display: none; position: fixed; z-index: 30; flex-direction: column; gap: 6px; padding: 8px;
+  display: none; position: fixed; z-index: 30; flex-direction: column; gap: 0; padding: 8px;
   width: max-content; max-width: min(92vw, 420px); overflow-y: auto; overflow-x: hidden;
   background: var(--tt-surface-window, #242424); border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
 }
 #tt-vmlim .tt-dsel.tt-open .tt-dsel-panel { display: flex; }
+/* GlimStone's select rows, on the window's own surface, so the hover and the ink follow the theme. */
 #tt-vmlim .tt-dsel-opt {
-  display: flex; align-items: center; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill); white-space: nowrap;
-  background: rgba(128, 128, 128, .16); color: var(--tt-text, #e6e6e6);
-  transition: background .12s, color .12s;
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control); white-space: nowrap;
+  background: transparent; color: var(--tt-text, #e6e6e6);
+  transition: background .12s;
 }
-#tt-vmlim .tt-dsel-opt:hover, #tt-vmlim .tt-dsel-opt.is-selected { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
-#tt-vmlim .tt-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+#tt-vmlim .tt-dsel-opt:hover, #tt-vmlim .tt-dsel-opt:focus-visible { background: var(--tt-hover); }
+#tt-vmlim .tt-dsel-opt.is-selected { font-weight: 600; }
+#tt-vmlim .tt-dsel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-accent-ink, #FCC419));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
+}
+#tt-vmlim .tt-dsel-opt.is-selected::after { visibility: visible; }

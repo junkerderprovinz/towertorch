@@ -1008,12 +1008,14 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
   background-color: transparent !important; color: inherit !important;
   border-radius: calc(var(--tt-radius-control) / 2); outline: none !important;
 }
-/* the picker panel: two columns of the same chips as every other TowerTorch dropdown, so paintSelects()
+/* the picker panel: two columns of the same rows as every other TowerTorch dropdown, so paintSelects()
    colours it with no painter of its own */
 .tt-timepick { flex-direction: row !important; gap: 8px !important; max-height: min(46vh, 232px); }
-.tt-tp-col { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+.tt-tp-col { display: flex; flex-direction: column; gap: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
 .tt-tp-col .tt-drop-it { justify-content: center; padding: 4px 12px; min-width: 44px; }
-.tt-timepick .tt-drop-on::after { content: none; }   /* a two-character chip has no room for the tick, and the fill already says it is picked */
+/* two digits leave no room for the check, so the picked one takes its colour instead */
+.tt-timepick .tt-drop-on::after { content: none; }
+.tt-timepick .tt-drop-on { color: var(--tt-rb-c, var(--tt-ink-on-dark)); }
 .tt-timepick .tt-drop-it:focus-visible { outline: none; box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
 .tt-days { display: flex; gap: 3px; flex-wrap: wrap; }
 /* The day chip and the row's delete badge have to be the same size, so they share one geometry
@@ -1501,27 +1503,32 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--txt, #eaeaea);
 }
 #tt-settings .tt-dsel-panel {
-  display: none; position: absolute; z-index: 30; margin-top: 4px; flex-direction: column; gap: 6px;
+  display: none; position: absolute; z-index: 30; margin-top: 4px; flex-direction: column; gap: 0;
   padding: 8px; width: max-content; min-width: 160px; max-width: min(92vw, 420px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   background: var(--tt-surface, #303030); border: none; border-radius: var(--tt-radius-card);
   box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
 }
 #tt-settings .tt-dsel.tt-open .tt-dsel-panel { display: flex; }
-/* The same contract as .tt-tsel-opt in Tools.css, so every TowerTorch dropdown reads alike in every colour
-   mode: an option rests neutral, and the hovered and the chosen one wear the dropdown's one
-   colour, which its wrapper carries as --tt-rb-c and accent mode takes through the chain. */
+/* The same contract as .tt-tsel-opt in Tools.css, so every TowerTorch dropdown reads alike in every
+   colour mode: GlimStone's select rows, the hover colour under the pointer, and the chosen one in
+   bold with the check in the dropdown's one colour, which its wrapper carries as --tt-rb-c and
+   accent mode takes through the chain. The panel stays dark on every theme, so its text, the
+   hover and the ink are the dark ones. */
 #tt-settings .tt-dsel-opt {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
-  background: rgba(128, 128, 128, .16); border: none; color: var(--tt-text, #e4e4e4); white-space: nowrap;
-  transition: background .12s, color .12s, filter .12s;
+  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
+  background: transparent; border: none; color: #e4e4e4; white-space: nowrap;
+  transition: background .12s;
 }
-#tt-settings .tt-dsel-opt:hover, #tt-settings .tt-dsel-opt.is-selected {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)));
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); box-shadow: none !important;
+#tt-settings .tt-dsel-opt:hover, #tt-settings .tt-dsel-opt:focus-visible { background: var(--tt-hover-dark); }
+#tt-settings .tt-dsel-opt.is-selected { font-weight: 600; }
+#tt-settings .tt-dsel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-ink-on-dark));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
-#tt-settings .tt-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+#tt-settings .tt-dsel-opt.is-selected::after { visibility: visible; }
 #tt-settings .tt-dsel-opt.is-disabled { opacity: .4; pointer-events: none; }
 .tt-set-prev { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; align-items: center; }
 .tt-set-prev .tt-b-lg { font-size: var(--tt-text-title); font-weight: 700; padding: 6px 16px; letter-spacing: .2px; } /* the live lg tier of the Shares sheet */
@@ -1935,7 +1942,7 @@ html.tt-docker-on.tt-on-addct .tt-dsel-trigger::after {
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #cfcfcf;
 }
 html.tt-docker-on.tt-on-addct .tt-dsel-panel {
-  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 6px;
+  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 0;
   padding: 8px; width: max-content; min-width: 160px; max-width: min(92vw, 420px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   background: #303030; border: none; border-radius: var(--tt-radius-card);
@@ -1944,21 +1951,23 @@ html.tt-docker-on.tt-on-addct .tt-dsel-panel {
 html.tt-docker-on.tt-on-addct .tt-dsel.tt-open .tt-dsel-panel { display: flex; }
 html.tt-docker-on.tt-on-addct .tt-dsel.tt-dsel-disabled .tt-dsel-trigger { opacity: .5; cursor: not-allowed; }
 html.tt-docker-on.tt-on-addct .tt-dsel-group { font-size: var(--tt-text-meta); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #9a9a9a; padding: 4px 12px 0; }
-/* the same .tt-tsel-opt contract as the settings block above: neutral at rest, the dropdown's one
-   colour on the hovered and the chosen option */
+/* the same .tt-tsel-opt contract as the settings block above: plain rows, the hover colour under
+   the pointer, the chosen one in bold with the check; the panel stays dark on every theme */
 html.tt-docker-on.tt-on-addct .tt-dsel-opt {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
-  background: rgba(128, 128, 128, .16); border: none; color: #e4e4e4; white-space: nowrap;
-  transition: background .12s, color .12s, filter .12s;
+  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
+  background: transparent; border: none; color: #e4e4e4; white-space: nowrap;
+  transition: background .12s;
 }
 html.tt-docker-on.tt-on-addct .tt-dsel-opt:hover,
-html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-selected {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)));
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616)));
-  box-shadow: none !important;   /* no frames or rings, on selected items either */
+html.tt-docker-on.tt-on-addct .tt-dsel-opt:focus-visible { background: var(--tt-hover-dark); }
+html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-selected { font-weight: 600; }
+html.tt-docker-on.tt-on-addct .tt-dsel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-ink-on-dark));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
-html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-selected::after { visibility: visible; }
 html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-disabled { opacity: .4; pointer-events: none; }
 
 /* The plan editor wraps its own selects in the same .tt-dsel panel, but the rules above are scoped
@@ -1984,7 +1993,7 @@ html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-disabled { opacity: .4; pointer-ev
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #cfcfcf;
 }
 .tt-pop .tt-dsel-panel {
-  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 6px;
+  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 0;
   padding: 8px; width: max-content; min-width: 160px; max-width: min(92vw, 420px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   background: #303030; border: none; border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6));   /* no border line */
@@ -1994,40 +2003,44 @@ html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-disabled { opacity: .4; pointer-ev
 .tt-pop .tt-dsel-group { font-size: var(--tt-text-meta); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #9a9a9a; padding: 4px 12px 0; }
 .tt-pop .tt-dsel-opt {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
-  background: rgba(128, 128, 128, .16); border: none; color: #e4e4e4; white-space: nowrap;
-  transition: background .12s, color .12s, filter .12s;
+  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
+  background: transparent; border: none; color: #e4e4e4; white-space: nowrap;
+  transition: background .12s;
 }
-.tt-pop .tt-dsel-opt:hover, .tt-pop .tt-dsel-opt.is-selected {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)));
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); box-shadow: none !important;
+.tt-pop .tt-dsel-opt:hover, .tt-pop .tt-dsel-opt:focus-visible { background: var(--tt-hover-dark); }
+.tt-pop .tt-dsel-opt.is-selected { font-weight: 600; }
+.tt-pop .tt-dsel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-ink-on-dark));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
-.tt-pop .tt-dsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+.tt-pop .tt-dsel-opt.is-selected::after { visibility: visible; }
 .tt-pop .tt-dsel-opt.is-disabled { opacity: .4; pointer-events: none; }
 
 /* The plan editor's dependency picker is TowerTorch's fourth dropdown widget. Being a multi-select it is
    hand-built as .tt-drop with .tt-drop-it entries rather than wrapping a <select>, but it takes
-   the same panel and chips as the others: neutral at rest, and the list's one colour from
-   tt-theme.js paintSelects under the pointer and while the entry is in the list. */
+   the same panel and rows as the others: the hover colour under the pointer, and every entry in
+   the list in bold with the check in the list's one colour from tt-theme.js paintSelects. */
 .tt-drop {
-  padding: 8px; display: flex; flex-direction: column; gap: 6px; min-width: 160px; max-width: min(92vw, 420px);
+  padding: 8px; display: flex; flex-direction: column; gap: 0; min-width: 160px; max-width: min(92vw, 420px);
   max-height: min(50vh, 260px); background: #303030; border-radius: var(--tt-radius-card);
   box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .55));   /* no border line */
 }
 .tt-drop-it {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
+  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
   font-size: var(--tt-text-meta); white-space: nowrap; border: none;
-  background: rgba(128, 128, 128, .16); color: #e4e4e4;
-  transition: background .12s, color .12s, filter .12s;
+  background: transparent; color: #e4e4e4;
+  transition: background .12s;
 }
-.tt-drop-it:hover, .tt-drop-on {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)));
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616)));
-}
-.tt-drop-on:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+.tt-drop-it:hover, .tt-drop-it:focus-visible { background: var(--tt-hover-dark); }
 .tt-drop-on { font-weight: 600; }
-.tt-drop-on::after { content: " ✓"; margin-left: auto; padding-left: 8px; }   /* the tick marks membership inside the chip */
+.tt-drop-it::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-ink-on-dark));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
+}
+.tt-drop-on::after { visibility: visible; }
 
 /* The Docker allocations table has empty label cells, .docker-allocation-dt holding only a
    non-breaking space, which ctVarLabels would badge into a stray square before each row. The
@@ -2358,7 +2371,7 @@ html.tt-docker-on.tt-on-addct .ui-dropdownchecklist-item {
   display: flex; align-items: center; padding: 5px 11px !important;
   background: transparent !important; color: #c9c9c9 !important;
 }
-html.tt-docker-on.tt-on-addct .ui-dropdownchecklist-item:hover { background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important; }
+html.tt-docker-on.tt-on-addct .ui-dropdownchecklist-item:hover { background: var(--tt-hover-dark) !important; color: #e4e4e4 !important; }
 html.tt-docker-on.tt-on-addct .ui-dropdownchecklist-item label { color: inherit !important; cursor: pointer; }
 html.tt-docker-on.tt-on-addct .ui-dropdownchecklist-item input[type="checkbox"] {
   -webkit-appearance: none; appearance: none;

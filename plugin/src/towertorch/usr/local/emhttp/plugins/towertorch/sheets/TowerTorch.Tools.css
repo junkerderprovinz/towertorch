@@ -287,6 +287,12 @@ html.tt-tools-on #displaybox div.title {
   font-size: var(--tt-sec-fs) !important; font-weight: var(--tt-sec-fw, 500) !important; text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px);
   box-shadow: none !important; min-height: var(--tt-sec-h, 22px) !important; box-sizing: border-box !important;
 }
+/* Tokens.css gives the name in every section bar the page's text colour, which on the dark themes
+   is near white on the badge's accent, and the page's glyph the accent itself, which vanishes on it. */
+html.tt-tools-on #displaybox div.title > span.left { color: inherit !important; gap: 6px !important; }
+html.tt-tools-on #displaybox div.title > span.left > :is(i.title, i.fa, i[class*="icon-"]) { color: inherit !important; margin-right: 0 !important; }
+/* Most pages leave the right half empty, and the badge's gap would still pad its end. */
+html.tt-tools-on #displaybox div.title > span.right:empty { display: none !important; }
 /* When the heading carries a status (the Docker settings page) the title row goes transparent, the
    badge wraps only the name (.left), and the state dot sits to its right with the "Status:" label
    hidden, like a disk chip. Pages without a status keep the whole-title badge. */
@@ -403,7 +409,7 @@ html.tt-popups-on #displaybox .tt-tsel-trigger::after {
 }
 html.tt-tools-on #displaybox .tt-tsel-panel,
 html.tt-popups-on #displaybox .tt-tsel-panel {
-  display: none; position: absolute; z-index: 9999; margin-top: 4px; flex-direction: column; gap: 6px;
+  display: none; position: absolute; z-index: 9999; margin-top: 4px; flex-direction: column; gap: 0;
   padding: 8px; width: max-content; min-width: 180px; max-width: min(92vw, 460px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   background: #303030; border: none; border-radius: var(--tt-radius-card); box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6));
@@ -414,36 +420,43 @@ html.tt-tools-on #displaybox .tt-tsel.tt-tsel-disabled .tt-tsel-trigger,
 html.tt-popups-on #displaybox .tt-tsel.tt-tsel-disabled .tt-tsel-trigger { opacity: .5; cursor: not-allowed; }
 html.tt-tools-on #displaybox .tt-tsel-group,
 html.tt-popups-on #displaybox .tt-tsel-group { font-size: var(--tt-text-meta); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #9a9a9a; padding: 4px 12px 0; }
-/* An option rests neutral, and the hovered and the chosen one wear the dropdown's one colour: the
-   .tt-tsel wrapper's --tt-rb-c from ttPaintRotate under rainbow, the accent otherwise. The panel
-   is dark on every theme, so the resting grey is too. */
+/* The options are GlimStone's select rows: no fill at rest, the hover colour under the pointer and
+   the keyboard, and the chosen one in bold with the check at its end. The check wears the
+   dropdown's one colour, the .tt-tsel wrapper's --tt-rb-c from ttPaintRotate under rainbow and the
+   accent otherwise. Every row keeps the check's room, so a pick never shifts the labels. The panel
+   is dark on every theme, so the hover and the ink are the dark ones. */
 html.tt-tools-on #displaybox .tt-tsel-opt,
 html.tt-popups-on #displaybox .tt-tsel-opt {
   display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
-  background: rgba(128, 128, 128, .16); border: none; color: #e4e4e4; white-space: nowrap;
-  transition: background .12s, color .12s, filter .12s;
+  line-height: 1.3; margin: 0; padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
+  background: transparent; border: none; color: #e4e4e4; white-space: nowrap;
+  transition: background .12s;
 }
 html.tt-tools-on #displaybox .tt-tsel-opt:hover,
-html.tt-tools-on #displaybox .tt-tsel-opt.is-selected,
+html.tt-tools-on #displaybox .tt-tsel-opt:focus-visible,
 html.tt-popups-on #displaybox .tt-tsel-opt:hover,
-html.tt-popups-on #displaybox .tt-tsel-opt.is-selected {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419)));
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); box-shadow: none !important;
+html.tt-popups-on #displaybox .tt-tsel-opt:focus-visible { background: var(--tt-hover-dark); }
+html.tt-tools-on #displaybox .tt-tsel-opt.is-selected,
+html.tt-popups-on #displaybox .tt-tsel-opt.is-selected { font-weight: 600; }
+html.tt-tools-on #displaybox .tt-tsel-opt::after,
+html.tt-popups-on #displaybox .tt-tsel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-ink-on-dark));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
-html.tt-tools-on #displaybox .tt-tsel-opt.is-selected:hover,
-html.tt-popups-on #displaybox .tt-tsel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)); }
+html.tt-tools-on #displaybox .tt-tsel-opt.is-selected::after,
+html.tt-popups-on #displaybox .tt-tsel-opt.is-selected::after { visibility: visible; }
 html.tt-tools-on #displaybox .tt-tsel-opt.is-disabled,
 html.tt-popups-on #displaybox .tt-tsel-opt.is-disabled { opacity: .45; cursor: not-allowed; }
-/* Languages that are not installed yet get a dimmer fill rather than a border. They carry no
-   data-i, so ttPaintRotate and ttToolsSyncSel skip them; the trailing download glyph says that
-   choosing one installs something. */
+/* Languages that are not installed yet read dimmer. They carry no data-i, so ttPaintRotate and
+   ttToolsSyncSel skip them, and they are never the chosen one, so the trailing download glyph
+   takes the check's place and says that choosing one installs something. */
 html.tt-popups-on #displaybox .tt-tsel-opt-avail {
-  background: var(--tt-surface-1, rgba(255, 255, 255, .04)) !important;
   color: var(--tt-text-dim, #8a8a8a) !important; justify-content: space-between !important;
 }
+html.tt-popups-on #displaybox .tt-tsel-opt-avail::after { display: none; }
 html.tt-popups-on #displaybox .tt-tsel-opt-avail:hover {
-  background: var(--tt-hover) !important; color: var(--tt-text-chip, #cfcfcf) !important; filter: none !important;
+  background: var(--tt-hover-dark) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }
 html.tt-popups-on #displaybox .tt-tsel-avail-dl { opacity: .7; font-size: var(--tt-text-meta); }
 /* The locale flag is a bundled SVG (images/flags/<iso>.svg) because Windows renders flag emoji as
@@ -490,24 +503,29 @@ html.tt-tools-on #displaybox .ui-dropdownchecklist-selector .ui-icon { display: 
 html.tt-tools-on #displaybox .ui-dropdownchecklist-dropcontainer {
   background: #303030 !important; border: none !important; border-radius: var(--tt-radius-card) !important;
   box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important;
-  display: flex !important; flex-direction: column !important; gap: 6px !important;
+  display: flex !important; flex-direction: column !important; gap: 0 !important;
   padding: 8px !important; min-width: 180px !important; max-width: min(92vw, 460px) !important;
   height: auto !important; max-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important;
 }
-/* Each row is a twin of .tt-tsel-opt: neutral at rest, and the list's one colour (its trigger's
-   --tt-rb-c from ttPaintRotate) on hover and while checked. The native
-   checkbox is hidden and the chip colour marks the checked state. The widget's toggle handler sits
-   on the item div (the label's for= is broken by a trailing slash), so the label ignores pointer
-   events and every click reaches the div. */
+/* Each row is a twin of .tt-tsel-opt: a plain row, the hover colour under the pointer, and every
+   checked one in bold with the check, in the list's one colour (its trigger's --tt-rb-c from
+   ttPaintRotate). The native checkbox is hidden and the check marks the checked state. The
+   widget's toggle handler sits on the item div (the label's for= is broken by a trailing slash),
+   so the label ignores pointer events and every click reaches the div. */
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item {
   display: flex !important; align-items: center; gap: 8px; justify-content: flex-start;
   line-height: 1.3; margin: 0 !important; padding: 6px 12px !important; cursor: pointer; white-space: nowrap;
   /* a native rule pins the item to a 22px border-box height, swallowing the padding; height:auto
      lets it match the tt-tsel options (about 29px) */
   height: auto !important; min-height: 0 !important; box-sizing: border-box !important;
-  border: none !important; border-radius: var(--tt-radius-pill) !important;
-  background: rgba(128, 128, 128, .16) !important; color: #e4e4e4 !important;
-  transition: filter .12s, background .12s, color .12s;
+  border: none !important; border-radius: var(--tt-radius-control) !important;
+  background: transparent !important; color: #e4e4e4 !important;
+  transition: background .12s;
+}
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-ink-on-dark));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-text { color: inherit !important; }
@@ -516,13 +534,12 @@ html.tt-tools-on #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-te
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(.ui-dropdownchecklist-close) .ui-dropdownchecklist-text { pointer-events: none !important; }
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-hover,
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item:hover,
-html.tt-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-active,
-html.tt-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked) {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) !important;
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))) !important; box-shadow: none !important;
-}
-html.tt-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked):hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)) !important; }
-/* the explicitClose "...schließen" row carries no checkbox -> a muted, centred footer link, never a coloured chip */
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:focus-visible,
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item.ui-state-active { background: var(--tt-hover-dark) !important; box-shadow: none !important; }
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked) { font-weight: 600; }
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:has(input:checked)::after { visibility: visible; }
+/* the explicitClose "...schließen" row carries no checkbox -> a muted, centred footer link without a check */
+html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"]))::after { display: none; }
 html.tt-tools-on #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"])) {
   background: transparent !important; color: #9a9a9a !important; justify-content: center;
   border-radius: var(--tt-radius-control) !important; font-size: var(--tt-text-meta); margin-top: 4px !important; filter: none !important;
