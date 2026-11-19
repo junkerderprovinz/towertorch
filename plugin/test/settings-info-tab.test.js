@@ -61,7 +61,7 @@ console.log('\nThe last tab is Info, with three cards in GlimStone order');
 console.log('\nEvery version links to its release page');
 {
   const pins = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'glimstone.json'), 'utf8')).targets.map((t) => t.version);
-  ok('GlimStone is 4.5.8, and both pins name it', /var GLS_VER = "4\.5\.8";/.test(settings) && pins.join() === '4.5.8,4.5.8', pins.join());
+  ok('GlimStone is 4.6.0, and both pins name it', /var GLS_VER = "4\.6\.0";/.test(settings) && pins.join() === '4.6.0,4.6.0', pins.join());
   const verLink = new Function('el', grabFn(settings, 'verLink') + '\nreturn verLink;')(el);
   const ui = verLink('1.2.3', 'https://github.com/junkerderprovinz/towertorch');
   ok('a release number is a link and shows without a v', ui.tag === 'a' && ui.textContent === '1.2.3');
@@ -71,9 +71,9 @@ console.log('\nEvery version links to its release page');
   ok('a dev build has no link', dev.tag === 'span' && dev.textContent === 'dev');
   ok('a release candidate links to its own tag', verLink('1.0.0-rc1', 'R').href === 'R/releases/tag/v1.0.0-rc1');
   // A patch tag folds into the next minor and goes, so the number opens the newest release.
-  const gls = new Function('el', 'GLS_RELEASE_URL', grabFn(settings, 'glimstoneLink') + '\nreturn glimstoneLink;')(el, 'https://github.com/junkerderprovinz/glimstone/releases/latest')('4.5.8');
+  const gls = new Function('el', 'GLS_RELEASE_URL', grabFn(settings, 'glimstoneLink') + '\nreturn glimstoneLink;')(el, 'https://github.com/junkerderprovinz/glimstone/releases/latest')('4.6.0');
   ok('GlimStone opens its newest release', /var GLS_RELEASE_URL = GLS_REPO \+ "\/releases\/latest";/.test(settings) && /var GLS_REPO = "https:\/\/github\.com\/junkerderprovinz\/glimstone";/.test(settings)
-    && gls.tag === 'a' && gls.href === 'https://github.com/junkerderprovinz/glimstone/releases/latest' && gls.textContent === '4.5.8', gls.href);
+    && gls.tag === 'a' && gls.href === 'https://github.com/junkerderprovinz/glimstone/releases/latest' && gls.textContent === '4.6.0', gls.href);
   ok('the GlimStone row shows it', /versionRow\("GlimStone", glimstoneLink\(GLS_VER\)\)/.test(settings));
   const cmp = new Function(grabFn(settings, 'verCmp') + '\nreturn verCmp;')();
   ok('a newer patch is newer', cmp('1.0.1', '1.0.0') > 0);
