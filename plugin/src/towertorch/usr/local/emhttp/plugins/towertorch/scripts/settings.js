@@ -1644,10 +1644,17 @@
     var snR = el("div", "tt-set-row tt-set-inline");
     var snL = el("span", "tt-set-lblwrap");
     snL.appendChild(el("span", null, T("Zustandsanzeigen nativ färben", "Native state colours")));
-    snL.appendChild(infoIcon(T("An: Auslastungsbalken und Status-Badges behalten ihre native Zustandsfarbe (grün, orange, rot). Aus: sie werden in den aktuellen Farbmodus integriert. Zustands-Punkte bei Containern und Laufwerken sind immer nativ, denn bei ihnen ist die Farbe die einzige Information.", "On: usage bars and status badges keep their native state colour (green, orange, red). Off: they fold into the current colour mode. The state dots on containers and drives are always native, because for them the colour is the only information there is.")));
+    snL.appendChild(infoIcon(T("An: Auslastungsbalken und Status-Badges behalten ihre native Zustandsfarbe (grün, orange, rot). Aus: sie werden in den aktuellen Farbmodus integriert. Zustands-Punkte bei Containern und Laufwerken bleiben nativ, denn bei ihnen ist die Farbe die einzige Information. Mit „Zustandsfarben aus“ nehmen alle die Akzentfarbe.", "On: usage bars and status badges keep their native state colour (green, orange, red). Off: they fold into the current colour mode. The state dots on containers and drives stay native, because for them the colour is the only information there is. With “State colours off” they all take the accent colour.")));
     snR.appendChild(snL);
     snR.appendChild(toggle(get("tt.statenative", "0") === "1", function (v) { set("tt.statenative", v ? "1" : "0"); syncHeaderBar(); syncSharesBar(); }));
+    // Off wins over native: with the state colours off there is no state colour left to keep.
+    var monoOn = get("tt.statemono", "0") === "1";
+    c1.appendChild(toggleRow(T("Zustandsfarben aus", "State colours off"),
+      T("An: Zustandsanzeigen nehmen die Akzentfarbe statt Grün, Orange und Rot. Das gilt für Status-Badges, Zustands-Punkte, Auslastungsbalken und die Chips der Kopfleiste, auch in Plugins, die TowerTorchs Farben übernehmen, etwa bei deren Fehler- und Lücken-Badges. Was ein Zustand bedeutet, steht weiter im Tooltip.",
+        "On: state indicators take the accent colour instead of green, orange and red. This covers status badges, state dots, usage bars and the header chips, also in plugins that take TowerTorch's colours, such as their error and vulnerability badges. What a state means is still in its tooltip."),
+      monoOn, function (v) { monoOn = v; set("tt.statemono", v ? "1" : "0"); setRowEnabled(snR, !monoOn); syncHeaderBar(); syncSharesBar(); }));
     c1.appendChild(snR);
+    setRowEnabled(snR, !monoOn);
     c1.appendChild(el("div", "tt-set-lbl", T("Vorschau", "Preview")));
     var prev = el("div", "tt-set-prev");
     // Eight mixed badges, so the whole palette sweep is visible; paintPrev colours each by index.

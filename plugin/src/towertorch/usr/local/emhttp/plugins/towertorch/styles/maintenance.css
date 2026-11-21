@@ -31,9 +31,9 @@
 .tt-mw-ord { color: #a3a3a3; font-weight: 400; }
 .tt-mw-avail { grid-column: 2 / 4; display: flex; align-items: center; gap: 7px; color: #a3a3a3; font-size: var(--tt-text-meta); }
 .tt-mw-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: #6f6f6f; }
-.tt-mw-dot-ok { background: #6fdc8c; }
-.tt-mw-dot-warn { background: #ff832b; }
-.tt-mw-dot-err { background: #ff8389; }
+.tt-mw-dot-ok { background: var(--tt-ok, #6fdc8c); }
+.tt-mw-dot-warn { background: var(--tt-warn, #ff832b); }
+.tt-mw-dot-err { background: var(--tt-err, #ff8389); }
 .tt-mw-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .tt-mw-row + .tt-mw-row { margin-top: 10px; }
 .tt-mw-lbl { font-weight: 600; min-width: 92px; display: inline-flex; align-items: center; gap: 6px; }
@@ -63,9 +63,9 @@ html .tt-mw .tt-mw-time:focus { background: #383838 !important; outline: none; }
 .tt-mw-lockline { display: flex; align-items: center; gap: 8px; margin: 14px 14px 0; color: #a3a3a3; font-size: var(--tt-text-meta); }
 
 .tt-mw-chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: var(--tt-radius-pill); font-size: var(--tt-text-meta); white-space: nowrap; flex: none; }
-.tt-mw-ok { background: #6fdc8c; color: #161616; }
-.tt-mw-warn { background: #ff832b; color: #161616; }
-.tt-mw-failed { background: #ff8389; color: #161616; }
+.tt-mw-ok { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616); }
+.tt-mw-warn { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616); }
+.tt-mw-failed { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616); }
 .tt-mw-neutral { background: #3c3c3c; color: #e6e6e6; }
 .tt-mw-dim { background: #2e2e2e; color: #a3a3a3; }
 .tt-mw-running { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616); }

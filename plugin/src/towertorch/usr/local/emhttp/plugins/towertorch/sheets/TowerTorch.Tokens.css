@@ -467,6 +467,15 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-err-hover:  color-mix(in srgb, var(--tt-err) 85%, var(--tt-text));
   --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
 }
+/* With the state colours off (tt.statemono) every state token takes the accent, on the page and in
+   the dark windows, which declare their own. A plugin's chips that read these tokens follow without
+   knowing the switch, and the hovers mix from the tokens, so they follow too. */
+html.tt-state-mono,
+html.tt-state-mono :is(.tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, #alternateView .tt-av-win, #alternateView .alternateViewContent) {
+  --tt-ok:   var(--tt-accent);  --tt-ok-fg:   var(--tt-accent-text);  --tt-ok-ink:   var(--tt-accent-ink);
+  --tt-warn: var(--tt-accent);  --tt-warn-fg: var(--tt-accent-text);  --tt-warn-ink: var(--tt-accent-ink);
+  --tt-err:  var(--tt-accent);  --tt-err-fg:  var(--tt-accent-text);  --tt-err-ink:  var(--tt-accent-ink);
+}
 /* When the system asks for more contrast, the ink takes GlimStone's second step and the focus ring
    thickens. */
 @media (prefers-contrast: more) {
