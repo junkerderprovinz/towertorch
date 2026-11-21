@@ -217,7 +217,9 @@ Every picture uses a different accent colour. The server and its apps, shares an
   folder, and folders that already exist stay as they are.
 - Theming: one accent colour for everything, or rainbow mode with an editable
   palette; icon colours toggleable; settings sync across origins (IP, hostname,
-  domain) via the engine, and they survive cleared browser data.
+  domain) via the engine, and they survive cleared browser data. **State colours
+  off** gives badges, state dots, usage bars and header chips the accent instead of
+  green, orange and red, also in plugins that take TowerTorch's colours.
 - Icon pipeline: each logo gets the treatment it can actually take. A logo whose
   visible pixels are already one tone is flattened to clean ink; for a known app a
   real monochrome glyph is fetched and flattened instead; anything else is tinted so
@@ -317,7 +319,9 @@ and notifications. Every row has an (i) that explains it, and rows that depend o
 switch stay locked while it is off. Settings are mirrored into the engine config, so
 every browser and origin sees the same configuration, and only what changed is sent.
 The one exception is OLED, which puts the dark look on true black and stays on the
-device it was switched on, since it belongs to the screen.
+device it was switched on, since it belongs to the screen. The **Info** tab shows the
+installed version and where its updates stand, as Unraid's plugin manager sees them,
+and lists the engine and GlimStone under **Components**.
 
 <br>
 
