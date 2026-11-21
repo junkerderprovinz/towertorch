@@ -1427,9 +1427,11 @@ html.tt-on-plugins input.tt-plugbar-btn:hover:not(:disabled) { background: var(-
 #tt-settings.tt-set-reactive .tt-set-tab:not(.tt-set-tab-on):is(:hover, :focus-visible) .tt-set-tabico { color: var(--tt-rb-c, var(--tt-accent, #FCC419)); }
 /* The cards stay dark on the light themes, so the quiet tokens inside one keep their dark-theme
    values: a grey chip such as an idle tab in an area's preview, a lock line's "Folgt", a hint, the
-   colour mode's groove, an off switch's track and the hover. */
+   colour mode's groove, an off switch's track and the hover, the text on a button, the state
+   colours of the update line and the accent's ink on a version number. */
 html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
-  --tt-text-chip: #cfcfcf; --tt-text-dim: #8a8a8a; --tt-text-hint: #a3a3a3;
+  --tt-text: #e6e6e6; --tt-text-chip: #cfcfcf; --tt-text-dim: #8a8a8a; --tt-text-hint: #a3a3a3;
+  --tt-ok-ink: #6fdc8c; --tt-warn-ink: #ff832b; --tt-err-ink: #ff8389; --tt-accent-ink: var(--tt-ink-on-dark);
   --tt-surface-base: #161616; --tt-surface-3: #2e2e2e; --tt-toggle-track-off: #3a3a3a;
   --tt-hover: var(--tt-hover-dark);
 }
@@ -1549,23 +1551,39 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
    floating bubble shows the text. */
 .tt-set-lblwrap { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
 /* The Info tab. Unraid paints every link in its theme colour, so a link drawn as a button takes
-   the button's ink back. A version number is a link to its release page, in tabular figures. */
+   the button's ink back. */
 #tt-settings a.tt-btn, #tt-settings a.tt-btn:link, #tt-settings a.tt-btn:visited { color: #e6e6e6; text-decoration: none; }
 #tt-settings a.tt-btn:hover, #tt-settings a.tt-btn:focus-visible { color: var(--tt-rb-ct, var(--tt-accent-text, #161616)); }
-.tt-set-ver { font-variant-numeric: tabular-nums lining-nums; }
-.tt-set-verbad { color: var(--tt-err-ink, #ff8389); }
 .tt-set-prose { margin: 12px 0 0; line-height: 1.5; }
-.tt-set-btnrow { display: flex; flex-wrap: wrap; align-items: center; }
 /* the give row stands a blank line below its sentence, as GlimStone's About card asks */
 .tt-set-give { padding-top: 9px; }
-/* The update check shows its verdict on itself in the state colours, which no colour mode
-   touches; the word changes with the colour, so colour is never the only signal. */
-#tt-settings .tt-set-check.tt-set-chk-ok { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616); }
-#tt-settings .tt-set-check.tt-set-chk-ok:hover { background: var(--tt-ok-hover); }
-#tt-settings .tt-set-check.tt-set-chk-new { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616); }
-#tt-settings .tt-set-check.tt-set-chk-new:hover { background: var(--tt-warn-hover); }
-#tt-settings .tt-set-check.tt-set-chk-bad { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616); }
-#tt-settings .tt-set-check.tt-set-chk-bad:hover { background: var(--tt-err-hover); }
+/* The Version and Components cards, GlimStone's InfoVersionCard and InfoComponentsCard. A version
+   number reads as plain text in tabular figures and takes the accent's ink under the pointer,
+   with no frame, fill or underline, so it never reads as a button. */
+#tt-settings .tt-ver-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-top: 12px; }
+#tt-settings .tt-ver-app { min-width: 0; font-weight: 600; }
+#tt-settings .tt-ver-num { flex-shrink: 0; font-variant-numeric: tabular-nums lining-nums; }
+#tt-settings a.tt-ver-num, #tt-settings a.tt-ver-num:link, #tt-settings a.tt-ver-num:visited { color: inherit; text-decoration: none; }
+#tt-settings a.tt-ver-num:focus-visible { color: var(--tt-accent-ink); }
+@media (hover: hover) { #tt-settings a.tt-ver-num:hover { color: var(--tt-accent-ink); } }
+/* the last row: where the updates stand at its start, the buttons at its end, and the buttons
+   drop under the words on a narrow card */
+#tt-settings .tt-ver-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 16px; }
+#tt-settings .tt-ver-state { display: flex; flex: 1 1 8rem; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-width: 0; margin: 0; }
+#tt-settings .tt-ver-state[data-tone="ok"] .tt-ver-line, #tt-settings .tt-ver-status[data-tone="ok"] { color: var(--tt-ok-ink); }
+#tt-settings .tt-ver-state[data-tone="warn"] .tt-ver-line, #tt-settings .tt-ver-status[data-tone="warn"] { color: var(--tt-warn-ink); }
+#tt-settings .tt-ver-state[data-tone="fail"] .tt-ver-line, #tt-settings .tt-ver-status[data-tone="fail"] { color: var(--tt-err-ink); }
+#tt-settings .tt-ver-note { color: var(--tt-text-dim); }
+#tt-settings .tt-ver-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-left: auto; }
+#tt-settings .tt-ver-actions .tt-set-xbtn { margin: 0; }
+/* the dot before "What's new", grey while nothing is unseen */
+#tt-settings .tt-ver-dot { flex: none; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--tt-text-dim); }
+#tt-settings a.tt-btn.tt-ver-go, #tt-settings a.tt-btn.tt-ver-go:link, #tt-settings a.tt-btn.tt-ver-go:visited { background: var(--tt-accent); color: var(--tt-accent-text); }
+#tt-settings a.tt-btn.tt-ver-go:hover, #tt-settings a.tt-btn.tt-ver-go:focus-visible { background: var(--tt-accent-hover); color: var(--tt-accent-text); }
+#tt-settings .tt-ver-rows { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 0; padding: 0; list-style: none; }
+#tt-settings .tt-ver-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+#tt-settings .tt-ver-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+#tt-settings .tt-ver-status { margin-left: auto; font-size: var(--tt-text-meta); }
 /* an area's own colour beside its name in the area colours card */
 .tt-set-excdot { width: 14px; height: 14px; flex: none; border-radius: var(--tt-radius-pill); }
 .tt-info { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; background: none; color: var(--txt, #e6e6e6); opacity: .8; cursor: help; position: relative; flex: 0 0 auto; }

@@ -216,13 +216,30 @@
   function T(d, e) { return de ? d : e; }
   var TT_VER = "@@TTVER@@"; if (TT_VER.indexOf("@@") === 0) TT_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "4.7.0";
+  var GLS_VER = "4.8.2";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var DISCORD = "https://discord.gg/avtvQmvwED";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
-  var GLS_RELEASE_URL = GLS_REPO + "/releases/latest";
   var LATEST_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases/latest";
   var RELEASES_API = "https://api.github.com/repos/junkerderprovinz/towertorch/releases";
+  var UPDATE_API = "/plugins/towertorch/server/update.php";
+  // The Version and Components cards' words: GlimStone's componentText versionCard and
+  // componentsCard in the two languages this page speaks, and the engine's (i) beside them.
+  var CARD_TEXT = de ? {
+    title: "Version", hint: "Die Version von {app}, der Stand der Updates und was diese Version gebracht hat.",
+    whatsNew: "Neuigkeiten", check: "Nach Updates suchen", checking: "Prüfe …", current: "Aktuell", checked: "Zuletzt geprüft {when}",
+    available: "Update auf {version} verfügbar", failed: "Prüfung fehlgeschlagen", plugins: "Im Plugins-Tab aktualisieren",
+    unreleased: "{version}, kein veröffentlichter Stand",
+    components: "Komponenten", componentsHint: "Alles, woraus {app} besteht oder was es mitbringt, mit seiner Version.", design: "Design-System",
+    engineHint: "Der Dienst, der auf dem Server läuft: Er startet die Container nach dem Startplan, misst ihre Last und setzt ihre Limits."
+  } : {
+    title: "Version", hint: "The version of {app}, where its updates stand and what this version brought.",
+    whatsNew: "What's new", check: "Check for updates", checking: "Checking …", current: "Up to date", checked: "Last checked {when}",
+    available: "Update to {version} available", failed: "Check failed", plugins: "Update in the Plugins tab",
+    unreleased: "{version}, not a released build",
+    components: "Components", componentsHint: "Everything {app} is made of or brings along, with its version.", design: "Design system",
+    engineHint: "The service that runs on the server: it starts the containers by their start plan, measures their load and sets their limits."
+  };
 
   var COLS = [
     { key: "update", label: T("Update-Status", "Update status"), help: T("Ob für das Image ein Update bereitsteht.", "Whether an update is waiting for the image.") },
@@ -2443,7 +2460,7 @@
     emptyText.appendChild(emptyTitle); emptyText.appendChild(emptyHint); searchEmpty.appendChild(emptyText);
     main.appendChild(searchEmpty);
     function restore() {
-      Array.prototype.forEach.call(root.querySelectorAll(".tt-set-card, .tt-set-row, .tt-set-lbl, .tt-set-prose"), function (e9) { e9.style.removeProperty("display"); });
+      Array.prototype.forEach.call(root.querySelectorAll(".tt-set-card, .tt-set-row, .tt-set-lbl, .tt-set-prose, .tt-ver-head, .tt-ver-foot, .tt-ver-row"), function (e9) { e9.style.removeProperty("display"); });
       searchEmpty.style.display = "none";
       var st9 = localStorage.getItem("tt.settab"), ix9 = 0; SECS.forEach(function (sc9, j9) { if (sc9.id === st9) ix9 = j9; }); showSec(ix9);
     }
@@ -2456,7 +2473,7 @@
       var shown = 0;
       Array.prototype.forEach.call(root.querySelectorAll(".tt-set-card"), function (cardEl) {
         var h9 = cardEl.querySelector(".tt-set-h"), titleHit = !!h9 && searchText(h9).indexOf(q) >= 0, any = false;
-        Array.prototype.forEach.call(cardEl.querySelectorAll(".tt-set-row, .tt-set-lbl, .tt-set-prose"), function (r9) {
+        Array.prototype.forEach.call(cardEl.querySelectorAll(".tt-set-row, .tt-set-lbl, .tt-set-prose, .tt-ver-head, .tt-ver-foot, .tt-ver-row"), function (r9) {
           var hit = titleHit || searchText(r9).indexOf(q) >= 0; r9.style.display = hit ? "" : "none"; if (hit) any = true;
         });
         cardEl.style.display = (titleHit || any) ? "" : "none";
@@ -2469,23 +2486,10 @@
       emptyHint.textContent = T("Keine Einstellung enthält „" + raw + "“.", "No setting contains “" + raw + "”.");
       searchEmpty.style.display = shown ? "none" : "";
     }
-    // The Info tab in GlimStone's order: Version, Help, About.
+    // The Info tab in GlimStone's order: Version, Components, Help, About.
     (function () {
-      var cVer = card(T("Version", "Version"));
-      cVer.appendChild(versionRow("UI", verLink(TT_VER, REPO)));
-      var engine = el("span", "tt-set-ver", "…");
-      cVer.appendChild(versionRow("Engine", engine));
-      cVer.appendChild(versionRow("GlimStone", glimstoneLink(GLS_VER)));
-      // the version of the daemon that is running, so an update that did not restart it shows
-      apiRead("state").then(function (st) {
-        if (st && st.version) engine.parentNode.replaceChild(verLink(String(st.version), REPO), engine);
-        else engine.textContent = T("unbekannt", "unknown");
-      }).catch(function () { engine.textContent = T("nicht erreichbar", "not reachable"); engine.classList.add("tt-set-verbad"); });
-      var crow = el("div", "tt-set-btnrow");
-      var notes = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-notes", function () { openReleaseNotes(notes); }), "WhatsNew", T("Versionshinweise", "Release notes"));
-      var chk = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-set-check", function () { checkUpdates(chk); }), "Sync", T("Nach Updates suchen", "Check for updates"));
-      crow.appendChild(notes); crow.appendChild(chk); cVer.appendChild(crow);
-      wrapInfo.appendChild(cVer);
+      wrapInfo.appendChild(versionCard());
+      wrapInfo.appendChild(componentsCard());
 
       var cHelp = card(T("Hilfe", "Help"));
       cHelp.appendChild(el("p", "tt-set-prose", T("Probleme, Wünsche oder Verbesserungsvorschläge? Mach gern ein Issue auf GitHub auf, oder schau auf Discord vorbei.", "Problems, wishes or suggestions? You're welcome to open an issue on GitHub, or come say hi on Discord.")));
@@ -2587,25 +2591,121 @@
   // The badge-visibility matrix is a grid of on/off settings, so each cell is the shared .tt-cb
   // switch, carrying its own badge's colour and the ink for its knob.
   function chkCell(key, v, color) { var td = el("td", "tt-set-chk"); var cb = el("input", "tt-cb"); cb.type = "checkbox"; cb.checked = !!(colview[key] && colview[key][v]); if (rainbow && color) { cb.style.setProperty("--tt-rb-c", color); cb.style.setProperty("--tt-rb-ct", idealText(color)); } cb.addEventListener("change", function () { var cur = colview[key] || { s: true, a: true }; colview[key] = { s: cur.s, a: cur.a }; colview[key][v] = cb.checked; set("tt.colview2", JSON.stringify(colview)); }); td.appendChild(cb); return td; }
-  function versionRow(name, value) {
-    var row = el("div", "tt-set-row tt-set-inline");
-    row.appendChild(el("span", null, name)); row.appendChild(value);
-    return row;
+  function fill(s, vals) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return k in vals ? vals[k] : m; }); }
+  // "3 minutes ago" or "yesterday" in the page's language, the way GlimStone's timeAgo says it.
+  function timeAgo(at, now) {
+    var f = new Intl.RelativeTimeFormat(de ? "de" : "en", { numeric: "auto" }), value = Math.round((at - now) / 1000);
+    var steps = [["second", 60], ["minute", 60], ["hour", 24]];
+    for (var i = 0; i < steps.length; i++) {
+      if (Math.abs(value) < steps[i][1]) return f.format(i ? value : 0, steps[i][0]);
+      value = Math.round(value / steps[i][1]);
+    }
+    return f.format(value, "day");
   }
-  // A version links to its own release page. A build with no release behind it, such as a dev
-  // build, shows its name without a link, since the link would lead nowhere.
-  function verLink(ver, repo) {
+  // A version reads as plain text and opens the newest release of its project, so a number never
+  // leads to a tag that a folded patch took away. A build that is no release, such as dev, says so
+  // and has no link, since the link would lead nowhere.
+  function verNumber(ver, repo) {
     var v = String(ver || "").replace(/^v/, "");
-    if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(v)) return el("span", "tt-set-ver", v);
-    var a = el("a", "tt-btn tt-set-ver", v);
-    a.href = repo + "/releases/tag/v" + v; a.target = "_blank"; a.rel = "noopener noreferrer";
+    if (!/^\d+(\.\d+)+$/.test(v)) return el("span", "tt-ver-num", fill(CARD_TEXT.unreleased, { version: v }));
+    var a = el("a", "tt-ver-num", v);
+    a.href = repo + "/releases/latest"; a.target = "_blank"; a.rel = "noopener noreferrer";
     return a;
   }
-  // GlimStone folds its patch tags into the next minor, so its number opens the newest release.
-  function glimstoneLink(ver) {
-    var a = el("a", "tt-btn tt-set-ver", ver);
-    a.href = GLS_RELEASE_URL; a.target = "_blank"; a.rel = "noopener noreferrer";
-    return a;
+  // GlimStone's Version card: the plugin and its number, then one last row with where the updates
+  // stand at its start and the buttons at its end. A plugin has no update switch, its check asks
+  // Unraid, and its one action leads to the Plugins tab, where Unraid installs the update.
+  function versionCard() {
+    var W = CARD_TEXT, state = { kind: "checking" };
+    var c = card(W.title, fill(W.hint, { app: "TowerTorch" }));
+    var head = el("div", "tt-ver-head");
+    head.appendChild(el("span", "tt-ver-app", "TowerTorch"));
+    head.appendChild(verNumber(TT_VER, REPO));
+    var foot = el("div", "tt-ver-foot"), line = el("p", "tt-ver-state"), acts = el("div", "tt-ver-actions");
+    line.setAttribute("role", "status");
+    // While a new version is out, "What's new" opens that version's notes, so its number needs no link.
+    var news = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-ver-news", function () { openReleaseNotes(news, state.kind === "available" ? state.version : ""); }), "WhatsNew", W.whatsNew);
+    news.insertBefore(el("span", "tt-ver-dot"), news.firstChild);
+    var chk = labelled(actionBtn("", "tt-btn tt-set-xbtn tt-ver-check", function () { run(true); }), "Sync", W.check);
+    var go = labelled(el("a", "tt-btn tt-set-xbtn tt-ver-go"), "Sync", W.plugins);
+    go.href = "/Plugins";
+    acts.appendChild(news); acts.appendChild(chk); acts.appendChild(go);
+    foot.appendChild(line); foot.appendChild(acts);
+    c.appendChild(head); c.appendChild(foot);
+    function paint() {
+      var face = {
+        checking: [W.checking, "neutral"],
+        current: [W.current, "ok", state.checkedAt && fill(W.checked, { when: timeAgo(state.checkedAt, new Date()) })],
+        available: [fill(W.available, { version: state.version }), "warn"],
+        failed: [W.failed, "fail", state.reason]
+      }[state.kind];
+      line.textContent = ""; line.setAttribute("data-tone", face[1]);
+      line.appendChild(el("span", "tt-ver-line", face[0]));
+      if (face[2]) line.appendChild(el("span", "tt-ver-note", face[2]));
+      // Once a new version is found there is nothing left to look for.
+      chk.style.display = state.kind === "available" ? "none" : "";
+      chk.setAttribute("aria-disabled", String(state.kind === "checking"));
+      go.style.display = state.kind === "available" ? "" : "none";
+    }
+    function run(check) {
+      state = { kind: "checking" }; paint();
+      askUpdates(check).then(function (r) {
+        var s = updateState(r);
+        // Unraid has not looked yet on this boot, so the first visit looks once.
+        if (!s && !check) return run(true);
+        state = s || { kind: "failed" }; paint();
+      }).catch(function (e) { state = { kind: "failed", reason: (e && e.message) || String(e) }; paint(); });
+    }
+    run(false);
+    return c;
+  }
+  // Where the updates stand, in GlimStone's terms. Unraid's plugin manager answers, so this tab and
+  // the Plugins tab never disagree, and null means Unraid has not checked since it booted.
+  function updateState(r) {
+    if (!r || !r.latest) return null;
+    if (verCmp(r.latest, r.installed || TT_VER) > 0) return { kind: "available", version: String(r.latest).replace(/^v/, "") };
+    return { kind: "current", checkedAt: r.checkedAt ? new Date(r.checkedAt * 1000) : null };
+  }
+  function askUpdates(check) {
+    var opts = { method: check ? "POST" : "GET", headers: { Accept: "application/json" }, credentials: "same-origin" };
+    if (check) { // emhttp accepts the csrf_token in a form body only
+      opts.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      opts.body = "csrf_token=" + encodeURIComponent(csrfToken());
+    }
+    return fetch(UPDATE_API, opts).then(function (r) {
+      return r.json().catch(function () { return null; }).then(function (d) {
+        if (!r.ok) throw new Error((d && d.error) || "HTTP " + r.status);
+        return d;
+      });
+    });
+  }
+  // GlimStone's Components card: every other version TowerTorch is made of, what each is in its
+  // (i), and GlimStone's row last. Every part ships with the plugin's own release, so there is no
+  // switch to update them on their own.
+  function componentsCard() {
+    var W = CARD_TEXT, c = card(W.components, fill(W.componentsHint, { app: "TowerTorch" }));
+    var rows = el("ul", "tt-ver-rows"), engine = componentRow("Engine", W.engineHint, "", REPO);
+    rows.appendChild(engine.li);
+    rows.appendChild(componentRow("GlimStone", W.design, GLS_VER, GLS_REPO).li);
+    c.appendChild(rows);
+    // the version of the daemon that is running, so an update that did not restart it shows
+    apiRead("state").then(function (st) {
+      if (st && st.version) engine.number(String(st.version));
+      else engine.status(T("unbekannt", "unknown"), "warn");
+    }).catch(function () { engine.status(T("nicht erreichbar", "not reachable"), "fail"); });
+    return c;
+  }
+  function componentRow(name, hint, ver, repo) {
+    var li = el("li", "tt-ver-row"), nm = el("span", "tt-ver-name"), end = el("span", "tt-ver-num", "…");
+    nm.appendChild(el("span", "tt-ver-part", name)); nm.appendChild(infoIcon(hint));
+    li.appendChild(nm); li.appendChild(end);
+    function put(n) { li.replaceChild(n, end); end = n; }
+    if (ver) put(verNumber(ver, repo));
+    return {
+      li: li,
+      number: function (v) { put(verNumber(v, repo)); },
+      status: function (text, tone) { var s = el("span", "tt-ver-status", text); s.setAttribute("data-tone", tone); put(s); }
+    };
   }
   // The marks on the Info tab's README buttons: Buy Me a Coffee's own artwork, Discord, PayPal and
   // Bitcoin from Simple Icons (CC0), GitHub's Octicon (MIT) and GlimStone's bug glyph.
@@ -2700,34 +2800,16 @@
     }
     return 0;
   }
-  // The check shows its verdict on the button itself: green when this build is the latest
-  // release, orange with the newer number, red and shaken when the check fails.
-  function checkUpdates(btn) {
-    btn.classList.remove("tt-set-chk-ok", "tt-set-chk-new", "tt-set-chk-bad");
-    labelled(btn, "Sync", T("Prüfe …", "Checking …"));
-    return fetch(LATEST_API, { headers: { Accept: "application/vnd.github+json" } })
-      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (j) {
-        var latest = String((j && j.tag_name) || "").replace(/^v/, "");
-        if (!/^\d+\.\d+\.\d+$/.test(latest)) throw new Error(T("keine Versionsnummer in der Antwort", "no version number in the answer"));
-        if (verCmp(latest, TT_VER) > 0) { btn.classList.add("tt-set-chk-new"); labelled(btn, "UpdateAvailable", T(latest + " verfügbar", latest + " available")); }
-        else { btn.classList.add("tt-set-chk-ok"); labelled(btn, "UpToDate", T("Aktuell", "Up to date")); }
-      })
-      .catch(function (e) {
-        btn.classList.add("tt-set-chk-bad"); labelled(btn, "Warning", T("Prüfung fehlgeschlagen", "Check failed"));
-        failed(btn, T("Die Update-Prüfung ist fehlgeschlagen: ", "The update check failed: ") + ((e && e.message) || e));
-      });
-  }
-  // The running version's notes, from the release API the update check reads. A dev build has no
-  // release of its own and shows the latest one.
+  // A version's notes from GitHub's release API: the running one's, or a newer one's while it waits
+  // in the Plugins tab. A dev build has no release of its own and shows the latest one.
   function notesSource(ver) {
     var v = String(ver || "").replace(/^v/, "");
     if (/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(v)) return { api: RELEASES_API + "/tags/v" + v, page: REPO + "/releases/tag/v" + v, ver: v };
     return { api: LATEST_API, page: REPO + "/releases", ver: "" };
   }
-  function openReleaseNotes(opener) {
+  function openReleaseNotes(opener, ver) {
     var C = window.TTTheme; if (!C || !C.modal) return;
-    var src = notesSource(TT_VER);
+    var src = notesSource(ver || TT_VER);
     var win = el("div", "tt-win tt-dlg tt-win-notes");
     var title = el("div", "tt-win-title", src.ver ? T("Neu in ", "New in ") + src.ver : T("Versionshinweise", "Release notes"));
     var card = el("div", "tt-win-card tt-notes");
