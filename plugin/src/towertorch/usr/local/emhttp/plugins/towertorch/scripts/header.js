@@ -2704,6 +2704,7 @@
       // otherwise blank the icon while leaving its badge.
       ["lang", "search", "logout", "terminal", "browse", "feedback", "info", "log", "help"].forEach(function (k9) { root.classList.toggle("tt-hideicon-" + k9, g("tt.hideicon." + k9, "0") === "1" && g("tt.theming", "1") !== "0"); });
       root.classList.toggle("tt-state-native", g("tt.statenative", "0") === "1" && g("tt.theming", "1") !== "0");
+      root.classList.toggle("tt-state-mono", g("tt.statemono", "0") === "1" && g("tt.theming", "1") !== "0");
       // a global rainbow flag, so the shared loader can cycle its colour once per revolution
       root.classList.toggle("tt-rb-on", rbOn() && g("tt.theming", "1") !== "0");
       // One representative colour on <html>, so a native button in any sheet can follow the colour
