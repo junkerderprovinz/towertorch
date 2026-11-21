@@ -34,12 +34,12 @@ The Info tab shows where TowerTorch's updates stand the way the Plugins tab sees
 ✨ **Added**
 - **State colours off.** A new switch in the Badges card gives every state indicator the accent colour instead of green, orange and red: status badges, state dots, usage bars and the header chips. Plugins that take TowerTorch's colours follow, ShipLog's chips among them, and the tooltip still says what a state means.
 
+🎨 **Design**
+- **Version and Components cards on the Info tab.** The Version card shows TowerTorch's number with one line on where its updates stand. The engine and GlimStone 4.8.2 move to a Components card of their own, and each number opens its project's newest release. On Unraid's light themes the buttons and the update line stay readable on the dark card.
+- **The maintenance window's dots and chips take the state colours of your theme.** They used a fixed green, orange and red, so State colours off reaches them too.
+
 ⚡ **Improved**
 - **The update check asks Unraid.** Check for updates on the Info tab runs the same check as the Plugins tab, so the two never disagree. While a new version waits, What's new opens its notes and a button leads to the Plugins tab, where Unraid installs it.
-
-🎨 **Design**
-- **Version and Components cards on the Info tab.** The Version card shows TowerTorch's number with one line on where its updates stand. The engine and GlimStone move to a Components card of their own, and each number opens its project's newest release. On Unraid's light themes the buttons and the update line stay readable on the dark card.
-- **The maintenance window's dots and chips take the state colours of your theme.** They used a fixed green, orange and red, so State colours off reaches them too.
 
 ### 1.5.3
 A container without an icon of its own shows the logo of the app it runs, and update windows wait for the download before they say done.
