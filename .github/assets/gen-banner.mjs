@@ -5,17 +5,17 @@
  *   towertorch-banner-logo.svg / .png  text-free, logo on white (support thread)
  *
  * The README serves the light and dark banner as a <picture> pair. The logo reads on
- * both grounds, so both embed the same master unchanged. The wordmark (Bree Serif)
- * and the claim (Lato) become SVG paths, so the file carries no font and renders the
- * same in resvg and in a browser.
+ * both grounds, so both embed the same master unchanged. The wordmark (Bree Serif
+ * Light) and the claim (Bree Light) become SVG paths, so the file carries no font
+ * and renders the same in resvg and in a browser.
  *
- * Needs opentype.js and @resvg/resvg-js installed globally. Bree Serif and Lato,
- * both OFL, are fetched at runtime into the OS temp dir and stay out of the repo.
+ * Needs opentype.js and @resvg/resvg-js installed globally, and the house fonts as
+ * TTF in HOUSE_FONTS (default %LOCALAPPDATA%\halleluja-fonts).
  *
  * To change the name or the claim, edit the values below and run
  * `node .github/assets/gen-banner.mjs`.
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
@@ -44,19 +44,10 @@ const THEMES = [
   { suffix: "-dark", bg: "#0d1117", name: "#e6edf3", claim: "#9aa4ad" },
 ];
 
-async function font(file, url) {
-  const p = join(tmpdir(), file);
-  if (!existsSync(p)) {
-    const r = await fetch(url);
-    if (!r.ok) throw new Error(`${file} fetch ${r.status}`);
-    writeFileSync(p, Buffer.from(await r.arrayBuffer()));
-  }
-  const b = readFileSync(p);
-  return opentype.parse(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
-}
-
-const bree = await font("tt-BreeSerif-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/breeserif/BreeSerif-Regular.ttf");
-const lato = await font("tt-Lato-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/lato/Lato-Regular.ttf");
+// The house typeface is licensed, so it is read from a local folder and never committed.
+const fonts = process.env.HOUSE_FONTS ?? join(process.env.LOCALAPPDATA ?? tmpdir(), "halleluja-fonts");
+const font = opentype.parse(readFileSync(join(fonts, "bree-serif-light.ttf")).buffer);
+const claimFont = opentype.parse(readFileSync(join(fonts, "bree-light.ttf")).buffer);
 
 // The logo master as it is, with the ink box measured from a render rather than taken
 // from the viewBox, since a master may carry empty margin.
@@ -92,18 +83,18 @@ function fit(fnt, lines, size, maxW) {
 }
 const textX = logoX + ink.w * scale + gap;
 const maxTextW = W - textX - rightMargin;
-const name = fit(bree, [NAME], NAME_SIZE, maxTextW);
-const claim = fit(lato, CLAIM, CLAIM_SIZE, maxTextW);
+const name = fit(font, [NAME], NAME_SIZE, maxTextW);
+const claim = fit(claimFont, CLAIM, CLAIM_SIZE, maxTextW);
 
 // Name and claim are centred as one block on H/2, where the logo's ink centre sits,
 // with the baselines taken from the font metrics.
 const em = (fnt, s) => s / fnt.unitsPerEm;
-const nameAsc = bree.ascender * em(bree, name.size);
-const nameDesc = -bree.descender * em(bree, name.size);
-const claimAsc = lato.ascender * em(lato, claim.size);
-const claimDesc = -lato.descender * em(lato, claim.size);
+const nameAsc = font.ascender * em(font, name.size);
+const nameDesc = -font.descender * em(font, name.size);
+const claimAsc = claimFont.ascender * em(claimFont, claim.size);
+const claimDesc = -claimFont.descender * em(claimFont, claim.size);
 const toClaim = Math.round(nameDesc + 16 + claimAsc);
-const claimStep = Math.round((lato.ascender - lato.descender) * em(lato, claim.size) * 1.15);
+const claimStep = Math.round((claimFont.ascender - claimFont.descender) * em(claimFont, claim.size) * 1.15);
 const blockH = nameAsc + toClaim + claimStep * (CLAIM.length - 1) + claimDesc;
 const nameBase = Math.round(H / 2 - blockH / 2 + nameAsc);
 const placed = (ds, x, y, fill) => `<g transform="translate(${x.toFixed(2)},${y})">${ds.map((d) => `<path d="${d}" fill="${fill}"/>`).join("")}</g>`;
