@@ -47,6 +47,21 @@ for (const light of [false, true]) {
 console.log('\nThe rule comes after the windows, so a tie goes to it');
 ok('mono rule follows the window rule', rules.indexOf(monoRule) > rules.indexOf(windowRule));
 
+console.log('\nThe settings cards stay dark on a light theme and still follow the switch');
+{
+  const dockerRules = parseRules(read('styles/docker.css'));
+  const cardSel = 'html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card';
+  const cardRule = dockerRules.find((r) => norm(r.selector) === cardSel);
+  const monoCard = dockerRules.find((r) => norm(r.selector) === 'html.tt-state-mono' + cardSel.slice(4));
+  ok('the dark card rule is there', !!cardRule);
+  ok('a mono rule for the card comes after it', !!monoCard && dockerRules.indexOf(monoCard) > dockerRules.indexOf(cardRule));
+  const card = Object.assign({}, tokens(true), { '--tt-accent': '#1D99F3', '--tt-accent-text': '#161616' }, mono, decls(cardRule), decls(monoCard));
+  for (const k of ['--tt-ok-ink', '--tt-warn-ink', '--tt-err-ink']) {
+    const want = resolve('var(--tt-accent-ink)', card), got = resolve(card[k], card);
+    ok(`card on a light theme: ${k} reads as the card's accent ink`, got === want, `${got} against ${want}`);
+  }
+}
+
 console.log('\nThe switch');
 const header = read('scripts/header.js'), settings = read('scripts/settings.js');
 ok('header.js sets tt-state-mono from tt.statemono while theming is on',

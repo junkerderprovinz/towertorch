@@ -1435,6 +1435,10 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
   --tt-surface-base: #161616; --tt-surface-3: #2e2e2e; --tt-toggle-track-off: #3a3a3a;
   --tt-hover: var(--tt-hover-dark);
 }
+/* the card declares its own state inks, so the state colours switch has to reach it too */
+html.tt-state-mono:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
+  --tt-ok-ink: var(--tt-accent-ink); --tt-warn-ink: var(--tt-accent-ink); --tt-err-ink: var(--tt-accent-ink);
+}
 /* The cards stand under each other at the width of their column. A row keeps its name at the start
    and its control at the end, and a field, a picker or a slider keeps a width of its own rather
    than stretching with the card. Stacked cards
