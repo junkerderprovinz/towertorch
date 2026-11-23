@@ -1565,6 +1565,10 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
 #tt-settings .tt-ver-num { flex-shrink: 0; font-variant-numeric: tabular-nums lining-nums; }
 #tt-settings a.tt-ver-num, #tt-settings a.tt-ver-num:link, #tt-settings a.tt-ver-num:visited { color: inherit; text-decoration: none; }
 #tt-settings a.tt-ver-num:focus-visible { color: var(--tt-accent-ink); }
+/* a 24px target for a finger, given back by the margin so the line keeps its height */
+#tt-settings a.tt-ver-num { padding-block: 2px; margin-block: -2px; }
+/* a long build number, such as a branch build's, drops under the name on a phone */
+#tt-settings .tt-ver-head .tt-ver-num { flex-shrink: 1; min-width: 0; margin-left: auto; overflow-wrap: anywhere; }
 @media (hover: hover) { #tt-settings a.tt-ver-num:hover { color: var(--tt-accent-ink); } }
 /* the last row: where the updates stand at its start, the buttons at its end, and the buttons
    drop under the words on a narrow card */
@@ -1581,9 +1585,13 @@ html:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
 #tt-settings a.tt-btn.tt-ver-go, #tt-settings a.tt-btn.tt-ver-go:link, #tt-settings a.tt-btn.tt-ver-go:visited { background: var(--tt-accent); color: var(--tt-accent-text); }
 #tt-settings a.tt-btn.tt-ver-go:hover, #tt-settings a.tt-btn.tt-ver-go:focus-visible { background: var(--tt-accent-hover); color: var(--tt-accent-text); }
 #tt-settings .tt-ver-rows { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 0; padding: 0; list-style: none; }
-#tt-settings .tt-ver-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+/* On a narrow card a row breaks before its end, which moves under the name whole. Inside it the
+   button and the number keep one line, and a status that leaves them no room takes its own above. */
+#tt-settings .tt-ver-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; }
+#tt-settings .tt-ver-end { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px 12px; margin-left: auto; }
+#tt-settings .tt-ver-tail { display: flex; align-items: center; gap: 12px; }
 #tt-settings .tt-ver-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
-#tt-settings .tt-ver-status { margin-left: auto; font-size: var(--tt-text-meta); }
+#tt-settings .tt-ver-status { font-size: var(--tt-text-meta); white-space: nowrap; }
 /* an area's own colour beside its name in the area colours card */
 .tt-set-excdot { width: 14px; height: 14px; flex: none; border-radius: var(--tt-radius-pill); }
 .tt-info { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; background: none; color: var(--txt, #e6e6e6); opacity: .8; cursor: help; position: relative; flex: 0 0 auto; }

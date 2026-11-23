@@ -216,7 +216,7 @@
   function T(d, e) { return de ? d : e; }
   var TT_VER = "@@TTVER@@"; if (TT_VER.indexOf("@@") === 0) TT_VER = "dev";
   // the GlimStone version this UI is built against, bumped by hand whenever its files are recopied
-  var GLS_VER = "4.8.2";
+  var GLS_VER = "4.9.0";
   var REPO = "https://github.com/junkerderprovinz/towertorch";
   var DISCORD = "https://discord.gg/avtvQmvwED";
   var GLS_REPO = "https://github.com/junkerderprovinz/glimstone";
@@ -227,14 +227,14 @@
   // componentsCard in the two languages this page speaks, and the engine's (i) beside them.
   var CARD_TEXT = de ? {
     title: "Version", hint: "Die Version von {app}, der Stand der Updates und was diese Version gebracht hat.",
-    whatsNew: "Neuigkeiten", check: "Nach Updates suchen", checking: "Prüfe …", current: "Aktuell", checked: "Zuletzt geprüft {when}",
+    whatsNew: "Neuigkeiten", check: "Nach Updates suchen", checking: "Prüfe …", unchecked: "Noch nicht geprüft", current: "Aktuell", checked: "Zuletzt geprüft {when}",
     available: "Update auf {version} verfügbar", failed: "Prüfung fehlgeschlagen", plugins: "Im Plugins-Tab aktualisieren",
     unreleased: "{version}, kein veröffentlichter Stand",
     components: "Komponenten", componentsHint: "Alles, woraus {app} besteht oder was es mitbringt, mit seiner Version.", design: "Design-System",
     engineHint: "Der Dienst, der auf dem Server läuft: Er startet die Container nach dem Startplan, misst ihre Last und setzt ihre Limits."
   } : {
     title: "Version", hint: "The version of {app}, where its updates stand and what this version brought.",
-    whatsNew: "What's new", check: "Check for updates", checking: "Checking …", current: "Up to date", checked: "Last checked {when}",
+    whatsNew: "What's new", check: "Check for updates", checking: "Checking …", unchecked: "Not checked yet", current: "Up to date", checked: "Last checked {when}",
     available: "Update to {version} available", failed: "Check failed", plugins: "Update in the Plugins tab",
     unreleased: "{version}, not a released build",
     components: "Components", componentsHint: "Everything {app} is made of or brings along, with its version.", design: "Design system",
@@ -2640,12 +2640,15 @@
     foot.appendChild(line); foot.appendChild(acts);
     c.appendChild(head); c.appendChild(foot);
     function paint() {
+      // "Up to date" is a finding, so it needs a check behind it.
+      var kind = state.kind === "current" && !state.checkedAt ? "unchecked" : state.kind;
       var face = {
+        unchecked: [W.unchecked, "neutral"],
         checking: [W.checking, "neutral"],
         current: [W.current, "ok", state.checkedAt && fill(W.checked, { when: timeAgo(state.checkedAt, new Date()) })],
         available: [fill(W.available, { version: state.version }), "warn"],
         failed: [W.failed, "fail", state.reason]
-      }[state.kind];
+      }[kind];
       line.textContent = ""; line.setAttribute("data-tone", face[1]);
       line.appendChild(el("span", "tt-ver-line", face[0]));
       if (face[2]) line.appendChild(el("span", "tt-ver-note", face[2]));
@@ -2659,17 +2662,17 @@
       askUpdates(check).then(function (r) {
         var s = updateState(r);
         // Unraid has not looked yet on this boot, so the first visit looks once.
-        if (!s && !check) return run(true);
-        state = s || { kind: "failed" }; paint();
+        if (s.kind === "unchecked" && !check) return run(true);
+        state = s; paint();
       }).catch(function (e) { state = { kind: "failed", reason: (e && e.message) || String(e) }; paint(); });
     }
     run(false);
     return c;
   }
   // Where the updates stand, in GlimStone's terms. Unraid's plugin manager answers, so this tab and
-  // the Plugins tab never disagree, and null means Unraid has not checked since it booted.
+  // the Plugins tab never disagree. Without a file from Unraid's last check there is nothing to compare.
   function updateState(r) {
-    if (!r || !r.latest) return null;
+    if (!r || !r.latest) return { kind: "unchecked" };
     if (verCmp(r.latest, r.installed || TT_VER) > 0) return { kind: "available", version: String(r.latest).replace(/^v/, "") };
     return { kind: "current", checkedAt: r.checkedAt ? new Date(r.checkedAt * 1000) : null };
   }
@@ -2702,16 +2705,24 @@
     }).catch(function () { engine.status(T("nicht erreichbar", "not reachable"), "fail"); });
     return c;
   }
+  // A row's end holds its status, then its button and number on one line, so on a narrow card
+  // they move under the name together and a long status takes a line of its own above them.
   function componentRow(name, hint, ver, repo) {
-    var li = el("li", "tt-ver-row"), nm = el("span", "tt-ver-name"), end = el("span", "tt-ver-num", "…");
+    var li = el("li", "tt-ver-row"), nm = el("span", "tt-ver-name"), end = el("span", "tt-ver-end"), tail = el("span", "tt-ver-tail");
+    var num = el("span", "tt-ver-num", "…");
     nm.appendChild(el("span", "tt-ver-part", name)); nm.appendChild(infoIcon(hint));
+    tail.appendChild(num); end.appendChild(tail);
     li.appendChild(nm); li.appendChild(end);
-    function put(n) { li.replaceChild(n, end); end = n; }
+    function put(n) { tail.replaceChild(n, num); num = n; }
     if (ver) put(verNumber(ver, repo));
     return {
       li: li,
       number: function (v) { put(verNumber(v, repo)); },
-      status: function (text, tone) { var s = el("span", "tt-ver-status", text); s.setAttribute("data-tone", tone); put(s); }
+      // stands in place of a number the part could not give
+      status: function (text, tone) {
+        var s = el("span", "tt-ver-status", text); s.setAttribute("data-tone", tone);
+        end.insertBefore(s, tail); tail.textContent = "";
+      }
     };
   }
   // The marks on the Info tab's README buttons: Buy Me a Coffee's own artwork, Discord, PayPal and

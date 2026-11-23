@@ -104,7 +104,7 @@ const face = (c) => ({
 console.log('\nEvery version reads as text and opens its newest release');
 {
   const pins = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'glimstone.json'), 'utf8')).targets.map((t) => t.version);
-  ok('GlimStone is 4.8.2, and both pins name it', /var GLS_VER = "4\.8\.2";/.test(settings) && pins.join() === '4.8.2,4.8.2', pins.join());
+  ok('GlimStone is 4.9.0, and both pins name it', /var GLS_VER = "4\.9\.0";/.test(settings) && pins.join() === '4.9.0,4.9.0', pins.join());
   const { verNumber, verCmp } = load('en');
   const ui = verNumber('1.2.3', 'https://github.com/junkerderprovinz/towertorch');
   ok('a release number is a link and shows without a v', ui.tag === 'a' && ui.textContent === '1.2.3' && verNumber('v0.9.0', 'R').textContent === '0.9.0');
@@ -116,6 +116,9 @@ console.log('\nEvery version reads as text and opens its newest release');
   ok('in German too', load('de').verNumber('dev', 'R').textContent === 'dev, kein veröffentlichter Stand');
   ok('the number is plain text in its colour, the accent under the pointer', /#tt-settings a\.tt-ver-num, #tt-settings a\.tt-ver-num:link, #tt-settings a\.tt-ver-num:visited \{ color: inherit; text-decoration: none; \}/.test(css)
     && /@media \(hover: hover\) \{ #tt-settings a\.tt-ver-num:hover \{ color: var\(--tt-accent-ink\); \} \}/.test(css));
+  ok('a number is a 24px target that keeps the line\'s height', /#tt-settings a\.tt-ver-num \{ padding-block: 2px; margin-block: -2px; \}/.test(css));
+  ok('a long number in the head drops under the name and may break', /#tt-settings \.tt-ver-head \.tt-ver-num \{ flex-shrink: 1; min-width: 0; margin-left: auto; overflow-wrap: anywhere; \}/.test(css)
+    && /#tt-settings \.tt-ver-head \{ display: flex; flex-wrap: wrap;/.test(css));
   ok('a newer patch is newer', verCmp('1.0.1', '1.0.0') > 0);
   ok('the minor outranks the patch', verCmp('1.1.0', '1.0.9') > 0 && verCmp('1.0.9', '1.1.0') < 0);
   ok('the same version is not newer', verCmp('v1.2.0', '1.2.0') === 0);
@@ -168,6 +171,19 @@ console.log('\nEvery version reads as text and opens its newest release');
     ok('and then shows what it found', face(c).line === 'Up to date' && face(c).note === 'Last checked now', JSON.stringify(face(c)));
   }
   {
+    const t = load('en', { answers: [{ body: { installed: '1.5.3', latest: null, checkedAt: null } }, { body: { installed: '1.5.3', latest: null, checkedAt: null } }] });
+    const c = t.versionCard(); await tick(); await tick(); await tick(); await tick();
+    const f = face(c);
+    ok('a check that left nothing to compare: "Not checked yet" in the neutral tone', f.line === 'Not checked yet' && f.tone === 'neutral' && !f.note, JSON.stringify(f));
+    ok('with the check to look again, and no Plugins tab button', f.check && !f.checkBusy && !f.go);
+    ok('and only one look of its own', t.log.fetched.length === 2);
+  }
+  {
+    const t = load('en', { answers: [{ body: { installed: '1.5.3', latest: '1.5.3', checkedAt: null } }] });
+    const c = t.versionCard(); await tick(); await tick();
+    ok('"Up to date" needs a check behind it', face(c).line === 'Not checked yet' && face(c).tone === 'neutral', JSON.stringify(face(c)));
+  }
+  {
     const t = load('en', { answers: [{ body: { installed: '1.5.3', latest: '1.5.3', checkedAt: now } }, { status: 502, body: { error: 'Network failure' } }] });
     const c = t.versionCard(); await tick(); await tick();
     c.find('tt-ver-check').click(); await tick(); await tick();
@@ -189,6 +205,9 @@ console.log('\nEvery version reads as text and opens its newest release');
     const t2 = load('de', { answers: [{ body: { installed: '1.5.3', latest: '1.6.0', checkedAt: now } }] });
     const c2 = t2.versionCard(); await tick(); await tick();
     ok('"Update auf 1.6.0 verfügbar"', face(c2).line === 'Update auf 1.6.0 verfügbar');
+    const t3 = load('de', { answers: [{ body: { installed: '1.5.3', latest: '1.5.3', checkedAt: null } }] });
+    const c3 = t3.versionCard(); await tick(); await tick();
+    ok('"Noch nicht geprüft"', face(c3).line === 'Noch nicht geprüft', JSON.stringify(face(c3)));
   }
   ok('a plugin has no update switch', !/autoUpdate|Automatisch aktualisieren|Update automatically/.test(settings));
 
@@ -206,8 +225,10 @@ console.log('\nEvery version reads as text and opens its newest release');
     const names = rows.map((r) => r.find('tt-ver-part').textContent);
     ok('Engine first, GlimStone last', names.join() === 'Engine,GlimStone', names.join());
     ok('each with what it is in its (i), never under its name', rows.every((r) => r.find('tt-info') && r.find('tt-info').getAttribute('data-tip')) && !c.all().some((n) => n.cls.has('tt-ver-sub')));
-    ok('the engine shows the version that runs, opening the newest release', rows[0].kids[1].textContent === '1.5.3' && rows[0].kids[1].href === 'https://github.com/junkerderprovinz/towertorch/releases/latest');
-    ok('GlimStone shows 4.8.2 and opens its newest release', rows[1].kids[1].textContent === '4.8.2' && rows[1].kids[1].href === 'https://github.com/junkerderprovinz/glimstone/releases/latest');
+    const num = (r) => r.find('tt-ver-tail').find('tt-ver-num');
+    ok('the engine shows the version that runs, opening the newest release', num(rows[0]).textContent === '1.5.3' && num(rows[0]).href === 'https://github.com/junkerderprovinz/towertorch/releases/latest');
+    ok('GlimStone shows 4.9.0 and opens its newest release', num(rows[1]).textContent === '4.9.0' && num(rows[1]).href === 'https://github.com/junkerderprovinz/glimstone/releases/latest');
+    ok('a row ends in one part that holds its status, button and number', rows.every((r) => r.kids.length === 2 && r.kids[1].cls.has('tt-ver-end') && r.kids[1].find('tt-ver-tail')));
     ok('GlimStone\'s (i) calls it the design system', rows[1].find('tt-info').getAttribute('data-tip') === 'Design system');
     ok('the card is called Components', /card\(W\.components, fill\(W\.componentsHint, \{ app: "TowerTorch" \}\)\)/.test(settings));
     ok('and has no switch, since every part ships with the plugin', !/components\.update|Update components/.test(settings));
@@ -217,10 +238,17 @@ console.log('\nEvery version reads as text and opens its newest release');
     const c = t.componentsCard(); await tick(); await tick();
     const st = c.find('tt-ver-status');
     ok('an unreachable engine says so in place, in the fail tone', st && st.textContent === 'not reachable' && st.getAttribute('data-tone') === 'fail');
+    ok('the status stands in the row\'s end before its tail, and no number waits there', st.parent.cls.has('tt-ver-end') && st.parent.kids[1].cls.has('tt-ver-tail') && !st.parent.find('tt-ver-num'));
     const t2 = load('de');
     const c2 = t2.componentsCard(); await tick();
     ok('German: Komponenten, Design-System', c2.find('tt-set-h').textContent === 'Komponenten' && c2.all().filter((n) => n.cls.has('tt-ver-row'))[1].find('tt-info').getAttribute('data-tip') === 'Design-System');
   }
+
+  console.log('\nA component row breaks before its end on a narrow card');
+  ok('the row wraps', /#tt-settings \.tt-ver-row \{ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; \}/.test(css));
+  ok('its end moves under the name whole, kept at the end', /#tt-settings \.tt-ver-end \{ display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px 12px; margin-left: auto; \}/.test(css));
+  ok('the button and the number keep one line', /#tt-settings \.tt-ver-tail \{ display: flex; align-items: center; gap: 12px; \}/.test(css));
+  ok('a status never breaks, it takes a line of its own above them', /#tt-settings \.tt-ver-status \{ font-size: var\(--tt-text-meta\); white-space: nowrap; \}/.test(css));
 
   console.log('\nEach version appears once');
   ok('the footer line is gone', !/verLine|tt-set-version-foot/.test(settings) && !/\.tt-set-version\b/.test(css));
