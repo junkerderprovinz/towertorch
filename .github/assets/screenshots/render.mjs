@@ -8,8 +8,8 @@
 // Everything here is rendered at twice the size and scaled down, which keeps the type crisp
 // through the tilt.
 //
-// The heading is set in Bree Serif Light and the line below in Bree Light. Both are licensed and
-// never committed, so HOUSE_FONTS (default %LOCALAPPDATA%\halleluja-fonts) must hold them as TTF.
+// The heading is set in Bree Serif Regular and the line below in Bree Light. Neither is
+// committed, so HOUSE_FONTS (default %LOCALAPPDATA%\halleluja-fonts) must hold them as TTF.
 // The browser bar keeps Lato, fetched once from Google Fonts.
 //
 // Deps (global): playwright-core with its Chromium installed.
@@ -106,7 +106,7 @@ const lato = dataUrl(await cached("Lato-Regular.ttf", "https://github.com/google
 const logo = dataUrl(readFileSync(join(here, "..", "towertorch.svg")), "image/svg+xml");
 
 const STYLE = `
-@font-face { font-family: "Bree Serif"; src: url(${font("bree-serif-light.ttf")}); font-weight: 300; }
+@font-face { font-family: "Bree Serif"; src: url(${font("bree-serif-regular.ttf")}); font-weight: 400; }
 @font-face { font-family: Bree; src: url(${font("bree-light.ttf")}); font-weight: 300; }
 @font-face { font-family: Lato; src: url(${lato}); }
 * { box-sizing: border-box; margin: 0; }
@@ -117,7 +117,8 @@ body { position: relative; width: ${W}px; height: ${H}px; overflow: hidden; font
 .vignette { position: absolute; inset: 0; box-shadow: inset 0 0 200px rgba(0,0,0,.6); }
 .copy { position: absolute; left: 80px; top: 0; bottom: 0; width: 380px; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
 .copy img { width: 96px; }
-h1 { font: 300 52px/1.14 "Bree Serif", serif; color: #f4f4f4; text-wrap: balance; }
+/* A little wider than the line below, so "Every share and" keeps to one line. */
+h1 { font: 400 52px/1.14 "Bree Serif", serif; color: #f4f4f4; text-wrap: balance; margin-right: -10px; }
 h1 em { font-style: normal; color: #FCC419; }
 .sub { font-size: 23px; line-height: 1.4; color: #9d9481; }
 .stage { position: absolute; width: ${WIN_W}px; height: ${WIN_H}px; perspective: 2400px; }
@@ -167,7 +168,7 @@ try {
   for (const shot of SHOTS.filter((s) => !CHOSEN.length || CHOSEN.includes(s.page))) {
     const big = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
     await big.setContent(page(shot));
-    await big.evaluate(() => Promise.all(['300 1em "Bree Serif"', "300 1em Bree", "1em Lato"].map((f) => document.fonts.load(f))));
+    await big.evaluate(() => Promise.all(['400 1em "Bree Serif"', "300 1em Bree", "1em Lato"].map((f) => document.fonts.load(f))));
     await big.evaluate(() => Promise.all([...document.images].map((img) => img.decode())));
     const png = await big.screenshot();
     await big.close();
