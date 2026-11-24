@@ -8,6 +8,10 @@
 // Everything here is rendered at twice the size and scaled down, which keeps the type crisp
 // through the tilt.
 //
+// The heading is set in Bree Serif Light and the line below in Bree Light. Both are licensed and
+// never committed, so HOUSE_FONTS (default %LOCALAPPDATA%\halleluja-fonts) must hold them as TTF.
+// The browser bar keeps Lato, fetched once from Google Fonts.
+//
 // Deps (global): playwright-core with its Chromium installed.
 // Run: node .github/assets/screenshots/render.mjs [page...]   (no page renders them all)
 
@@ -95,23 +99,25 @@ async function cached(file, url) {
 }
 
 const dataUrl = (buf, type) => `data:${type};base64,${buf.toString("base64")}`;
-const fonts = "https://github.com/google/fonts/raw/main/ofl";
-const bree = dataUrl(await cached("BreeSerif-Regular.ttf", `${fonts}/breeserif/BreeSerif-Regular.ttf`), "font/ttf");
-const lato = dataUrl(await cached("Lato-Regular.ttf", `${fonts}/lato/Lato-Regular.ttf`), "font/ttf");
+// The house typeface is licensed, so it is read from a local folder and never committed.
+const fonts = process.env.HOUSE_FONTS ?? join(process.env.LOCALAPPDATA ?? tmpdir(), "halleluja-fonts");
+const font = (file) => dataUrl(readFileSync(join(fonts, file)), "font/ttf");
+const lato = dataUrl(await cached("Lato-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/lato/Lato-Regular.ttf"), "font/ttf");
 const logo = dataUrl(readFileSync(join(here, "..", "towertorch.svg")), "image/svg+xml");
 
 const STYLE = `
-@font-face { font-family: "Bree Serif"; src: url(${bree}); }
+@font-face { font-family: "Bree Serif"; src: url(${font("bree-serif-light.ttf")}); font-weight: 300; }
+@font-face { font-family: Bree; src: url(${font("bree-light.ttf")}); font-weight: 300; }
 @font-face { font-family: Lato; src: url(${lato}); }
 * { box-sizing: border-box; margin: 0; }
-body { position: relative; width: ${W}px; height: ${H}px; overflow: hidden; font-family: Lato, sans-serif; background: #0c0c0b; }
+body { position: relative; width: ${W}px; height: ${H}px; overflow: hidden; font-family: Bree, sans-serif; font-weight: 300; background: #0c0c0b; }
 .wall { position: absolute; inset: 0; background: radial-gradient(55% 60% at 62% 35%, #26231d, #0f0e0c 72%); }
 .relief { position: absolute; width: 46%; left: -9%; top: -4%; transform: rotate(-10deg); opacity: .32;
   filter: grayscale(1) brightness(.36) contrast(1.2) drop-shadow(-2px -2px 0 rgba(255,255,255,.16)) drop-shadow(12px 18px 26px rgba(0,0,0,.85)); }
 .vignette { position: absolute; inset: 0; box-shadow: inset 0 0 200px rgba(0,0,0,.6); }
 .copy { position: absolute; left: 80px; top: 0; bottom: 0; width: 380px; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
 .copy img { width: 96px; }
-h1 { font: 400 52px/1.14 "Bree Serif", serif; color: #f4f4f4; text-wrap: balance; }
+h1 { font: 300 52px/1.14 "Bree Serif", serif; color: #f4f4f4; text-wrap: balance; }
 h1 em { font-style: normal; color: #FCC419; }
 .sub { font-size: 23px; line-height: 1.4; color: #9d9481; }
 .stage { position: absolute; width: ${WIN_W}px; height: ${WIN_H}px; perspective: 2400px; }
@@ -122,7 +128,7 @@ h1 em { font-style: normal; color: #FCC419; }
   box-shadow: 0 0 0 1px #333, 0 1px 0 1px rgba(255,255,255,.05), 0 2px 4px rgba(0,0,0,.35), 0 16px 32px rgba(0,0,0,.4), 0 48px 96px rgba(0,0,0,.5); }
 .front .win { transform: rotateY(-7deg) rotateX(3deg) translateZ(40px);
   box-shadow: 0 0 0 1px #3a3a3a, 0 1px 0 1px rgba(255,255,255,.06), 0 4px 8px rgba(0,0,0,.45), 0 24px 48px rgba(0,0,0,.55), 0 64px 120px rgba(0,0,0,.65); }
-.bar { height: ${BAR_H}px; display: flex; align-items: center; gap: 16px; padding: 0 16px; border-radius: 12px 12px 0 0;
+.bar { height: ${BAR_H}px; display: flex; align-items: center; gap: 16px; padding: 0 16px; border-radius: 12px 12px 0 0; font: 400 14px Lato, sans-serif;
   background: linear-gradient(#242424, #1c1c1c); border-bottom: 1px solid #0e0e0e; }
 .dots { display: flex; gap: 8px; } .dots i { width: 12px; height: 12px; border-radius: 50%; background: #3d3d3d; }
 .nav { display: flex; gap: 14px; color: #7c7c7c; } .nav svg { width: 16px; height: 16px; display: block; }
@@ -161,7 +167,7 @@ try {
   for (const shot of SHOTS.filter((s) => !CHOSEN.length || CHOSEN.includes(s.page))) {
     const big = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
     await big.setContent(page(shot));
-    await big.evaluate(() => document.fonts.ready);
+    await big.evaluate(() => Promise.all(['300 1em "Bree Serif"', "300 1em Bree", "1em Lato"].map((f) => document.fonts.load(f))));
     await big.evaluate(() => Promise.all([...document.images].map((img) => img.decode())));
     const png = await big.screenshot();
     await big.close();
