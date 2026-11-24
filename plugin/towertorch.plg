@@ -10,7 +10,7 @@
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "80faa52817572fb51e81b123f51fcbd0ad9590835f28f0fbc3a90d93269ba364">
+  <!ENTITY sha256    "cdcf075912b09590e2458e0e77bbc00c2e1e50645ea8b94faf24f41fe4143e22">
 ]>
 
 <PLUGIN name="&name;"
