@@ -4,7 +4,7 @@ go 1.26.10
 
 toolchain go1.27.4
 
-require github.com/junkerderprovinz/parleyport/kit v1.1.0
+require github.com/junkerderprovinz/parleyport v1.3.7
 
 require (
 	github.com/coder/websocket v1.8.15 // indirect
