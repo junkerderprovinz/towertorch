@@ -402,6 +402,13 @@ html.tt-popups-on #displaybox .tt-tsel-trigger:hover,
 html.tt-popups-on #displaybox .tt-tsel.tt-open .tt-tsel-trigger {
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616)));
 }
+/* Keyboard focus is the step up the native fields take, not a ring (GlimStone rule 14). It comes
+   after the hover so a focused trigger under the pointer still shows it has the keys, while an
+   open list keeps its colour. */
+html.tt-tools-on #displaybox .tt-tsel:not(.tt-open) > .tt-tsel-trigger:focus-visible,
+html.tt-popups-on #displaybox .tt-tsel:not(.tt-open) > .tt-tsel-trigger:focus-visible {
+  filter: none; background: color-mix(in srgb, var(--tt-tl-surface2) 85%, var(--tt-text, #e6e6e6)); color: var(--tt-text, #e6e6e6);
+}
 html.tt-tools-on #displaybox .tt-tsel-trigger::after,
 html.tt-popups-on #displaybox .tt-tsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 4px;

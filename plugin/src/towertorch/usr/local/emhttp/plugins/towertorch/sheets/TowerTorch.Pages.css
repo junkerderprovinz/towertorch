@@ -121,7 +121,7 @@ html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not
 }
 html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked { background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); }
 html[data-tt-page="vmform"] #vmform input[type="checkbox"]:not(.domain_vcpu):not([style*="none"]):checked::before { left: 19px; background: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)); }
-html[data-tt-page="vmform"] #vmform :is(input, textarea, .tt-tsel-trigger):focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
+html[data-tt-page="vmform"] #vmform :is(input, textarea):focus-visible { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419) !important; }
 html[data-tt-page="vmform"] #displaybox blockquote.inline_help {
   border: none !important; background: var(--tt-surface-3, #2e2e2e) !important; border-radius: var(--tt-radius-control) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }

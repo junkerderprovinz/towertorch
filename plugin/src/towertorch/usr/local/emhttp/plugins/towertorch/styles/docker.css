@@ -1511,6 +1511,10 @@ html.tt-state-mono:is(.Theme--white, .Theme--azure) #tt-settings .tt-set-card {
 }
 #tt-settings .tt-dsel-trigger:hover { background-color: var(--tt-hover); }
 #tt-settings .tt-dsel.tt-open .tt-dsel-trigger { background-color: var(--tt-surface-chip-hi, color-mix(in srgb, var(--tt-surface-chip, #383838) 82%, #ffffff)); }
+/* A dropdown is a field, so its focus is the text field's step up the ramp rather than a ring or
+   the page's brightness step (GlimStone rule 14). It comes after the hover, so a focused trigger
+   under the pointer still shows it has the keys. */
+#tt-settings .tt-dsel-trigger:focus-visible { filter: none; background-color: var(--tt-surface-chip-hi, color-mix(in srgb, var(--tt-surface-chip, #383838) 82%, #ffffff)); }
 #tt-settings .tt-dsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 8px;
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--txt, #eaeaea);
@@ -1972,6 +1976,9 @@ html.tt-docker-on.tt-on-addct .tt-dsel-trigger {
    overlay, so it needs a dark-on-light fill: a faint white overlay with light text vanishes. */
 html.Theme--white.tt-docker-on.tt-on-addct .tt-dsel-trigger,
 html.Theme--azure.tt-docker-on.tt-on-addct .tt-dsel-trigger { background: rgba(0, 0, 0, .06); color: #1c1c1c; }
+/* focus is the stronger fill the form's fields take, never a ring */
+html.tt-docker-on.tt-on-addct .tt-dsel-trigger:focus-visible { filter: none; background: rgba(255, 255, 255, .11); }
+html:is(.Theme--white, .Theme--azure).tt-docker-on.tt-on-addct .tt-dsel-trigger:focus-visible { background: rgba(0, 0, 0, .1); }
 html.Theme--white.tt-docker-on.tt-on-addct .tt-dsel-trigger::after,
 html.Theme--azure.tt-docker-on.tt-on-addct .tt-dsel-trigger::after { border-top-color: #555; }
 html.tt-docker-on.tt-on-addct .tt-dsel-trigger::after {
@@ -2025,6 +2032,9 @@ html.tt-docker-on.tt-on-addct .tt-dsel-opt.is-disabled { opacity: .4; pointer-ev
 }
 .tt-pop .tt-dsel-trigger:hover::after,
 .tt-pop .tt-dsel.tt-open .tt-dsel-trigger::after { border-top-color: currentColor; }
+/* Keyboard focus is the step the editor's fields take, after the hover so it shows under the
+   pointer too. An open list keeps its colour. */
+.tt-pop .tt-dsel:not(.tt-open) > .tt-dsel-trigger:focus-visible { filter: none; background: #383838; color: #eaeaea; }
 .tt-pop .tt-dsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 4px;
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #cfcfcf;

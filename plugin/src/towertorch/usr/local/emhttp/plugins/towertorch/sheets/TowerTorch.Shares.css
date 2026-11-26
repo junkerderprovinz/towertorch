@@ -1310,6 +1310,11 @@ html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-open .tt-sel-trigger
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419)));
   color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-shr-accent-text, #161616)));
 }
+/* Keyboard focus is the fields' step up the ladder, after the hover so it shows under the pointer
+   too; an open list keeps its colour. */
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel:not(.tt-open) > .tt-sel-trigger:focus-visible {
+  filter: none; background: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)); color: var(--tt-text, #e6e6e6);
+}
 /* the open panel is the same floating vertical list as the disk dropdown */
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-panel {
   display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 0;

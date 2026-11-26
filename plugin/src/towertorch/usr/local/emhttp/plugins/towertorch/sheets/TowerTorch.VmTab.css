@@ -483,6 +483,7 @@ html.tt-vms-on #kvm_list .switch-button-background .switch-button-button {
   cursor: pointer; transition: background-color .12s;
 }
 #tt-vmlim .tt-dsel-trigger:hover { background-color: var(--tt-hover); }
+#tt-vmlim .tt-dsel-trigger:focus-visible { background-color: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)); }
 #tt-vmlim .tt-dsel-trigger::after {
   content: ""; flex: 0 0 auto; width: 0; height: 0; margin-left: 8px;
   border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--tt-text, #e6e6e6);

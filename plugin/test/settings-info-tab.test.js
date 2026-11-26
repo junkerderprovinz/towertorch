@@ -104,7 +104,7 @@ const face = (c) => ({
 console.log('\nEvery version reads as text and opens its newest release');
 {
   const pins = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'glimstone.json'), 'utf8')).targets.map((t) => t.version);
-  ok('GlimStone is 4.9.0, and both pins name it', /var GLS_VER = "4\.9\.0";/.test(settings) && pins.join() === '4.9.0,4.9.0', pins.join());
+  ok('GlimStone is 4.9.2, and both pins name it', /var GLS_VER = "4\.9\.2";/.test(settings) && pins.join() === '4.9.2,4.9.2', pins.join());
   const { verNumber, verCmp } = load('en');
   const ui = verNumber('1.2.3', 'https://github.com/junkerderprovinz/towertorch');
   ok('a release number is a link and shows without a v', ui.tag === 'a' && ui.textContent === '1.2.3' && verNumber('v0.9.0', 'R').textContent === '0.9.0');
@@ -227,7 +227,7 @@ console.log('\nEvery version reads as text and opens its newest release');
     ok('each with what it is in its (i), never under its name', rows.every((r) => r.find('tt-info') && r.find('tt-info').getAttribute('data-tip')) && !c.all().some((n) => n.cls.has('tt-ver-sub')));
     const num = (r) => r.find('tt-ver-tail').find('tt-ver-num');
     ok('the engine shows the version that runs, opening the newest release', num(rows[0]).textContent === '1.5.3' && num(rows[0]).href === 'https://github.com/junkerderprovinz/towertorch/releases/latest');
-    ok('GlimStone shows 4.9.0 and opens its newest release', num(rows[1]).textContent === '4.9.0' && num(rows[1]).href === 'https://github.com/junkerderprovinz/glimstone/releases/latest');
+    ok('GlimStone shows 4.9.2 and opens its newest release', num(rows[1]).textContent === '4.9.2' && num(rows[1]).href === 'https://github.com/junkerderprovinz/glimstone/releases/latest');
     ok('a row ends in one part that holds its status, button and number', rows.every((r) => r.kids.length === 2 && r.kids[1].cls.has('tt-ver-end') && r.kids[1].find('tt-ver-tail')));
     ok('GlimStone\'s (i) calls it the design system', rows[1].find('tt-info').getAttribute('data-tip') === 'Design system');
     ok('the card is called Components', /card\(W\.components, fill\(W\.componentsHint, \{ app: "TowerTorch" \}\)\)/.test(settings));
