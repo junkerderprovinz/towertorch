@@ -68,12 +68,12 @@ html.tt-header-on #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a svg.
 /* Icon-only mode. ttTabIcons() wraps the label in its own span so it can be hidden, and the icon's
    right margin collapses with it. Unraid's default-base.css hides every ".nav-item a span", so the
    label needs this default-visible rule; the .tt-tabtext-off rule below has one more class and wins
-   when it applies. */
+   when it applies. A tab a plugin adds has no glyph, so it keeps its name. */
 html.tt-header-on #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a span.tt-tab-label { display: inline; }
-html.tt-tabtext-off #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a span.tt-tab-label { display: none; }
+html.tt-tabtext-off #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a:has(> svg.tt-tab-ico) span.tt-tab-label { display: none; }
 html.tt-tabtext-off #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a svg.tt-tab-ico { margin-right: 0; }
 /* without the label the pill matches the utility icon boxes (36x36, --tt-lgb-h, no padding) */
-html.tt-tabtext-off #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a {
+html.tt-tabtext-off #menu .nav-tile .nav-item:not(.util):not(.gui_search) > a:has(> svg.tt-tab-ico) {
   width: var(--tt-lgb-h, 36px) !important; padding: 0 !important;
 }
 html.tt-header-on #menu .nav-tile .nav-item:not(.util):not(.gui_search).active > a {
