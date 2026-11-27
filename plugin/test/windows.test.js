@@ -251,6 +251,14 @@ console.log('\nA question in a window');
   ok('the answer button runs it', ran === 1);
 }
 
+{
+  const preview = new N('div'); preview.className = 'tt-fimp';
+  TTTheme.ask({ title: 'Diese Ordner übernehmen?', text: 'Woher sie kommen.', body: preview, ok: 'Übernehmen', cancel: 'Abbrechen', onOk: () => {} });
+  const card = body.querySelector('.tt-dlg').querySelector('.tt-win-card');
+  ok('a preview stands in the card under the text', card.childNodes.length === 2 && card.childNodes[1] === preview);
+  key('Escape');
+}
+
 console.log('\nThe colours of a window');
 {
   const mk = (del) => { const w = new N('div'); w.className = 'tt-win'; const t = w.appendChild(new N('div')); t.className = 'tt-win-title'; ['a', 'b'].forEach((x, i) => { const b = w.appendChild(new N('span')); b.className = 'tt-win-btn' + (i === 1 && del ? ' tt-win-del' : ''); }); return w; };

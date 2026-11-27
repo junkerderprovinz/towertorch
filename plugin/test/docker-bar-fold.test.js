@@ -31,6 +31,7 @@ class El {
   has(c) { return this.className.split(/\s+/).includes(c); }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; }
+  hasAttribute(k) { return k in this.attrs; }
   addEventListener(t, f) { this.listeners[t] = f; }
   appendChild(c) { return this.insertBefore(c, null); }
   insertBefore(c, ref) {
@@ -112,7 +113,7 @@ console.log('\nLabels');
   fr.b.querySelector('.tt-allct').listeners.click({ preventDefault() {}, stopPropagation() {} });
   ok('and so do the menu entries', fr.menus[0][0].label === 'Tout démarrer');
   ok('the view switch reads in sentence case', /function advWord\(on\) \{ return on \? \(LANG === "de" \? "Erweiterte Ansicht" : "Advanced view"\) : \(LANG === "de" \? "Einfache Ansicht" : "Basic view"\); \}/.test(js) && !/EINFACHE ANSICHT|BASIC VIEW/.test(js));
-  ok('relocateTopBar folds the bar on every pass', /foldBar\(jsa\);\n\s*ensureBarToggle\(jsa\);/.test(js));
+  ok('relocateTopBar folds the bar on every pass while theming is on', /if \(themed\) \{ foldBar\(jsa\); ensureBarToggle\(jsa\); \}/.test(js));
 }
 
 console.log('\nThe sheet');

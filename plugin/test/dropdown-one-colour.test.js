@@ -1,6 +1,6 @@
 // A dropdown follows GlimStone's rainbow rule for selectors: its options rest neutral, and the
-// hovered and the chosen one wear the dropdown's one colour. No option takes a palette slot of
-// its own, in any of TowerTorch's dropdown widgets.
+// chosen one's check wears the dropdown's one colour. No option takes a palette slot of its own,
+// in any of TowerTorch's dropdown widgets.
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -27,12 +27,12 @@ for (const f of SHEETS) {
   ok(path.basename(f), coloured.length === 0, coloured.map((r) => r.sel.slice(0, 80)).join(' | '));
 }
 
-console.log('\nThe chosen option wears the dropdown\'s colour');
+console.log('\nThe chosen option\'s check wears the dropdown\'s colour');
 {
   const docker = clean(read('styles/docker.css'));
-  ok('on the settings page', /#tt-settings \.tt-dsel-opt:hover, #tt-settings \.tt-dsel-opt\.is-selected \{\s*background: var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent/.test(docker));
-  ok('in a window', /\.tt-pop \.tt-dsel-opt:hover, \.tt-pop \.tt-dsel-opt\.is-selected \{\s*background: var\(--tt-rb-c/.test(docker));
-  ok('in the dependency picker', /\.tt-drop-it:hover, \.tt-drop-on \{\s*background: var\(--tt-rb-c/.test(docker));
+  ok('on the settings page', /#tt-settings \.tt-dsel-opt::after \{[^}]*background: var\(--tt-rb-c, var\(--tt-ink-on-dark\)\)/.test(docker));
+  ok('in a window', /\.tt-pop \.tt-dsel-opt::after \{[^}]*background: var\(--tt-rb-c/.test(docker));
+  ok('in the dependency picker', /\.tt-drop-it::after \{[^}]*background: var\(--tt-rb-c/.test(docker));
   ok('no colour mode sub-rule decides it any more', !/rbneutral[^{]*\.(tt-dsel-opt|tt-tsel-opt|tt-sel-opt|tt-drop-it)/.test(SHEETS.map((f) => clean(read(f))).join('\n')));
 }
 

@@ -15,6 +15,8 @@ type Container struct {
 	Ports     []string `json:"ports"`               // published ports, e.g. "8080:80/tcp"
 	Mounts    []Mount  `json:"mounts,omitempty"`    // volume/bind mounts (present even when stopped)
 	Autostart bool     `json:"autostart"`           // whether Unraid's native autostart owns it
+	// Labels stay on the engine side: the folder import reads them, the pages do not.
+	Labels map[string]string `json:"-"`
 }
 
 // Mount is one volume/bind mount on a container. /containers/json carries Mounts

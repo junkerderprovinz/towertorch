@@ -230,8 +230,11 @@ function candidates(page, el, prop) {
         const c = compounds(sel);
         const ctx = c.slice(0, -1).map((x) => simples(x).filter((t) => t.t === 'class' || t.t === 'id').map((t) => (t.t === 'id' ? '#' : '.') + t.v));
         if (el.outside && ctx.some((t) => t.some((v) => el.outside.includes(v)))) continue;
-        if (c.length > 1 && !keyed(c[c.length - 1], el) && !(el.inside && ctx.some((t) => t.some((v) => el.inside.includes(v))))) continue;
-        if (el.html && c.length > 1 && /^html\b/.test(c[0]) && matchCompound(c[0], { tag: 'html', classes: el.html, attrs: {}, states: {} }) === false) continue;
+        // The theming gate :where(html.tt-popups-on) names <html>, which is always there, so it
+        // is no context of its own.
+        const gate = /^:where\(html\b/.test(c[0]);
+        if (c.length > (gate ? 2 : 1) && !keyed(c[c.length - 1], el) && !(el.inside && ctx.some((t) => t.some((v) => el.inside.includes(v))))) continue;
+        if (el.html && c.length > 1 && /^(html\b|:where\(html\b)/.test(c[0]) && matchCompound(c[0], { tag: 'html', classes: el.html, attrs: {}, states: {} }) === false) continue;
         hits.forEach((d, n) => out.push({ sheet: name, selector: sel, value: d.value, important: d.important, spec: specificity(sel), order: order + n / 100 }));
       }
     }

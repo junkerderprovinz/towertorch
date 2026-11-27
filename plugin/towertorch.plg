@@ -3,14 +3,14 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.5.1">
+  <!ENTITY version   "1.5.9">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&slug;">
   <!ENTITY plgPath   "/boot/config/plugins/&slug;">
   <!ENTITY txz       "&slug;-&version;-x86_64-1.txz">
-  <!ENTITY sha256    "b95fdec905b652f145eb832af481d509a692e260f0ade2ce0e9bdaba337621d0">
+  <!ENTITY sha256    "dead36a8be2b52488a121c8e419b9ae9c87443f1d987afb729ea0f288ba19078">
 ]>
 
 <PLUGIN name="&name;"
@@ -28,6 +28,106 @@
 </ICON>
 
 <CHANGES>
+### 1.5.9
+
+🐛 **Fixed**
+- **The (i) icons open on a click.** A click or a tap on an (i), on TowerTorch's own settings and on every Settings and Tools page, opens its help and keeps it open until you click somewhere else. Before, the click closed the bubble the hover had just opened. Thanks @Revan335 ([#138](https://github.com/junkerderprovinz/towertorch/issues/138)).
+
+### 1.5.8
+TowerTorch makes room for dlandon's plugins, the Next series and the classic ones.
+
+🐛 **Fixed**
+- **A yes/no switch keeps a plugin's settings.** On a plugin's settings page, such as Folder Caching, Recycle Bin, File Activity, Tips and Tweaks, Enhanced Log or Unassigned Devices, flipping a switch could reset that plugin's other settings and skip the restart its Apply runs. There the switch now waits for Apply, and Unraid's own display settings still save at once. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Recycle Bin Next and File Activity Next** show their status as a dot beside the page title, and their log filters sit in a plain row instead of one large badge. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Preclear's footer icons** stay on screen while a preclear runs, with the footer hidden. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **A plugin's own menu tab**, such as Custom SMB Shares, keeps its name with the tabs set to icons only. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+
+### 1.5.7
+Theming off and each area switch take TowerTorch's look away completely, and TowerTorch makes room for FolderView Plus, Unassigned Devices Next and ZFS Master NG.
+
+⚡ **Improved**
+- **Each area switch takes its whole look away.** Turn off Docker, Plugins, VMs, Main, Shares, the header area, Settings or Favorites under Areas, and that area's pages look the way Unraid draws them, tab strips, title bars and table heads included. Every other area keeps its look. With the Docker area off, TowerTorch's Docker functions keep working, as with theming off. Thanks @Revan335 for the idea ([#136](https://github.com/junkerderprovinz/towertorch/issues/136)).
+
+🐛 **Fixed**
+- **Theming off turns the whole look off.** The Docker and Plugins tabs kept TowerTorch's tabs, title bars and action bar, and the Wild motion level still made Unraid's menu bounce. With theming off, Unraid looks like plain Unraid, and the Docker functions keep working. Thanks @Revan335 ([#136](https://github.com/junkerderprovinz/towertorch/issues/136)).
+- **FolderView Plus keeps its folders.** A click on a folder row opens its menu again, the folder autostart switch works, and TowerTorch's grid, folder and tile views, the page search and the Dashboard order leave FolderView Plus's folders where it puts them. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Unassigned Devices Next looks right.** Its renamed tables and headings get the TowerTorch look again, the gear and refresh sit in the controls card, the historical devices join the tile row, and each switch shows one tooltip. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **ZFS Master NG's dataset table** is no longer treated like the array table. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Preclear's status** stays out of a disk tile's serial number.
+- **Light themes.** Other plugins' tables on Tools and Settings pages, the header bell and the (i) icons on Main are readable again.
+
+### 1.5.6
+Dropdowns show keyboard focus the way the fields beside them do, and a maintenance job reaches the backup app while it reconnects.
+
+🎨 **Design**
+- **Built on GlimStone 4.9.2,** a dropdown you reach with Tab shows it with a step in its fill, like the text fields next to it, instead of a ring or a brightness glow.
+
+⚡ **Improved**
+- **ParleyPort 1.3.8.** The fortress parts come from ParleyPort now. Your fortress membership and settings carry over as they are.
+
+🐛 **Fixed**
+- **A maintenance job reaches the backup app while it reconnects, and starts only once.** If the backup app had just joined again or changed its name, the job could fail, and a request whose answer got lost could start it twice.
+
+### 1.5.5
+The Info tab follows GlimStone 4.9.0, and State colours off reaches the Version card on light themes too.
+
+🎨 **Design**
+- **Not checked yet.** Until Unraid has looked for updates, the Version card says so. Up to date only shows after a check.
+- **Components on a phone.** A row's number moves under the name in one piece, and a long status gets a line of its own above it, so nothing is cut off.
+- **Version numbers are easier to tap.** Each one is a 24px target, and a long one moves under the name on a phone.
+- **GlimStone 4.9.0.**
+
+⚡ **Improved**
+- **kit 1.1.0.** Your fortress membership, notification channels and settings carry over as they are.
+
+🐛 **Fixed**
+- **State colours off on light themes.** Up to date in the Version card stayed green on Unraid's white and azure themes. It takes the accent colour like every other state.
+
+### 1.5.4
+The Info tab shows where TowerTorch's updates stand the way the Plugins tab sees them, and a new switch turns the state colours off.
+
+✨ **Added**
+- **State colours off.** A new switch in the Badges card gives every state indicator the accent colour instead of green, orange and red: status badges, state dots, usage bars and the header chips. Plugins that take TowerTorch's colours follow, ShipLog's chips among them, and the tooltip still says what a state means.
+
+🎨 **Design**
+- **Version and Components cards on the Info tab.** The Version card shows TowerTorch's number with one line on where its updates stand. The engine and GlimStone 4.8.2 move to a Components card of their own, and each number opens its project's newest release. On Unraid's light themes the buttons and the update line stay readable on the dark card.
+- **The maintenance window's dots and chips take the state colours of your theme.** They used a fixed green, orange and red, so State colours off reaches them too.
+
+⚡ **Improved**
+- **The update check asks Unraid.** Check for updates on the Info tab runs the same check as the Plugins tab, so the two never disagree. While a new version waits, What's new opens its notes and a button leads to the Plugins tab, where Unraid installs it.
+
+### 1.5.3
+A container without an icon of its own shows the logo of the app it runs, and update windows wait for the download before they say done.
+
+✨ **Added**
+- **Logos for containers without an icon.** Where Unraid shows its question mark, the Docker tab shows the logo of the app the container runs, coloured in your icon style. TowerTorch knows the app by the container's image, and by its name only when the image gives nothing away. 70 logos ship with the plugin, so they show without internet too. Only the display changes, the container's template stays as it is, and the new App logos card on the Docker tab of the settings turns them off.
+- **The icon search knows a container by its image.** A container with an icon of its own is looked up by the app its image runs as well, so one you gave a name of your own still finds its brand logo. An icon you set yourself is never swapped.
+
+🎨 **Design**
+- **The User Scripts list uses the whole width.** The list pinned every column to a fixed width and left most of a wide page empty. Names and descriptions get the room, the buttons stand in even columns from row to row, and in a narrow window they move below the name.
+
+🐛 **Fixed**
+- **Update windows wait for the download.** When you updated a container or a plugin, the progress window could show its tick and Done from the start, carried over from the window before it on the same page. Every window starts with the loading ring and shows the tick only once the job is finished.
+- **The arrow on a script category's tile follows your icon style.** It stayed white and vanished on a light accent such as yellow. It takes the tile's ink, black on yellow.
+- **A brand glyph no longer shows in plain black.** With Tint icons off, a known app's one-colour glyph could replace its logo and stay black. The logo stays in that case.
+
+### 1.5.2
+TowerTorch takes over the Docker folders of another folder plugin, and open dropdowns are plain rows that light in a soft tint of your accent.
+
+✨ **Added**
+- **Take over the folders of another folder plugin.** When another folder plugin keeps Docker folders, the gear menu on the Docker tab offers Take over folders. A preview shows which containers land in which folder before anything is created, and each folder keeps its colour. Folders that already exist and containers already in a folder stay as they are, so a second run changes nothing. The other plugin's files are left untouched.
+
+🎨 **Design**
+- **Open dropdowns are plain rows.** Their entries are no longer chips filled with the accent. The entry under the pointer or the keyboard gets the soft tint, and the chosen one stands in bold with GlimStone's check.
+
+🐛 **Fixed**
+- **The heading on the Settings and Tools pages reads on the dark themes.** The page name in the accent badge was nearly white on the accent. It takes the badge's dark ink now, and the page's own symbol, which vanished in the accent, shows in front of it again.
+- **The dropdown on the settings page reads on the light themes.** Its list was dark text on a dark panel.
+- **Apps of your fortress on a server with a single network find each other at home directly** instead of only through the relay.
+- **A phrase change counts every app that took it.** An app whose answer got lost on the way back was listed as gone, although it had the new phrase.
+- **A restart no longer keeps two apps apart.** If an app of your fortress restarted while a new one was joining, the two never learned which app the other was. The newcomer now asks again.
+- **Security fixes for the fortress.** A member's direct call can no longer be steered to another page on a host it reaches, oversized messages are turned away before they take up memory, and golang.org/x/net 0.63.0 brings the latest fixes to Go's network library.
+
 ### 1.5.1
 GlimStone 4.5.4 lights whatever you point at in a soft tint of your accent, the Help card leads to Discord, and a new setup starts on soft corners.
 

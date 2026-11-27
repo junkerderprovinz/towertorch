@@ -133,6 +133,17 @@ func inFortress(t *testing.T, run func() ([]byte, error)) (*vault, *Door) {
 	return v, d
 }
 
+// waitForOldPhrase waits until BombVault answers the reopened TowerTorch on
+// the phrase the fortress left. Once BombVault said the phrase moved on, the
+// kit no longer lists it online there, so that answer counts as reached too.
+func waitForOldPhrase(t *testing.T, d *Door) {
+	t.Helper()
+	waitFor(t, "TowerTorch to reach BombVault on the old phrase", func() bool {
+		f := d.current()
+		return online(f, "bombvault") || f != nil && f.PhraseChanged()
+	})
+}
+
 // online says an instance of app is in reach of f.
 func online(f *kitfortress.Fortress, app string) bool {
 	if f == nil {
@@ -164,7 +175,7 @@ func TestTowerTorchFollowsANewPhraseAndAsksAgain(t *testing.T) {
 	if err := d.Open(); err != nil {
 		t.Fatal(err)
 	}
-	waitFor(t, "TowerTorch to reach BombVault on the old phrase", func() bool { return online(d.current(), "bombvault") })
+	waitForOldPhrase(t, d)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -187,6 +198,41 @@ func TestTowerTorchFollowsANewPhraseAndAsksAgain(t *testing.T) {
 	}
 	if want := kitfortress.Domain.Keys(v.phrase()).Group; cfg.Keys.Group != want {
 		t.Error("the membership kept the keys of the old phrase")
+	}
+}
+
+func TestTowerTorchFollowsWhenBombVaultToldItFirst(t *testing.T) {
+	v, d := inFortress(t, func() ([]byte, error) { return []byte(`{"ok":true}`), nil })
+	old := v.phrase()
+	if err := d.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := v.f.ChangePhrase(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err := v.f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	v.open(v.phrase(), old)
+	if err := d.Open(); err != nil {
+		t.Fatal(err)
+	}
+	// The kit asks BombVault what it is as soon as it shows up, and the old
+	// phrase answers that it moved on.
+	waitFor(t, "BombVault to tell TowerTorch the phrase changed", func() bool {
+		f := d.current()
+		return f != nil && f.PhraseChanged()
+	})
+	waitForOldPhrase(t, d)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	out, err := d.Act(ctx, v.id.ID(), maint.BackupAction, nil)
+	if err != nil || string(out) != `{"ok":true}` {
+		t.Fatalf("act after the change = %s, %v", out, err)
+	}
+	if d.PhraseChanged() {
+		t.Error("TowerTorch followed and still says the phrase changed")
 	}
 }
 

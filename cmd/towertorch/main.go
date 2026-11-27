@@ -27,6 +27,7 @@ import (
 	"github.com/junkerderprovinz/towertorch/internal/api"
 	"github.com/junkerderprovinz/towertorch/internal/bugreport"
 	"github.com/junkerderprovinz/towertorch/internal/dockercli"
+	"github.com/junkerderprovinz/towertorch/internal/folderimport"
 	"github.com/junkerderprovinz/towertorch/internal/fortress"
 	"github.com/junkerderprovinz/towertorch/internal/iconsrc"
 	"github.com/junkerderprovinz/towertorch/internal/maint"
@@ -150,7 +151,7 @@ func serve() {
 		log.Printf("towertorch: not taking part in the fortress: %v", err)
 	}
 	defer func() { _ = door.Close() }()
-	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, TemplateIcons: tmplIcons, Fortress: board, Maintenance: engine, Door: door, TemplatesDir: tmplDir, Version: version, Diag: bugreport.Default}
+	srv := &api.Server{Docker: docker, Store: st, Runner: orch, Notifier: notifier, Pidder: docker, VMs: vmc, Icons: icons, TemplateIcons: tmplIcons, Fortress: board, Maintenance: engine, Door: door, TemplatesDir: tmplDir, FolderRoot: env("TT_FOLDER_IMPORT_DIR", folderimport.DefaultRoot), Version: version, Diag: bugreport.Default}
 	// A stale socket from an unclean stop would make Listen fail with EADDRINUSE.
 	_ = os.Remove(apiSock)
 	ln, err := net.Listen("unix", apiSock)

@@ -27,8 +27,8 @@ function grab(name) {
 console.log('\nUp to date shows as a green chip');
 {
   ok('no rule hides it', !/span\.green-text \{ display: none/.test(css));
-  ok('it takes the ok green while its column is on', /\.tt-enh\.tt-c-update #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text \{ background: var\(--tt-ok, #6fdc8c\);/.test(css));
-  ok('and goes with the update-status column', /\.tt-enh:not\(\.tt-c-update\)  #docker_list tr:is\(\.sortable, \.folder-element\) td\.updatecolumn > span\.green-text,/.test(css));
+  ok('it takes the ok green while its column is on', /\.tt-enh\.tt-c-update #docker_list tr:is\(\.sortable, \.folder-element\):where\(:not\(\.folder\)\) td\.updatecolumn > span\.green-text \{ background: var\(--tt-ok, #6fdc8c\);/.test(css));
+  ok('and goes with the update-status column', /\.tt-enh:not\(\.tt-c-update\)  #docker_list tr:is\(\.sortable, \.folder-element\):where\(:not\(\.folder\)\) td\.updatecolumn > span\.green-text,/.test(css));
 }
 
 console.log('\nA start plan run that went well leaves no pill');
@@ -78,7 +78,7 @@ console.log('\nNothing is cut off without a hint');
 {
   const narrow = /@media \(max-width: 600px\) \{([\s\S]*?)\n\}/.exec(css.slice(css.indexOf('At phone width the columns')));
   ok('at phone width the table drops its header', narrow && /> thead \{ display: none; \}/.test(narrow[1]));
-  ok('and each row wraps its cells under the name', narrow && /tr:is\(\.sortable, \.folder-element\) \{ display: flex; flex-wrap: wrap;/.test(narrow[1]) && /td\.ct-name \{ flex: 1 0 100%; \}/.test(narrow[1]));
+  ok('and each row wraps its cells under the name', narrow && /tr:is\(\.sortable, \.folder-element\):where\(:not\(\.folder\)\) \{ display: flex; flex-wrap: wrap;/.test(narrow[1]) && /td\.ct-name \{ flex: 1 0 100%; \}/.test(narrow[1]));
   ok('without forcing a display the column toggles hide', narrow && !/display: block !important/.test(narrow[1]));
   ok('a volume path ends in an ellipsis at rest', /\.tt-vtext \{ display: block; overflow: hidden; text-overflow: ellipsis;/.test(css));
   ok('and only scrolls once the marquee runs', /\.tt-vrun > \.tt-vtext \{ display: inline-block; overflow: visible;/.test(css) && /w\.classList\.add\("tt-vrun"\)/.test(js));

@@ -70,9 +70,9 @@ console.log('\nEvery view has a gear');
 {
   const fn = (name) => { const i = docker.indexOf('function ' + name + '('); let d = 0; for (let k = docker.indexOf('{', i); k < docker.length; k++) { if (docker[k] === '{') d++; else if (docker[k] === '}') { d--; if (!d) return docker.slice(i, k + 1); } } return ''; };
   const top = fn('relocateTopBar');
-  ok('list: the gear sits beside the view switch in the docked bar', /advGrp = jsa\.querySelector\("\.tt-bar-adv"\)/.test(top) && /advGrp\.appendChild\(makeGear\("tt-hgear-home"\)\)/.test(top));
+  ok('list: the gear sits beside the view switch in the docked bar', /var gearHome = themed \? jsa\.querySelector\("\.tt-bar-adv"\) : jsa;/.test(top) && /gearHome\.appendChild\(makeGear\("tt-hgear-home"\)\)/.test(top));
   ok('list: never in a column header, which scrolls away with a wide table', !/th\d?\.appendChild\(makeGear/.test(top) && !/tt-hgear-th2/.test(docker));
-  ok('list: the stale-gear sweep spares the bar\'s gear', /if \(!x9\.closest\("\.tt-bar-adv"\)\) x9\.remove\(\)/.test(top));
+  ok('list: the stale-gear sweep spares the bar\'s gear', /if \(x9\.parentElement !== gearHome\) x9\.remove\(\)/.test(top));
   const nonList = /if \(!listView\) \{([\s\S]*?)\} else if/.exec(top);
   ok('card and folder keep the bar\'s gear, so the way back to the list stays in one place', !!nonList && !/return|\.remove\(\);\s*\/\/ gear|tt-bar-adv \.tt-hgear/.test(nonList[1]), nonList && nonList[1]);
   ok('multi-select stays with the list', /if \(listView\) ensureBulkModeBadge\(jsa\)/.test(top));
@@ -111,7 +111,7 @@ console.log('\nMulti-select belongs to the list');
     const doc = { querySelector: (s) => els[s] || null, querySelectorAll: () => [] };
     const state = new Function('document', 'mode', 'on',
       'var ttBulkModeOn = on, toggled = 0; function ttBulkModeToggle() { ttBulkModeOn = !ttBulkModeOn; toggled++; }' +
-      'function syncFooterDock() {} function findRows() { return []; }\n' + fnSrc + '\nrelocateTopBar(); return { on: ttBulkModeOn, toggled: toggled };')(doc, viewMode, bulkOn);
+      'function syncFooterDock() {} function findRows() { return []; } function themingOn() { return true; }\n' + fnSrc + '\nrelocateTopBar(); return { on: ttBulkModeOn, toggled: toggled };')(doc, viewMode, bulkOn);
     return Object.assign(state, { removed });
   };
   for (const v of ['grid', 'folder']) {

@@ -55,7 +55,7 @@ const ROUND = [
   '.tt-ct-dotrow > .tt-badge', '.tt-tile-dot', '.tt-cfg', '.tt-ip-dot', '.tt-req::after', '#tt-ctout-status',
   '.tt-isl-dot', '.tt-nchan-loader', 'i.fa-circle.orb', '.tt-status-dot', '.tt-loader > span',
   '.tt-info:focus-visible', '.tt-acctinfo', '.tt-toolsinfo', '.popupAuthorIcon img', 'input[type="radio"]',
-  '.inner > span.state.tt-badge', '.inner > i:is(.stopped, .paused)', '.tt-aop-ok::before', '.tt-dk-dot', '.tt-sn-ok', 'i[id^="check_"]', '.tt-mw-dot', '.tt-mw-ring',
+  '.inner > span.state.tt-badge', '.inner > i:is(.stopped, .paused)', '.tt-aop-ok::before', '.tt-dk-dot', '.tt-sn-ok', 'i[id^="check_"]', '.tt-mw-dot', '.tt-mw-ring', '.tt-ver-dot',
 ];
 function radiusOk(sel, value) {
   const v = value.replace(/\s*!important$/, '').trim();

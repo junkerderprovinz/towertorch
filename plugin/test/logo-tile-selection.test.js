@@ -86,7 +86,8 @@ console.log('\nPicking rows the way a file manager does');
   const skip = /var BULK_SKIP = "[^"]+";/.exec(js)[0];
   class Row {
     constructor(name) { const self = this; this.name = name; this.style = { display: '' }; this.tile = { attrs: { 'aria-checked': 'false' }, setAttribute(k, v) { this.attrs[k] = v; }, closest: (sel) => (/tr$/.test(sel) ? self : null) }; }
-    querySelector(sel) { return sel === '.tt-pick' ? this.tile : null; }
+    get classList() { return { contains: () => false }; }
+    querySelector(sel) { return sel === '.tt-pick' || sel === ':scope > td .tt-pick' ? this.tile : null; }
   }
   const rows = ['a', 'b', 'c', 'd', 'e'].map((n) => new Row(n));
   let syncs = 0;
@@ -128,7 +129,7 @@ console.log('\nPicking rows the way a file manager does');
   ok('once a row is picked, a plain click on another tile picks too', api.tileFor(onTile) === rows[2]);
   api.setMode('grid');
   ok('only the list has tiles to pick', api.rowFor({ target: target('x'), ctrlKey: true, button: 0 }) === null && api.tileFor(onTile) === null);
-  ok('the page\'s click handler picks before it flashes the actions', /var picked = ttBulkRowFor\(e\) \|\| ttBulkTileFor\(e\);\n\s*if \(picked\) \{ e\.preventDefault\(\); e\.stopPropagation\(\); ttBulkClick\(picked, e\); return; \}\n\s*var hand = /.test(js));
+  ok('the page\'s click handler picks before it flashes the actions', /var picked = ttBulkRowFor\(e\) \|\| ttBulkTileFor\(e\);\n\s*if \(picked\) \{ e\.preventDefault\(\); e\.stopPropagation\(\); ttBulkClick\(picked, e\); return; \}\n\s*var bar2 = ttFlashBarFor\(e\);/.test(js));
   ok('a Shift and a press on a row starts no text selection', /document\.addEventListener\("mousedown", function \(e\) \{ try \{ if \(!dead && e\.shiftKey && ttBulkRowFor\(e\)\) e\.preventDefault\(\);/.test(js));
   ok('html.tt-bulk-picked follows whether anything is picked', /classList\.toggle\("tt-bulk-picked", names\.length > 0\)/.test(js));
 }

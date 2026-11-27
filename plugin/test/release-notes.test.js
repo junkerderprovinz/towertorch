@@ -1,5 +1,5 @@
-// The Version card opens the running version's release notes in one window, "Neu in x.y.z",
-// from a button that stands before the update check, so the check stays the last step. The notes
+// "What's new" in the Version card opens a version's release notes in one window, "Neu in x.y.z":
+// the running version's, or the newer one's while it waits in the Plugins tab. The notes
 // are GitHub Markdown built from elements and text nodes: a release body can never inject markup,
 // and a link becomes an anchor only for http or https. The release page link opens the foot and
 // Close ends it.
@@ -54,11 +54,12 @@ function load(ver, fetch, theme) {
 }
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
-console.log('\nThe Version card offers the notes before the update check');
+console.log('\nThe Version card offers "What\'s new" before the update check');
 {
-  const block = settings.slice(settings.indexOf('// The Info tab in GlimStone'), settings.indexOf('var cHelp ='));
-  ok('a "Versionshinweise" button with the What\'s new glyph opens the window', /labelled\(actionBtn\("", "tt-btn tt-set-xbtn tt-set-notes", function \(\) \{ openReleaseNotes\(notes\); \}\), "WhatsNew", T\("Versionshinweise", "Release notes"\)\)/.test(block));
-  ok('it stands before "Nach Updates suchen", which stays last', /crow\.appendChild\(notes\); crow\.appendChild\(chk\); cVer\.appendChild\(crow\);/.test(block));
+  const block = settings.slice(settings.indexOf('function versionCard('), settings.indexOf('function updateState('));
+  ok('a "Neuigkeiten" button with the What\'s new glyph opens the window', /labelled\(actionBtn\("", "tt-btn tt-set-xbtn tt-ver-news", function \(\) \{ openReleaseNotes\(news, state\.kind === "available" \? state\.version : ""\); \}\), "WhatsNew", W\.whatsNew\)/.test(block));
+  ok('while a new version waits, it opens that version\'s notes', /var src = notesSource\(ver \|\| TT_VER\);/.test(settings));
+  ok('it stands before "Nach Updates suchen", and the Plugins tab comes last', /acts\.appendChild\(news\); acts\.appendChild\(chk\); acts\.appendChild\(go\);/.test(block));
   ok('no "New" button, since TowerTorch marks no changes', !/Neu ·|New ·/.test(settings));
 }
 

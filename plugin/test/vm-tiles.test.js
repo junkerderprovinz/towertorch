@@ -77,7 +77,10 @@ class N {
 }
 function all(root) { const out = []; (function walk(n) { n.children.forEach((c) => { out.push(c); walk(c); }); })(root); return out; }
 function compound(n, s) {
-  const m = /^([a-z0-9]*)((?:[#.][\w-]+)*)((?:\[[^\]]+\])*)$/i.exec(s); if (!m) return false;
+  const nots = (s.match(/:not\(\.[\w-]+\)/g) || []).map((x) => x.slice(6, -1));
+  if (nots.some((c) => n.classList.contains(c))) return false;
+  s = s.replace(/:not\(\.[\w-]+\)/g, '');
+  const m =/^([a-z0-9]*)((?:[#.][\w-]+)*)((?:\[[^\]]+\])*)$/i.exec(s); if (!m) return false;
   if (m[1] && n.tagName !== m[1].toUpperCase()) return false;
   for (const p of m[2].match(/[#.][\w-]+/g) || []) { if (p[0] === '#' ? n.id !== p.slice(1) : !n.classList.contains(p.slice(1))) return false; }
   for (const a of m[3].match(/\[[^\]]+\]/g) || []) { const q = /^\[([\w-]+)(?:="([^"]*)")?\]$/.exec(a); if (!q || !(q[1] in n.attrs) || (q[2] != null && n.attrs[q[1]] !== q[2])) return false; }
@@ -139,7 +142,7 @@ const api = new Function('document', 'window', 'localStorage', 'ls', 'stubs',
   'function limSet() { return { cpu: false, ram: false, bw: false }; }\n' +
   'function vmBwText() { return "-"; }\n' +
   'function vmRowData(tr) { return rowData(tr); }\n' +
-  ['el', 'currentView', 'vmIpLines', 'vmNoIp', 'vmDiskParts', 'vmBadge', 'vmDiskBadges', 'removeVmGrid', 'vmCardSig', 'vmNativeAuto', 'vmAutoSwitch', 'vmCard', 'renderVmGrid'].map(grabFn).join('\n') +
+  ['el', 'ttFvPlus', 'currentView', 'vmIpLines', 'vmNoIp', 'vmDiskParts', 'vmBadge', 'vmDiskBadges', 'removeVmGrid', 'vmCardSig', 'vmNativeAuto', 'vmAutoSwitch', 'vmCard', 'renderVmGrid'].map(grabFn).join('\n') +
   '\nvar vmGridHolder = null;\nreturn { currentView: currentView, vmIpLines: vmIpLines, vmDiskParts: vmDiskParts, vmCard: vmCard, vmCardSig: vmCardSig, renderVmGrid: renderVmGrid, removeVmGrid: removeVmGrid, holder: function () { return vmGridHolder; } };'
 )(doc, win, { getItem: ls }, ls, {
   bars: () => { actionBars++; },

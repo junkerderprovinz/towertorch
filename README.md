@@ -58,11 +58,9 @@ If it has earned a place on your server or computer, toss a coin to your knight:
 <br>
 
 <p align="center">
-  <a href="https://buymeacoffee.com/junkerderprovinz"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(0,0,841.9,245.3))" alt="Buy me a coffee" width="160" height="46.62"></a>
-  &nbsp;
-  <a href="https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(841.9,0,841.9,245.3))" alt="PayPal" width="160" height="46.62"></a>
-  &nbsp;
-  <a href="https://junkerderprovinz.github.io/junkerderprovinz/"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(1683.8,0,841.9,245.3))" alt="Donate with crypto" width="160" height="46.62"></a>
+  <a href="https://buymeacoffee.com/junkerderprovinz"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(-23.082,-20.153,888.064,285.606))" alt="Buy me a coffee" width="168.773" height="54.278"></a>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=76FVV52TKXTUS"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(890.818,-20.153,888.064,285.606))" alt="PayPal" width="168.773" height="54.278"></a>
+  <a href="https://junkerderprovinz.github.io/junkerderprovinz/"><img src="https://raw.githubusercontent.com/junkerderprovinz/junkerderprovinz/main/donate/buttons/give.svg#svgView(viewBox(1804.718,-20.153,888.064,285.606))" alt="Donate with crypto" width="168.773" height="54.278"></a>
 </p>
 
 <br>
@@ -216,10 +214,14 @@ Every picture uses a different accent colour. The server and its apps, shares an
   pencil edits a folder's name, colour, icon and members, a tile at the end
   creates a new one, and a container dragged onto a folder moves into it. The
   live search opens any folder with a match, and the scroll position is kept
-  across every folder action.
+  across every folder action. Folders from another folder plugin can be taken
+  over from the gear menu: a preview shows which containers land in which
+  folder, and folders that already exist stay as they are.
 - Theming: one accent colour for everything, or rainbow mode with an editable
   palette; icon colours toggleable; settings sync across origins (IP, hostname,
-  domain) via the engine, and they survive cleared browser data.
+  domain) via the engine, and they survive cleared browser data. **State colours
+  off** gives badges, state dots, usage bars and header chips the accent instead of
+  green, orange and red, also in plugins that take TowerTorch's colours.
 - Icon pipeline: each logo gets the treatment it can actually take. A logo whose
   visible pixels are already one tone is flattened to clean ink; for a known app a
   real monochrome glyph is fetched and flattened instead; anything else is tinted so
@@ -230,6 +232,11 @@ Every picture uses a different accent colour. The server and its apps, shares an
   background, so the browser never waits on a CDN and a box with no internet simply
   keeps the icons it shipped with. A container icon you set yourself, one that differs
   from the icon its template ships, is never swapped for a curated one, only coloured.
+  A container without an icon of its own shows the logo of the app it runs, known by
+  its image and by its name only when the image gives nothing away. About seventy of
+  these logos ship with the plugin (from dashboard-icons, listed in
+  `container-app-marks/README.md`), so they show without internet too, and the
+  **App logos** card on the Docker tab of the settings turns them off.
   Choose the treatment globally under **Logos & Icons**, or pin it per container / VM /
   plugin in that item's own window. That card
   previews the choice on real Docker, VM and Plugin icons from this box, through the
@@ -314,7 +321,9 @@ and notifications. Every row has an (i) that explains it, and rows that depend o
 switch stay locked while it is off. Settings are mirrored into the engine config, so
 every browser and origin sees the same configuration, and only what changed is sent.
 The one exception is OLED, which puts the dark look on true black and stays on the
-device it was switched on, since it belongs to the screen.
+device it was switched on, since it belongs to the screen. The **Info** tab shows the
+installed version and where its updates stand, as Unraid's plugin manager sees them,
+and lists the engine and GlimStone under **Components**.
 
 <br>
 

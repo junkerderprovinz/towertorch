@@ -64,7 +64,7 @@ console.log('\nThe icon colouring is TowerTorch\'s dropdown');
   ok('the trigger draws its arrow', /border-top:\s*5px solid/.test(after), after);
   const trig = body('#tt-vmlim .tt-dsel-trigger');
   ok('on the field fill every other field in the window has', /var\(--tt-surface-3/.test(decl(trig, 'background-color')), decl(trig, 'background-color'));
-  ok('its items rest neutral in every colour mode', /rgba\(128, 128, 128, \.16\)/.test(body('#tt-vmlim .tt-dsel-opt')));
+  ok('its items rest without a fill in every colour mode', /background:\s*transparent/.test(body('#tt-vmlim .tt-dsel-opt')));
 }
 
 console.log('\n' + (fail ? `FAILED  ${pass} passed, ${fail} failed` : `OK  ${pass} passed`));

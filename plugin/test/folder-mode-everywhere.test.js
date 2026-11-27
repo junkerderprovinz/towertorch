@@ -36,9 +36,9 @@ console.log('\napplyFilter() carries an explicit "folder" branch');
 
   console.log('\napplyFilter(): which path fires per mode');
   function run(mode, ttOrgView, gh, findRowsCb, renderFolderViewCb) {
-    const fn = new Function('mode', 'filterText', 'gridHolder', 'ttOrgView', 'norm', 'renderFolderView', 'findRows',
+    const fn = new Function('mode', 'filterText', 'gridHolder', 'ttOrgView', 'norm', 'renderFolderView', 'findRows', 'ttFvPlus',
       applyFilterSrc + '\nreturn applyFilter;'
-    )(mode, 'sonarr', gh, ttOrgView, s => s, renderFolderViewCb, findRowsCb);
+    )(mode, 'sonarr', gh, ttOrgView, s => s, renderFolderViewCb, findRowsCb, () => false);
     fn();
   }
   {

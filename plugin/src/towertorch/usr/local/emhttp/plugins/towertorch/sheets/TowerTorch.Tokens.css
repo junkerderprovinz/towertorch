@@ -307,6 +307,11 @@ html {
   --tt-hover-chroma: 0.3;
   --tt-hover-dark: oklab(from var(--tt-rbaccent, var(--tt-accent)) 0.432 calc(a * var(--tt-hover-chroma)) calc(b * var(--tt-hover-chroma)));
   --tt-hover: var(--tt-hover-dark);
+  /* GlimStone's check mark, which marks the chosen entry of an open dropdown, as a mask so it takes
+     the dropdown's colour. Most dropdown panels stay dark on every theme, so the mark there reads
+     in the dark ramp's ink, which the light themes leave alone. */
+  --tt-check-mark: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0.3 0.549 13.399 13.399'><path fill-rule='evenodd' d='M4.381 12.219 L4.574 12.378 L4.793 12.497 L5.032 12.572 L5.155 12.592 L5.405 12.596 L5.651 12.552 L5.884 12.461 L6.096 12.328 L6.278 12.157 L13.457 3.957 L13.584 3.736 L13.666 3.495 L13.699 3.242 L13.683 2.988 L13.656 2.863 L13.566 2.625 L13.431 2.408 L13.257 2.222 L13.05 2.074 L12.936 2.016 L12.695 1.934 L12.442 1.901 L12.188 1.917 L11.942 1.983 L11.713 2.096 L11.511 2.251 L5.238 9.399 L2.519 6.681 L2.425 6.595 L2.213 6.454 L1.977 6.356 L1.854 6.325 L1.6 6.3 L1.346 6.325 L1.223 6.356 L0.987 6.454 L0.775 6.595 L0.595 6.775 L0.454 6.987 L0.399 7.103 L0.325 7.346 L0.3 7.6 L0.306 7.727 L0.356 7.977 L0.399 8.097 L0.519 8.322 L0.681 8.519Z'/></svg>");
+  --tt-ink-on-dark: var(--tt-accent-ink-dark, oklab(from var(--tt-accent) clamp(0.74, l, 1) calc(a * min(1, 1 / l, 0.26 / (1 - l))) calc(b * min(1, 1 / l, 0.26 / (1 - l)))));
 
   /* The type scale, one size per role: the status line and a tile's one figure, an emphasised
      title, body text, the sub-line beside or under a name, and the meta size for notches, counts
@@ -461,6 +466,15 @@ html.tt-popups-on #alternateView .alternateViewContent {
   --tt-warn-hover: color-mix(in srgb, var(--tt-warn) 85%, var(--tt-text));
   --tt-err-hover:  color-mix(in srgb, var(--tt-err) 85%, var(--tt-text));
   --tt-card-bg: var(--tt-surface-1);  --tt-card-inset: var(--tt-surface-2);  --tt-field-bg: var(--tt-surface-3);
+}
+/* With the state colours off (tt.statemono) every state token takes the accent, on the page and in
+   the dark windows, which declare their own. A plugin's chips that read these tokens follow without
+   knowing the switch, and the hovers mix from the tokens, so they follow too. */
+html.tt-state-mono,
+html.tt-state-mono :is(.tt-pop, .tt-menu, .tt-win, .tt-rowmenu, .tt-cpop, .tt-bulkbar, #tt-settings .tt-set-empty, #alternateView .tt-av-win, #alternateView .alternateViewContent) {
+  --tt-ok:   var(--tt-accent);  --tt-ok-fg:   var(--tt-accent-text);  --tt-ok-ink:   var(--tt-accent-ink);
+  --tt-warn: var(--tt-accent);  --tt-warn-fg: var(--tt-accent-text);  --tt-warn-ink: var(--tt-accent-ink);
+  --tt-err:  var(--tt-accent);  --tt-err-fg:  var(--tt-accent-text);  --tt-err-ink:  var(--tt-accent-ink);
 }
 /* When the system asks for more contrast, the ink takes GlimStone's second step and the focus ring
    thickens. */
@@ -702,39 +716,40 @@ html { --tt-focus-ring-width: 2px; }
    view and <nav class="tabs"> pills in the tabbed one, and its only orange is the active tab's
    border (--brand-orange). docker.css restyles these on the Docker and Plugins pages, while this
    sheet is loaded on every page, so the rule here covers Main, Shares, Settings, Tools and the rest.
-   The html.tt-popups-on prefix plus !important outranks both the stock sheet and the docker.css
-   copy. The sections read as a shade block rather than through hairlines. */
-html.tt-popups-on div.title {
+   The html.tt-page-on prefix plus !important outranks both the stock sheet and the docker.css
+   copy; it holds while theming and the page's own area are on. The sections read as a shade block
+   rather than through hairlines. */
+html.tt-page-on div.title {
   background: var(--tt-surface-4, #262626) !important;
   border: none !important; box-shadow: none !important;
   border-radius: var(--tt-radius-control) !important;
   padding: 8px 14px !important;
 }
-html.tt-popups-on div.title > span.left, html.tt-popups-on div.title > span.right {
+html.tt-page-on div.title > span.left, html.tt-page-on div.title > span.right {
   text-transform: uppercase; letter-spacing: 1.5px; font-size: var(--tt-text-meta); font-weight: 600;
   color: var(--tt-text, #e6e6e6) !important;
 }
-html.tt-popups-on div.title span.left i.title,
-html.tt-popups-on div.title span.left i[class*="icon-"],
-html.tt-popups-on div.title span.left i.fa { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
+html.tt-page-on div.title span.left i.title,
+html.tt-page-on div.title span.left i[class*="icon-"],
+html.tt-page-on div.title span.left i.fa { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
 /* The section badge and the page's action control share a line, so they share the md tier, the same
    one every other section badge in TowerTorch uses. plugins.js stamps this button inline with !important,
    which outranks this rule, so the two have to stay on the same token. */
-html.tt-popups-on #displaybox input[type="button"][value*="ktualisierung" i],
-html.tt-popups-on #displaybox input[type="button"][value*="update" i] {
+html.tt-page-on #displaybox input[type="button"][value*="ktualisierung" i],
+html.tt-page-on #displaybox input[type="button"][value*="update" i] {
   height: var(--tt-md-h, 30px) !important; min-height: var(--tt-md-h, 30px) !important; padding: var(--tt-md-pad, 0 20px) !important;
   font-size: var(--tt-md-fs) !important;
   display: inline-flex !important; align-items: center !important; box-sizing: border-box !important;
 }
 /* The tabbed view's pill row: idle pills take a grey shade, the active and hovered one the TowerTorch
    accent, which replaces the stock --brand-orange outline. */
-html.tt-popups-on nav.tabs, html.tt-popups-on nav.tabs .tabs-container { background: transparent !important; border: none !important; box-shadow: none !important; }
-html.tt-popups-on nav.tabs .tabs-container > button[role="tab"] {
+html.tt-page-on nav.tabs, html.tt-page-on nav.tabs .tabs-container { background: transparent !important; border: none !important; box-shadow: none !important; }
+html.tt-page-on nav.tabs .tabs-container > button[role="tab"] {
   background: var(--tt-surface-4, #262626) !important; color: var(--tt-text-chip, #cfcfcf) !important;
   border: none !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.tt-popups-on nav.tabs .tabs-container > button[role="tab"]:hover,
-html.tt-popups-on nav.tabs .tabs-container > button[role="tab"][aria-selected="true"] {
+html.tt-page-on nav.tabs .tabs-container > button[role="tab"]:hover,
+html.tt-page-on nav.tabs .tabs-container > button[role="tab"][aria-selected="true"] {
   background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important;
   color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
   border-color: transparent !important;
@@ -1016,8 +1031,8 @@ html.tt-popups-on a[class*="back_to"] > i { color: inherit !important; }
    and the top-nav util icons (#menu) are pulled in to the content edge by the --tt-content-rgap
    header.js measures. Only the light-DOM nav containers get the padding; the os-version and profile
    web components stay untouched, and at fluid width the gap is 0. */
-html.tt-popups-on #header { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
-html.tt-popups-on #menu   { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
+html.tt-popups-on.tt-header-on #header { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
+html.tt-popups-on.tt-header-on #menu   { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
 
 /* The Apps (Community Applications) tab in the TowerTorch look: colour, shade and radius only, no layout
    changes, so CA's dynamic multi-state grid keeps working. Its selectors (#searchBox, .caMenuItem,
@@ -2110,7 +2125,7 @@ html.tt-popups-on:has(body.body_sidebarScroll) { overflow: hidden !important; }
    bounce instead of popping out of a point. */
 @keyframes tt-wild-slidein { 0% { transform: translateX(28px); opacity: 0; } 55% { transform: translateX(-6px); opacity: 1; } 100% { transform: translateX(0); } }
 @media (prefers-reduced-motion: no-preference) {
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .sidenav.sidenavShow { animation: tt-wild-slidein .34s cubic-bezier(.34, 1.56, .64, 1); }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .sidenav.sidenavShow { animation: tt-wild-slidein .34s cubic-bezier(.34, 1.56, .64, 1); }
 }
 
 /* The card's corner marks as ordinary badges in a row. CA draws Official, Limited Time, Installed

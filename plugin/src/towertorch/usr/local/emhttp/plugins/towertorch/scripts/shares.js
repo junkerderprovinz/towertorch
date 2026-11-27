@@ -127,7 +127,7 @@
   function paintTabs() {
     try {
       ttHideSmokeTab();
-      var rb = rbOn(), neutral = rb && rbNeutral(), btns = document.querySelectorAll('#displaybox nav.tabs button[role="tab"]');
+      var rb = rbOn() && document.documentElement.classList.contains("tt-shares-on"), neutral = rb && rbNeutral(), btns = document.querySelectorAll('#displaybox nav.tabs button[role="tab"]');
       document.documentElement.classList.toggle("tt-shares-rbneutral", rbNeutral()); // paintRows never runs for the /Docker tab bar
       for (var i = 0; i < btns.length; i++) {
         var b = btns[i], active = b.getAttribute("aria-selected") === "true";
@@ -329,7 +329,7 @@
       if (!onMain()) return;
       var rb = rbOn(), neutral = rb && rbNeutral();
       document.documentElement.classList.toggle("tt-shares-rbneutral", rbNeutral());
-      var tbs = document.querySelectorAll("#displaybox table.unraid.disk_status");
+      var tbs = document.querySelectorAll("#displaybox " + MAIN_DISKS);
       for (var j = 0; j < tbs.length; j++) {
         var rows = tbs[j].querySelectorAll("tbody > tr"), ri = 0;
         for (var r = 0; r < rows.length; r++) {
@@ -744,6 +744,8 @@
   // /Main has its own row code: table.unraid.disk_status has ten mixed columns, is refilled by
   // nchan and carries structural rows (colspan placeholders, pool_header, tr_last, offline rows)
   // that the share-list logic would break. onMain() requires nav.tabs, so it runs in Tabbed mode only.
+  // The array, pool and boot tables. ZFS Master NG's dataset table carries disk_status too.
+  var MAIN_DISKS = "table.unraid.disk_status:not(.zfs_table)";
   function onMain() { try { return pn() === "/Main" && !!document.querySelector("#displaybox nav.tabs"); } catch (e) { return false; } }
   // Badges a value cell by moving its children into .tt-b > .tt-b-v, so the Reads/Writes spans and
   // the Errors info icon keep working. Skipped: the usage bar (restyled by CSS), the assignment
@@ -1101,7 +1103,7 @@
   // /Main: a fixed 11-column grid, with ttFill11 normalising the colspan rows.
   var ttMainCols = ttColFactory({
     key: "tt.main.colpx", n: 11,
-    sel: "#displaybox table.unraid.disk_status",
+    sel: "#displaybox " + MAIN_DISKS,
     host: function () { var a = document.querySelector("#displaybox span.status a.tooltip_diskio"); return a ? a.parentNode : null; },
     place: function (host, b) { host.insertBefore(b, host.firstChild); }   // leads the cluster; behind the toggle it overflows the right alignment edge
   });
@@ -1134,7 +1136,7 @@
   function ttMarqResume() {
     if (!ttMarqRun) return;
     if ((Date.now() - ttMarqRun.t0) / 1000 > ttMarqRun.dur + 2) { ttMarqRun = null; return; }   // over, plus a grace margin
-    var b = document.querySelector("#displaybox table.unraid.disk_status td.desc:hover .tt-b");
+    var b = document.querySelector("#displaybox " + MAIN_DISKS + " td.desc:hover .tt-b");
     // A missing :hover match does not mean the pointer left: right after the node swap the
     // browser's hit-test can lag a frame. The run state stays, and the next tick or the re-fired
     // mouseover resumes it; mouseout ends it.
@@ -1156,7 +1158,7 @@
     if (ttMarqBound) return; ttMarqBound = true;
     var host = document.getElementById("displaybox"); if (!host) return;
     host.addEventListener("mouseover", function (e) {
-      var b = e.target && e.target.closest ? e.target.closest("table.unraid.disk_status td.desc .tt-b") : null;
+      var b = e.target && e.target.closest ? e.target.closest(MAIN_DISKS + " td.desc .tt-b") : null;
       if (!b || b.getAttribute("data-tt-marq") === "1") return;
       // The refill swaps the node under the pointer, so the browser re-fires mouseover on the new
       // node. Starting fresh would reset t0 every second, so a run still going on the same pill
@@ -1166,7 +1168,7 @@
       ttMarqStart(b);
     });
     host.addEventListener("mouseout", function (e) {
-      var b = e.target && e.target.closest ? e.target.closest("table.unraid.disk_status td.desc .tt-b") : null;
+      var b = e.target && e.target.closest ? e.target.closest(MAIN_DISKS + " td.desc .tt-b") : null;
       if (!b || b.getAttribute("data-tt-marq") !== "1") return;
       if (e.relatedTarget && b.contains(e.relatedTarget)) return;   // still inside the pill
       var v = b.querySelector(":scope > .tt-b-v");
@@ -1209,25 +1211,27 @@
       if (k.tagName === "A" || (k.querySelector && k.querySelector("a, input[type='checkbox'], .switch-button-background"))) wrap.appendChild(k);
     }
     if (!wrap.firstChild) return null;
-    // Stamp tt-ud-icon on every non-switch anchor that has content, since the glyph can be the
-    // anchor's own text rather than an <i>. An empty anchor (each toggle span carries one) would
-    // render as a blank accent square between the toggle and its label.
+    // Stamp tt-ud-icon on every anchor with content outside a switch's box, since the glyph can be
+    // the anchor's own text rather than an <i>. An empty anchor (each toggle box carries one) would
+    // render as a blank accent square between the toggle and its label. A switch's box is told by
+    // its checkbox, since UD Next names every control's box span-switches-right.
     var as = wrap.querySelectorAll("a");
     for (var ai = 0; ai < as.length; ai++) {
       var aEl = as[ai], hasGlyph = !!((aEl.textContent || "").trim() || aEl.querySelector("i, img, span, svg, b"));
-      if (!aEl.closest("[class*='switch']") && hasGlyph) aEl.classList.add("tt-ud-icon");
+      if (!aEl.parentNode.querySelector("input[type='checkbox']") && hasGlyph) aEl.classList.add("tt-ud-icon");
       else aEl.classList.remove("tt-ud-icon");   // drop a stale stamp
     }
-    // each toggle gets its label as plain hover text rather than a balloon
+    // Each toggle gets its label as plain hover text rather than a balloon, unless UD Next shows
+    // its own data-tooltip balloon there.
     for (var tw = 0; tw < wrap.children.length; tw++) {
       var wch = wrap.children[tw], wl = wch.querySelector ? wch.querySelector(".switch-button-label") : null;
-      if (wl && !wch.getAttribute("title")) wch.setAttribute("title", (wl.textContent || "").trim());
+      if (wl && !wch.getAttribute("title") && !wch.hasAttribute("data-tooltip")) wch.setAttribute("title", (wl.textContent || "").trim());
     }
     // the icons too: without a title of their own, derive one from the glyph (gear for settings,
     // circling arrows for refresh)
     for (var ti = 0; ti < as.length; ti++) {
       var ta = as[ti];
-      if (!ta.classList.contains("tt-ud-icon") || ta.getAttribute("title")) continue;
+      if (!ta.classList.contains("tt-ud-icon") || ta.getAttribute("title") || ta.hasAttribute("data-tooltip")) continue;
       var cls = ((ta.querySelector("i, span") || {}).className || "") + " " + (ta.className || "");
       if (/gear|cog|setting/i.test(cls)) ta.setAttribute("title", LANG === "de" ? "Unassigned-Devices-Einstellungen" : "Unassigned Devices settings");
       else if (/refresh|sync|rotate/i.test(cls)) ta.setAttribute("title", LANG === "de" ? "Datenträger neu einlesen" : "Refresh disks");
@@ -1409,7 +1413,7 @@
       // the balloon is a nested <span> that default-base.css reveals on :hover. Folding its text
       // into data-tt-tip also keys the Shares.css rule that hides the native box, so teardown
       // reverts it. Only disk_status and the UD tables; array_status stays with ttFoldDesc.
-      var infos = box.querySelectorAll("table.unraid.disk_status a.info, :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.info");
+      var infos = box.querySelectorAll(MAIN_DISKS + " a.info, table.tt-udt a.info");
       for (var n2 = 0; n2 < infos.length; n2++) {
         var ia = infos[n2], sp2 = ia.querySelector(":scope > span"); if (!sp2) continue;
         var it2 = ttHelpText(sp2); if (!it2) continue;
@@ -1431,6 +1435,7 @@
     try {
       if (g("tt.enable.main", "0") === "0") return;
       if (!onMain()) return;
+      if (window.TTTheme && window.TTTheme.stampUdTables) window.TTTheme.stampUdTables();
       var box = document.getElementById("displaybox");
       // ttDiskioHome and ttUdCtrlsHome run before flattenTeardown, which deletes every
       // .tt-card-head including the ones hosting the relocated controls.
@@ -1439,7 +1444,7 @@
       // in sections mode only, so in native-tabs mode the bar would keep the black balloon.
       var dio = document.querySelector("#displaybox span.status a.tooltip_diskio");
       if (dio && dio.closest) { var dst = dio.closest("span.status"); if (dst) ttDiskioTip(dst); }
-      var tbs = document.querySelectorAll("#displaybox table.unraid.disk_status");
+      var tbs = document.querySelectorAll("#displaybox " + MAIN_DISKS);
       for (var i = 0; i < tbs.length; i++) {
         enhanceMainHead(tbs[i]);
         ttMainCols.grips(tbs[i]);   // after the Browse header insert
@@ -1869,11 +1874,11 @@
   // Unassigned Devices is a third-party plugin, so its DOM is described here rather than assumed:
   // div.title.ud > span.left holds one slash-joined heading text beside five span.right.ud (the
   // gear and refresh anchors plus three toggle spans with an empty a.tooltip); .show-disks,
-  // .show-shares and .show-historical each hold a div.title.shift > span.left with an icon and
-  // text; the usb_mounts, samba_mounts and usb_absent tables have their tbody replaced every three
-  // seconds by UD's refreshPage(). The headings are static markup and hold no listeners, so they
-  // split once, with data-tt-ud-orig keeping the original for teardown. The split reads the current
-  // text, so it works after ttLocalizeMain() has translated it.
+  // .show-shares and .show-historical each hold a div.title.shift > span.left (span.title-left in
+  // UD Next) with an icon and text; the three tables, stamped tt-udt by TTTheme.stampUdTables(),
+  // have their tbody replaced every three seconds by UD's refreshPage(). The headings are static
+  // markup and hold no listeners, so they split once, with data-tt-ud-orig keeping the original for
+  // teardown. The split reads the current text, so it works after ttLocalizeMain() has translated it.
   function ttUdSplitHeading(host) {
     if (!host || host.getAttribute("data-tt-ud")) return;
     var kids = Array.prototype.slice.call(host.childNodes), parts = [], cur = null;
@@ -1932,7 +1937,7 @@
       // The top UD bar heading is hidden by CSS, since the sections below repeat it. Only the
       // sub-section heads split into badges.
       var heads = Array.prototype.slice.call(document.querySelectorAll(
-        "#displaybox :is(.show-disks, .show-shares, .show-historical) > div.title.shift :is(span.left, div.left)"));
+        "#displaybox :is(.show-disks, .show-shares, .show-historical) > div.title.shift :is(span.left, div.left, span.title-left)"));
       for (var h = 0; h < heads.length; h++) ttUdSplitHeading(heads[h]);
       ttUdCtrlsMove();
       var tbs = document.querySelectorAll("#displaybox #disk-table-body, #displaybox #remotes-table-body, #displaybox #historical-table-body");
@@ -1954,16 +1959,16 @@
     try {
       var hs = document.querySelectorAll("#displaybox [data-tt-ud-orig]");
       for (var i = 0; i < hs.length; i++) { hs[i].innerHTML = hs[i].getAttribute("data-tt-ud-orig"); hs[i].removeAttribute("data-tt-ud-orig"); hs[i].removeAttribute("data-tt-ud"); }
-      var cells = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) td.tt-bcell");
+      var cells = document.querySelectorAll("#displaybox table.tt-udt td.tt-bcell");
       for (var c2 = 0; c2 < cells.length; c2++) {
         var b2 = cells[c2].querySelector(":scope > .tt-b"), v2 = b2 && b2.querySelector(":scope > .tt-b-v");
         if (v2) { while (v2.firstChild) cells[c2].insertBefore(v2.firstChild, b2); }
         if (b2) cells[c2].removeChild(b2);
         cells[c2].classList.remove("tt-bcell");
       }
-      var nn = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.tt-b-name");
+      var nn = document.querySelectorAll("#displaybox table.tt-udt a.tt-b-name");
       for (var n2 = 0; n2 < nn.length; n2++) { nn[n2].classList.remove("tt-b"); nn[n2].classList.remove("tt-b-name"); }
-      var thc = document.querySelectorAll("#displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) [data-tt-udth]");   // back to the native header alignment
+      var thc = document.querySelectorAll("#displaybox table.tt-udt [data-tt-udth]");   // back to the native header alignment
       for (var t2 = 0; t2 < thc.length; t2++) { thc[t2].style.removeProperty("text-align"); thc[t2].removeAttribute("data-tt-udth"); }
       var mk = document.querySelectorAll("#displaybox tr[data-tt-ud]");
       for (var m2 = 0; m2 < mk.length; m2++) mk[m2].removeAttribute("data-tt-ud");
@@ -2008,7 +2013,7 @@
   function ttDensity(on2) {
     try {
       var dens = g("tt.density", "normal");
-      var tbs = document.querySelectorAll("#displaybox table.unraid.share_status, #displaybox table.unraid.disk_status, #displaybox table.array_status, #displaybox table.usb_mounts, #displaybox table.samba_mounts, #displaybox table.usb_absent");
+      var tbs = document.querySelectorAll("#displaybox table.unraid.share_status, #displaybox " + MAIN_DISKS + ", #displaybox table.array_status, #displaybox table.tt-udt");
       for (var i = 0; i < tbs.length; i++) {
         tbs[i].classList.toggle("tt-dens-compact", !!on2 && dens === "compact");
         tbs[i].classList.toggle("tt-dens-airy", !!on2 && dens === "airy");
@@ -2153,7 +2158,9 @@
     try {
       var root = document.documentElement;
       // Master theming off behaves like a disabled area and runs the teardown branch below.
-      var on = g("tt.enable.shares", "0") !== "0" && g("tt.theming", "1") !== "0";   // opt in, since it flips Unraid's tabbed setting
+      // Opt in, since it flips Unraid's tabbed setting. The area also styles other pages' tab
+      // strips, which stay native where that page's own area is off.
+      var on = g("tt.enable.shares", "0") !== "0" && g("tt.theming", "1") !== "0" && !!(window.TTTheme && window.TTTheme.pageAreaOn && window.TTTheme.pageAreaOn());
       // /Main is its own area but reuses this enhancer, so tt-shares-on is set there when the Start
       // area is on even with the Shares area off. onMain() gates it to /Main, so the Shares styling
       // never leaks onto another page.
@@ -2199,18 +2206,18 @@
           // The inline rainbow colours paintTabs and paintRows stamped survive a class removal, so
           // they are cleared here along with the neutral class.
           root.classList.remove("tt-shares-rbneutral");
-          var painted = document.querySelectorAll('#displaybox nav.tabs button[role="tab"], #displaybox #shareslist tr, #displaybox #disk_list tr, #displaybox .tt-b, #displaybox .tt-b-browse, #displaybox table.unraid.disk_status tr, #displaybox table.array_status input[type="submit"], #displaybox table.array_status input[type="button"], #displaybox table.array_status a.button, #displaybox table.array_status button, #displaybox .tt-card-head, #displaybox a.tt-ud-icon, #displaybox a.tt-ibtn, #displaybox .tt-aop-link, #displaybox .switch-button-background');
+          var painted = document.querySelectorAll('#displaybox nav.tabs button[role="tab"], #displaybox #shareslist tr, #displaybox #disk_list tr, #displaybox .tt-b, #displaybox .tt-b-browse, #displaybox " + MAIN_DISKS + " tr, #displaybox table.array_status input[type="submit"], #displaybox table.array_status input[type="button"], #displaybox table.array_status a.button, #displaybox table.array_status button, #displaybox .tt-card-head, #displaybox a.tt-ud-icon, #displaybox a.tt-ibtn, #displaybox .tt-aop-link, #displaybox .switch-button-background');
           for (var p = 0; p < painted.length; p++) { painted[p].style.removeProperty("background"); painted[p].style.removeProperty("color"); painted[p].style.removeProperty("--tt-rb-c"); painted[p].style.removeProperty("--tt-rb-ct"); }
           ttSelectsTeardown();
           ttCardsTeardown();
           // The /Main disk_status tables give back their injected Browse column, value badges and
           // markers, so a live disable reverts before the next nchan refill. A colspan left one too
           // wide heals with that refill.
-          var mbrowse = document.querySelectorAll("#displaybox table.unraid.disk_status td.tt-browse-col");
+          var mbrowse = document.querySelectorAll("#displaybox " + MAIN_DISKS + " td.tt-browse-col");
           for (var mb = 0; mb < mbrowse.length; mb++) mbrowse[mb].parentNode.removeChild(mbrowse[mb]);
           // Move the children back rather than reading textContent, which would destroy the wrapped
           // diskio spans and the error info icon.
-          var mbc = document.querySelectorAll("#displaybox table.unraid.disk_status td.tt-bcell");
+          var mbc = document.querySelectorAll("#displaybox " + MAIN_DISKS + " td.tt-bcell");
           for (var bcx = 0; bcx < mbc.length; bcx++) {
             var cbx = mbc[bcx].querySelector(":scope > .tt-b"), vvx = cbx && cbx.querySelector(":scope > .tt-b-v");
             if (vvx) { while (vvx.firstChild) mbc[bcx].insertBefore(vvx.firstChild, cbx); }
@@ -2220,13 +2227,13 @@
           var mmk = document.querySelectorAll("#displaybox [data-tt-main]");
           for (var mmx = 0; mmx < mmk.length; mmx++) mmk[mmx].removeAttribute("data-tt-main");
           // strip the headline badge classes off the device link
-          var mname = document.querySelectorAll("#displaybox table.unraid.disk_status a.tt-b-name");
+          var mname = document.querySelectorAll("#displaybox " + MAIN_DISKS + " a.tt-b-name");
           for (var mn = 0; mn < mname.length; mn++) { mname[mn].classList.remove("tt-b"); mname[mn].classList.remove("tt-b-name"); }
           // An empty slot on a stopped array has no link to declass, since enhanceMainName wraps
           // its bare text node instead.
-          var msname = document.querySelectorAll("#displaybox table.unraid.disk_status span.tt-b-name");
+          var msname = document.querySelectorAll("#displaybox " + MAIN_DISKS + " span.tt-b-name");
           for (var ms = 0; ms < msname.length; ms++) msname[ms].parentNode.replaceChild(document.createTextNode(msname[ms].textContent || ""), msname[ms]);
-          var mvoid = document.querySelectorAll("#displaybox table.unraid.disk_status tr.tt-tr-void");
+          var mvoid = document.querySelectorAll("#displaybox " + MAIN_DISKS + " tr.tt-tr-void");
           for (var mv = 0; mv < mvoid.length; mv++) mvoid[mv].classList.remove("tt-tr-void");
           ttMainCols.teardown();
           ttShareCols.teardown();
@@ -2281,7 +2288,7 @@
         // enhanceMain is idempotent, so its own writes re-enter here once and then no-op.
         for (var i = 0; i < recs.length; i++) {
           var tgt = recs[i].target;
-          if (tgt && (tgt.id === "array_devices" || tgt.id === "disk-table-body" || tgt.id === "remotes-table-body" || tgt.id === "historical-table-body" || (tgt.closest && tgt.closest("table.unraid.disk_status")))) { enhanceMain(); paintMain(); break; }
+          if (tgt && (tgt.id === "array_devices" || tgt.id === "disk-table-body" || tgt.id === "remotes-table-body" || tgt.id === "historical-table-body" || (tgt.closest && tgt.closest(MAIN_DISKS)))) { enhanceMain(); paintMain(); break; }
         }
         if (moPending) return; moPending = true;
         setTimeout(function () { moPending = false; if (g("tt.theming", "1") === "0") return; hideRedundantTabs(); paintTabs(); enhanceShares(); paintRows(); enhanceShareDetail(); paintCards(); enhanceMain(); paintMain(); if (g("tt.enable.shares", "0") !== "0" && onStats()) moveStatsControls(); if (g("tt.enable.shares", "0") !== "0" && onBrowse()) enhanceBrowse(); }, 150);

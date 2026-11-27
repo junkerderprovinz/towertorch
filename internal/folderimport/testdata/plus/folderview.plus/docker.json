@@ -1,0 +1,51 @@
+{
+  "mediaFolderId01": {
+    "name": "Media",
+    "icon": "/plugins/folderview.plus/images/icons/folder-media.svg",
+    "regex": "",
+    "containers": ["plex", "jellyfin"],
+    "hiddenPreviewMembers": [],
+    "memberIdentities": {},
+    "parentId": "",
+    "settings": {
+      "preview": 1,
+      "folder_accent_enabled": true,
+      "folder_accent_color": "#FFCA63",
+      "child_folder_order": ["arrFolderId0002"],
+      "childFolderOrder": ["arrFolderId0002"]
+    },
+    "actions": [],
+    "createdAt": "2026-10-02T09:14:00+00:00"
+  },
+  "arrFolderId0002": {
+    "name": "Arr",
+    "icon": "/plugins/folderview.plus/images/icons/folder-download.svg",
+    "regex": "^(sonarr|radarr|prowlarr)",
+    "containers": ["sabnzbd"],
+    "parentId": "mediaFolderId01",
+    "settings": {
+      "preview": 1,
+      "folder_accent_enabled": false,
+      "folder_accent_color": "#55b72d"
+    },
+    "actions": []
+  },
+  "toolsFolderId03": {
+    "name": "Tools",
+    "icon": "",
+    "regex": "",
+    "containers": ["oldtool", "plex"],
+    "parentId": "",
+    "settings": {"preview": 0},
+    "actions": []
+  },
+  "netFolderId0004": {
+    "name": "Network",
+    "icon": "/plugins/folderview.plus/images/icons/folder-network.svg",
+    "regex": "",
+    "containers": [],
+    "parentId": "",
+    "settings": {"preview": 1},
+    "actions": []
+  }
+}

@@ -185,28 +185,28 @@ html.tt-shares-on #displaybox table.unraid.share_status a.tt-b-browse:hover { bo
    and gated on .tt-on-main because disk_status also renders on /Device and /Disk, which stay
    native. enhanceMain() wraps the value cells in .tt-b > .tt-b-v and moves a.view into a
    td.tt-browse-col pill. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b {
   display: inline-flex; align-items: center; gap: 5px; border: none;
   border-radius: var(--tt-radius-pill); padding: var(--tt-bmd-pad, 4px 12px);
   font-size: var(--tt-md-fs); font-weight: 600; line-height: 1.35;
   white-space: nowrap; text-decoration: none; vertical-align: middle;
   background: var(--tt-shr-accent, #FCC419); color: var(--tt-shr-accent-text, #161616);
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b .tt-b-v { font-family: inherit; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b .tt-b-v { font-family: inherit; }
 /* Pool rows right-align their value cells natively while array rows centre them, so every value
    badge cell is centred under its header. The name cell has no .tt-bcell and stays left. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.tt-bcell { text-align: center !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.tt-bcell { text-align: center !important; }
 /* the same for the Unassigned Devices tables, whose headers ttUdBadgeCell centres */
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) td.tt-bcell { text-align: center !important; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b a,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b a:hover,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b i { color: inherit; text-decoration: none; }   /* wrapped links take the badge colour, without the native blue and hover underline */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.tt-browse-col { white-space: nowrap; overflow: visible; width: 1%; }   /* the inserted column lands on the native nth-child(2) width:30%; 1% lets the auto layout shrink it to the pill, which a fixed-layout table such as share_status would not */
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt td.tt-bcell { text-align: center !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b a,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b a:hover,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b i { color: inherit; text-decoration: none; }   /* wrapped links take the badge colour, without the native blue and hover underline */
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.tt-browse-col { white-space: nowrap; overflow: visible; width: 1%; }   /* the inserted column lands on the native nth-child(2) width:30%; 1% lets the auto layout shrink it to the pill, which a fixed-layout table such as share_status would not */
 /* Rows without a Browse target (Parity, unformatted disks) carry an empty <a class='view'></a>
    that enhanceMainRow cannot move; its native 20px width would push their name badges right, so
    it is hidden. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td:first-child a.view:not([href]) { display: none !important; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status a.tt-b-browse {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td:first-child a.view:not([href]) { display: none !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) a.tt-b-browse {
   display: inline-flex !important; width: auto !important; align-items: center; justify-content: center;
   border-radius: var(--tt-radius-pill) !important; padding: var(--tt-bmd-pad, 4px 12px) !important;
   font-family: inherit !important; font-size: var(--tt-md-fs) !important; font-weight: 600 !important;
@@ -214,57 +214,57 @@ html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status a.tt-b-browse 
   background: var(--tt-shr-accent, #FCC419) !important; color: var(--tt-shr-accent-text, #161616) !important;
   transition: filter .12s;
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status a.tt-b-browse:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) a.tt-b-browse:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 
 /* A .tt-b that wraps a live link (Berechnen, the disk row's recompute link) steps on hover like
    a.tt-b-name and a.tt-b-browse; static value pills and tooltip-only a.info anchors do not. */
 html.tt-shares-on #displaybox table.unraid.share_status .tt-b:has(a[href], a[onclick]),
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b:has(a[href], a[onclick]) { cursor: pointer; transition: filter .12s; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b:has(a[href], a[onclick]) { cursor: pointer; transition: filter .12s; }
 html.tt-shares-on #displaybox table.unraid.share_status .tt-b:has(a[href], a[onclick]):hover,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b:has(a[href], a[onclick]):hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b:has(a[href], a[onclick]):hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 /* With table-layout:auto (the min-width override is below) each column sizes to its content, so the
    numeric headers (GESCHRIEBEN, FEHLER) keep their full label and the pool and boot rows ending in
    <td colspan=4> lay out correctly; a fixed layout would size the grid from a colspan-shifted row
    and squeeze the identification cell. Identification gets a 26% bias for the leftover space and
    is left-aligned, because the inserted Browse column moves td.desc onto default-base.css's
    nth-child(3) right-align. Under drag-resize the .tt-colfix override sets width:auto. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc { width: 26%; text-align: left; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead tr[data-tt-main] > td:nth-child(3) { text-align: left; }   /* the shifted IDENTIFIKATION header has the same right-align; keyed on the TowerTorch head marker so other heads stay native */
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc { width: 26%; text-align: left; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead tr[data-tt-main] > td:nth-child(3) { text-align: left; }   /* the shifted IDENTIFIKATION header has the same right-align; keyed on the TowerTorch head marker so other heads stay native */
 
 /* The model badge stays on one line; under the auto layout the column gets its min-content. Below
    about 1000px of viewport the unbreakable model_serial token makes the table wider than its
    container, and the native overflow-x:auto brings back a horizontal scrollbar. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc .tt-b,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc .tt-b-v {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc .tt-b,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc .tt-b-v {
   white-space: nowrap !important; overflow: visible !important; text-overflow: clip !important;
   overflow-wrap: normal !important; word-break: normal !important;
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc .tt-b { flex-wrap: nowrap; max-width: none; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc .tt-b { flex-wrap: nowrap; max-width: none; }
 
 /* /Main disk_status: roomier rows, a large disk name badge, a gap before the reads and writes
    count, and TowerTorch action buttons. shares.js sets --tt-shr-accent to the Start area's accent on /Main. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody td { padding: 9px 14px; }   /* native rows have only 8px on the left */
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody td { padding: 9px 14px; }   /* native rows have only 8px on the left */
 /* the disk name as a large headline badge, like the share name */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b.tt-b-name {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b.tt-b-name {
   padding: var(--tt-lg-pad, 6px 16px); font-size: var(--tt-lg-fs);
   font-weight: 700; letter-spacing: .2px;
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-b.tt-b-name:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status a.tt-b-name,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status a.tt-b-name:hover { text-decoration: none; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b.tt-b-name:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) a.tt-b-name,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) a.tt-b-name:hover { text-decoration: none; }
 /* a small gap between the inline .diskio rate and the reads and writes count */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td span.diskio { margin-right: 6px; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td span.diskio { margin-right: 6px; }
 /* default-base.css gives .TableContainer tables min-width:1000px, which scrolls below that width;
    /Main drops it, while the other pages keep their native scroll */
-html.tt-shares-on.tt-on-main #displaybox .TableContainer table.unraid.disk_status { min-width: 0 !important; width: 100%; table-layout: auto; }
+html.tt-shares-on.tt-on-main #displaybox .TableContainer table.unraid.disk_status:not(.zfs_table) { min-width: 0 !important; width: 100%; table-layout: auto; }
 /* In native sub-tab mode the div.title bars separate the device groups in a panel (native margin
    2rem 0). In section mode the panels carry their own margin. */
 html.tt-shares-on.tt-on-main #displaybox div.title { margin-top: 32px; }
 /* the eyebrow head of the /Shares share_status table; full labels set each column's min-content
    under the auto layout, and 14px matches the body cells */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead td,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead th {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead td,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead th {
   background: transparent !important; color: var(--tt-text-dim, #8a8a8a) !important; font-size: var(--tt-text-meta) !important;
   font-weight: 500 !important; text-transform: uppercase !important; letter-spacing: 1.2px !important;
   border: none !important; box-shadow: none !important; padding-top: 8px !important; padding-bottom: 12px !important;
@@ -273,9 +273,9 @@ html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead th {
 }
 /* An empty header cell takes no padding, and a header row with no text disappears; the subpool
    divider theads are empty rows that would open a gap. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead td:empty,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead th:empty { background: transparent !important; padding: 0 !important; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead tr:not(:has(td:not(:empty), th:not(:empty))) { display: none !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead td:empty,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead th:empty { background: transparent !important; padding: 0 !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead tr:not(:has(td:not(:empty), th:not(:empty))) { display: none !important; }
 /* no native rule lines under thead cells or div.title anywhere on the page */
 html.tt-shares-on.tt-on-main #displaybox table thead td,
 html.tt-shares-on.tt-on-main #displaybox table thead th,
@@ -327,24 +327,24 @@ html.tt-shares-on.tt-on-main #displaybox .usage-disk:not(.sys):not(.mm) > span:l
    row; the widths live in a <colgroup> per table (ttColSet), saved in tt.main.colpx. */
 /* the grip is an 8px hit strip at each header cell's right edge, with a 2px accent line on hover
    and drag; touch-action:none lets touch pointers drag instead of scroll */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead td { position: relative; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead td > .tt-colgrip {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead td { position: relative; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead td > .tt-colgrip {
   /* inside the cell: an overhang into the next positioned head cell would paint under it, and
      the pointer would never reach the grip */
   position: absolute; top: 0; bottom: 0; right: 0; width: 8px;
   cursor: col-resize; touch-action: none; user-select: none; z-index: 30;
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead td > .tt-colgrip::after {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead td > .tt-colgrip::after {
   content: ""; position: absolute; top: 15%; bottom: 15%; left: 3px; width: 2px;
   border-radius: var(--tt-radius-pill); background: transparent; transition: background .12s;
 }
 /* hovering the header row shows all dividers softly; the grip's own hover accent below wins by
    source order */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead tr:hover td > .tt-colgrip::after {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead tr:hover td > .tt-colgrip::after {
   background: rgba(128, 128, 128, .45);
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status thead td > .tt-colgrip:hover::after,
-html.tt-col-dragging #displaybox table.unraid.disk_status thead td > .tt-colgrip::after {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) thead td > .tt-colgrip:hover::after,
+html.tt-col-dragging #displaybox table.unraid.disk_status:not(.zfs_table) thead td > .tt-colgrip::after {
   background: var(--tt-shr-accent, #FCC419);
 }
 /* while dragging: no text selection anywhere, keep the col-resize cursor even off the grip */
@@ -352,26 +352,26 @@ html.tt-col-dragging, html.tt-col-dragging * { user-select: none !important; cur
 /* Resized: the <colgroup> widths define every column, which makes the fixed layout safe with the
    colspan rows. shares.js sets the table's inline width to the column sum, so growing past the
    container scrolls with .TableContainer's native overflow-x. */
-html.tt-shares-on.tt-on-main #displaybox .TableContainer table.unraid.disk_status.tt-colfix { table-layout: fixed !important; }
+html.tt-shares-on.tt-on-main #displaybox .TableContainer table.unraid.disk_status:not(.zfs_table).tt-colfix { table-layout: fixed !important; }
 /* widths derived automatically, before any drag, keep the table at container width with no
    horizontal scrollbar; only dragged widths use the column sum */
-html.tt-shares-on.tt-on-main #displaybox .TableContainer table.unraid.disk_status.tt-colfix.tt-colauto { width: 100% !important; }
+html.tt-shares-on.tt-on-main #displaybox .TableContainer table.unraid.disk_status:not(.zfs_table).tt-colfix.tt-colauto { width: 100% !important; }
 /* With explicit widths, the usage bar's min-width and the identification bias step aside, and the
    one-line model string ends in an ellipsis inside its column. .tt-colfix outranks the earlier
    !important overflow:visible rules. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix .usage-disk:not(.sys):not(.mm) { min-width: 0; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix td.desc { width: auto; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix td.desc,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix td.desc .tt-b,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix td.desc .tt-b-v {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix .usage-disk:not(.sys):not(.mm) { min-width: 0; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix td.desc { width: auto; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix td.desc,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix td.desc .tt-b,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix td.desc .tt-b-v {
   overflow: hidden !important; text-overflow: ellipsis !important;
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix td.desc .tt-b { max-width: 100%; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status.tt-colfix td.desc .tt-b .tt-b-v { min-width: 0; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix td.desc .tt-b { max-width: 100%; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table).tt-colfix td.desc .tt-b .tt-b-v { min-width: 0; }
 /* while the hover marquee runs, the pill is the sliding window and the value span must not clip
    itself, or its ellipsis would hide the tail */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc .tt-b[data-tt-marq="1"] { overflow: hidden !important; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status td.desc .tt-b[data-tt-marq="1"] .tt-b-v { overflow: visible !important; text-overflow: clip !important; max-width: none !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc .tt-b[data-tt-marq="1"] { overflow: hidden !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) td.desc .tt-b[data-tt-marq="1"] .tt-b-v { overflow: visible !important; text-overflow: clip !important; max-width: none !important; }
 /* spacer rows render a bar with no fill and no label, which would show as a stray grey block */
 html.tt-shares-on.tt-on-main #displaybox .usage-disk:not(.sys):not(.mm):has(> span:last-child:empty) { visibility: hidden !important; }
 /* :empty misses a label holding only &nbsp;, so shares.js ttVoidBars stamps those */
@@ -379,17 +379,17 @@ html.tt-shares-on.tt-on-main #displaybox .usage-disk.tt-bar-void { visibility: h
 /* Nothing in a disk_status body paints its own background; every visual lives on a badge, pill or
    bar, so the body, rows, cells and container are flat page background. The thead tint is left
    alone. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody td {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table),
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody tr,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody td {
   background: transparent !important; background-image: none !important; box-shadow: none !important;
   border: none !important;   /* no native rule line on the totals row (tr_last) */
 }
 html.tt-shares-on.tt-on-main #displaybox .TableContainer { background: transparent !important; background-image: none !important; }
 /* the totals row gets the header tint back as a line-free bar; the extra class outranks the rule
    above */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.tr_last > td {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody tr.tr_last > td {
   background: rgba(128, 128, 128, .14) !important; border: none !important;
 }
 /* The stopped array (/Main "Array-Datenträger" as editable slots). */
@@ -397,8 +397,8 @@ html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.tr_la
    tr_last is also the totals class, so the tint above would paint it as a grey slab. shares.js
    ttVoidRow stamps the empty ones with a class, which survives every nchan refill, and they become
    a plain section gap; tr_last rows with content (totals, "Slots:") keep their bar. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.tr_last.tt-tr-void,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.tr_last.tt-tr-void > td {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody tr.tr_last.tt-tr-void,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody tr.tr_last.tt-tr-void > td {
   background: transparent !important; border: none !important; box-shadow: none !important;
   height: 16px !important; line-height: 16px !important; padding: 0 !important;
 }
@@ -407,44 +407,44 @@ html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.tr_la
    tr>td:hover{overflow:visible} lets it paint across the Temp badge on hover. It is clamped to its
    cell and the stopped rows stay clipped on hover; shares.js ttSlotTip puts the full device string
    into the TowerTorch bubble. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status select.slot {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) select.slot {
   min-width: 0 !important; max-width: 100% !important; width: 100% !important; box-sizing: border-box !important;
   text-overflow: ellipsis;
 }
 /* !important beats the native hover overflow for the whole stopped row, including the <em>idSb</em>
    a missing or wrong slot prints after the select */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.offline > td { overflow: hidden !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody tr.offline > td { overflow: hidden !important; }
 /* The clamped control is a neutral filled field at the control radius instead of Unraid's
    underline. Only background-color is set, since the shorthand would also remove the native caret,
    a background-image pair in the theme's border colour. Focus shows a stronger fill, no ring. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status select.slot {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) select.slot {
   background-color: rgba(128, 128, 128, .16) !important;
   border: none !important; box-shadow: none !important;
   border-radius: var(--tt-radius-control) !important;
   padding: 5px 16px 5px 12px !important;
   font-size: var(--tt-md-fs); font-weight: 600;
 }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status select.slot:focus {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) select.slot:focus {
   outline: none !important; background-color: rgba(128, 128, 128, .26) !important;
 }
 /* the assignment <form> is a block wrapper around the select, so it must not add its own box */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tbody tr.offline form { margin: 0; padding: 0; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tbody tr.offline form { margin: 0; padding: 0; }
 /* header.js does not wrap selects in this table (see ttWrapPageSelects), but a wrapper arriving any
    other way must stay in its column too, since its trigger sizes to the longest option, the full
    model, serial, size and device line. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-tsel,
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status .tt-tsel > .tt-tsel-trigger {
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-tsel,
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-tsel > .tt-tsel-trigger {
   min-width: 0 !important; max-width: 100% !important; width: 100% !important; box-sizing: border-box !important;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 /* On an empty slot the disk name badge is a <span>, since there is no <a> to tag (shares.js
    enhanceMainName), so it reads as a label without the hover lift of .tt-b.tt-b-name. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status span.tt-b.tt-b-name { cursor: default; }
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status span.tt-b.tt-b-name:hover { box-shadow: none !important; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) span.tt-b.tt-b-name { cursor: default; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) span.tt-b.tt-b-name:hover { box-shadow: none !important; }
 /* A table a few px wider than its container adds a dark scrollbar track under the rows, and during
    a column drag it pops in and out and the page jumps. Automatic widths never scroll, a drag
    freezes the overflow, and dragged widths keep a slim bar without a track. */
-html.tt-shares-on.tt-on-main #displaybox .TableContainer:has(table.unraid.disk_status.tt-colauto) { overflow-x: hidden !important; }
+html.tt-shares-on.tt-on-main #displaybox .TableContainer:has(table.unraid.disk_status:not(.zfs_table).tt-colauto) { overflow-x: hidden !important; }
 html.tt-col-dragging #displaybox .TableContainer { overflow-x: hidden !important; }
 html.tt-shares-on.tt-on-main #displaybox .TableContainer::-webkit-scrollbar { height: 8px; }
 html.tt-shares-on.tt-on-main #displaybox .TableContainer::-webkit-scrollbar-track { background: transparent; }
@@ -499,7 +499,7 @@ html.tt-shares-on.tt-on-shares #displaybox nav.tabs > a.tt-colreset { margin-lef
 /* Centre the DS, Größe, Benutzt and Frei columns (8 to 11 with the Browse column inserted). The
    value badges centre through text-align and the usage bars through their auto margins; rows with
    colspans shift the positions and are left out. */
-html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status tr > td:nth-child(n+8):nth-child(-n+11):not([colspan]) { text-align: center; }
+html.tt-shares-on.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tr > td:nth-child(n+8):nth-child(-n+11):not([colspan]) { text-align: center; }
 /* the /Main action buttons (Start, Stop, Format, Check, Sync, Clear, History, Move, Pause, Cancel,
    Reboot, Shutdown) as accent pills, a.button included since ArrayOperation uses it */
 html.tt-shares-on.tt-on-main #displaybox input[type="submit"],
@@ -572,21 +572,21 @@ html.tt-shares-on.tt-on-main #displaybox .show-historical > div.title.shift {
   background: none !important; border-bottom: none !important;
 }
 /* the split heading badges (shares.js ttUdSplitHeading): section badges side by side */
-html.tt-shares-on.tt-on-main #displaybox div.title :is(span.left, div.left) { display: inline-flex; align-items: center; gap: 8px; letter-spacing: .3px; }
-html.tt-shares-on.tt-on-main #displaybox div.title :is(span.left, div.left) .tt-b {
+html.tt-shares-on.tt-on-main #displaybox div.title :is(span.left, div.left, span.title-left) { display: inline-flex; align-items: center; gap: 8px; letter-spacing: .3px; }
+html.tt-shares-on.tt-on-main #displaybox div.title :is(span.left, div.left, span.title-left) .tt-b {
   display: inline-flex; align-items: center; gap: 6px; border: none;
   min-height: var(--tt-sec-h, 22px); box-sizing: border-box;   /* the section badge */
   border-radius: var(--tt-radius-pill); padding: var(--tt-sec-pad, 0 12px);
   font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw, 500); letter-spacing: var(--tt-sec-ls, 1.2px); text-transform: uppercase; line-height: 1.35; white-space: nowrap;
   background: var(--tt-shr-accent, #FCC419); color: var(--tt-shr-accent-text, #161616);
 }
-html.tt-shares-on.tt-on-main #displaybox div.title :is(span.left, div.left) .tt-b img.icon { height: 16px; width: auto; padding: 0; }
+html.tt-shares-on.tt-on-main #displaybox div.title :is(span.left, div.left, span.title-left) .tt-b img.icon { height: 16px; width: auto; padding: 0; }
 /* UD's full-colour badge PNGs become monochrome in the badge ink: white by default, black on light
    fills (.tt-ink-dark, set by shares.js from idealText()) */
 html.tt-shares-on.tt-on-main #displaybox .tt-b.tt-ud-h img,
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b img { filter: brightness(0) invert(1); }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b img { filter: brightness(0) invert(1); }
 html.tt-shares-on.tt-on-main #displaybox .tt-b.tt-ud-h.tt-ink-dark img,
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b.tt-ink-dark img { filter: brightness(0); }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b.tt-ink-dark img { filter: brightness(0); }
 /* Gear and refresh as plain icons in the theme ink, in the native bar and after the move into the
    UD card head (.tt-ud-ctrls). The selector takes any <i> because UD's fa classes differ between
    versions. */
@@ -684,49 +684,49 @@ html.tt-shares-on.tt-on-main #displaybox .tt-ud-ctrls div.right.ud {
 html.tt-shares-on.tt-on-main #displaybox .tt-ud-ctrls .switch-button-background,
 html.tt-shares-on.tt-on-main #displaybox div.title.ud :is(span.right, div.right) .switch-button-background { margin: 0 !important; }
 html.tt-shares-on.tt-on-main #displaybox div.title.ud :is(span.right, div.right) > * { margin: 0 !important; float: none !important; }
-/* The three UD tables (usb_mounts, samba_mounts, usb_absent) in the /Main list look, like the
+/* The three UD tables, stamped tt-udt by TTTheme.stampUdTables(), in the /Main list look, like the
    disk_status block above. */
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) thead td {
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt thead td {
   background: rgba(128, 128, 128, .14); font-weight: 600; white-space: nowrap; padding: 8px 14px;
 }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) tbody td { padding: 9px 14px; }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b {
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt tbody td { padding: 9px 14px; }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b {
   display: inline-flex; align-items: center; gap: 5px; border: none;
   border-radius: var(--tt-radius-pill); padding: var(--tt-bmd-pad, 4px 12px);
   font-size: var(--tt-md-fs); font-weight: 600; line-height: 1.35;
   white-space: nowrap; text-decoration: none; vertical-align: middle;
   background: var(--tt-shr-accent, #FCC419); color: var(--tt-shr-accent-text, #161616);
 }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b a,
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b a:hover,
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b i { color: inherit; text-decoration: none; }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b.tt-b-name {
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b a,
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b a:hover,
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b i { color: inherit; text-decoration: none; }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt .tt-b.tt-b-name {
   padding: var(--tt-lg-pad, 6px 16px); font-size: var(--tt-lg-fs); font-weight: 700; letter-spacing: .2px;
 }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.tt-b-name,
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.tt-b-name:hover { text-decoration: none; }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt a.tt-b-name,
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt a.tt-b-name:hover { text-decoration: none; }
 /* the per-device settings gear (a.info > i.fa-gears, JS-skipped from badging) -> small TowerTorch icon button */
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.info i.fa-gears {
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt a.info i.fa-gears {
   display: inline-flex; align-items: center; justify-content: center;
   width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); box-sizing: border-box; border-radius: var(--tt-radius-pill);
   background: var(--tt-shr-accent, #FCC419); color: var(--tt-shr-accent-text, #161616); transition: filter .12s;
 }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a.info:hover i.fa-gears { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) i.fa-gears[disabled],
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) i.fa-gears.disabled {
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt a.info:hover i.fa-gears { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt i.fa-gears[disabled],
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt i.fa-gears.disabled {
   display: inline-flex; align-items: center; justify-content: center;
   width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); box-sizing: border-box; border-radius: var(--tt-radius-pill);
   background: #3a3a3a; color: #8a8a8a; opacity: .55;
 }
 /* the remove control (ENTFERNEN column, UD historical devices) as an icon tile in the page's
    accent, forced over the native inline red on the <i>, since removing is never painted red */
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) :is(i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban) {
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt :is(i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban) {
   display: inline-flex; align-items: center; justify-content: center;
   width: var(--tt-icon-badge, 26px); height: var(--tt-icon-badge, 26px); box-sizing: border-box; border-radius: var(--tt-radius-pill);
   background: var(--tt-shr-accent, #FCC419) !important; color: var(--tt-shr-accent-text, #161616) !important; transition: background-color .12s; cursor: pointer;
 }
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) a:hover > :is(i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban),
-html.tt-shares-on.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) :is(i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban):hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt a:hover > :is(i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban),
+html.tt-shares-on.tt-on-main #displaybox table.tt-udt :is(i.fa-remove, i.fa-times, i.fa-trash, i.fa-trash-o, i.fa-ban):hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 /* The UD HISTORICAL, FREIGABEN and DISKS toggles are native jQuery switchButtons (a
    .switch-button-background track, .checked when on, and a .switch-button-button knob). Only colour
    and radius change, as for the Docker and VM autostart toggles. */
@@ -934,7 +934,7 @@ html.tt-shares-on.tt-on-main #displaybox :is(table.array_status, .tt-aop-pills) 
 html.tt-shares-on.tt-on-main #displaybox .tt-info {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
   width: 15px; height: 15px; margin-left: 10px; flex: 0 0 auto; vertical-align: middle;
-  color: var(--txt, #e6e6e6); opacity: .8; background: none; cursor: help; text-transform: none; letter-spacing: normal;
+  color: var(--tt-text, #e6e6e6); opacity: .8; background: none; cursor: help; text-transform: none; letter-spacing: normal;
 }
 html.tt-shares-on.tt-on-main #displaybox .tt-info:hover,
 html.tt-shares-on.tt-on-main #displaybox .tt-info:focus { opacity: 1; outline: none; }
@@ -1115,9 +1115,9 @@ html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-text { co
    the item div and one click toggles. Only the inner list is restyled; the dropcontainer wrapper's
    position is widget-managed. */
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-dropcontainer {
-  display: flex !important; flex-direction: column !important; align-items: flex-start !important;  /* pills hug their label, not full width */
-  gap: 6px !important; padding: 8px !important;
-  width: max-content !important; min-width: 160px !important; max-width: min(92vw, 420px) !important;  /* panel hugs the widest pill, not the widget's inline 300px */
+  display: flex !important; flex-direction: column !important; align-items: stretch !important;  /* rows span the panel, so the hover and the check line up */
+  gap: 0 !important; padding: 8px !important;
+  width: max-content !important; min-width: 160px !important; max-width: min(92vw, 420px) !important;  /* panel hugs the widest row, not the widget's inline 300px */
   height: auto !important; max-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important;  /* the list is the only scroll container */
   background: #303030 !important; border: none !important; border-radius: var(--tt-radius-card) !important;
   box-shadow: var(--tt-elev-3, 0 12px 30px rgba(0, 0, 0, .6)) !important;   /* no border line; the fill and shadow carry the depth off the #222 card */
@@ -1129,27 +1129,33 @@ html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-dropconta
   height: auto !important; width: auto !important; overflow: visible !important;
   border: none !important; box-shadow: none !important; background: transparent !important; padding: 0 !important;  /* strip jQuery-UI's translucent .ui-widget-content frame; the inner dropcontainer carries the fill and shadow */
 }
-/* Same contract as .tt-tsel-opt and .tt-dsel-opt: neutral at rest, and the list's one colour on
-   hover and when picked, stamped by tt-theme.js paintSelects on the wrapper and falling back
-   through --tt-rbaccent to this area's --tt-shr-accent in accent mode. */
+/* Same contract as .tt-tsel-opt and .tt-dsel-opt: plain rows, the hover colour under the pointer,
+   and the picked ones in bold with the check. The check wears the list's one colour, stamped by
+   tt-theme.js paintSelects on the wrapper and falling back through --tt-rbaccent to this area's
+   --tt-shr-accent in accent mode. */
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item,
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt {
   display: flex !important; align-items: center; gap: 8px; justify-content: flex-start;
   height: auto !important; line-height: 1.3 !important; margin: 0 !important;
-  padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-pill);
-  background: rgba(128, 128, 128, .16) !important;
+  padding: 6px 12px; cursor: pointer; border-radius: var(--tt-radius-control);
+  background: transparent !important;
   border: none !important; color: #e4e4e4 !important; white-space: nowrap;
-  transition: background .12s, color .12s, filter .12s;
+  transition: background .12s;
 }
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:hover,
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:focus-visible,
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt:hover,
-html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked) {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419))) !important;
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-shr-accent-text, #161616))) !important;
-  box-shadow: none !important;   /* no frames or rings, on selected badges either */
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt:focus-visible { background: var(--tt-hover-dark) !important; box-shadow: none !important; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item::after,
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt::after {
+  content: ""; flex: 0 0 auto; width: 14px; height: 14px; margin-left: auto; visibility: hidden;
+  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419)));
+  -webkit-mask: var(--tt-check-mark) center / contain no-repeat; mask: var(--tt-check-mark) center / contain no-repeat;
 }
-html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked):hover,
-html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected:hover { background: color-mix(in srgb, var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419))) 85%, var(--tt-text, #e6e6e6)) !important; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked) { font-weight: 600; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:has(input:checked)::after,
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected::after { visibility: visible; }
+html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item:not(:has(input[type="checkbox"]))::after { display: none; }
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item input[type="checkbox"] { display: none !important; }
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item label,
 html.tt-shares-on.tt-on-share-detail #displaybox .ui-dropdownchecklist-item .ui-dropdownchecklist-text {
@@ -1304,9 +1310,14 @@ html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-open .tt-sel-trigger
   background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419)));
   color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-shr-accent-text, #161616)));
 }
+/* Keyboard focus is the fields' step up the ladder, after the hover so it shows under the pointer
+   too; an open list keeps its colour. */
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel:not(.tt-open) > .tt-sel-trigger:focus-visible {
+  filter: none; background: color-mix(in srgb, var(--tt-surface-3, #2e2e2e) 85%, var(--tt-text, #e6e6e6)); color: var(--tt-text, #e6e6e6);
+}
 /* the open panel is the same floating vertical list as the disk dropdown */
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-panel {
-  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 6px;
+  display: none; position: absolute; z-index: 20; margin-top: 4px; flex-direction: column; gap: 0;
   padding: 8px; width: max-content; min-width: 160px; max-width: min(92vw, 420px);
   max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   background: #303030; border: none; border-radius: var(--tt-radius-card);
@@ -1314,12 +1325,7 @@ html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-panel {
 }
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-open .tt-sel-panel { display: flex; }
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel.tt-sel-disabled .tt-sel-trigger { opacity: .5; cursor: not-allowed; }
-/* the picked chip wears the list's colour, read through the same chain as every other option */
-html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected {
-  background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-shr-accent, #FCC419))) !important;
-  color: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-shr-accent-text, #161616))) !important;
-  box-shadow: none !important;   /* no frames or rings, on selected badges either */
-}
+html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-selected { font-weight: 600; }
 html.tt-shares-on.tt-on-share-detail #displaybox .tt-sel-opt.is-disabled { opacity: .4; pointer-events: none; }
 
 /* In rainbow mode shares.js paintTabs() colours every sub-tab pill, on the /Shares list and the
@@ -1349,10 +1355,10 @@ html.tt-shares-rbneutral.tt-on-shares #displaybox nav.tabs button[role="tab"]:no
 }
 /* The same sub-mode on /Main, for the disk_status badges paintMain() paints. Scoped to disk_status,
    so the semantic .tt-aop-status pills and the Reboot/Shutdown buttons keep their colours. */
-html.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status .tt-b { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
-html.tt-shares-on.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status a.tt-b-browse { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
-html.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status tr:hover .tt-b,
-html.tt-shares-on.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status tr:hover a.tt-b-browse {
+html.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) .tt-b { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-shares-on.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) a.tt-b-browse { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tr:hover .tt-b,
+html.tt-shares-on.tt-shares-rbneutral.tt-on-main #displaybox table.unraid.disk_status:not(.zfs_table) tr:hover a.tt-b-browse {
   background: var(--tt-rb-c, var(--tt-shr-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-shr-accent-text, #161616)) !important;
 }
 /* The status pills get their own stack, moved out of the grid rows by ttAopPillStack and returned
@@ -1399,8 +1405,8 @@ html.tt-shares-rbneutral.tt-on-main #displaybox table.array_status a.button:hove
    outside the rainbow modes through the base rule above. */
 /* The sub-mode reaches the Unassigned Devices tables too: grey at rest, whole-row recolour on hover
    through the vars the UD loop stamps on the <tr>. */
-html.tt-shares-rbneutral.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) .tt-b { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
-html.tt-shares-rbneutral.tt-on-main #displaybox :is(table.usb_mounts, table.samba_mounts, table.usb_absent) tr:hover .tt-b {
+html.tt-shares-rbneutral.tt-on-main #displaybox table.tt-udt .tt-b { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-shares-rbneutral.tt-on-main #displaybox table.tt-udt tr:hover .tt-b {
   background: var(--tt-rb-c, var(--tt-shr-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-shr-accent-text, #161616)) !important;
 }
 /* the buttons outside the tables, which paintMain stamps .tt-xbtn, follow the same contract */
@@ -1416,7 +1422,7 @@ html.tt-shares-on #displaybox [data-tt-tip] { position: relative; }
 /* ttTipSweep folds the nested-span balloon of an a.info anchor into data-tt-tip, and the native span
    box must not show under the floating bubble. Keyed on [data-tt-tip], so removing the attribute
    brings the native balloon back without a reload. The floating bubble depends on this rule. */
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent) a.info[data-tt-tip] > span { display: none !important; }
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt) a.info[data-tt-tip] > span { display: none !important; }
 /* The UD icon tiles, the column-reset icon button and the Planung and Wiki links join the same
    contract. Toggle tracks stay coloured while checked, like the active menu tab. */
 html.tt-shares-rbneutral.tt-on-main #displaybox a.tt-ud-icon,
@@ -1675,12 +1681,12 @@ html.tt-shares-on #displaybox table.unraid.share_status.tt-dens-airy thead td,
 html.tt-shares-on #displaybox table.unraid.share_status.tt-dens-airy thead th { padding-top: 10px; padding-bottom: 10px; }
 /* the /Main device and UD tables, whose base is tbody 9px 14px and thead 8px 14px; the divider
    theads' padding:0 !important still wins over these */
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent).tt-dens-compact tbody td { padding: 5px 10px; }
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent).tt-dens-compact thead td,
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent).tt-dens-compact thead th { padding: 6px 10px; }
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent).tt-dens-airy tbody td { padding: 12px 16px; }
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent).tt-dens-airy thead td,
-html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status, table.usb_mounts, table.samba_mounts, table.usb_absent).tt-dens-airy thead th { padding: 10px 16px; }
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt).tt-dens-compact tbody td { padding: 5px 10px; }
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt).tt-dens-compact thead td,
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt).tt-dens-compact thead th { padding: 6px 10px; }
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt).tt-dens-airy tbody td { padding: 12px 16px; }
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt).tt-dens-airy thead td,
+html.tt-shares-on.tt-on-main #displaybox :is(table.unraid.disk_status:not(.zfs_table), table.tt-udt).tt-dens-airy thead th { padding: 10px 16px; }
 /* The array-operation grid rows change vertically only; the flush-left padding-left 0 on the first
    two cells and the 10px horizontal stay. The !important matches the base grid padding, so the
    extra class and later source order decide, and :not(:nth-child(1)) leaves the status cell's zero

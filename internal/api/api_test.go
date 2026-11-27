@@ -689,3 +689,63 @@ func TestIconsCarryTheUsersOwnIcon(t *testing.T) {
 		t.Errorf("only the own icon carries the field: %s", rec.Body.String())
 	}
 }
+
+// A container whose image the browser knows is looked up as that app, while the
+// check for an icon its user set still goes by the container's own name.
+func TestIconsLookUpTheAppTheImageRuns(t *testing.T) {
+	s, h := newServer()
+	jelly := iconsrc.Result{Kind: iconsrc.KindGlyph, Source: iconsrc.SrcSimple, Slug: "jellyfin"}
+	s.Icons = cachedIcons{"jellyfin": jelly, "films": {Kind: iconsrc.KindNone}, "backup": {Kind: iconsrc.KindNone}}
+	s.TemplateIcons = fakeOwners{"films": tmplicon.Own}
+	rec := httptest.NewRecorder()
+	body := `{"names":["films","media","backup"],"apps":{"films":"jellyfin","media":"jellyfin"}}`
+	h.ServeHTTP(rec, httptest.NewRequest("POST", "/api/icons", strings.NewReader(body)))
+	var got map[string]iconsrc.Result
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+		t.Fatalf("decode: %v (%s)", err, rec.Body.String())
+	}
+	if r := got["media"]; r != jelly {
+		t.Errorf("media = %+v, want the app's answer", r)
+	}
+	if r := got["films"]; !r.Own || r.Kind != iconsrc.KindGlyph {
+		t.Errorf("films = %+v, want the app's answer marked own by its name", r)
+	}
+	if r := got["backup"]; r.Kind != iconsrc.KindNone {
+		t.Errorf("backup = %+v, want its own name looked up", r)
+	}
+	if _, ok := got["jellyfin"]; ok || len(got) != 3 {
+		t.Errorf("the answer is keyed by the names asked for: %s", rec.Body.String())
+	}
+}
+
+func TestFolderImportResolvesAgainstTheLiveContainers(t *testing.T) {
+	s, h := newServer()
+	s.FolderRoot = t.TempDir()
+	dir := filepath.Join(s.FolderRoot, "folder.view3")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	cfg := `{"f1":{"name":"VPN","regex":"","containers":["gluetun","gone"],"settings":{},"actions":[]}}`
+	if err := os.WriteFile(filepath.Join(dir, "docker.json"), []byte(cfg), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("GET", "/api/folderimport", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("code = %d: %s", rec.Code, rec.Body.String())
+	}
+	want := `{"folders":[{"id":"f1","name":"VPN","members":["gluetun"],"gone":["gone"]}]}`
+	if got := strings.TrimSpace(rec.Body.String()); got != want {
+		t.Fatalf("body = %s, want %s", got, want)
+	}
+}
+
+func TestFolderImportWithNothingToTakeOverIsAnEmptyList(t *testing.T) {
+	s, h := newServer()
+	s.FolderRoot = t.TempDir()
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("GET", "/api/folderimport", nil))
+	if rec.Code != http.StatusOK || strings.TrimSpace(rec.Body.String()) != `{"folders":[]}` {
+		t.Fatalf("code = %d, body = %s", rec.Code, rec.Body.String())
+	}
+}

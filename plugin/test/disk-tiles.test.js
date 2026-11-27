@@ -173,6 +173,10 @@ console.log('\nThe readers follow Unraid\'s rows');
   ok('it spins down through UD\'s own call', JSON.stringify(u.spin) === JSON.stringify({ fn: 'spinDownDisk', args: ['sdh'] }) && !u.down);
   ok('the browse link comes from its partition row', u.browse === '/Main/Browse?dir=/mnt/disks/Elements');
   ok('usage, rate and temperature', u.fs && u.fs.fs === 'ntfs' && u.fs.used === '3.12 TB' && u.rd === 1.2e6 && u.temp.c === 31 && u.serial === 'TESTUD01');
+  // Preclear (PreclearFooter.page) writes its running status into the span UD leaves for it.
+  const PRECLEARING = UD.replace("<span id='preclear_x' style='display:block;'></span>", "<span id='preclear_sdh' style='display:block;'><i style='margin-left: -10px;' class='icon-preclear'></i><span style='margin-left: 4px;'></span>Zeroing: 37% @ 211 MB/s (2:01:33)</span>");
+  const pc = R.readUd(tbody(PRECLEARING)).disks[0];
+  ok('a running preclear keeps its status out of the serial', !!pc && pc.serial === 'TESTUD01' && pc.dev === 'sdh', pc && pc.serial);
   const none = R.readUd(tbody(UD_NONE));
   ok('no disks: UD\'s own notice is kept', none.disks.length === 0 && !none.unknown && none.notice === 'No Unassigned Disks available.');
   ok('an empty table is left to UD until it has answered', R.readUd(tbody('')).unknown);

@@ -1,0 +1,5 @@
+{
+  "a": {"name": "Alpha", "containers": ["plex"], "parentId": "b"},
+  "b": {"name": "Beta", "containers": [], "parentId": "a"},
+  "c": {"name": "Gamma", "containers": [], "parentId": "missing"}
+}

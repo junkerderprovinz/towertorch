@@ -66,7 +66,14 @@
   // while every orchestration control stays: the actions column, the state toggle, the limit
   // gears, the plan chip with its editor, the save and start-in-order actions and the heartbeat.
   // It is read at the presentational chokepoints only, never near boot(), the timers or the API.
-  function themingOn() { return localStorage.getItem("tt.theming") !== "0"; }
+  // The Docker area switch takes the same look away for this tab alone.
+  function themingOn() { return localStorage.getItem("tt.theming") !== "0" && localStorage.getItem("tt.enable.docker") !== "0"; }
+  // FolderView Plus groups the list into folders of its own, and its theme contract
+  // (docs/THEME_API_CONTRACT.md) leaves those rows, their order and the view to it. It is known by
+  // its asset directory, apart from the older folder.view plugins.
+  function ttFvPlus() { return !!document.querySelector('script[src*="/plugins/folderview.plus/"]'); }
+  // The grid and folder views belong to the theming, and FolderView Plus owns the page's view.
+  function ttViewsOn() { return themingOn() && !ttFvPlus(); }
   // Skip jQuery's switchButton() widget for the per-row autostart toggle. Unraid's loadlist()
   // replaces the whole #docker_list after every action and then calls
   // $('.autostart').switchButton(), a jQuery UI widget that builds four DOM nodes and an event
@@ -79,7 +86,8 @@
   // loadlist(), and is scoped to .autostart, so the Basic/Advanced view toggle keeps the real
   // widget.
   (function () {
-    if (!window.jQuery || !jQuery.fn.switchButton || jQuery.fn.switchButton.__ttPatched) return;
+    // FolderView Plus builds its folder rows' autostart switch through the same widget.
+    if (!window.jQuery || !jQuery.fn.switchButton || jQuery.fn.switchButton.__ttPatched || ttFvPlus()) return;
     var realSwitchButton = jQuery.fn.switchButton;
     jQuery.fn.switchButton = function (opts) {
       if (themingOn() && this.length && this.hasClass("autostart")) { this.addClass("tt-noswitch"); return this; }
@@ -127,8 +135,8 @@
   // "TowerTorch" in both halves. "TT" is a source-code prefix, the tt- class namespace, the
   // TT_* constants and the tt.* keys, and it never leaves the source.
   var T = {
-    de: { uptodate: "Aktuell", update: "Update", start: "Starten", stop: "Stoppen", restart: "Neustart", pause: "Pause", resume: "Fortsetzen", force: "Update erzwingen", save: "Startplan speichern", startorder: "In Reihenfolge starten", filter: "filtern…", search: "Suche", cols: "Badges", view: "Ansicht", list: "Liste", grid: "Raster", plan: "Startplan", done: "erledigt", saving: "speichere…", saved: "gespeichert", after: "nach", active: "aktiv", watchdog: "Auto-Start", wUnhealthy: "bei „unhealthy“", wExit: "bei Absturz (nicht bei normalem Stopp)", wMax: "max./Std.", schedules: "Zeitpläne", addsched: "+ Zeitplan", remove: "entfernen", manage: "Im Startplan verwalten", dependsOn: "Hängt ab von", commaSep: "kommagetrennt", dependsOnInfo: "Container, die laufen müssen, bevor dieser startet. TowerTorch startet sie zuerst, wartet, bis jeder von ihnen bereit meldet (womit „bereit“ gemeint ist, legst du unten unter „Bereit wenn“ fest), und startet erst danach diesen hier. Das Feld ist eine Auswahlliste: hineinklicken öffnet sie, jeder Klick nimmt einen Container auf oder wieder heraus, Tippen geht auch. Leer heißt: dieser Container wartet auf nichts und startet sofort.", startDelay: "Startverzögerung", startOrder: "Startnummer", startOrderPh: "Nr.", startOrderInfo: "Kleinere Zahl startet früher; leer/0 = ohne Nummer und startet zuletzt in Listenreihenfolge. Priorität, keine feste Reihenfolge; Doppelte sind erlaubt. Abhängigkeiten und Health-Gates gehen weiterhin vor.", secWait: "Sek. vor dem Start warten", readyWhen: "Bereit wenn", onFail: "Bei Fehlschlag", failhint: "abort überspringt Abhängige · continue/degrade starten sie trotzdem.", ramLimit: "RAM-Limit", cpuLimit: "CPU-Limit", cpuram: "CPU/RAM-Limits", ramPh: "z. B. 2G · 512M · leer = unverändert", cpuPh: "z. B. 1.5 · leer = unverändert", limitsFoot: "Sofort per Docker-Update angewendet, kein Neustart. Leeres Feld lässt den Wert unverändert. „Limit entfernen“ setzt auf unbegrenzt (Docker kann ein Limit live nicht ganz löschen, restlos weg erst durch Neu-Erstellen des Containers).", invalid: "Ungültige Eingabe", saveShort: "Speichern", ramNum: "z. B. 2 · leer = unverändert", cpuNum: "z. B. 1.5 · leer", cpuPin: "CPU-Pinning", cpuPinPh: "z. B. 0-3,6  (leer = alle)", cfgSet: "eingestellt", cfgUnset: "nicht eingestellt (Standard)", removeLim: "Limit entfernen", execPh: "Befehl im Container, z. B. pg_isready", logPh: "Text im Log, z. B. ready", bandwidth: "Bandbreite", egress: "Egress (Upload)", upload: "↑ Upload", download: "↓ Download", bwFoot: "Upload = tbf-Shaper, Download = Netfilter-Policing (hashlimit) im Container, kein Kernel-Qdisc. Wird laufend angewendet; nach einem Container-Neustart erst im nächsten Zyklus wieder. Braucht nsenter + tc/iptables auf dem Host; die Schnittstelle stellst du in den Einstellungen ein.", idleStop: "Auto-Stop bei Leerlauf", idleMin: "Leerlauf-Minuten", idleCpu: "CPU-Schwelle %", idleFoot: "Stoppt den Container, wenn er längere Zeit nichts zu tun hat: CPU unter der Schwelle und kaum Netzwerkverkehr, beides gleichzeitig und ohne Unterbrechung. „Leerlauf-Minuten“ ist, wie lange das so bleiben muss, bevor TowerTorch stoppt; „CPU-Schwelle %“ ist, ab welcher Auslastung der Container als beschäftigt gilt. Ein beschäftigter Container wird nie gestoppt, und TowerTorch startet ihn danach auch nicht von selbst wieder.", restartPolicy: "Restart-Policy", rpNo: "Nein (kein Auto-Start)", rpUnlessStopped: "Außer wenn gestoppt", rpAlways: "Immer", rpOnFailure: "Bei Fehler", rpWarn: "kein Auto-Start", rpWarnTip: "Restart-Policy „no“: dieser Container startet nach einem Host-Neustart nicht automatisch.", depsOk: "Alle Abhängigkeiten bereit", depsBad: "Abhängigkeit nicht bereit:", depNotRun: "noch nicht geprüft", newFolder: "Neuer Ordner", editFolder: "Ordner bearbeiten", deleteFolder: "Ordner löschen", moveToFolder: "In Ordner verschieben", rootLevel: "(Wurzelebene)", iconMode: "Icon-Färbung", iconInherit: "folgt globaler Einstellung", iconAuto: "Automatisch", iconNative: "Natives Icon", iconFlat: "Nachzeichnen", iconTint: "Tönen", iconOriginal: "Original-Logo", hideStopped: "Gestoppte ausblenden", bulkStartAll: "Alle starten", bulkStopAll: "Alle stoppen", bulkRestartAll: "Alle neu starten", bulkUpdateAll: "Alle aktualisieren", bulkPauseAll: "Alle pausieren", bulkResumeAll: "Alle fortsetzen", allContainers: "Alle Container", barAdd: "Container hinzufügen", barCheck: "Nach Aktualisierungen suchen", barUpdateAll: "Alle aktualisieren", barSizes: "Containergröße", updateCt: "Aktualisieren", discardTitle: "Ungespeicherte Änderungen verwerfen?", discard: "Verwerfen", keepEditing: "Weiter bearbeiten", cancel: "Abbrechen", newFolderTitle: "Neuen Ordner anlegen", folderName: "Name des Ordners", create: "Anlegen", folderColour: "Farbe", folderIcon: "Symbol", folderMembers: "Container", deleteFolderTitle: "Ordner „%s“ löschen?", deleteShort: "Löschen", thirdParty: "Drittanbieter", daemonDown: "Dienst nicht erreichbar, Limits und Bandbreite ruhen", manageInfo: "Nimmt den Container in den Startplan auf. TowerTorch startet ihn nach seinen Abhängigkeiten und wartet, bis er bereit ist.", watchdogInfo: "Startet den Container neu, wenn er abstürzt oder als unhealthy gemeldet wird.", sceneTitle: "Startablauf", sceneInfo: "So startet TowerTorch diesen Container zusammen mit denen, auf die er wartet, und denen, die auf ihn warten. Wer auf andere wartet, kommt nach ihnen dran, und ein Pfeil zeigt, auf wen. Ein Haken heißt bereit. Wartezeiten sind verkürzt, stehen aber im richtigen Verhältnis zueinander.", sceneAlone: "Dieser Container wartet auf niemanden, und niemand wartet auf ihn.", sceneCycle: "Diese Container warten im Kreis aufeinander. So startet der Plan nicht." },
-    en: { uptodate: "up to date", update: "Update", start: "Start", stop: "Stop", restart: "Restart", pause: "Pause", resume: "Resume", force: "Force update", save: "Save start plan", startorder: "Start in order", filter: "filter…", search: "Search", cols: "Badges", view: "View", list: "List", grid: "Grid", plan: "Start plan", done: "done", saving: "saving…", saved: "saved", after: "after", active: "active", watchdog: "Auto-start", wUnhealthy: "when unhealthy", wExit: "on crash (not on a normal stop)", wMax: "max/hour", schedules: "Schedules", addsched: "+ schedule", remove: "remove", manage: "Manage in the start plan", dependsOn: "Depends on", commaSep: "comma-separated", dependsOnInfo: "Containers that have to be running before this one starts. TowerTorch starts them first, waits until each of them reports ready (what “ready” means is set below under “Ready when”), and only then starts this one. The field is a picker: click it to open the list, each click adds or removes a container, and typing works too. Empty means this container waits for nothing and starts right away.", startDelay: "Start delay", startOrder: "Start order", startOrderPh: "no.", startOrderInfo: "Lower number starts earlier; empty/0 = unnumbered and starts last in list order. A priority, not a strict order; duplicates are fine. Dependencies and health-gates still take precedence.", secWait: "sec to wait before starting", readyWhen: "Ready when", onFail: "On fail", failhint: "abort skips dependents · continue/degrade start them anyway.", ramLimit: "RAM limit", cpuLimit: "CPU limit", cpuram: "CPU/RAM limits", ramPh: "e.g. 2G · 512M · empty = unchanged", cpuPh: "e.g. 1.5 · empty = unchanged", limitsFoot: "Applied instantly via Docker update, no restart. An empty field leaves the value unchanged. “Remove limit” sets it to unlimited (Docker can't fully unset a limit live, gone for good only by recreating the container).", invalid: "invalid value", saveShort: "Save", ramNum: "e.g. 2 · empty = unchanged", cpuNum: "e.g. 1.5 · empty", cpuPin: "CPU pinning", cpuPinPh: "e.g. 0-3,6  (empty = all)", cfgSet: "configured", cfgUnset: "not set (default)", removeLim: "Remove limit", execPh: "command in the container, e.g. pg_isready", logPh: "text in the log, e.g. ready", bandwidth: "Bandwidth", egress: "Egress (upload)", upload: "↑ Upload", download: "↓ Download", bwFoot: "Upload = tbf shaper, download = netfilter policing (hashlimit) inside the container, no kernel qdisc. Re-applied while running; after a container restart it returns on the next cycle. Needs nsenter + tc/iptables on the host; set the interface on the Settings page.", idleStop: "Auto-stop when idle", idleMin: "Idle minutes", idleCpu: "CPU threshold %", idleFoot: "Stops the container once it has had nothing to do for a while: CPU below the threshold and barely any network traffic, both at once and without a break. “Idle minutes” is how long that has to hold before TowerTorch stops it; “CPU threshold %” is the load above which the container counts as busy. A busy container is never stopped, and TowerTorch does not start it again by itself afterwards.", restartPolicy: "Restart policy", rpNo: "No (never)", rpUnlessStopped: "Unless stopped", rpAlways: "Always", rpOnFailure: "On failure", rpWarn: "no auto-start", rpWarnTip: "Restart policy “no”: this container will not auto-start after a host reboot.", depsOk: "All dependencies ready", depsBad: "Dependency not ready:", depNotRun: "not checked yet", newFolder: "New folder", editFolder: "Edit folder", deleteFolder: "Delete folder", moveToFolder: "Move to folder", rootLevel: "(Root level)", iconMode: "Icon colouring", iconInherit: "follows the global setting", iconAuto: "Automatic", iconNative: "Native icon", iconFlat: "Redraw", iconTint: "Tone", iconOriginal: "Original logo", hideStopped: "Hide stopped", bulkStartAll: "Start all", bulkStopAll: "Stop all", bulkRestartAll: "Restart all", bulkUpdateAll: "Update all", bulkPauseAll: "Pause all", bulkResumeAll: "Resume all", allContainers: "All containers", barAdd: "Add container", barCheck: "Check for updates", barUpdateAll: "Update all", barSizes: "Container size", updateCt: "Update", discardTitle: "Discard unsaved changes?", discard: "Discard", keepEditing: "Keep editing", cancel: "Cancel", newFolderTitle: "Create a folder", folderName: "Folder name", create: "Create", folderColour: "Colour", folderIcon: "Icon", folderMembers: "Containers", deleteFolderTitle: "Delete folder “%s”?", deleteShort: "Delete", thirdParty: "Third party", daemonDown: "Service not reachable, limits and bandwidth are paused", manageInfo: "Adds the container to the start plan. TowerTorch starts it after its dependencies and waits until it is ready.", watchdogInfo: "Restarts the container when it crashes or reports unhealthy.", sceneTitle: "Start sequence", sceneInfo: "How TowerTorch starts this container together with the ones it waits for and the ones that wait for it. A container that waits for others comes after them, and an arrow shows which ones. A check means ready. Delays are shortened but keep their proportions.", sceneAlone: "This container waits for no one, and no one waits for it.", sceneCycle: "These containers wait for each other in a circle, so the plan will not start." },
+    de: { uptodate: "Aktuell", update: "Update", start: "Starten", stop: "Stoppen", restart: "Neustart", pause: "Pause", resume: "Fortsetzen", force: "Update erzwingen", save: "Startplan speichern", startorder: "In Reihenfolge starten", filter: "filtern…", search: "Suche", cols: "Badges", view: "Ansicht", list: "Liste", grid: "Raster", plan: "Startplan", done: "erledigt", saving: "speichere…", saved: "gespeichert", after: "nach", active: "aktiv", watchdog: "Auto-Start", wUnhealthy: "bei „unhealthy“", wExit: "bei Absturz (nicht bei normalem Stopp)", wMax: "max./Std.", schedules: "Zeitpläne", addsched: "+ Zeitplan", remove: "entfernen", manage: "Im Startplan verwalten", dependsOn: "Hängt ab von", commaSep: "kommagetrennt", dependsOnInfo: "Container, die laufen müssen, bevor dieser startet. TowerTorch startet sie zuerst, wartet, bis jeder von ihnen bereit meldet (womit „bereit“ gemeint ist, legst du unten unter „Bereit wenn“ fest), und startet erst danach diesen hier. Das Feld ist eine Auswahlliste: hineinklicken öffnet sie, jeder Klick nimmt einen Container auf oder wieder heraus, Tippen geht auch. Leer heißt: dieser Container wartet auf nichts und startet sofort.", startDelay: "Startverzögerung", startOrder: "Startnummer", startOrderPh: "Nr.", startOrderInfo: "Kleinere Zahl startet früher; leer/0 = ohne Nummer und startet zuletzt in Listenreihenfolge. Priorität, keine feste Reihenfolge; Doppelte sind erlaubt. Abhängigkeiten und Health-Gates gehen weiterhin vor.", secWait: "Sek. vor dem Start warten", readyWhen: "Bereit wenn", onFail: "Bei Fehlschlag", failhint: "abort überspringt Abhängige · continue/degrade starten sie trotzdem.", ramLimit: "RAM-Limit", cpuLimit: "CPU-Limit", cpuram: "CPU/RAM-Limits", ramPh: "z. B. 2G · 512M · leer = unverändert", cpuPh: "z. B. 1.5 · leer = unverändert", limitsFoot: "Sofort per Docker-Update angewendet, kein Neustart. Leeres Feld lässt den Wert unverändert. „Limit entfernen“ setzt auf unbegrenzt (Docker kann ein Limit live nicht ganz löschen, restlos weg erst durch Neu-Erstellen des Containers).", invalid: "Ungültige Eingabe", saveShort: "Speichern", ramNum: "z. B. 2 · leer = unverändert", cpuNum: "z. B. 1.5 · leer", cpuPin: "CPU-Pinning", cpuPinPh: "z. B. 0-3,6  (leer = alle)", cfgSet: "eingestellt", cfgUnset: "nicht eingestellt (Standard)", removeLim: "Limit entfernen", execPh: "Befehl im Container, z. B. pg_isready", logPh: "Text im Log, z. B. ready", bandwidth: "Bandbreite", egress: "Egress (Upload)", upload: "↑ Upload", download: "↓ Download", bwFoot: "Upload = tbf-Shaper, Download = Netfilter-Policing (hashlimit) im Container, kein Kernel-Qdisc. Wird laufend angewendet; nach einem Container-Neustart erst im nächsten Zyklus wieder. Braucht nsenter + tc/iptables auf dem Host; die Schnittstelle stellst du in den Einstellungen ein.", idleStop: "Auto-Stop bei Leerlauf", idleMin: "Leerlauf-Minuten", idleCpu: "CPU-Schwelle %", idleFoot: "Stoppt den Container, wenn er längere Zeit nichts zu tun hat: CPU unter der Schwelle und kaum Netzwerkverkehr, beides gleichzeitig und ohne Unterbrechung. „Leerlauf-Minuten“ ist, wie lange das so bleiben muss, bevor TowerTorch stoppt; „CPU-Schwelle %“ ist, ab welcher Auslastung der Container als beschäftigt gilt. Ein beschäftigter Container wird nie gestoppt, und TowerTorch startet ihn danach auch nicht von selbst wieder.", restartPolicy: "Restart-Policy", rpNo: "Nein (kein Auto-Start)", rpUnlessStopped: "Außer wenn gestoppt", rpAlways: "Immer", rpOnFailure: "Bei Fehler", rpWarn: "kein Auto-Start", rpWarnTip: "Restart-Policy „no“: dieser Container startet nach einem Host-Neustart nicht automatisch.", depsOk: "Alle Abhängigkeiten bereit", depsBad: "Abhängigkeit nicht bereit:", depNotRun: "noch nicht geprüft", newFolder: "Neuer Ordner", editFolder: "Ordner bearbeiten", deleteFolder: "Ordner löschen", moveToFolder: "In Ordner verschieben", rootLevel: "(Wurzelebene)", iconMode: "Icon-Färbung", iconInherit: "folgt globaler Einstellung", iconAuto: "Automatisch", iconNative: "Natives Icon", iconFlat: "Nachzeichnen", iconTint: "Tönen", iconOriginal: "Original-Logo", hideStopped: "Gestoppte ausblenden", bulkStartAll: "Alle starten", bulkStopAll: "Alle stoppen", bulkRestartAll: "Alle neu starten", bulkUpdateAll: "Alle aktualisieren", bulkPauseAll: "Alle pausieren", bulkResumeAll: "Alle fortsetzen", allContainers: "Alle Container", barAdd: "Container hinzufügen", barCheck: "Nach Aktualisierungen suchen", barUpdateAll: "Alle aktualisieren", barSizes: "Containergröße", updateCt: "Aktualisieren", discardTitle: "Ungespeicherte Änderungen verwerfen?", discard: "Verwerfen", keepEditing: "Weiter bearbeiten", cancel: "Abbrechen", newFolderTitle: "Neuen Ordner anlegen", folderName: "Name des Ordners", create: "Anlegen", folderColour: "Farbe", folderIcon: "Symbol", folderMembers: "Container", deleteFolderTitle: "Ordner „%s“ löschen?", deleteShort: "Löschen", thirdParty: "Drittanbieter", daemonDown: "Dienst nicht erreichbar, Limits und Bandbreite ruhen", manageInfo: "Nimmt den Container in den Startplan auf. TowerTorch startet ihn nach seinen Abhängigkeiten und wartet, bis er bereit ist.", watchdogInfo: "Startet den Container neu, wenn er abstürzt oder als unhealthy gemeldet wird.", sceneTitle: "Startablauf", sceneInfo: "So startet TowerTorch diesen Container zusammen mit denen, auf die er wartet, und denen, die auf ihn warten. Wer auf andere wartet, kommt nach ihnen dran, und ein Pfeil zeigt, auf wen. Ein Haken heißt bereit. Wartezeiten sind verkürzt, stehen aber im richtigen Verhältnis zueinander.", sceneAlone: "Dieser Container wartet auf niemanden, und niemand wartet auf ihn.", sceneCycle: "Diese Container warten im Kreis aufeinander. So startet der Plan nicht.", importBtn: "Ordner übernehmen", importTitle: "Diese Ordner übernehmen?", importText: "Diese Ordner stammen aus einem anderen Ordner-Plugin. TowerTorch legt sie als Unraids eigene Docker-Ordner an, die die Ordneransicht zeigt. Die Dateien des anderen Plugins bleiben, wie sie sind.", importOk: "Übernehmen", importExists: "Schon da, bleibt, wie er ist", importStays: "%s bleibt in %f", importGone: "Nicht mehr da:", importEmpty: "Nichts zu übernehmen, übersprungen", importDone: "Ordner übernommen" },
+    en: { uptodate: "up to date", update: "Update", start: "Start", stop: "Stop", restart: "Restart", pause: "Pause", resume: "Resume", force: "Force update", save: "Save start plan", startorder: "Start in order", filter: "filter…", search: "Search", cols: "Badges", view: "View", list: "List", grid: "Grid", plan: "Start plan", done: "done", saving: "saving…", saved: "saved", after: "after", active: "active", watchdog: "Auto-start", wUnhealthy: "when unhealthy", wExit: "on crash (not on a normal stop)", wMax: "max/hour", schedules: "Schedules", addsched: "+ schedule", remove: "remove", manage: "Manage in the start plan", dependsOn: "Depends on", commaSep: "comma-separated", dependsOnInfo: "Containers that have to be running before this one starts. TowerTorch starts them first, waits until each of them reports ready (what “ready” means is set below under “Ready when”), and only then starts this one. The field is a picker: click it to open the list, each click adds or removes a container, and typing works too. Empty means this container waits for nothing and starts right away.", startDelay: "Start delay", startOrder: "Start order", startOrderPh: "no.", startOrderInfo: "Lower number starts earlier; empty/0 = unnumbered and starts last in list order. A priority, not a strict order; duplicates are fine. Dependencies and health-gates still take precedence.", secWait: "sec to wait before starting", readyWhen: "Ready when", onFail: "On fail", failhint: "abort skips dependents · continue/degrade start them anyway.", ramLimit: "RAM limit", cpuLimit: "CPU limit", cpuram: "CPU/RAM limits", ramPh: "e.g. 2G · 512M · empty = unchanged", cpuPh: "e.g. 1.5 · empty = unchanged", limitsFoot: "Applied instantly via Docker update, no restart. An empty field leaves the value unchanged. “Remove limit” sets it to unlimited (Docker can't fully unset a limit live, gone for good only by recreating the container).", invalid: "invalid value", saveShort: "Save", ramNum: "e.g. 2 · empty = unchanged", cpuNum: "e.g. 1.5 · empty", cpuPin: "CPU pinning", cpuPinPh: "e.g. 0-3,6  (empty = all)", cfgSet: "configured", cfgUnset: "not set (default)", removeLim: "Remove limit", execPh: "command in the container, e.g. pg_isready", logPh: "text in the log, e.g. ready", bandwidth: "Bandwidth", egress: "Egress (upload)", upload: "↑ Upload", download: "↓ Download", bwFoot: "Upload = tbf shaper, download = netfilter policing (hashlimit) inside the container, no kernel qdisc. Re-applied while running; after a container restart it returns on the next cycle. Needs nsenter + tc/iptables on the host; set the interface on the Settings page.", idleStop: "Auto-stop when idle", idleMin: "Idle minutes", idleCpu: "CPU threshold %", idleFoot: "Stops the container once it has had nothing to do for a while: CPU below the threshold and barely any network traffic, both at once and without a break. “Idle minutes” is how long that has to hold before TowerTorch stops it; “CPU threshold %” is the load above which the container counts as busy. A busy container is never stopped, and TowerTorch does not start it again by itself afterwards.", restartPolicy: "Restart policy", rpNo: "No (never)", rpUnlessStopped: "Unless stopped", rpAlways: "Always", rpOnFailure: "On failure", rpWarn: "no auto-start", rpWarnTip: "Restart policy “no”: this container will not auto-start after a host reboot.", depsOk: "All dependencies ready", depsBad: "Dependency not ready:", depNotRun: "not checked yet", newFolder: "New folder", editFolder: "Edit folder", deleteFolder: "Delete folder", moveToFolder: "Move to folder", rootLevel: "(Root level)", iconMode: "Icon colouring", iconInherit: "follows the global setting", iconAuto: "Automatic", iconNative: "Native icon", iconFlat: "Redraw", iconTint: "Tone", iconOriginal: "Original logo", hideStopped: "Hide stopped", bulkStartAll: "Start all", bulkStopAll: "Stop all", bulkRestartAll: "Restart all", bulkUpdateAll: "Update all", bulkPauseAll: "Pause all", bulkResumeAll: "Resume all", allContainers: "All containers", barAdd: "Add container", barCheck: "Check for updates", barUpdateAll: "Update all", barSizes: "Container size", updateCt: "Update", discardTitle: "Discard unsaved changes?", discard: "Discard", keepEditing: "Keep editing", cancel: "Cancel", newFolderTitle: "Create a folder", folderName: "Folder name", create: "Create", folderColour: "Colour", folderIcon: "Icon", folderMembers: "Containers", deleteFolderTitle: "Delete folder “%s”?", deleteShort: "Delete", thirdParty: "Third party", daemonDown: "Service not reachable, limits and bandwidth are paused", manageInfo: "Adds the container to the start plan. TowerTorch starts it after its dependencies and waits until it is ready.", watchdogInfo: "Restarts the container when it crashes or reports unhealthy.", sceneTitle: "Start sequence", sceneInfo: "How TowerTorch starts this container together with the ones it waits for and the ones that wait for it. A container that waits for others comes after them, and an arrow shows which ones. A check means ready. Delays are shortened but keep their proportions.", sceneAlone: "This container waits for no one, and no one waits for it.", sceneCycle: "These containers wait for each other in a circle, so the plan will not start.", importBtn: "Take over folders", importTitle: "Take over these folders?", importText: "These folders come from another folder plugin. TowerTorch creates them as Unraid's own Docker folders, which the folder view shows. The other plugin's files stay as they are.", importOk: "Take over", importExists: "Already there, stays as it is", importStays: "%s stays in %f", importGone: "No longer there:", importEmpty: "Nothing to take over, skipped", importDone: "Folders taken over" },
   };
   function t(k) { return (T[LANG] || T.en)[k] || T.en[k]; }
   var STATE_LABELS = {
@@ -145,7 +153,7 @@
   };
   function runLabel(s) { var m = RUN_LABELS[LANG] || RUN_LABELS.en; return m[s] || s || "?"; }
 
-  var mode = (localStorage.getItem(VIEW_KEY) === "grid" && themingOn()) ? "grid" : "list"; // the grid is part of the theming, so it never starts with theming off
+  var mode = (localStorage.getItem(VIEW_KEY) === "grid" && ttViewsOn()) ? "grid" : "list";
   var ttOrgView = null, ttOrgAvailable = false; // the cached docker.organizer GraphQL result; null while it is unloaded or unreachable
   var containers = [], containerNames = [], containersByName = {}, stats = {}, shiplog = {}, workingPlan = {}, lastRun = {}, iconCache = {};
   var netPrev = {}; // name to {rx,tx,t}, the previous cumulative counters, for the live rate
@@ -216,13 +224,20 @@
   function findRows() {
     var cands = ["#docker_list tr.sortable, #docker_list tr.folder-element", "#docker_list > tr", "table#docker_containers tbody tr", "table.tablesorter tbody tr", "div.tabs table tbody tr", "table tbody tr"];
     for (var i = 0; i < cands.length; i++) {
-      var rows = Array.prototype.slice.call(document.querySelectorAll(cands[i])).filter(function (tr) { return !isFolderHeader(tr) && !tr.classList.contains("advanced") && (tr.querySelector("td.ct-name, td.updatecolumn") || (tr.querySelector("img") && tr.textContent.trim().length > 1)); });
+      // FolderView Plus keeps a folder's members inside the folder row's .folder-storage, which is
+      // its own; the rows it shows are outside it.
+      var rows = Array.prototype.slice.call(document.querySelectorAll(cands[i])).filter(function (tr) { return !isFolderHeader(tr) && !tr.closest(".folder-storage") && !tr.classList.contains("advanced") && (tr.querySelector("td.ct-name, td.updatecolumn") || (tr.querySelector("img") && tr.textContent.trim().length > 1)); });
       if (rows.length) return rows;
     }
     return [];
   }
   function rowName(tr) { var a = tr.querySelector("td.ct-name .appname"); if (a && a.textContent.trim()) return a.textContent.trim(); var id = tr.id || ""; if (/^ct-/.test(id)) return id.slice(3); var img = tr.querySelector("img"); var cell = img ? (img.closest("td") || tr) : tr; var link = cell.querySelector("a"); return (link && link.textContent.trim() ? link.textContent.trim() : (cell.textContent || tr.textContent).trim().split("\n")[0].trim()); }
-  function hideNative(hide) { var tb = nativeTable(); if (tb) tb.style.display = hide ? "none" : ""; }
+  // Only a table hidden here is shown again, since FolderView Plus's Command view hides it too.
+  function hideNative(hide) {
+    var tb = nativeTable(); if (!tb) return;
+    if (hide) { tb.style.display = "none"; tb.setAttribute("data-tt-hidden", "1"); }
+    else if (tb.hasAttribute("data-tt-hidden")) { tb.style.display = ""; tb.removeAttribute("data-tt-hidden"); }
+  }
   // container state from the native glyph <i id='load-..' class='fa fa-play|pause|square ..'>
   function glyphState(g) { if (!g) return ""; var c = " " + (g.className || "") + " "; if (/\bfa-play\b/.test(c)) return "running"; if (/\bfa-pause\b/.test(c)) return "paused"; if (/\bfa-square\b/.test(c)) return "exited"; return ""; }
   // Unraid's Advanced/Basic view is a cookie plus a global .advanced/.basic toggle, with no body
@@ -756,6 +771,27 @@
     return out;
   }
   function tintTargets() { return tintTargetsNamed().map(function (t) { return t.el; }); }
+  // tt.imagelogos, on by default: the pipeline looks a container up as the app its image runs, or
+  // its name when the image says nothing, and a row on Unraid's placeholder shows that app's logo.
+  function imageLogosOn() { return localStorage.getItem("tt.imagelogos") !== "0" && !!window.TTContainerApps; }
+  var appMemo = {};
+  // name -> app for the engine's container list. Unraid's row names only the image's id, so the
+  // repository comes from the engine.
+  function containerApps(list) {
+    var out = {};
+    if (!imageLogosOn()) return out;
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i], key = c.name + "\n" + (c.image || "");
+      if (!Object.prototype.hasOwnProperty.call(appMemo, key)) appMemo[key] = window.TTContainerApps.appFor(c.image, c.name);
+      if (appMemo[key]) out[c.name] = appMemo[key];
+    }
+    return out;
+  }
+  function appLogo(app) {
+    if (!app) return "";
+    var light = window.TTTheme && window.TTTheme.lightTheme && window.TTTheme.lightTheme();
+    return "/plugins/towertorch/container-app-marks/" + window.TTContainerApps.markFile(app, !light);
+  }
   // Swaps an <img>'s source to a resolved icon, or back to the one it shipped with. The native
   // src is remembered once and the write is guarded on data-tt-isrc, so a repaint that changes
   // nothing writes no attribute.
@@ -778,26 +814,28 @@
     if (ink) return { color: ink, filter: "" };
     return { color: "", filter: want };
   }
-  // Resolve ONE item to {filter, srcUrl}. `scope` namespaces the per-item pins so a
-  // container and a VM of the same name keep separate settings.
-  //  · a font glyph (<i>) is a glyph already: it inks, and it has no src to swap.
-  //  · treat "flat"/"tint" fall back to native when there is no ink colour at all, which
-  //    is how a user who never enabled the tint keeps untouched icons.
-  function iconTreatment(scope, name, isGlyphEl, nativeSrc) {
+  // The plan for one item. `scope` namespaces the per-item pins so a container and a VM of the
+  // same name keep separate settings, and logo is the app's logo, which takes the placeholder's
+  // place. A font glyph (<i>) is a glyph already: it inks, and it has no src to swap. Without an
+  // ink colour the caller keeps the item's own picture, so a user who never enabled the tint
+  // keeps untouched icons.
+  function iconTreatment(scope, name, isGlyphEl, nativeSrc, logo) {
     var CI = window.TTTheme && window.TTTheme.icons;
     if (!CI) return { treat: "tint", url: "" };
     var res = CI.result(name), kind = res ? res.kind : "";
     var mode = CI.mode(scope, name);
     // Unraid's question-mark stand-in is replaced before anything is measured, so the plan is made
     // for the picture that will show.
-    var stand = isGlyphEl ? "" : CI.placeholder(nativeSrc);
+    var stand = isGlyphEl ? "" : CI.placeholder(nativeSrc, logo);
     if (stand) nativeSrc = stand;
     // A font glyph is monochrome by construction: measure nothing, fetch nothing, ink it.
     var spread = isGlyphEl ? 0 : CI.spread(nativeSrc);
     var plan = CI.plan(mode, kind === "pending" ? "" : kind, spread, isGlyphEl ? null : CI.tile(nativeSrc), !!(res && res.own));
     var url = stand;
-    if (!isGlyphEl && (plan.src === "glyph" || plan.src === "color")) url = CI.svgUrl(name);
-    return { treat: plan.treat, url: url, tile: plan.tile, why: plan.why };
+    // The app's logo is the curated colour artwork already, in the variant drawn for this page.
+    var isLogo = !!logo && stand === logo;
+    if (!isGlyphEl && (plan.src === "glyph" || (plan.src === "color" && !isLogo))) url = CI.svgUrl(name);
+    return { treat: plan.treat, url: url, stand: stand, glyph: !isGlyphEl && plan.src === "glyph", tile: plan.tile, why: plan.why };
   }
   function applyIconTint() {
     try {
@@ -843,7 +881,8 @@
       // without blocking. A name it has not looked up yet stays native for this pass and repaints
       // through the callback init() wires.
       var CI = window.TTTheme && window.TTTheme.icons;
-      if (CI) CI.want(named.map(function (x) { return x.name; }));
+      var apps = containerApps(containers);
+      if (CI) CI.want(named.map(function (x) { return x.name; }), apps);
       // The same size contract as applySettings()'s --tt-logo-img: tt.sgsize through the shared
       // map, not a literal, because the inline !important write below outranks docker.css's own
       // --tt-logo-img rules.
@@ -851,8 +890,7 @@
       for (var i = 0; i < imgs.length; i++) {
         var n = imgs[i];
         var isGlyphEl = n.tagName !== "IMG";
-        var plan = CI ? iconTreatment("docker", named[i].name, isGlyphEl, isGlyphEl ? "" : nativeIconSrc(n)) : { treat: "tint", url: "" };
-        if (!isGlyphEl) setIconSrc(n, plan.url);
+        var plan = CI ? iconTreatment("docker", named[i].name, isGlyphEl, isGlyphEl ? "" : nativeIconSrc(n), appLogo(apps[named[i].name])) : { treat: "tint", url: "" };
         // While adopting, this row's own ink and filters; otherwise the page-wide values.
         var thisFlat = flat, thisTint = f, thisInk = ink;
         if (adopt) {
@@ -864,6 +902,8 @@
         }
         // "native", or no ink colour at all, leaves the pixels alone
         var want = plan.treat === "native" ? "" : plan.treat === "flat" ? thisFlat : plan.treat === "knock" ? CI.knock(thisInk, plan.tile, str) : thisTint;
+        // A glyph is drawn black, so without a filter to ink it the row keeps its own picture.
+        if (!isGlyphEl) setIconSrc(n, plan.glyph && !want ? plan.stand : plan.url);
         if (n.tagName === "IMG") { n.style.filter = want; }
         else {
           var gif = glyphInkAndFilter(plan, ibgOn, ibgAcc, thisInk, want);
@@ -890,8 +930,7 @@
         for (var j = 0; j < g.length; j++) {
           var gn = g[j].getAttribute("data-tt-name") || "";
           gnames.push(gn);
-          var gp = CI ? iconTreatment("docker", gn, false, nativeIconSrc(g[j])) : { treat: "tint", url: "" };
-          setIconSrc(g[j], gp.url);
+          var gp = CI ? iconTreatment("docker", gn, false, nativeIconSrc(g[j]), appLogo(apps[gn])) : { treat: "tint", url: "" };
           var gFlat = flat, gTint = f, gInk = ink;
           if (adopt) {
             gInk = itemAdoptInk(g[j].closest(".tt-card, .tt-sn"));
@@ -899,9 +938,11 @@
             gFlat = cardBlk ? flatBlk : flatWht;
             gTint = cardBlk ? fBlk : fWht;
           }
-          g[j].style.filter = gp.treat === "native" ? "" : gp.treat === "flat" ? gFlat : gp.treat === "knock" ? CI.knock(gInk, gp.tile, str) : gTint;
+          var gWant = gp.treat === "native" ? "" : gp.treat === "flat" ? gFlat : gp.treat === "knock" ? CI.knock(gInk, gp.tile, str) : gTint;
+          setIconSrc(g[j], gp.glyph && !gWant ? gp.stand : gp.url);
+          g[j].style.filter = gWant;
         }
-        if (CI && gnames.length) CI.want(gnames);
+        if (CI && gnames.length) CI.want(gnames, apps);
       });
     } catch (e) {}
   }
@@ -954,7 +995,7 @@
       // The page gate for docker.css's list rules. ctApply stamps it on the add and update forms,
       // so the list page has to stamp it too, or html.tt-docker-on never matches and the reactive
       // rest-grey never applies.
-      document.documentElement.classList.toggle("tt-docker-on", themingOn() && localStorage.getItem("tt.enable.docker") !== "0");
+      document.documentElement.classList.toggle("tt-docker-on", themingOn());
       var root = document.documentElement.style;
       var accent = effc("accent"); if (accent) { root.setProperty("--tt-accent", accent); root.setProperty("--tt-accent-text", idealText(accent)); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root, accent); }
       var dens = localStorage.getItem("tt.density"); root.setProperty("--tt-density", { compact: "5px", normal: "9px", airy: "14px" }[dens] || "9px");
@@ -1031,7 +1072,7 @@
     Object.keys(BAR_LABELS).forEach(function (fn) {
       var b = barNative(bar, fn); if (!b) return;
       if (fn === "addContainer") b.classList.add("tt-bar-primary");
-      if (own && b.value !== t(BAR_LABELS[fn])) b.value = t(BAR_LABELS[fn]);
+      if (own && b.value !== t(BAR_LABELS[fn])) { if (!b.hasAttribute("data-tt-label")) b.setAttribute("data-tt-label", b.value); b.value = t(BAR_LABELS[fn]); }
     });
     var folded = BAR_FOLD.map(function (f2) { var b = barNative(bar, f2[0]); if (b) b.classList.add("tt-folded"); return b; });
     if (!folded.some(Boolean)) return;
@@ -1057,6 +1098,13 @@
     if (btn.getAttribute("aria-disabled") !== String(dead)) btn.setAttribute("aria-disabled", String(dead));
     var add = barNative(bar, "addContainer");
     if (add ? btn.previousElementSibling !== add : btn.parentElement !== bar) bar.insertBefore(btn, add ? add.nextSibling : bar.firstChild);
+  }
+  // With theming off Unraid's bar stays as Unraid draws it: every button shown under its own
+  // label and the view toggle in its own row. TowerTorch's own buttons still join it.
+  function unfoldBar(bar) {
+    Array.prototype.forEach.call(bar.querySelectorAll(".tt-folded, .tt-bar-primary"), function (b) { b.classList.remove("tt-folded", "tt-bar-primary"); });
+    Array.prototype.forEach.call(bar.querySelectorAll("[data-tt-label]"), function (b) { b.value = b.getAttribute("data-tt-label"); b.removeAttribute("data-tt-label"); });
+    Array.prototype.forEach.call(bar.querySelectorAll(".tt-allct, .tt-bar-adv"), function (x) { x.remove(); });
   }
   // The per-line hover marquee for the volumes column. The native cell is one
   // span.docker_readmore whose lines are separated by <br>, so each line is wrapped and moved
@@ -1508,6 +1556,12 @@
       // every badge pass. One read phase and one write phase cost a single layout.
       var f = document.getElementById("footer");
       var bar = document.querySelector("div.js-actions");
+      // With theming off the bar stays in Unraid's flow, so the inline edges from a docked pass go.
+      if (!themingOn()) {
+        if (bar) ["left", "right", "width", "padding-right"].forEach(function (p) { bar.style.removeProperty(p); });
+        colorBarButtons();
+        return;
+      }
       var lst = document.querySelector("#docker_list") || document.querySelector("table.tt-enh");
       // read phase
       var fixed = f && getComputedStyle(f).position === "fixed";
@@ -1624,10 +1678,11 @@
   function relocateTopBar() {
     try {
       syncFooterDock();
-      // The native toggle row stays collapsed in both views: its switch lives in the action bar
-      // and the native Update-All button below the table covers ShipLog's pill.
+      // With theming on the native toggle row stays collapsed in both views: its switch lives in
+      // the action bar and the native Update-All button below the table covers ShipLog's pill.
+      var themed = themingOn();
       var tv = document.querySelector("div.ToggleViewMode");
-      if (tv) tv.style.setProperty("display", "none", "important");
+      if (tv) { if (themed) tv.style.setProperty("display", "none", "important"); else tv.style.removeProperty("display"); }
       // The card and folder views keep the bar and its gear where the list has them, so the way
       // back to the list is always in one place. Their logos do not pick, so multi-select has
       // nothing to pick there and leaves with the list.
@@ -1643,14 +1698,14 @@
         // a gear as much as the card and folder views do. It sits beside the view switch in the
         // docked bar: a column header scrolls out of reach with a wide table and has no room
         // beside its label, while the bar wraps and stays on screen.
-        Array.prototype.slice.call(document.querySelectorAll(".tt-hgear")).forEach(function (x9) { if (!x9.closest(".tt-bar-adv")) x9.remove(); });
+        // With theming off the gear sits in the bar itself, beside Unraid's own buttons.
+        if (themed) { foldBar(jsa); ensureBarToggle(jsa); } else unfoldBar(jsa);
+        var gearHome = themed ? jsa.querySelector(".tt-bar-adv") : jsa;
+        Array.prototype.slice.call(document.querySelectorAll(".tt-hgear")).forEach(function (x9) { if (x9.parentElement !== gearHome) x9.remove(); });
         var hc = document.querySelector(".tt-headctl"); if (hc) hc.remove();
-        foldBar(jsa);
-        ensureBarToggle(jsa);
         if (window.TTMaint) window.TTMaint.bar(jsa);
         if (listView) ensureBulkModeBadge(jsa);
-        var advGrp = jsa.querySelector(".tt-bar-adv");
-        if (advGrp && !advGrp.querySelector(".tt-hgear")) advGrp.appendChild(makeGear("tt-hgear-home"));
+        if (gearHome && !gearHome.querySelector(".tt-hgear")) gearHome.appendChild(makeGear("tt-hgear-home"));
       } else {
         // the Plugins and VM pages have a tab strip rather than a js-actions bar
         var tc9 = document.querySelector("nav.tabs .tabs-container");
@@ -1856,7 +1911,7 @@
   function ttBulkRowFor(e) {
     if (mode !== "list" || !(e.ctrlKey || e.metaKey || e.shiftKey) || e.button || !e.target || !e.target.closest) return null;
     var tr = e.target.closest("#docker_list tr");
-    if (!tr || !tr.querySelector(".tt-pick") || e.target.closest(BULK_SKIP)) return null;
+    if (!tr || tr.classList.contains("folder") || !tr.querySelector(":scope > td .tt-pick") || e.target.closest(BULK_SKIP)) return null;
     return tr;
   }
   // A plain click on a logo tile picks it while multi-select is on or something is picked already;
@@ -1864,7 +1919,15 @@
   function ttBulkTileFor(e) {
     if (mode !== "list" || e.button || !e.target || !e.target.closest || !(ttBulkModeOn || Object.keys(ttBulkSel).length)) return null;
     var tile = e.target.closest("#docker_list td.ct-name span.tt-pick");
-    return tile ? tile.closest("tr") : null;
+    return tile && !tile.closest(".folder-storage") ? tile.closest("tr") : null;
+  }
+  // The row's own action bar, for a click on its icon, name or status dots. FolderView Plus answers
+  // the clicks on its folder rows, and a member it stores inside one is no cell of that row.
+  function ttFlashBarFor(e) {
+    var hand = e.target && e.target.closest ? e.target.closest("td.ct-name span.hand, td.ct-name span.appname, td.ct-name .tt-ct-dotrow") : null;
+    var row = hand && hand.closest("tr");
+    if (!row || row.classList.contains("folder")) return null;
+    return row.querySelector(":scope > td .tt-actbar");
   }
   function ttBulkInRange(tr) { var rows = ttBulkRows(); return rows.indexOf(ttBulkAnchor) >= 0 && rows.indexOf(tr) >= 0; }
   function ttBulkSet(tr, on) {
@@ -2313,6 +2376,58 @@
     if (out.length) steps.push({ q: ORG_MOVE_MUT, v: { sourceEntryIds: out, destinationFolderId: view.rootId }, m: "moveDockerEntriesToFolder" });
     return steps;
   }
+  // The folder import's preview rows and organizer calls, for the folders another folder plugin
+  // keeps, as the engine lists them: parents first, each container in one folder. A folder whose
+  // name the organizer already has is left as it is and only takes in the new folders below it,
+  // and a container that already sits in an organizer folder stays there, so a second run finds
+  // nothing to do. A folder left with nothing to hold is skipped. A create names its parent by
+  // organizer id, or by parentRef while that parent is itself still to be made.
+  function ttFolderImportPlan(view, folders) {
+    var key = function (n) { return String(n || "").trim().toLowerCase(); };
+    var byId = {}, have = {}, cts = {};
+    view.flatEntries.forEach(function (e) {
+      byId[e.id] = e;
+      if (e.type === "container") cts[key(e.name.replace(/^\//, ""))] = e;
+      else if (e.id !== view.rootId) { if (!have[key(e.name)]) have[key(e.name)] = { id: e.id }; }
+    });
+    // A folder named like the root stands for the root itself, so its children land at the top.
+    var top = { id: view.rootId, depth: -1 };
+    have.root = have[key((byId[view.rootId] || {}).name)] = top;
+    var rows = [], creates = [], placed = {}, taken = {};
+    folders.forEach(function (f) {
+      var parent = (f.parent && placed[f.parent]) || top;
+      var row = { name: f.name, depth: parent.depth + 1, state: "new", members: [], gone: (f.gone || []).slice(), elsewhere: [] };
+      rows.push(row);
+      var there = have[key(f.name)];
+      if (there) { row.state = "exists"; placed[f.id] = { id: there.id, ref: there.ref, depth: row.depth }; return; }
+      var c = { ref: f.id, name: f.name, items: [], row: row };
+      if (parent.ref) c.parentRef = parent.ref; else c.parentId = parent.id;
+      if (f.color) c.color = f.color;
+      (f.members || []).forEach(function (n) {
+        var e = cts[key(n)];
+        if (!e) row.gone.push(n);
+        else if (e.parentId !== view.rootId) row.elsewhere.push({ name: n, folder: (byId[e.parentId] || {}).name || "" });
+        else if (!taken[e.id]) { taken[e.id] = true; c.items.push(e.id); row.members.push(n); }
+      });
+      creates.push(c);
+      placed[f.id] = have[key(f.name)] = { ref: f.id, depth: row.depth };
+    });
+    for (var i = creates.length - 1; i >= 0; i--) {
+      var c = creates[i];
+      if (c.items.length || creates.some(function (k) { return k.parentRef === c.ref; })) continue;
+      c.row.state = "empty"; creates.splice(i, 1);
+    }
+    creates.forEach(function (k) { delete k.row; });
+    return { rows: rows, creates: creates };
+  }
+  // The id of the folder a create just made: the one under that parent, by that name, that the
+  // organizer did not have before.
+  function ttNewFolderId(before, after, name, parentId) {
+    var old = {};
+    before.flatEntries.forEach(function (e) { old[e.id] = true; });
+    var hit = after.flatEntries.filter(function (e) { return !old[e.id] && e.type !== "container" && e.name === name && e.parentId === parentId; })[0];
+    return hit ? hit.id : null;
+  }
   function ttOrgRunSteps(steps) {
     return steps.reduce(function (p, s) {
       return p.then(function () { return ttOrgMutate(s.q, s.v).then(function (data) { return { data: data, m: s.m }; }); });
@@ -2666,8 +2781,8 @@
     // Without the daemon the limits and bandwidth cannot work at all, so the menu says so in red.
     // A running daemon is the normal case and shows nothing (GlimStone rule 33).
     if (daemonUp === false) m.appendChild(el("div", "tt-menu-status tt-bad-text", t("daemonDown")));
-    // The list and grid choice belongs to the theming, so it is hidden with theming off.
-    if (themingOn()) {
+    // The list and grid choice is hidden with theming off and beside FolderView Plus.
+    if (ttViewsOn()) {
       m.appendChild(menuHead(t("view")));
       // The horizontal selector of the settings page, in its well, with the same glyphs as the
       // view selector there.
@@ -2690,6 +2805,13 @@
         ttLabelled(nb, "Folder", t("newFolder"));
         nb.addEventListener("click", function () { closeMenu(); ttOrgCreateFolder(); });
         nrow.appendChild(nb); m.appendChild(nrow);
+      }
+      if (ttOrgAvailable && importFolders && importFolders.length && ttFolderImportPlan(ttOrgView, importFolders).creates.length) {
+        var irow = el("div", "tt-menu-row tt-menu-plain");
+        var ib = el("button", "tt-btn tt-menu-newfolder"); ib.type = "button";
+        ttLabelled(ib, "Download", t("importBtn"));
+        ib.addEventListener("click", function () { var at = menuAnchor; closeMenu(); ttOrgImportAsk(at); });
+        irow.appendChild(ib); m.appendChild(irow);
       }
     }
     if (m.children.length) m.appendChild(el("div", "tt-menu-sep"));
@@ -2769,6 +2891,7 @@
   var ORG_MOVE_MUT = 'mutation($sourceEntryIds: [String!]!, $destinationFolderId: String!) { moveDockerEntriesToFolder(sourceEntryIds: $sourceEntryIds, destinationFolderId: $destinationFolderId) { views { ' + ORG_VIEW_SHAPE + ' } } }';
   // A move with a position, for the drag reordering, which combines the folder move and the
   // placement in one call; ORG_MOVE_MUT appends instead.
+  var ORG_CREATE_ITEMS_MUT = 'mutation($name: String!, $parentId: String, $sourceEntryIds: [String!]) { createDockerFolderWithItems(name: $name, parentId: $parentId, sourceEntryIds: $sourceEntryIds) { views { ' + ORG_VIEW_SHAPE + ' } } }';
   var ORG_MOVEPOS_MUT = 'mutation($sourceEntryIds: [String!]!, $destinationFolderId: String!, $position: Float!) { moveDockerItemsToPosition(sourceEntryIds: $sourceEntryIds, destinationFolderId: $destinationFolderId, position: $position) { views { ' + ORG_VIEW_SHAPE + ' } } }';
   function ttOrgQuery() {
     return ttGql(ORG_QUERY)
@@ -2785,7 +2908,7 @@
       .then(function (j) { if (j.errors) throw new Error(j.errors[0].message); return j.data; });
   }
   function ttOrgInit() {
-    return ttOrgQuery().then(function (v) { ttOrgView = v; ttOrgAvailable = !!v; })
+    return ttOrgQuery().then(function (v) { ttOrgView = v; ttOrgAvailable = !!v; if (v) ttLoadImport(); })
       .catch(function () { ttOrgView = null; ttOrgAvailable = false; }); // the feature flag is off or the API is unreachable
   }
   // TowerTorch's view mode is kept on the server through updateDockerViewPreferences as well as in
@@ -2813,6 +2936,56 @@
   // which cannot be styled and block the whole tab. Without tt-theme.js there is no window to ask in,
   // so the action does nothing.
   function ttOrgAsk(o) { if (window.TTTheme && window.TTTheme.ask) window.TTTheme.ask(o); }
+  // The folders another folder plugin keeps, as the engine reads them, or null until it answers.
+  // The gear menu offers to take them over while that would create anything.
+  var importFolders = null;
+  function ttLoadImport() {
+    api("GET", "folderimport").then(function (d) { importFolders = (d && d.folders) || []; }, function () { importFolders = []; });
+  }
+  function ttOrgImportAsk(opener) {
+    if (!ttOrgAvailable || !ttOrgView || !importFolders) return;
+    var p = ttFolderImportPlan(ttOrgView, importFolders);
+    if (!p.creates.length) return;
+    ttOrgAsk({ title: t("importTitle"), text: t("importText"), body: importList(p.rows), ok: t("importOk"), glyph: "Download", cancel: t("cancel"), opener: opener, onOk: function () { ttOrgImportRun(p.creates); } });
+  }
+  // The preview: each folder at its depth, with what it takes in or why it is left alone.
+  function importList(rows) {
+    var list = el("div", "tt-fimp");
+    rows.forEach(function (r) {
+      var row = el("div", "tt-fimp-row" + (r.state === "new" ? "" : " tt-fimp-skip"));
+      row.style.setProperty("--tt-fimp-depth", r.depth);
+      var head = el("div", "tt-fimp-name"); head.innerHTML = ttGlyph("Folder"); head.appendChild(el("span", "", r.name));
+      row.appendChild(head);
+      var notes = [];
+      if (r.state === "exists") notes.push(t("importExists"));
+      else if (r.members.length) notes.push(r.members.join(", "));
+      r.elsewhere.forEach(function (x) { notes.push(t("importStays").replace("%s", x.name).replace("%f", x.folder)); });
+      if (r.gone.length) notes.push(t("importGone") + " " + r.gone.join(", "));
+      if (r.state === "empty") notes.push(t("importEmpty"));
+      notes.forEach(function (n) { row.appendChild(el("div", "tt-fimp-note", n)); });
+      list.appendChild(row);
+    });
+    return list;
+  }
+  // One create after the other, since a nested folder needs its parent's new id. A colour comes
+  // along into the folder's look; an icon does not, the other plugin's being image files.
+  function ttOrgImportRun(creates) {
+    var ids = {}, last = null;
+    creates.reduce(function (p, c) {
+      return p.then(function () {
+        var parentId = c.parentId || ids[c.parentRef], before = ttOrgView;
+        if (!parentId) return;
+        return ttOrgMutate(ORG_CREATE_ITEMS_MUT, { name: c.name, parentId: parentId, sourceEntryIds: c.items }).then(function (data) {
+          var v = data.createDockerFolderWithItems.views[0];
+          ids[c.ref] = ttNewFolderId(before, v, c.name, parentId);
+          if (ids[c.ref] && c.color) setFolderLook(ids[c.ref], { color: c.color });
+          ttOrgView = v; last = data;
+        });
+      });
+    }, Promise.resolve())
+      .then(function () { flash(t("importDone")); }, function () { flash(t("invalid"), true); })
+      .then(function () { if (last) ttOrgAdopt(last, "createDockerFolderWithItems"); setMode("folder"); });
+  }
   function ttOrgCreateFolder() {
     if (!ttOrgAvailable || !ttOrgView) return;
     ttOrgAsk({ title: t("newFolderTitle"), input: { label: t("folderName"), placeholder: t("folderName") }, ok: t("create"), glyph: "Add", cancel: t("cancel"), onOk: ttOrgCreateNamed });
@@ -2888,7 +3061,7 @@
 
   // fromServer: the mode came from the organizer's own prefs, so there is nothing to save back.
   function setMode(m, fromServer) {
-    if (!themingOn() && m !== "list") m = "list"; // the grid and folder views belong to the theming
+    if (!ttViewsOn() && m !== "list") m = "list";
     if (m === "folder" && !ttOrgAvailable) m = "list"; // never enter the folder view without organizer data
     mode = m; localStorage.setItem(VIEW_KEY, m); refresh();
     if (!fromServer) ttOrgSavePrefs({ ttViewMode: m });
@@ -2935,7 +3108,7 @@
   function applyFilter() {
     if (mode === "grid") { if (gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll(".tt-card")).forEach(function (cd) { cd.style.display = (!filterText || norm(cd.dataset.name).indexOf(filterText) >= 0) ? "" : "none"; }); }
     else if (mode === "folder") { if (ttOrgView) renderFolderView(); }
-    else findRows().forEach(function (tr) { tr.style.display = (!filterText || norm(rowName(tr)).indexOf(filterText) >= 0) ? "" : "none"; });
+    else if (!ttFvPlus()) findRows().forEach(function (tr) { tr.style.display = (!filterText || norm(rowName(tr)).indexOf(filterText) >= 0) ? "" : "none"; });
   }
   // The header's page search filters the containers while it is open on this tab. Unraid removes
   // the box on blur, and the filter goes with it once the pointer is up, so the click that blurred
@@ -4908,7 +5081,7 @@
   function ctApply() {
     try {
       var root = document.documentElement;
-      var on2 = localStorage.getItem("tt.enable.docker") !== "0" && themingOn();
+      var on2 = themingOn();
       root.classList.toggle("tt-docker-on", on2);
       root.classList.toggle("tt-on-addct", on2 && onCtForm());   // page gate: every docker.css form rule requires BOTH classes
       if (!on2) { ctSelectsTeardown(); ctTitleUnwrap(); ctInfoBubblesTeardown(); ctVarLabelsTeardown(); return; }
@@ -5043,7 +5216,6 @@
     } catch (e) {}
   }
   function boot() {
-    if (localStorage.getItem("tt.enable.docker") === "0") return; // area disabled in TowerTorch settings
     if (onCtForm()) { bootCtForm(); return; } // form styling only, none of the list machinery, API polling or timers below
     if (onCtOutput()) { bootCtOutput(); return; } // the create and update output page becomes a floating window
     // On the AddContainer and UpdateContainer URL the form, or the run output, can be injected
@@ -5108,8 +5280,8 @@
           if (e.key === "tt.view") { setMode(localStorage.getItem("tt.view") === "grid" ? "grid" : "list"); return; }
           // The master theming toggle flipped live: coerce grid to list when it is now off,
           // reset the old visual state, then let applyMode() re-render for the new state.
-          if (e.key === "tt.theming") {
-            if (!themingOn() && mode === "grid") { mode = "list"; localStorage.setItem(VIEW_KEY, "list"); }
+          if (e.key === "tt.theming" || e.key === "tt.enable.docker") {
+            if (!ttViewsOn() && mode === "grid") { mode = "list"; localStorage.setItem(VIEW_KEY, "list"); }
             applySettings(); clearRowBadges(); removeEnhanceClasses(); applyMode();
             // applyMode's off branch re-injects orchestration but leaves the icon tint and the
             // per-row cosmetic inline styles from the previous theming-on state, so they are
@@ -5132,9 +5304,7 @@
           if (dead || mode !== "list") return;
           var picked = ttBulkRowFor(e) || ttBulkTileFor(e);
           if (picked) { e.preventDefault(); e.stopPropagation(); ttBulkClick(picked, e); return; }
-          var hand = e.target && e.target.closest ? e.target.closest("td.ct-name span.hand, td.ct-name span.appname, td.ct-name .tt-ct-dotrow") : null;
-          if (!hand) return;
-          var row2 = hand.closest("tr"); var bar2 = row2 && row2.querySelector(".tt-actbar");
+          var bar2 = ttFlashBarFor(e);
           if (!bar2) return;
           e.preventDefault(); e.stopPropagation();
           bar2.classList.add("tt-act-flash");

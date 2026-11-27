@@ -147,7 +147,7 @@ func TestFollowingANewPhraseClosesTheWayBackAndClearsTheList(t *testing.T) {
 	if len(d.RemovedMembers()) != 1 {
 		t.Fatal("the list went before the phrase changed")
 	}
-	waitFor(t, "TowerTorch to reach BombVault on the old phrase", func() bool { return online(d.current(), "bombvault") })
+	waitForOldPhrase(t, d)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if _, err := d.Act(ctx, v.id.ID(), maint.BackupAction, nil); err != nil {

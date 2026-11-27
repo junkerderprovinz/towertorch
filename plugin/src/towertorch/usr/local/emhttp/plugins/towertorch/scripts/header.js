@@ -370,6 +370,10 @@
             done = finishTxt && (Date.now() - (sa.__ttGrow || 0)) > 700;
             if (!done && finishTxt) { clearTimeout(sa.__ttSettleT); sa.__ttSettleT = setTimeout(function () { try { ttNchanStyle(); paintPopups(); } catch (e) {} }, 750); }
           }
+          // SweetAlert writes each dialog's title and log afresh, so a new progress span or log marks a
+          // new job, which must not inherit the finish of the one before it in the reused node.
+          var job = progT || sa.querySelector("pre");
+          if (sa.__ttJob !== job) { sa.__ttJob = job; sa.__ttDone = false; }
           if (done) sa.__ttDone = true;                  // once finished it never goes back to running
           sa.dataset.ttState = (done || sa.__ttDone) ? "done" : "run";
           sa.classList.toggle("tt-nchan-err", (done || sa.__ttDone) && /error|fehler/i.test((progT ? progT.textContent : (cb0 && cb0.textContent)) || ""));
@@ -1111,7 +1115,7 @@
   function ttArrFill() {
     try {
       if (!/^\/Main/.test(location.pathname)) return;
-      var tbl = document.querySelector("table.disk_status");
+      var tbl = document.querySelector("table.unraid.disk_status:not(.zfs_table)");
       if (!tbl) { if (!ttArrFill._t) { ttArrFill._t = setTimeout(function () { ttArrFill._t = 0; ttArrFill(); }, 900); } return; }   // apply() can run before the array table is parsed
       var usedSum = 0, sizeSum = 0, n = 0;
       Array.prototype.forEach.call(tbl.querySelectorAll("tr"), function (row) {
@@ -1364,7 +1368,7 @@
   // fills the track, stays green instead of turning red.
   function ttStateBars() {
     try {
-      var on = g("tt.statenative", "0") === "1" && g("tt.theming", "1") !== "0";
+      var on = g("tt.statenative", "0") === "1" && document.documentElement.classList.contains("tt-page-on");
       var allBars = document.querySelectorAll(".usage-disk:not(.sys):not(.mm) > span:first-child");
       // The two usage bars tall enough to slosh at their end: the 26px /Main bars while the Shares
       // area restyles them, and the array meter in the menu while the header area is on.
@@ -1381,7 +1385,7 @@
         for (var i = 0; i < allBars.length; i++) { var b = allBars[i]; if (b.style.background) b.style.removeProperty("background"); if (b.className && b.className.indexOf("tt-fill-") >= 0) b.className = b.className.replace(/\s*tt-fill-(green|amber|red)\b/g, ""); }
         return;
       }
-      var trs = document.querySelectorAll("table.unraid.disk_status tr");
+      var trs = document.querySelectorAll("table.unraid.disk_status:not(.zfs_table) tr");
       for (var t = 0; t < trs.length; t++) {
         var bars = trs[t].querySelectorAll(".usage-disk:not(.sys):not(.mm) > span:first-child");
         if (!bars.length) continue;
@@ -1589,13 +1593,13 @@
         // The work below matters only on /Main's disk table or a settings form, but the observer is
         // armed on every page, where the Docker and VM tabs' own per-row churn would wake it
         // hundreds of times per refresh. Bail before touching a single record.
-        if (!document.querySelector("table.unraid.disk_status") && !document.documentElement.classList.contains("tt-tools-on")) return;
+        if (!document.querySelector("table.unraid.disk_status:not(.zfs_table)") && !document.documentElement.classList.contains("tt-tools-on")) return;
         // Unraid replaces the whole /Main disk table on every nchan tick, so the fresh bars would
         // show the base colour until the debounced pass re-classes them, which reads as a blink.
         // This callback is a microtask that runs after the .html() call but before the next paint,
         // so re-classing here puts the class on the new bars before they ever paint. ttStateBars
         // inserts no nodes of its own, so its pass cannot wake the observer again.
-        for (var i = 0; i < recs.length; i++) { var t2 = recs[i].target; if (t2 && t2.closest && t2.closest("table.unraid.disk_status")) { try { ttStateBars(); } catch (e3) {} break; } }
+        for (var i = 0; i < recs.length; i++) { var t2 = recs[i].target; if (t2 && t2.closest && t2.closest("table.unraid.disk_status:not(.zfs_table)")) { try { ttStateBars(); } catch (e3) {} break; } }
         if (ttMainT) return; ttMainT = setTimeout(function () { ttMainT = null; try { ttStateBars(); ttPaintRotate(); ttToolsEnhance(); } catch (e2) {} }, 120);
       });
       ttMainObs.observe(box, { childList: true, subtree: true });
@@ -2004,7 +2008,7 @@
   //   which sets no marker attribute, and nesting would stack two triggers on one field.
   function ttWrapPageSelects() {
     try {
-      if (!document.documentElement.classList.contains("tt-popups-on")) return;
+      if (!document.documentElement.classList.contains("tt-page-on")) return;
       // The container form's selects belong to docker.js, which loads later and would wrap a
       // second trigger inside this one.
       if (/^\/(Docker|Apps)\/(AddContainer|UpdateContainer)\/?$/.test(location.pathname)) return;
@@ -2017,7 +2021,7 @@
         // wrapper cannot survive one tick, and an open panel would be destroyed mid-click on the
         // very control that assigns disks. Shares.css gives that native select the filled-pill
         // look instead, and its popup is drawn by the OS, so nothing can tear it away.
-        if (s.closest("table.unraid.disk_status")) continue;
+        if (s.closest("table.unraid.disk_status:not(.zfs_table)")) continue;
         var r = s.getBoundingClientRect(); if (!r.width || !r.height) continue;
         ttToolsWrapSelect(s);
       }
@@ -2051,22 +2055,43 @@
     if (opts[i]) opts[i].focus();
   }
   // The native /Settings pages apply on form submit rather than on change, so flipping a wrapped
-  // toggle has no effect until Apply. This persists the one changed field the way Apply does, by
-  // posting it to /update.php with the form's own #file and #section, and reloads.
+  // toggle has no effect until Apply. Where Apply only writes the form's file through update.php,
+  // this posts the one changed field the same way and reloads. A form that is saved elsewhere, or
+  // whose Apply also runs a #command or an #include, needs all its fields, so there the toggle
+  // only enables Apply. A #section goes along only when the form has one: update.php would turn
+  // every key of a flat file into an empty section.
   function ttApplyToolsSel(sel) {
     try {
       if (!sel || !sel.name || typeof window.csrf_token === "undefined") return;
       var form = sel.closest ? sel.closest("form") : null;
-      var fEl = form && form.querySelector('[name="#file"]'), sEl = form && form.querySelector('[name="#section"]');
+      if (!form || !/(^|\/)update\.php$/.test(form.getAttribute("action") || "")) return;
+      var fEl = form.querySelector('[name="#file"]'), sEl = form.querySelector('[name="#section"]');
+      if (!fEl || !fEl.value || form.querySelector('[name="#command"], [name="#include"]')) return;
       var fd = new URLSearchParams();
-      fd.append("#file", (fEl && fEl.value) || "dynamix/dynamix.cfg");
-      fd.append("#section", (sEl && sEl.value) || "display");
+      fd.append("#file", fEl.value);
+      if (sEl && sEl.value) fd.append("#section", sEl.value);
       fd.append("csrf_token", window.csrf_token);
       fd.append(sel.name, sel.value);
       // Keep a native setting that has a TowerTorch counterpart in step, or the TowerTorch side overrides it again.
       try { if (sel.name === "favorites") localStorage.setItem("tt.hidefavtab", (sel.value === "no" || sel.value === "0") ? "1" : "0"); } catch (eC) {}
       fetch("/update.php", { method: "POST", body: fd, credentials: "same-origin" }).then(function () { location.reload(); }).catch(function () {});
     } catch (e) {}
+  }
+  // The coloured status word in a page title becomes a state dot, with the word as its tooltip,
+  // like the disk state dots. Unraid names the colour in a class (span.status > span.green); the
+  // Next plugins write .status-text > .status-value and colour it inline.
+  var TT_STCOLOR = { green: "var(--tt-ok, #6fdc8c)", orange: "var(--tt-warn, #ff832b)", darkorange: "var(--tt-warn, #ff832b)", red: "var(--tt-err, #ff8389)", grey: "#8d8d8d", gray: "#8d8d8d", blue: "#1D99F3" };
+  function ttStatusDots() {
+    var words = document.querySelectorAll("#displaybox div.title .status span[class]:not([data-tt-dot]), #displaybox div.title .status-text > .status-value:not([data-tt-dot])");
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i];
+      var col = TT_STCOLOR[(w.className || "").trim().toLowerCase()] || TT_STCOLOR[(w.style.color || "").trim().toLowerCase()];
+      if (!col) continue;
+      w.setAttribute("data-tt-dot", "1"); w.setAttribute("data-tt-tip", (w.textContent || "").trim());
+      // The dot follows the colour modes unless state-native is on, and its shape the badge
+      // setting. The raw state colour goes into a var, and the sheet decides which one wins.
+      w.textContent = ""; w.classList.add("tt-status-dot"); w.style.setProperty("--tt-dotstate", col);
+    }
   }
   // Tidies the native /Tools and /Settings sub-pages: the setting labels lose their trailing colon,
   // the status word becomes a state dot, and each inline help block moves onto an info bubble.
@@ -2079,18 +2104,7 @@
         var tn = ttLabelText(dts[i]);
         if (tn && /:\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(/\s*:\s*$/, "");
       }
-      // The coloured status word in the page-title span becomes a state dot, with the word as its
-      // tooltip, like the disk state dots.
-      var stcolor = { green: "var(--tt-ok, #6fdc8c)", orange: "var(--tt-warn, #ff832b)", red: "var(--tt-err, #ff8389)", grey: "#8d8d8d", gray: "#8d8d8d", blue: "#1D99F3" };
-      var stwords = document.querySelectorAll("#displaybox div.title .status span[class]:not([data-tt-dot]), #displaybox div.title span.status span[class]:not([data-tt-dot])");
-      for (var sw = 0; sw < stwords.length; sw++) {
-        var w = stwords[sw]; var cl = (w.className || "").trim().toLowerCase(); var col = stcolor[cl];
-        if (!col) continue;
-        w.setAttribute("data-tt-dot", "1"); w.setAttribute("data-tt-tip", (w.textContent || "").trim());
-        // The dot follows the colour modes unless state-native is on, and its shape the badge
-        // setting. The raw state colour goes into a var, and the sheet decides which one wins.
-        w.textContent = ""; w.classList.add("tt-status-dot"); w.style.setProperty("--tt-dotstate", col);
-      }
+      ttStatusDots();
       // Unraid's per-setting help is a blockquote, whose text moves onto a small icon on the label
       // and rides the TowerTorch bubble; the native block is hidden.
       // A block already moved is looked at again, because some pages rewrite the label it went
@@ -2310,7 +2324,7 @@
   // viewport edge, so one body-mounted div serves every [data-tt-tip] anchor in the document
   // through delegation, which survives any rebuild. It is fixed, centred under the anchor and
   // clamped into the viewport with the arrow staying over the anchor, and flips above the anchor
-  // when the bottom edge would clip it. Hidden on scroll and on pointerdown.
+  // when the bottom edge would clip it. Hidden on scroll and on a press anywhere but an (i).
   var ttTipBound = false, ttTipCur = null, ttTipKeys = false;
   var ttTipFrame = 0, ttTipAt = "";
   function ttTipEl() {
@@ -2386,7 +2400,18 @@
       document.addEventListener("mouseout", out);
       document.addEventListener("focusin", over);
       document.addEventListener("focusout", out);
-      document.addEventListener("pointerdown", function () { ttTipKeys = false; ttTipHide(); }, true);   // a press means action rather than reading
+      // A press means action rather than reading, except on an (i): the glyph does nothing but
+      // explain, and a click or a tap is the only way in for someone who does not hover first.
+      document.addEventListener("pointerdown", function (e) {
+        ttTipKeys = false;
+        var info = e.target && e.target.closest ? e.target.closest(".tt-info, .tt-toolsinfo") : null;
+        if (info && document.documentElement.classList.contains("tt-popups-on") && (info.getAttribute("data-tt-tip") || info.getAttribute("data-tip"))) {
+          if (info !== ttTipCur) { ttTipCur = info; ttTipShow(info); }
+          if (!ttTipFrame) ttTipFrame = window.requestAnimationFrame(ttTipFollow);
+          return;
+        }
+        ttTipHide();
+      }, true);
       document.addEventListener("keydown", function () { ttTipKeys = true; }, true);   // the last input, page-wide, since a press on one control can focus another
       window.addEventListener("scroll", ttTipHide, true);          // any scroll de-anchors the fixed bubble, and capture catches inner containers too
       // Escape dismisses the bubble, which is a keyboard user's only way out after tabbing onto an
@@ -2668,6 +2693,13 @@
       // The native jQuery-UI dialogs and the SweetAlert confirmations follow the TowerTorch look on every
       // page. Master-gated only, since it is chrome rather than an area of its own.
       root.classList.toggle("tt-popups-on", g("tt.theming", "1") !== "0");
+      // The rules a sheet applies to every page's content wait for the page's own area as well,
+      // so switching an area off leaves its pages native.
+      root.classList.toggle("tt-page-on", !!(window.TTTheme && window.TTTheme.pageAreaOn && window.TTTheme.pageAreaOn()));
+      // The Docker and Plugins area classes, stamped here too so a flip on the settings page reaches
+      // an open Docker or Plugins tab, docker.css's rules on Unraid's markup included.
+      root.classList.toggle("tt-docker-on", g("tt.theming", "1") !== "0" && g("tt.enable.docker", "1") !== "0" && /^\/(Docker(\/|$)|Apps\/(AddContainer|UpdateContainer)\/?$)/.test(location.pathname));
+      root.classList.toggle("tt-on-plugins", g("tt.theming", "1") !== "0" && g("tt.enable.plugins", "1") !== "0" && /^\/Plugins(\/|$)/.test(location.pathname));
       if (g("towertorch.oled", "0") === "1" && g("tt.theming", "1") !== "0") root.setAttribute("data-oled", ""); else root.removeAttribute("data-oled");
       // CA's settings sub-page is a real Unraid form page, not one of CA's overlays, and nothing in
       // its markup identifies it: its form posts to /update.php like any other settings page. The
@@ -2698,8 +2730,9 @@
       // Per-icon hide for the utility icons, and the native state colours. The bell and burger are
       // not in the list: they are integral and handled in ttDockProfile, and a stale key would
       // otherwise blank the icon while leaving its badge.
-      ["lang", "search", "logout", "terminal", "browse", "feedback", "info", "log", "help"].forEach(function (k9) { root.classList.toggle("tt-hideicon-" + k9, g("tt.hideicon." + k9, "0") === "1" && g("tt.theming", "1") !== "0"); });
+      ["lang", "search", "logout", "terminal", "browse", "feedback", "info", "log", "help"].forEach(function (k9) { root.classList.toggle("tt-hideicon-" + k9, g("tt.hideicon." + k9, "0") === "1" && on); });
       root.classList.toggle("tt-state-native", g("tt.statenative", "0") === "1" && g("tt.theming", "1") !== "0");
+      root.classList.toggle("tt-state-mono", g("tt.statemono", "0") === "1" && g("tt.theming", "1") !== "0");
       // a global rainbow flag, so the shared loader can cycle its colour once per revolution
       root.classList.toggle("tt-rb-on", rbOn() && g("tt.theming", "1") !== "0");
       // One representative colour on <html>, so a native button in any sheet can follow the colour
@@ -2733,17 +2766,20 @@
         // Unraid's users menu sits there.
         var usersPg = /^\/Users(\/|$)/.test(p0);
         var toolsPg = !ownPg && !ctOutPg && (/^\/Tools\//.test(p0) || /^\/Settings\/./.test(p0) || usersPg || diskPg || caSettingsPg || !!document.querySelector("#displaybox fieldset legend"));
-        root.classList.toggle("tt-tools-on", toolsPg && g("tt.theming", "1") !== "0");
+        // The Settings and Tools pages and the user pages are the settings area; the disk pages and
+        // CA's settings form have no switch of their own.
+        var toolsArea = diskPg || caSettingsPg || g("tt.enable.settings", "1") !== "0";
+        root.classList.toggle("tt-tools-on", toolsPg && toolsArea && g("tt.theming", "1") !== "0");
         // The disk detail form is a full-width native grid whose labels and values would spread to
         // the screen edges, so the compact grid is kept for these pages alone.
-        root.classList.toggle("tt-diskpage", diskPg && toolsPg && g("tt.theming", "1") !== "0");
+        root.classList.toggle("tt-diskpage", diskPg && root.classList.contains("tt-tools-on"));
         // The create-key trigger and its dropdown live on this one sub-page, so the rules for it
         // are scoped here rather than reaching every menu trigger on other /Settings pages.
         var apiKeysPg = /^\/Settings\/ApiKeys\b/.test(p0);
-        root.classList.toggle("tt-apikeyspage", apiKeysPg && toolsPg && g("tt.theming", "1") !== "0");
+        root.classList.toggle("tt-apikeyspage", apiKeysPg && root.classList.contains("tt-tools-on"));
         // The user list carries a page title above its sections and an add button that is the
         // page's action; the header sheet handles both on either address.
-        root.classList.toggle("tt-userlist", /^\/(Settings\/)?Users\/?$/.test(p0) && toolsPg && g("tt.theming", "1") !== "0");
+        root.classList.toggle("tt-userlist", /^\/(Settings\/)?Users\/?$/.test(p0) && root.classList.contains("tt-tools-on"));
       } catch (e0) {}
       ttArrFill();
       ttStateBars();

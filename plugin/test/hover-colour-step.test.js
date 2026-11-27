@@ -47,7 +47,7 @@ const ALLOWED = [
   'html.tt-popups-on:has(.ca_homeTemplates) #displaybox a:hover',
   'html.tt-popups-on #alternateView a:hover',
   'html.tt-tools-on #displaybox a:not(.button):hover',
-  'html.tt-header-on #displaybox .user-list > a:hover img.picture',
+  'html.tt-header-on.tt-page-on #displaybox .user-list > a:hover img.picture',
   'html.tt-popups-on .searchSubmit:hover',
 ];
 for (const f of files(DIR, ['.css', '.js'])) {
@@ -61,7 +61,7 @@ console.log('\nThe step follows the fill it sits on');
   ok('the force-update link steps the accent', /td\.updatecolumn a\.exec:hover \{ background: var\(--tt-accent-hover\); \}/.test(docker));
   ok('the apply-update link steps the warning fill', /a\.exec:has\(span\.orange-text\):hover \{ background: var\(--tt-warn-hover\); \}/.test(docker));
   ok('the primary button steps its own colour chain', /\.tt-btn-primary:hover \{ background: color-mix\(in srgb, var\(--tt-rb-c, var\(--tt-rbaccent, var\(--tt-accent,/.test(docker));
-  ok('a hover on a chosen dropdown entry is the same step, not a filter', /\.tt-pop \.tt-dsel-opt\.is-selected:hover \{ background: color-mix\(/.test(docker));
+  ok('a hover on a dropdown entry is the hover colour, not a filter', /\.tt-pop \.tt-dsel-opt:hover, \.tt-pop \.tt-dsel-opt:focus-visible \{ background: var\(--tt-hover-dark\); \}/.test(docker));
   ok('the plan chip, whose fill differs per mode, takes the wash', /\.tt-plan:hover \{ box-shadow: inset 0 0 0 100vmax var\(--tt-hover-wash\); \}/.test(docker));
   const shares = clean(read('sheets/TowerTorch.Shares.css'));
   ok('an empty slot\'s name label cancels the wash, as it cancelled the filter', /span\.tt-b\.tt-b-name:hover \{ box-shadow: none !important; \}/.test(shares));

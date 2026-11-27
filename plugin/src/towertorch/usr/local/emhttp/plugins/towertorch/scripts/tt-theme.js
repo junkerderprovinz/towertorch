@@ -540,6 +540,7 @@
   var ICON_SIMPLE_MAX = 12;
   var ICON_ALPHA_MIN = 20;    // a pixel counts as "content" above this alpha
   var icoRes = {};            // normalised name -> {kind, source, slug}
+  var icoApp = {};            // normalised name -> the app the engine looks it up as
   var icoWant = {};           // names asked for but not yet answered
   var icoInflight = false, icoTimer = null, icoLast = 0;
   var icoListeners = [];
@@ -564,12 +565,20 @@
   function iconMode(scope, name) { return iconOverride(scope, name) || iconGlobalMode(); }
 
   // Steps 2 and 3: one batched POST per page, answered from the engine's cache. Names still being
-  // looked up come back "pending" and are asked for again later.
-  function iconWant(names) {
+  // looked up come back "pending" and are asked for again later. apps maps a name to the app its
+  // container's image runs, which the engine looks up in the name's place. A caller that passes no
+  // apps leaves the ones it has alone.
+  function iconWant(names, apps) {
     var fresh = false;
     for (var i = 0; i < (names || []).length; i++) {
       var k = icoNorm(names[i]);
-      if (!k || icoRes[k] || icoWant[k]) continue;
+      if (!k) continue;
+      var app = apps ? icoNorm(apps[names[i]]) : icoApp[k] || "";
+      if ((icoApp[k] || "") !== app) {
+        if (app) icoApp[k] = app; else delete icoApp[k];
+        delete icoRes[k];
+      }
+      if (icoRes[k] || icoWant[k]) continue;
       icoWant[k] = 1; fresh = true;
     }
     // Pending names are asked for at most every 6s, so a page full of them does not hammer the
@@ -580,10 +589,11 @@
   }
   function icoFlush() {
     if (icoInflight) return;
-    var names = [], k;
+    var names = [], apps = {}, k;
     for (k in icoWant) names.push(k);
     for (k in icoRes) { if (icoRes[k] && icoRes[k].kind === "pending") names.push(k); }
     if (!names.length) return;
+    names.forEach(function (n) { if (icoApp[n]) apps[n] = icoApp[n]; });
     icoInflight = true; icoLast = Date.now();
     var tok = "";
     try {
@@ -592,7 +602,7 @@
     } catch (e) {}
     fetch(ICON_PROXY + "?path=icons", {
       method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-      body: (tok ? "csrf_token=" + encodeURIComponent(tok) + "&" : "") + "data=" + encodeURIComponent(JSON.stringify({ names: names }))
+      body: (tok ? "csrf_token=" + encodeURIComponent(tok) + "&" : "") + "data=" + encodeURIComponent(JSON.stringify({ names: names, apps: apps }))
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       icoInflight = false;
       // A 502 from the proxy (engine stopped) or an engine without the icons endpoint: settle
@@ -650,7 +660,7 @@
   function iconResult(name) { return icoRes[icoNorm(name)] || null; }
   // The engine serves its cached artwork as image/svg+xml through the same-origin proxy, so an
   // <img> can point at it and the canvas heuristic can read it back without tainting.
-  function iconSvgUrl(name) { return ICON_PROXY + "?path=iconsvg&name=" + encodeURIComponent(icoNorm(name)); }
+  function iconSvgUrl(name) { var k = icoNorm(name); return ICON_PROXY + "?path=iconsvg&name=" + encodeURIComponent(icoApp[k] || k); }
 
   // Step 1: draw the icon small and take the standard deviation of luminance over its opaque
   // pixels, cached per URL. Until a measurement lands the caller uses the safe tint, and the
@@ -802,10 +812,11 @@
 
   // Unraid's stand-in for a container without an icon is a grey disc with a question mark, which
   // reads as an error and flattens to a blank disc. TowerTorch shows GlimStone's container glyph instead,
-  // in a neutral grey that the tint and the flat filter recolour like any other one-tone icon.
+  // in a neutral grey that the tint and the flat filter recolour like any other one-tone icon, or
+  // the logo of the app the container runs when the caller knows one.
   var ICON_PLACEHOLDER = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + GLYPHS.Containers[0] + '" width="96" height="96" fill="#8a8a8a">' + GLYPHS.Containers[1] + "</svg>");
-  function iconPlaceholder(src) {
-    return /\/dynamix\.docker\.manager\/images\/question\.png(\?|$)/.test(String(src || "")) ? ICON_PLACEHOLDER : "";
+  function iconPlaceholder(src, logo) {
+    return /\/dynamix\.docker\.manager\/images\/question\.png(\?|$)/.test(String(src || "")) ? logo || ICON_PLACEHOLDER : "";
   }
 
   // The room every window, menu and bubble keeps from the viewport's edges, 16px and 24px on a wide
@@ -1350,12 +1361,13 @@
   // name, which Enter takes and an empty one refuses; o.danger marks a deleting answer, which looks
   // like Cancel rather than red and leaves the focus on Cancel, the safe choice. o.onOk gets the
   // trimmed name. o.glyph is the answer's glyph and o.cancelGlyph the other one's. Without
-  // o.cancel the answer stands alone.
+  // o.cancel the answer stands alone. o.body is a node shown under the text, such as a preview.
   function ask(o) {
     var win = document.createElement("div"); win.className = "tt-win tt-dlg";
     var title = document.createElement("div"); title.className = "tt-win-title"; title.textContent = o.title; win.appendChild(title);
     var card = document.createElement("div"); card.className = "tt-win-card";
     if (o.text) { var p = document.createElement("p"); p.className = "tt-win-text"; p.textContent = o.text; card.appendChild(p); }
+    if (o.body) card.appendChild(o.body);
     var input = null;
     if (o.input) {
       input = document.createElement("input"); input.type = "text"; input.className = "tt-win-in";
@@ -1492,8 +1504,37 @@
   }
   try { keepAdoptedGridTiles(localStorage); } catch (e) {}
 
+  // Unassigned Devices names its three tables usb_mounts, samba_mounts and usb_absent, UD Next
+  // usb-mounts, samba-mounts and usb-absent. Both keep the tbody ids, so each table is stamped by its
+  // tbody with tt-udt and its part, and the sheets name the stamp.
+  var UD_PARTS = { "disk-table-body": "tt-udt-disks", "remotes-table-body": "tt-udt-remotes", "historical-table-body": "tt-udt-historical" };
+  function stampUdTables() {
+    Array.prototype.forEach.call(document.querySelectorAll("#displaybox #disk-table-body, #displaybox #remotes-table-body, #displaybox #historical-table-body"), function (tb) {
+      tb.parentNode.classList.add("tt-udt", UD_PARTS[tb.getAttribute("id")]);
+    });
+  }
+
+  // Each page's area switch and its default. An area that styles other pages too, as Shares does
+  // their tab strips, asks this first, so a switched-off area's pages stay native. A page outside
+  // every area follows the master switch alone.
+  var PAGE_AREAS = [
+    [/^\/(Docker(\/|$)|Apps\/(AddContainer|UpdateContainer)\/?$)/, "tt.enable.docker", "1"],
+    [/^\/Plugins(\/|$)/, "tt.enable.plugins", "1"],
+    [/^\/VMs(\/|$)/, "tt.enable.vms", "1"],
+    [/^\/Main(\/|$)/, "tt.enable.main", "0"],
+    [/^\/(Shares|Browse|Stats)(\/|$)/, "tt.enable.shares", "0"],
+    [/^\/(Settings|Tools|Users)(\/|$)/, "tt.enable.settings", "1"],
+    [/^\/Favorites(\/|$)/, "tt.enable.favorites", "1"],
+    [/^\/Dashboard(\/|$)/, "tt.enable.header", "0"]
+  ];
+  function pageAreaOn() {
+    if (g("tt.theming", "1") === "0") return false;
+    for (var i = 0; i < PAGE_AREAS.length; i++) if (PAGE_AREAS[i][0].test(location.pathname)) return g(PAGE_AREAS[i][1], PAGE_AREAS[i][2]) !== "0";
+    return true;
+  }
+
   window.TTTheme = {
-    backupWithCurrentKeys: backupWithCurrentKeys,
+    backupWithCurrentKeys: backupWithCurrentKeys, pageAreaOn: pageAreaOn, stampUdTables: stampUdTables,
     RB: RB, idealText: idealText, accentInks: accentInks, accentHovers: accentHovers, darkenTo: darkenTo, lightenTo: lightenTo, paintAccentInks: paintAccentInks, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,
