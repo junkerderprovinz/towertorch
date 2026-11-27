@@ -2055,16 +2055,21 @@
     if (opts[i]) opts[i].focus();
   }
   // The native /Settings pages apply on form submit rather than on change, so flipping a wrapped
-  // toggle has no effect until Apply. This persists the one changed field the way Apply does, by
-  // posting it to /update.php with the form's own #file and #section, and reloads.
+  // toggle has no effect until Apply. Where Apply only writes the form's file through update.php,
+  // this posts the one changed field the same way and reloads. A form that is saved elsewhere, or
+  // whose Apply also runs a #command or an #include, needs all its fields, so there the toggle
+  // only enables Apply. A #section goes along only when the form has one: update.php would turn
+  // every key of a flat file into an empty section.
   function ttApplyToolsSel(sel) {
     try {
       if (!sel || !sel.name || typeof window.csrf_token === "undefined") return;
       var form = sel.closest ? sel.closest("form") : null;
-      var fEl = form && form.querySelector('[name="#file"]'), sEl = form && form.querySelector('[name="#section"]');
+      if (!form || !/(^|\/)update\.php$/.test(form.getAttribute("action") || "")) return;
+      var fEl = form.querySelector('[name="#file"]'), sEl = form.querySelector('[name="#section"]');
+      if (!fEl || !fEl.value || form.querySelector('[name="#command"], [name="#include"]')) return;
       var fd = new URLSearchParams();
-      fd.append("#file", (fEl && fEl.value) || "dynamix/dynamix.cfg");
-      fd.append("#section", (sEl && sEl.value) || "display");
+      fd.append("#file", fEl.value);
+      if (sEl && sEl.value) fd.append("#section", sEl.value);
       fd.append("csrf_token", window.csrf_token);
       fd.append(sel.name, sel.value);
       // Keep a native setting that has a TowerTorch counterpart in step, or the TowerTorch side overrides it again.
