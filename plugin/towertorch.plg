@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.5.8">
+  <!ENTITY version   "1.5.9">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,6 +28,11 @@
 </ICON>
 
 <CHANGES>
+### 1.5.9
+
+🐛 **Fixed**
+- **The (i) icons open on a click.** A click or a tap on an (i), on TowerTorch's own settings and on every Settings and Tools page, opens its help and keeps it open until you click somewhere else. Before, the click closed the bubble the hover had just opened. Thanks @Revan335 ([#138](https://github.com/junkerderprovinz/towertorch/issues/138)).
+
 ### 1.5.8
 TowerTorch makes room for dlandon's plugins, the Next series and the classic ones.
 
