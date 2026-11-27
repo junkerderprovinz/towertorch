@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.5.7">
+  <!ENTITY version   "1.5.8">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,6 +28,15 @@
 </ICON>
 
 <CHANGES>
+### 1.5.8
+TowerTorch makes room for dlandon's plugins, the Next series and the classic ones.
+
+🐛 **Fixed**
+- **A yes/no switch keeps a plugin's settings.** On a plugin's settings page, such as Folder Caching, Recycle Bin, File Activity, Tips and Tweaks, Enhanced Log or Unassigned Devices, flipping a switch could reset that plugin's other settings and skip the restart its Apply runs. There the switch now waits for Apply, and Unraid's own display settings still save at once. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Recycle Bin Next and File Activity Next** show their status as a dot beside the page title, and their log filters sit in a plain row instead of one large badge. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Preclear's footer icons** stay on screen while a preclear runs, with the footer hidden. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **A plugin's own menu tab**, such as Custom SMB Shares, keeps its name with the tabs set to icons only. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+
 ### 1.5.7
 Theming off and each area switch take TowerTorch's look away completely, and TowerTorch makes room for FolderView Plus, Unassigned Devices Next and ZFS Master NG.
 
