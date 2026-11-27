@@ -3,7 +3,7 @@
   <!ENTITY name      "towertorch">
   <!ENTITY slug      "towertorch">
   <!ENTITY author    "Junker der Provinz">
-  <!ENTITY version   "1.5.6">
+  <!ENTITY version   "1.5.7">
   <!ENTITY gitURL    "https://raw.githubusercontent.com/junkerderprovinz/towertorch/main/plugin">
   <!ENTITY pluginURL "&gitURL;/&slug;.plg">
   <!ENTITY pkgURL    "https://github.com/junkerderprovinz/towertorch/releases/download/v&version;">
@@ -28,6 +28,20 @@
 </ICON>
 
 <CHANGES>
+### 1.5.7
+Theming off and each area switch take TowerTorch's look away completely, and TowerTorch makes room for FolderView Plus, Unassigned Devices Next and ZFS Master NG.
+
+⚡ **Improved**
+- **Each area switch takes its whole look away.** Turn off Docker, Plugins, VMs, Main, Shares, the header area, Settings or Favorites under Areas, and that area's pages look the way Unraid draws them, tab strips, title bars and table heads included. Every other area keeps its look. With the Docker area off, TowerTorch's Docker functions keep working, as with theming off. Thanks @Revan335 for the idea ([#136](https://github.com/junkerderprovinz/towertorch/issues/136)).
+
+🐛 **Fixed**
+- **Theming off turns the whole look off.** The Docker and Plugins tabs kept TowerTorch's tabs, title bars and action bar, and the Wild motion level still made Unraid's menu bounce. With theming off, Unraid looks like plain Unraid, and the Docker functions keep working. Thanks @Revan335 ([#136](https://github.com/junkerderprovinz/towertorch/issues/136)).
+- **FolderView Plus keeps its folders.** A click on a folder row opens its menu again, the folder autostart switch works, and TowerTorch's grid, folder and tile views, the page search and the Dashboard order leave FolderView Plus's folders where it puts them. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Unassigned Devices Next looks right.** Its renamed tables and headings get the TowerTorch look again, the gear and refresh sit in the controls card, the historical devices join the tile row, and each switch shows one tooltip. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **ZFS Master NG's dataset table** is no longer treated like the array table. Thanks @Revan335 ([#135](https://github.com/junkerderprovinz/towertorch/issues/135)).
+- **Preclear's status** stays out of a disk tile's serial number.
+- **Light themes.** Other plugins' tables on Tools and Settings pages, the header bell and the (i) icons on Main are readable again.
+
 ### 1.5.6
 Dropdowns show keyboard focus the way the fields beside them do, and a maintenance job reaches the backup app while it reconnects.
 
