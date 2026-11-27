@@ -85,7 +85,7 @@ console.log('\nIn the reactive mode every button of the changelog window colours
 // falls through to the accent the repository button rests on.
 console.log('\nThe close button hovers in the accent like the repository button rests');
 {
-  const body = ruleBody(css, ':where(html.tt-popups-on) .sl-bubble .sl-x:hover');
+  const body = ruleBody(css, ':where(html.tt-docker-on) .sl-bubble .sl-x:hover');
   ok('a hover rule for the close button exists', body != null);
   ok('it reads the stamp, then the accent', /background:\s*var\(--tt-rb-c,\s*var\(--tt-accent,/.test(body || ''), body);
   ok('with the accent text', /color:\s*var\(--tt-rb-ct,\s*var\(--tt-accent-text,/.test(body || ''), body);

@@ -29,6 +29,11 @@ Link="tt-hdr-hook"
     r.setAttribute("data-tt-motion", anim === "off" || anim === "0" ? "off" : anim === "wild" || anim === "2" ? "wild" : "subtle");
     r.classList.toggle("tt-badge-glass", g("tt.badgeglass", "0") === "1" && theming);
     r.classList.toggle("tt-popups-on", theming);
+    // The rules a sheet applies to every page's content wait for the page's own area as well.
+    r.classList.toggle("tt-page-on", !!(window.TTTheme && window.TTTheme.pageAreaOn && window.TTTheme.pageAreaOn()));
+    // The Docker and Plugins pages' own area classes, which docker.js and plugins.js stamp too.
+    r.classList.toggle("tt-docker-on", theming && g("tt.enable.docker", "1") !== "0" && /^\/(Docker(\/|$)|Apps\/(AddContainer|UpdateContainer)\/?$)/.test(location.pathname));
+    r.classList.toggle("tt-on-plugins", theming && g("tt.enable.plugins", "1") !== "0" && /^\/Plugins(\/|$)/.test(location.pathname));
     // OLED belongs to the screen, so it lives under a key the engine's mirror never syncs.
     if (g("towertorch.oled", "0") === "1" && theming) r.setAttribute("data-oled", ""); else r.removeAttribute("data-oled");
     r.classList.toggle("tt-footer-off", g("tt.footer", "1") === "1" && theming);

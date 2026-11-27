@@ -1514,8 +1514,27 @@
     });
   }
 
+  // Each page's area switch and its default. An area that styles other pages too, as Shares does
+  // their tab strips, asks this first, so a switched-off area's pages stay native. A page outside
+  // every area follows the master switch alone.
+  var PAGE_AREAS = [
+    [/^\/(Docker(\/|$)|Apps\/(AddContainer|UpdateContainer)\/?$)/, "tt.enable.docker", "1"],
+    [/^\/Plugins(\/|$)/, "tt.enable.plugins", "1"],
+    [/^\/VMs(\/|$)/, "tt.enable.vms", "1"],
+    [/^\/Main(\/|$)/, "tt.enable.main", "0"],
+    [/^\/(Shares|Browse|Stats)(\/|$)/, "tt.enable.shares", "0"],
+    [/^\/(Settings|Tools|Users)(\/|$)/, "tt.enable.settings", "1"],
+    [/^\/Favorites(\/|$)/, "tt.enable.favorites", "1"],
+    [/^\/Dashboard(\/|$)/, "tt.enable.header", "0"]
+  ];
+  function pageAreaOn() {
+    if (g("tt.theming", "1") === "0") return false;
+    for (var i = 0; i < PAGE_AREAS.length; i++) if (PAGE_AREAS[i][0].test(location.pathname)) return g(PAGE_AREAS[i][1], PAGE_AREAS[i][2]) !== "0";
+    return true;
+  }
+
   window.TTTheme = {
-    backupWithCurrentKeys: backupWithCurrentKeys, stampUdTables: stampUdTables,
+    backupWithCurrentKeys: backupWithCurrentKeys, pageAreaOn: pageAreaOn, stampUdTables: stampUdTables,
     RB: RB, idealText: idealText, accentInks: accentInks, accentHovers: accentHovers, darkenTo: darkenTo, lightenTo: lightenTo, paintAccentInks: paintAccentInks, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,

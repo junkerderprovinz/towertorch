@@ -71,7 +71,8 @@
   function update() {
     var native = document.getElementById("resetsort"), tb = body();
     if (!tb) return;
-    if (g("tt.theming", "1") === "0") {
+    var area = tb.id === "kvm_list" ? g("tt.enable.vms", "1") : g("tt.enable.docker", "1");
+    if (g("tt.theming", "1") === "0" || area === "0") {
       var old = native.previousElementSibling;
       if (old && old.classList.contains("tt-sortreset")) old.parentNode.removeChild(old);
       native.classList.remove("tt-sortreset-native");
@@ -89,7 +90,7 @@
     update();
     // Unraid refills the body on every listing and moves rows while they are dragged.
     new MutationObserver(soon).observe(tb, { childList: true });
-    window.addEventListener("storage", function (e) { if (e.key === "tt.theming") soon(); });
+    window.addEventListener("storage", function (e) { if (/^tt\.(theming|enable\.(docker|vms))$/.test(e.key || "")) soon(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

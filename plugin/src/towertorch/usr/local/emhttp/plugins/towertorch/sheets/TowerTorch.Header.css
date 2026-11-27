@@ -1455,8 +1455,8 @@ html:where(.tt-popups-on)[data-tt-motion="off"] .ui-dialog *:not(.tt-shake) { tr
    /Settings landing xmenu. On area pages it sets the same --tt-align-left and --tt-box-shift the
    area rule uses, so nothing shifts twice. measureAlign() writes both variables, and the brand
    margin, from the measured menu edge on every resize. */
-html.tt-header-on:not(.Theme--sidebar):not(.Theme--width-boxed) #displaybox { padding-left: var(--tt-align-left, 0); }
-html.tt-header-on.Theme--width-boxed:not(.Theme--sidebar) #displaybox { margin-left: var(--tt-box-shift, 0); margin-right: 0; }
+html.tt-header-on.tt-page-on:not(.Theme--sidebar):not(.Theme--width-boxed) #displaybox { padding-left: var(--tt-align-left, 0); }
+html.tt-header-on.tt-page-on.Theme--width-boxed:not(.Theme--sidebar) #displaybox { margin-left: var(--tt-box-shift, 0); margin-right: 0; }
 
 /* backs up the script's hiding: empty step cards and blocks in the streaming window never render as
    a grey bar */
@@ -1743,41 +1743,41 @@ html.tt-tools-on .unapi button:not([role="tab"]):hover { background: color-mix(i
    .Panels of div.user-list > a > img.picture (48px) plus the name with a 10px gap; the avatar becomes
    a large accent tile at the control radius, with the name below and more room between tiles.
    Scoped to the user grid with :has(.user-list). */
-html.tt-header-on #displaybox .Panels:has(.user-list) { gap: 20px !important; padding-top: 6px; }
-html.tt-header-on #displaybox .user-list { display: contents; }
-html.tt-header-on #displaybox .user-list > a {
+html.tt-header-on.tt-page-on #displaybox .Panels:has(.user-list) { gap: 20px !important; padding-top: 6px; }
+html.tt-header-on.tt-page-on #displaybox .user-list { display: contents; }
+html.tt-header-on.tt-page-on #displaybox .user-list > a {
   display: inline-flex !important; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px;
   text-decoration: none !important; color: var(--tt-ink-dim, #cfcfcf) !important; padding: 6px !important;
   transition: color .12s, transform .12s;
 }
-html.tt-header-on #displaybox .user-list > a:hover { transform: translateY(-2px); color: var(--tt-ink, #e8e8e8) !important; }
-html.tt-header-on #displaybox .user-list > a br { display: none; }
-html.tt-header-on #displaybox .user-list > a img.picture {
+html.tt-header-on.tt-page-on #displaybox .user-list > a:hover { transform: translateY(-2px); color: var(--tt-ink, #e8e8e8) !important; }
+html.tt-header-on.tt-page-on #displaybox .user-list > a br { display: none; }
+html.tt-header-on.tt-page-on #displaybox .user-list > a img.picture {
   width: 76px !important; height: 76px !important; min-width: 76px !important; max-width: 76px !important; flex: none !important;
   box-sizing: border-box !important; padding: 13px !important;
   border-radius: var(--tt-radius-control) !important;
   background: var(--tt-iconbg-color, var(--tt-accent, #FCC419)) !important;
   object-fit: contain; transition: filter .12s; border: none !important;
 }
-html.tt-header-on #displaybox .user-list > a:hover img.picture { filter: brightness(1.1); }
+html.tt-header-on.tt-page-on #displaybox .user-list > a:hover img.picture { filter: brightness(1.1); }
 /* the /Users action buttons (Benutzer hinzufügen, Fertig) as accent pills like the other form
    buttons, since tt-tools-on is not set there */
-html.tt-header-on #displaybox:has(.user-list) input[type="button"],
-html.tt-header-on #displaybox:has(.user-list) input[type="submit"],
-html.tt-header-on #displaybox:has(.user-list) a.button {
+html.tt-header-on.tt-page-on #displaybox:has(.user-list) input[type="button"],
+html.tt-header-on.tt-page-on #displaybox:has(.user-list) input[type="submit"],
+html.tt-header-on.tt-page-on #displaybox:has(.user-list) a.button {
   background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important; color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
   border: none !important; outline: none !important; box-shadow: none !important;
   border-radius: var(--tt-radius-pill) !important; height: var(--tt-md-h, 30px); padding: 0 18px !important;
   font-weight: 600; text-transform: uppercase; letter-spacing: .6px; cursor: pointer; transition: filter .12s;
 }
-html.tt-header-on #displaybox:has(.user-list) input[type="button"]:hover:not(:disabled),
-html.tt-header-on #displaybox:has(.user-list) input[type="submit"]:hover:not(:disabled) { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+html.tt-header-on.tt-page-on #displaybox:has(.user-list) input[type="button"]:hover:not(:disabled),
+html.tt-header-on.tt-page-on #displaybox:has(.user-list) input[type="submit"]:hover:not(:disabled) { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 
 /* Table header rows as GlimStone's eyebrow: no fill, the meta size in the muted ink, uppercase and
    tracked, set apart from the rows by the space under them. Only background-color changes, not the
    background shorthand, so tablesorter's sort arrow image, the widths and sorting stay native. */
-html.tt-header-on .tablesorter > thead > tr > th,
-html.tt-header-on #kvm_table > thead > tr > th {
+html.tt-header-on.tt-page-on .tablesorter > thead > tr > th,
+html.tt-header-on.tt-page-on #kvm_table > thead > tr > th {
   background-color: transparent !important;
   color: var(--tt-text-dim, #8a8a8a) !important;
   font-weight: 500 !important;
@@ -1787,8 +1787,8 @@ html.tt-header-on #kvm_table > thead > tr > th {
   box-shadow: none !important;
   padding-top: 8px !important; padding-bottom: 12px !important;
 }
-html.tt-header-on .tablesorter > thead > tr,
-html.tt-header-on #kvm_table > thead > tr { border: none !important; }
+html.tt-header-on.tt-page-on .tablesorter > thead > tr,
+html.tt-header-on.tt-page-on #kvm_table > thead > tr { border: none !important; }
 
 /* the island's fill bars glide on each nchan tick instead of jumping */
 html.tt-header-on .tt-isl-fill { transition: width .5s ease, background-color .4s ease; }

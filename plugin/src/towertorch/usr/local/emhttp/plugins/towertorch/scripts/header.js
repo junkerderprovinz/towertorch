@@ -1368,7 +1368,7 @@
   // fills the track, stays green instead of turning red.
   function ttStateBars() {
     try {
-      var on = g("tt.statenative", "0") === "1" && g("tt.theming", "1") !== "0";
+      var on = g("tt.statenative", "0") === "1" && document.documentElement.classList.contains("tt-page-on");
       var allBars = document.querySelectorAll(".usage-disk:not(.sys):not(.mm) > span:first-child");
       // The two usage bars tall enough to slosh at their end: the 26px /Main bars while the Shares
       // area restyles them, and the array meter in the menu while the header area is on.
@@ -2008,7 +2008,7 @@
   //   which sets no marker attribute, and nesting would stack two triggers on one field.
   function ttWrapPageSelects() {
     try {
-      if (!document.documentElement.classList.contains("tt-popups-on")) return;
+      if (!document.documentElement.classList.contains("tt-page-on")) return;
       // The container form's selects belong to docker.js, which loads later and would wrap a
       // second trigger inside this one.
       if (/^\/(Docker|Apps)\/(AddContainer|UpdateContainer)\/?$/.test(location.pathname)) return;
@@ -2672,6 +2672,13 @@
       // The native jQuery-UI dialogs and the SweetAlert confirmations follow the TowerTorch look on every
       // page. Master-gated only, since it is chrome rather than an area of its own.
       root.classList.toggle("tt-popups-on", g("tt.theming", "1") !== "0");
+      // The rules a sheet applies to every page's content wait for the page's own area as well,
+      // so switching an area off leaves its pages native.
+      root.classList.toggle("tt-page-on", !!(window.TTTheme && window.TTTheme.pageAreaOn && window.TTTheme.pageAreaOn()));
+      // The Docker and Plugins area classes, stamped here too so a flip on the settings page reaches
+      // an open Docker or Plugins tab, docker.css's rules on Unraid's markup included.
+      root.classList.toggle("tt-docker-on", g("tt.theming", "1") !== "0" && g("tt.enable.docker", "1") !== "0" && /^\/(Docker(\/|$)|Apps\/(AddContainer|UpdateContainer)\/?$)/.test(location.pathname));
+      root.classList.toggle("tt-on-plugins", g("tt.theming", "1") !== "0" && g("tt.enable.plugins", "1") !== "0" && /^\/Plugins(\/|$)/.test(location.pathname));
       if (g("towertorch.oled", "0") === "1" && g("tt.theming", "1") !== "0") root.setAttribute("data-oled", ""); else root.removeAttribute("data-oled");
       // CA's settings sub-page is a real Unraid form page, not one of CA's overlays, and nothing in
       // its markup identifies it: its form posts to /update.php like any other settings page. The
@@ -2702,7 +2709,7 @@
       // Per-icon hide for the utility icons, and the native state colours. The bell and burger are
       // not in the list: they are integral and handled in ttDockProfile, and a stale key would
       // otherwise blank the icon while leaving its badge.
-      ["lang", "search", "logout", "terminal", "browse", "feedback", "info", "log", "help"].forEach(function (k9) { root.classList.toggle("tt-hideicon-" + k9, g("tt.hideicon." + k9, "0") === "1" && g("tt.theming", "1") !== "0"); });
+      ["lang", "search", "logout", "terminal", "browse", "feedback", "info", "log", "help"].forEach(function (k9) { root.classList.toggle("tt-hideicon-" + k9, g("tt.hideicon." + k9, "0") === "1" && on); });
       root.classList.toggle("tt-state-native", g("tt.statenative", "0") === "1" && g("tt.theming", "1") !== "0");
       root.classList.toggle("tt-state-mono", g("tt.statemono", "0") === "1" && g("tt.theming", "1") !== "0");
       // a global rainbow flag, so the shared loader can cycle its colour once per revolution
@@ -2738,17 +2745,20 @@
         // Unraid's users menu sits there.
         var usersPg = /^\/Users(\/|$)/.test(p0);
         var toolsPg = !ownPg && !ctOutPg && (/^\/Tools\//.test(p0) || /^\/Settings\/./.test(p0) || usersPg || diskPg || caSettingsPg || !!document.querySelector("#displaybox fieldset legend"));
-        root.classList.toggle("tt-tools-on", toolsPg && g("tt.theming", "1") !== "0");
+        // The Settings and Tools pages and the user pages are the settings area; the disk pages and
+        // CA's settings form have no switch of their own.
+        var toolsArea = diskPg || caSettingsPg || g("tt.enable.settings", "1") !== "0";
+        root.classList.toggle("tt-tools-on", toolsPg && toolsArea && g("tt.theming", "1") !== "0");
         // The disk detail form is a full-width native grid whose labels and values would spread to
         // the screen edges, so the compact grid is kept for these pages alone.
-        root.classList.toggle("tt-diskpage", diskPg && toolsPg && g("tt.theming", "1") !== "0");
+        root.classList.toggle("tt-diskpage", diskPg && root.classList.contains("tt-tools-on"));
         // The create-key trigger and its dropdown live on this one sub-page, so the rules for it
         // are scoped here rather than reaching every menu trigger on other /Settings pages.
         var apiKeysPg = /^\/Settings\/ApiKeys\b/.test(p0);
-        root.classList.toggle("tt-apikeyspage", apiKeysPg && toolsPg && g("tt.theming", "1") !== "0");
+        root.classList.toggle("tt-apikeyspage", apiKeysPg && root.classList.contains("tt-tools-on"));
         // The user list carries a page title above its sections and an add button that is the
         // page's action; the header sheet handles both on either address.
-        root.classList.toggle("tt-userlist", /^\/(Settings\/)?Users\/?$/.test(p0) && toolsPg && g("tt.theming", "1") !== "0");
+        root.classList.toggle("tt-userlist", /^\/(Settings\/)?Users\/?$/.test(p0) && root.classList.contains("tt-tools-on"));
       } catch (e0) {}
       ttArrFill();
       ttStateBars();

@@ -13,7 +13,7 @@ const BADGE_INK = /^var\(--tt-rbaccent-text, var\(--tt-accent-text, #161616\)\)$
 
 for (const theme of ['black', 'gray', 'white', 'azure']) {
   console.log('\nTheme ' + theme);
-  const html = ['Theme--' + theme, 'tt-popups-on'];
+  const html = ['Theme--' + theme, 'tt-popups-on', 'tt-page-on'];
   const badge = { tag: 'div', classes: ['title'], attrs: {}, states: {}, has: [], html: html.concat('tt-tools-on', 'tt-forms-on'), inside: ['#displaybox'] };
   const name = { tag: 'span', classes: ['left'], attrs: {}, states: {}, has: [], html: html.concat('tt-tools-on', 'tt-forms-on'), inside: ['#displaybox', '.title'] };
   const bar = { tag: 'span', classes: ['left'], attrs: {}, states: {}, has: [], html, inside: ['.title'], outside: ['#displaybox'] };

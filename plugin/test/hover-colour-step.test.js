@@ -47,7 +47,7 @@ const ALLOWED = [
   'html.tt-popups-on:has(.ca_homeTemplates) #displaybox a:hover',
   'html.tt-popups-on #alternateView a:hover',
   'html.tt-tools-on #displaybox a:not(.button):hover',
-  'html.tt-header-on #displaybox .user-list > a:hover img.picture',
+  'html.tt-header-on.tt-page-on #displaybox .user-list > a:hover img.picture',
   'html.tt-popups-on .searchSubmit:hover',
 ];
 for (const f of files(DIR, ['.css', '.js'])) {

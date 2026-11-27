@@ -29,13 +29,13 @@ const winner = (pg, el, props) => {
 };
 
 const HEADS = [
-  ['Docker', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tt-enh', '.tablesorter'], html: ['tt-docker-on', 'tt-header-on', 'tt-popups-on'] }, ['.tt-enh', '.tablesorter']],
-  ['Plugins', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tt-plug', '#plugin_table', '.tablesorter'], html: ['tt-on-plugins', 'tt-header-on', 'tt-popups-on'] }, ['.tt-plug', '#plugin_table', '.tablesorter']],
-  ['Plugins, the other tables', 'docker', { tag: 'th', classes: [], inside: ['.tt-plug-lite', '.tablesorter'], html: ['tt-on-plugins', 'tt-header-on', 'tt-popups-on'] }, ['.tt-plug-lite', '.tablesorter']],
-  ['VMs', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['#displaybox', '#kvm_table', '.tablesorter'], html: ['tt-vms-on', 'tt-header-on', 'tt-popups-on'] }, ['#displaybox', '#kvm_table', '.tablesorter']],
-  ['Shares', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.share_status', '.unraid'], html: ['tt-shares-on', 'tt-on-shares', 'tt-header-on', 'tt-popups-on'] }, ['#displaybox', '.share_status', '.unraid']],
-  ['Main', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.disk_status', '.unraid'], outside: ['.tr_last', '.tt-tr-void', '.array_status'], html: ['tt-shares-on', 'tt-on-main', 'tt-header-on', 'tt-popups-on'] }, ['#displaybox', '.disk_status', '.unraid']],
-  ['any other sortable table', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tablesorter'], html: ['tt-header-on', 'tt-popups-on'] }, ['.tablesorter']],
+  ['Docker', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tt-enh', '.tablesorter'], html: ['tt-docker-on', 'tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['.tt-enh', '.tablesorter']],
+  ['Plugins', 'docker', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tt-plug', '#plugin_table', '.tablesorter'], html: ['tt-on-plugins', 'tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['.tt-plug', '#plugin_table', '.tablesorter']],
+  ['Plugins, the other tables', 'docker', { tag: 'th', classes: [], inside: ['.tt-plug-lite', '.tablesorter'], html: ['tt-on-plugins', 'tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['.tt-plug-lite', '.tablesorter']],
+  ['VMs', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['#displaybox', '#kvm_table', '.tablesorter'], html: ['tt-vms-on', 'tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['#displaybox', '#kvm_table', '.tablesorter']],
+  ['Shares', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.share_status', '.unraid'], html: ['tt-shares-on', 'tt-on-shares', 'tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['#displaybox', '.share_status', '.unraid']],
+  ['Main', 'every', { tag: 'td', classes: [], inside: ['#displaybox', '.disk_status', '.unraid'], outside: ['.tr_last', '.tt-tr-void', '.array_status'], html: ['tt-shares-on', 'tt-on-main', 'tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['#displaybox', '.disk_status', '.unraid']],
+  ['any other sortable table', 'every', { tag: 'th', classes: ['tablesorter-header'], inside: ['.tablesorter'], html: ['tt-header-on', 'tt-popups-on', 'tt-page-on'] }, ['.tablesorter']],
 ];
 
 const hex = (c) => { const m = /^#([0-9a-f]{6})$/i.exec(c); return m ? [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255) : null; };

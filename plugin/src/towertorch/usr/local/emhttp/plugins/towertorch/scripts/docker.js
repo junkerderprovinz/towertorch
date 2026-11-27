@@ -66,7 +66,8 @@
   // while every orchestration control stays: the actions column, the state toggle, the limit
   // gears, the plan chip with its editor, the save and start-in-order actions and the heartbeat.
   // It is read at the presentational chokepoints only, never near boot(), the timers or the API.
-  function themingOn() { return localStorage.getItem("tt.theming") !== "0"; }
+  // The Docker area switch takes the same look away for this tab alone.
+  function themingOn() { return localStorage.getItem("tt.theming") !== "0" && localStorage.getItem("tt.enable.docker") !== "0"; }
   // FolderView Plus groups the list into folders of its own, and its theme contract
   // (docs/THEME_API_CONTRACT.md) leaves those rows, their order and the view to it. It is known by
   // its asset directory, apart from the older folder.view plugins.
@@ -994,7 +995,7 @@
       // The page gate for docker.css's list rules. ctApply stamps it on the add and update forms,
       // so the list page has to stamp it too, or html.tt-docker-on never matches and the reactive
       // rest-grey never applies.
-      document.documentElement.classList.toggle("tt-docker-on", themingOn() && localStorage.getItem("tt.enable.docker") !== "0");
+      document.documentElement.classList.toggle("tt-docker-on", themingOn());
       var root = document.documentElement.style;
       var accent = effc("accent"); if (accent) { root.setProperty("--tt-accent", accent); root.setProperty("--tt-accent-text", idealText(accent)); if (window.TTTheme && window.TTTheme.paintAccentInks) window.TTTheme.paintAccentInks(root, accent); }
       var dens = localStorage.getItem("tt.density"); root.setProperty("--tt-density", { compact: "5px", normal: "9px", airy: "14px" }[dens] || "9px");
@@ -5080,7 +5081,7 @@
   function ctApply() {
     try {
       var root = document.documentElement;
-      var on2 = localStorage.getItem("tt.enable.docker") !== "0" && themingOn();
+      var on2 = themingOn();
       root.classList.toggle("tt-docker-on", on2);
       root.classList.toggle("tt-on-addct", on2 && onCtForm());   // page gate: every docker.css form rule requires BOTH classes
       if (!on2) { ctSelectsTeardown(); ctTitleUnwrap(); ctInfoBubblesTeardown(); ctVarLabelsTeardown(); return; }
@@ -5215,7 +5216,6 @@
     } catch (e) {}
   }
   function boot() {
-    if (localStorage.getItem("tt.enable.docker") === "0") return; // area disabled in TowerTorch settings
     if (onCtForm()) { bootCtForm(); return; } // form styling only, none of the list machinery, API polling or timers below
     if (onCtOutput()) { bootCtOutput(); return; } // the create and update output page becomes a floating window
     // On the AddContainer and UpdateContainer URL the form, or the run output, can be injected
@@ -5280,7 +5280,7 @@
           if (e.key === "tt.view") { setMode(localStorage.getItem("tt.view") === "grid" ? "grid" : "list"); return; }
           // The master theming toggle flipped live: coerce grid to list when it is now off,
           // reset the old visual state, then let applyMode() re-render for the new state.
-          if (e.key === "tt.theming") {
+          if (e.key === "tt.theming" || e.key === "tt.enable.docker") {
             if (!ttViewsOn() && mode === "grid") { mode = "list"; localStorage.setItem(VIEW_KEY, "list"); }
             applySettings(); clearRowBadges(); removeEnhanceClasses(); applyMode();
             // applyMode's off branch re-injects orchestration but leaves the icon tint and the

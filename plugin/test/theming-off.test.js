@@ -40,7 +40,7 @@ console.log('\nNo sheet reaches Unraid\'s markup past the master switch');
 
 console.log('\nThe Docker and Plugins pages stay native with theming off');
 {
-  const on = ['tt-popups-on', 'tt-docker-on', 'tt-header-on'];
+  const on = ['tt-popups-on', 'tt-docker-on', 'tt-on-plugins', 'tt-header-on'];
   const off = [];
   const reach = (el, prop) => candidates(withUnraid('docker'), el, prop).filter((c) => c.sheet !== 'unraid default-base.css');
   const cases = [

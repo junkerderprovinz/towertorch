@@ -23,7 +23,7 @@ console.log('\nA select on the container form gets one dropdown');
   const sweep = (pathname) => {
     const wrapped = [];
     const sel = { options: [1, 2], closest: () => null, getBoundingClientRect: () => ({ width: 200, height: 30 }) };
-    const document = { documentElement: { classList: { contains: (c) => c === 'tt-popups-on' } }, querySelectorAll: () => [sel] };
+    const document = { documentElement: { classList: { contains: (c) => c === 'tt-page-on' } }, querySelectorAll: () => [sel] };
     new Function('document', 'location', 'ttToolsWrapSelect', grabFn(header, 'ttWrapPageSelects') + '\nttWrapPageSelects();')(document, { pathname }, (s) => wrapped.push(s));
     return wrapped.length;
   };

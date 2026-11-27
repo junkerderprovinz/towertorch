@@ -716,39 +716,40 @@ html { --tt-focus-ring-width: 2px; }
    view and <nav class="tabs"> pills in the tabbed one, and its only orange is the active tab's
    border (--brand-orange). docker.css restyles these on the Docker and Plugins pages, while this
    sheet is loaded on every page, so the rule here covers Main, Shares, Settings, Tools and the rest.
-   The html.tt-popups-on prefix plus !important outranks both the stock sheet and the docker.css
-   copy. The sections read as a shade block rather than through hairlines. */
-html.tt-popups-on div.title {
+   The html.tt-page-on prefix plus !important outranks both the stock sheet and the docker.css
+   copy; it holds while theming and the page's own area are on. The sections read as a shade block
+   rather than through hairlines. */
+html.tt-page-on div.title {
   background: var(--tt-surface-4, #262626) !important;
   border: none !important; box-shadow: none !important;
   border-radius: var(--tt-radius-control) !important;
   padding: 8px 14px !important;
 }
-html.tt-popups-on div.title > span.left, html.tt-popups-on div.title > span.right {
+html.tt-page-on div.title > span.left, html.tt-page-on div.title > span.right {
   text-transform: uppercase; letter-spacing: 1.5px; font-size: var(--tt-text-meta); font-weight: 600;
   color: var(--tt-text, #e6e6e6) !important;
 }
-html.tt-popups-on div.title span.left i.title,
-html.tt-popups-on div.title span.left i[class*="icon-"],
-html.tt-popups-on div.title span.left i.fa { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
+html.tt-page-on div.title span.left i.title,
+html.tt-page-on div.title span.left i[class*="icon-"],
+html.tt-page-on div.title span.left i.fa { color: oklab(from var(--tt-rbaccent, var(--tt-accent, #FCC419)) clamp(var(--tt-ink-min, 0), l, var(--tt-ink-max, 1)) calc(a * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l))) calc(b * min(1, var(--tt-ink-max, 1) / l, (1 - var(--tt-ink-min, 0)) / (1 - l)))) !important; }
 /* The section badge and the page's action control share a line, so they share the md tier, the same
    one every other section badge in TowerTorch uses. plugins.js stamps this button inline with !important,
    which outranks this rule, so the two have to stay on the same token. */
-html.tt-popups-on #displaybox input[type="button"][value*="ktualisierung" i],
-html.tt-popups-on #displaybox input[type="button"][value*="update" i] {
+html.tt-page-on #displaybox input[type="button"][value*="ktualisierung" i],
+html.tt-page-on #displaybox input[type="button"][value*="update" i] {
   height: var(--tt-md-h, 30px) !important; min-height: var(--tt-md-h, 30px) !important; padding: var(--tt-md-pad, 0 20px) !important;
   font-size: var(--tt-md-fs) !important;
   display: inline-flex !important; align-items: center !important; box-sizing: border-box !important;
 }
 /* The tabbed view's pill row: idle pills take a grey shade, the active and hovered one the TowerTorch
    accent, which replaces the stock --brand-orange outline. */
-html.tt-popups-on nav.tabs, html.tt-popups-on nav.tabs .tabs-container { background: transparent !important; border: none !important; box-shadow: none !important; }
-html.tt-popups-on nav.tabs .tabs-container > button[role="tab"] {
+html.tt-page-on nav.tabs, html.tt-page-on nav.tabs .tabs-container { background: transparent !important; border: none !important; box-shadow: none !important; }
+html.tt-page-on nav.tabs .tabs-container > button[role="tab"] {
   background: var(--tt-surface-4, #262626) !important; color: var(--tt-text-chip, #cfcfcf) !important;
   border: none !important; border-radius: var(--tt-radius-pill) !important;
 }
-html.tt-popups-on nav.tabs .tabs-container > button[role="tab"]:hover,
-html.tt-popups-on nav.tabs .tabs-container > button[role="tab"][aria-selected="true"] {
+html.tt-page-on nav.tabs .tabs-container > button[role="tab"]:hover,
+html.tt-page-on nav.tabs .tabs-container > button[role="tab"][aria-selected="true"] {
   background: var(--tt-rbaccent, var(--tt-accent, #FCC419)) !important;
   color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616)) !important;
   border-color: transparent !important;
@@ -1030,8 +1031,8 @@ html.tt-popups-on a[class*="back_to"] > i { color: inherit !important; }
    and the top-nav util icons (#menu) are pulled in to the content edge by the --tt-content-rgap
    header.js measures. Only the light-DOM nav containers get the padding; the os-version and profile
    web components stay untouched, and at fluid width the gap is 0. */
-html.tt-popups-on #header { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
-html.tt-popups-on #menu   { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
+html.tt-popups-on.tt-header-on #header { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
+html.tt-popups-on.tt-header-on #menu   { box-sizing: border-box !important; padding-right: var(--tt-content-rgap, 0px) !important; }
 
 /* The Apps (Community Applications) tab in the TowerTorch look: colour, shade and radius only, no layout
    changes, so CA's dynamic multi-state grid keeps working. Its selectors (#searchBox, .caMenuItem,

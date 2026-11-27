@@ -127,7 +127,7 @@
   function paintTabs() {
     try {
       ttHideSmokeTab();
-      var rb = rbOn(), neutral = rb && rbNeutral(), btns = document.querySelectorAll('#displaybox nav.tabs button[role="tab"]');
+      var rb = rbOn() && document.documentElement.classList.contains("tt-shares-on"), neutral = rb && rbNeutral(), btns = document.querySelectorAll('#displaybox nav.tabs button[role="tab"]');
       document.documentElement.classList.toggle("tt-shares-rbneutral", rbNeutral()); // paintRows never runs for the /Docker tab bar
       for (var i = 0; i < btns.length; i++) {
         var b = btns[i], active = b.getAttribute("aria-selected") === "true";
@@ -2158,7 +2158,9 @@
     try {
       var root = document.documentElement;
       // Master theming off behaves like a disabled area and runs the teardown branch below.
-      var on = g("tt.enable.shares", "0") !== "0" && g("tt.theming", "1") !== "0";   // opt in, since it flips Unraid's tabbed setting
+      // Opt in, since it flips Unraid's tabbed setting. The area also styles other pages' tab
+      // strips, which stay native where that page's own area is off.
+      var on = g("tt.enable.shares", "0") !== "0" && g("tt.theming", "1") !== "0" && !!(window.TTTheme && window.TTTheme.pageAreaOn && window.TTTheme.pageAreaOn());
       // /Main is its own area but reuses this enhancer, so tt-shares-on is set there when the Start
       // area is on even with the Shares area off. onMain() gates it to /Main, so the Shares styling
       // never leaks onto another page.
