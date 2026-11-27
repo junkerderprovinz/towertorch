@@ -1309,8 +1309,12 @@ html.tt-header-on #menu .tt-nav-wiggle:nth-child(3n) { animation-delay: calc(var
 /* The native footer strip (footer#footer, fixed, 28px: array status, temperatures, copyright) is
    hidden by default and tt.footer="0" brings it back. header.js sets tt-footer-off only with
    theming on. The native layout sizes the scroll area with fillAvailableHeight() rather than a
-   body padding, so nothing needs to be given back. */
-html.tt-footer-off #footer { display: none !important; }
+   body padding, so nothing needs to be given back.
+   Preclear shows each running preclear as an icon in the footer, whose tooltip carries the progress
+   and the controls, so while one runs the footer keeps Unraid's layout and only the icons are drawn. */
+html.tt-footer-off #footer:not(:has(#preclear-footer > .exec)) { display: none !important; }
+html.tt-footer-off #footer:has(#preclear-footer > .exec) { visibility: hidden; }
+html.tt-footer-off #preclear-footer { visibility: visible; }
 @media (prefers-reduced-motion: reduce) {
   html.tt-header-on #menu .tt-nav-wiggle { animation: none; outline: 2px dashed var(--tt-hdr-accent, #70b8ff); outline-offset: 2px; }
 }
