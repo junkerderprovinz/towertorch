@@ -369,8 +369,8 @@ html.tt-header-on [data-tt-trig] svg { width: 16px !important; height: 16px !imp
    and keeps the bell swinging instead (ttBellSync), so the badge itself never shows. The box stays
    like every other header button and the glyph takes the highest level's colour: alert, warning,
    or the bell's accent for a notice. The header stays dark on every theme, so the bell keeps the
-   dark theme's ink range on the light ones too. */
-html.tt-header-on [data-tt-trig="bell"] { position: relative; --tt-ink-min: 0.74; --tt-ink-max: 1; }
+   dark theme's inks on the light ones too. */
+html.tt-header-on [data-tt-trig="bell"] { position: relative; --tt-ink-min: 0.74; --tt-ink-max: 1; --tt-warn-ink: #ff832b; --tt-err-ink: #ff8389; }
 html.tt-header-on [data-tt-trig="bell"] [class*="absolute"] { display: none !important; }
 html.tt-header-on [data-tt-trig="bell"][data-tt-bell="alert"] { --tt-bell-c: var(--tt-err-ink, #ff8389); }
 html.tt-header-on [data-tt-trig="bell"][data-tt-bell="warning"] { --tt-bell-c: var(--tt-warn-ink, #ff832b); }

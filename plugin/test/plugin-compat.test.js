@@ -238,7 +238,7 @@ console.log('\nZFS Master NG\'s table is not an array table');
 console.log('\nThe light themes, beyond the tables');
 {
   const header = read('sheets/TowerTorch.Header.css');
-  ok('the bell takes the dark header\'s ink on every theme', /html\.tt-header-on \[data-tt-trig="bell"\] \{ position: relative; --tt-ink-min: 0\.74; --tt-ink-max: 1; \}/.test(header));
+  ok('the bell takes the dark header\'s ink on every theme', /html\.tt-header-on \[data-tt-trig="bell"\] \{ position: relative; --tt-ink-min: 0\.74; --tt-ink-max: 1; --tt-warn-ink: #ff832b; --tt-err-ink: #ff8389; \}/.test(header));
   const info = { tag: 'span', classes: ['tt-info', 'tt-dk-info'], attrs: {}, states: {}, html: ['tt-shares-on', 'tt-on-main', 'tt-dk-on', 'Theme--white'], outside: ['.tt-win-title', '.ca_homeTemplatesHeader', '.tt-win'] };
   const page = ['sheets/TowerTorch.Tokens.css', 'sheets/TowerTorch.Disks.css', 'sheets/TowerTorch.Shares.css'];
   const c = candidates(page, info, 'color'), win = c[c.length - 1];
