@@ -134,10 +134,14 @@ func inFortress(t *testing.T, run func() ([]byte, error)) (*vault, *Door) {
 }
 
 // waitForOldPhrase waits until BombVault answers the reopened TowerTorch on
-// the phrase the fortress left.
+// the phrase the fortress left. Once BombVault said the phrase moved on, the
+// kit no longer lists it online there, so that answer counts as reached too.
 func waitForOldPhrase(t *testing.T, d *Door) {
 	t.Helper()
-	waitFor(t, "TowerTorch to reach BombVault on the old phrase", func() bool { return online(d.current(), "bombvault") })
+	waitFor(t, "TowerTorch to reach BombVault on the old phrase", func() bool {
+		f := d.current()
+		return online(f, "bombvault") || f != nil && f.PhraseChanged()
+	})
 }
 
 // online says an instance of app is in reach of f.
