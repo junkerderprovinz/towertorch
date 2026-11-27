@@ -194,6 +194,38 @@ console.log('\nIn the list the controls go back to the section head');
   ok('sending them home gives UD its bar back as it was', P.bar.querySelectorAll('div.right.ud').length === 5 && !P.bar.hasAttribute('data-tt-ud-moved') && P.root.querySelectorAll('.tt-ud-lbl, .tt-ud-unit, .tt-ud-panel, .tt-ud-ctrls').length === 0);
 }
 
+// UD Next 2026.11.09 (UnassignedDevices.page) puts every control in a span.right.span-switches-right,
+// the gear and refresh too, with its own data-tooltip balloon, and each switch's input inside an <a>.
+function pageNext() {
+  const nsw = (k, tip, label) => h('span', { class: 'right span-switches-right ud-tooltip', 'data-tooltip': tip }, [h('a', {}, [
+    h('input', { type: 'checkbox', name: k + '-switch', class: k + '-switch' }),
+    h('span', { class: 'switch-button-label on' }, [label]), h('div', { class: 'switch-button-background checked' }, [h('div', { class: 'switch-button-button' })]),
+  ])]);
+  const bar = h('div', { id: 'ud-page', class: 'latest title shift ud' }, [
+    h('span', { class: 'right span-switches-right' }, [h('a', { class: 'ud-tooltip', 'data-tooltip': 'Unassigned Devices Settings', href: '/Settings/UnassignedDevicesSettings' }, [h('i', { class: 'fa fa-gear' })])]),
+    h('span', { class: 'right span-switches-right' }, [h('a', { class: 'exec ud-tooltip', 'data-tooltip': 'Refresh Disks and Configuration', onclick: 'rescan_disks()' }, [h('i', { class: 'fa fa-refresh' })])]),
+    nsw('historical', 'Show/Hide Historical Unassigned Devices', 'Historisch'), nsw('shares', 'Show/Hide SMB/NFS/ISO Shares', 'Freigaben'), nsw('disks', 'Show/Hide Unassigned Disk Devices', 'Datenträger'),
+    h('span', { class: 'left' }, ['Unassigned Disks/Remote Shares/Historical Unassigned Devices']),
+  ]);
+  const row = h('div', { class: 'tt-dk-udrow' }, [h('div', { class: 'show-disks' }), h('div', { class: 'show-shares' }), h('div', { class: 'show-historical' })]);
+  const head = h('div', { class: 'tt-card-head' }, [h('span', { class: 'left' }, ['Unassigned Devices'])]);
+  const sec = h('section', { 'data-tt-card': '1', class: 'tt-dk-box', role: 'tabpanel' }, [head, bar, row]);
+  const root = h('html', {}, [h('div', { id: 'displaybox' }, [sec])]);
+  return { root, row, bar, icons: bar.querySelectorAll('a[data-tooltip]') };
+}
+
+console.log('\nUD Next\'s controls get their card too');
+{
+  const P = pageNext(), ud = de(P.root);
+  ud.move();
+  const units = P.root.querySelectorAll('.tt-ud-unit');
+  ok('one line for each of the five controls', units.length === 5, units.length);
+  ok('gear and refresh are icon buttons, though their box names a switch', P.icons.every((a) => a.classList.contains('tt-ud-icon')));
+  ok('the switches are not', !P.root.querySelector('.switch-button-background').closest('a.tt-ud-icon'));
+  const titled = P.root.querySelectorAll('.tt-ud-ctrls [title]');
+  ok('UD Next\'s own balloon is the only tooltip, so no title is added beside it', titled.length === 0, titled.map((e) => e.getAttribute('title')).join(' | '));
+}
+
 console.log('\nThe card is laid out like a settings card');
 {
   const disks = rules(read('sheets/TowerTorch.Disks.css'));

@@ -59,7 +59,7 @@ console.log('\nThe logo tile shows under the same switch on all three tabs');
 
 console.log('\nThe names read in the text colour, as on the Plugins and VM tabs');
 {
-  const nm = body(docker, '.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .appname a');
+  const nm = body(docker, '.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .appname a');
   ok('a container name takes the row\'s text colour, not Unraid\'s link blue', decl(nm, 'color') === 'inherit !important', nm);
 }
 
@@ -67,7 +67,7 @@ console.log('\nThe plugin row');
 {
   const cell = body(docker, '.tt-plug #plugin_list > tr > td');
   ok('the padding follows the density', /padding-top: var\(--tt-density, 9px\)/.test(cell || '') && /padding-bottom: var\(--tt-density, 9px\)/.test(cell || ''), cell);
-  ok('the logo stands as far from the name as on Docker', decl(body(docker, '.tt-plugname'), 'gap') === decl(body(docker, '.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer'), 'gap'));
+  ok('the logo stands as far from the name as on Docker', decl(body(docker, '.tt-plugname'), 'gap') === decl(body(docker, '.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer'), 'gap'));
   const box = body(docker, '.tt-plugico');
   ok('every logo sits in one fixed square', decl(box, 'width') === 'var(--tt-logo-img, 62px)' && decl(box, 'height') === 'var(--tt-logo-img, 62px)', box);
   ok('centred in it', decl(box, 'align-items') === 'center' && decl(box, 'justify-content') === 'center');

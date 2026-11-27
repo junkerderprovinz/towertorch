@@ -43,7 +43,7 @@ console.log('\nDocker per-kind hover badges: the fallback goes through --tt-acce
 {
   const kinds = ['net', 'ip', 'lan', 'port', 'vol', 'cpu', 'ram', 'bw'];
   kinds.forEach((kind) => {
-    const listSel = `html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-${kind}`;
+    const listSel = `html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-${kind}`;
     const gridSel = `html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-${kind}`;
     const sel = `${listSel},\n${gridSel}`;
     const body = ruleBody(dockerCss, sel);

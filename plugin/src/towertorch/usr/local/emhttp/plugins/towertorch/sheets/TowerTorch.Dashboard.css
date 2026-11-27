@@ -135,38 +135,39 @@ html.tt-dash-on table.dashboard .outer .inner span[class*="blue"] { color: inher
    ones follow with the warning dot, stopped ones come last with a grey icon and dot. Unraid
    rebuilds the row on every reload and hides stopped items with an inline display, so the tiles
    are drawn on its own elements and their display stays below that inline style. The icon keeps
-   Unraid's click handler, and its hit area spans the tile. */
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) > tr.updated > td {
+   Unraid's click handler, and its hit area spans the tile. FolderView Plus puts its folder cards
+   in the same row in an order of its own, so beside it (html.tt-dash-fv) the row stays native. */
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) > tr.updated > td {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; padding-bottom: 16px;
 }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer {
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer {
   position: relative; display: flex; align-items: center; gap: 10px; box-sizing: border-box; min-width: 0; min-height: 46px;
   float: none; margin: 0; padding: 6px 10px 6px 7px; background: var(--tt-chip); border-radius: var(--tt-radius-control);
   transition: background var(--tt-motion-control-dur, 0s);
 }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--tt-hover); }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started { order: -2; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.paused { order: -1; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand { display: flex; flex: none; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand > .img { width: 32px; height: 32px; margin: 0; object-fit: contain; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped > span.hand > * { filter: grayscale(1); opacity: .5; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner {
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer:hover { background: var(--tt-hover); }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer.started { order: -2; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer.paused { order: -1; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand { display: flex; flex: none; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer > span.hand > .img { width: 32px; height: 32px; margin: 0; object-fit: contain; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer.stopped > span.hand > * { filter: grayscale(1); opacity: .5; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer .inner {
   display: block; flex: 1; width: auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
   font-size: var(--tt-text-subline); font-weight: 600; line-height: 1.4; color: var(--tt-text, #e6e6e6);
 }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.stopped .inner { color: var(--tt-text-chip, #cfcfcf); }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer.started .inner > :is(br, i.started, .state) { display: none; }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i:is(.stopped, .paused) {
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer.stopped .inner { color: var(--tt-text-chip, #cfcfcf); }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer.started .inner > :is(br, i.started, .state) { display: none; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i:is(.stopped, .paused) {
   display: inline-block; width: 8px; height: 8px; margin: 0 6px 0 0; border-radius: 50%; font-size: 0; vertical-align: middle;
   background: var(--tt-text-dim, #8a8a8a);
 }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i.paused { background: var(--tt-warn, #ff832b); }
-html.tt-dash-on table.dashboard :is(#docker_view, #vm_view) span.outer .inner > .state {
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer .inner > i.paused { background: var(--tt-warn, #ff832b); }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view) span.outer .inner > .state {
   margin: 0; font-size: var(--tt-text-meta); font-weight: 400; color: var(--tt-text-dim, #8a8a8a);
 }
 /* a VM's PCI or SR-IOV warning keeps its tooltip above the tile's hit area */
-html.tt-dash-on table.dashboard #vm_view span.outer .inner > i.fa-warning { position: relative; z-index: 1; margin-left: 4px; }
+html.tt-dash-on:not(.tt-dash-fv) table.dashboard #vm_view span.outer .inner > i.fa-warning { position: relative; z-index: 1; margin-left: 4px; }
 html.tt-dash-on table.dashboard :is(#no_apps, #no_vms) { grid-column: 1 / -1; color: var(--tt-text-dim, #8a8a8a); }
 /* a container without an icon (dashboard.js) */
 html.tt-dash-on table.dashboard span.hand.tt-dash-noicon > img { display: none; }

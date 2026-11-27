@@ -31,7 +31,7 @@ console.log('\nEvery cell centres its content as one block');
     ok('the ' + where + ' logo cell adds no margin under the logo', !!w && w.value === '0', w && w.sheet + ': ' + w.selector + ' => ' + w.value);
   }
   ok('the stray <br> beside the CPU and RAM badges takes no line',
-    /#docker_list tr:is\(\.sortable, \.folder-element\) > td:has\(> \.tt-resgroup\) > br \{ display: none; \}/.test(docker));
+    /#docker_list tr:is\(\.sortable, \.folder-element\):where\(:not\(\.folder\)\) > td:has\(> \.tt-resgroup\) > br \{ display: none; \}/.test(docker));
 }
 
 console.log('\nA CPU, RAM or BW line is as tall as its badge');

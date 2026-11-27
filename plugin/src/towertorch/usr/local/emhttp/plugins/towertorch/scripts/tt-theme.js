@@ -1504,8 +1504,18 @@
   }
   try { keepAdoptedGridTiles(localStorage); } catch (e) {}
 
+  // Unassigned Devices names its three tables usb_mounts, samba_mounts and usb_absent, UD Next
+  // usb-mounts, samba-mounts and usb-absent. Both keep the tbody ids, so each table is stamped by its
+  // tbody with tt-udt and its part, and the sheets name the stamp.
+  var UD_PARTS = { "disk-table-body": "tt-udt-disks", "remotes-table-body": "tt-udt-remotes", "historical-table-body": "tt-udt-historical" };
+  function stampUdTables() {
+    Array.prototype.forEach.call(document.querySelectorAll("#displaybox #disk-table-body, #displaybox #remotes-table-body, #displaybox #historical-table-body"), function (tb) {
+      tb.parentNode.classList.add("tt-udt", UD_PARTS[tb.getAttribute("id")]);
+    });
+  }
+
   window.TTTheme = {
-    backupWithCurrentKeys: backupWithCurrentKeys,
+    backupWithCurrentKeys: backupWithCurrentKeys, stampUdTables: stampUdTables,
     RB: RB, idealText: idealText, accentInks: accentInks, accentHovers: accentHovers, darkenTo: darkenTo, lightenTo: lightenTo, paintAccentInks: paintAccentInks, motionLevel: motionLevel, shapeName: shapeName, rbSeed: rbSeed, palette: palette, rbColor: rbColor, paintSelects: paintSelects,
     registerSelectSync: registerSelectSync, nextSelIndex: nextSelIndex, wheelStepSelect: wheelStepSelect,
     gfonts: GFONTS, loadGFonts: loadGFonts, primaryFamily: primaryFamily,

@@ -1115,7 +1115,7 @@
   function ttArrFill() {
     try {
       if (!/^\/Main/.test(location.pathname)) return;
-      var tbl = document.querySelector("table.disk_status");
+      var tbl = document.querySelector("table.unraid.disk_status:not(.zfs_table)");
       if (!tbl) { if (!ttArrFill._t) { ttArrFill._t = setTimeout(function () { ttArrFill._t = 0; ttArrFill(); }, 900); } return; }   // apply() can run before the array table is parsed
       var usedSum = 0, sizeSum = 0, n = 0;
       Array.prototype.forEach.call(tbl.querySelectorAll("tr"), function (row) {
@@ -1385,7 +1385,7 @@
         for (var i = 0; i < allBars.length; i++) { var b = allBars[i]; if (b.style.background) b.style.removeProperty("background"); if (b.className && b.className.indexOf("tt-fill-") >= 0) b.className = b.className.replace(/\s*tt-fill-(green|amber|red)\b/g, ""); }
         return;
       }
-      var trs = document.querySelectorAll("table.unraid.disk_status tr");
+      var trs = document.querySelectorAll("table.unraid.disk_status:not(.zfs_table) tr");
       for (var t = 0; t < trs.length; t++) {
         var bars = trs[t].querySelectorAll(".usage-disk:not(.sys):not(.mm) > span:first-child");
         if (!bars.length) continue;
@@ -1593,13 +1593,13 @@
         // The work below matters only on /Main's disk table or a settings form, but the observer is
         // armed on every page, where the Docker and VM tabs' own per-row churn would wake it
         // hundreds of times per refresh. Bail before touching a single record.
-        if (!document.querySelector("table.unraid.disk_status") && !document.documentElement.classList.contains("tt-tools-on")) return;
+        if (!document.querySelector("table.unraid.disk_status:not(.zfs_table)") && !document.documentElement.classList.contains("tt-tools-on")) return;
         // Unraid replaces the whole /Main disk table on every nchan tick, so the fresh bars would
         // show the base colour until the debounced pass re-classes them, which reads as a blink.
         // This callback is a microtask that runs after the .html() call but before the next paint,
         // so re-classing here puts the class on the new bars before they ever paint. ttStateBars
         // inserts no nodes of its own, so its pass cannot wake the observer again.
-        for (var i = 0; i < recs.length; i++) { var t2 = recs[i].target; if (t2 && t2.closest && t2.closest("table.unraid.disk_status")) { try { ttStateBars(); } catch (e3) {} break; } }
+        for (var i = 0; i < recs.length; i++) { var t2 = recs[i].target; if (t2 && t2.closest && t2.closest("table.unraid.disk_status:not(.zfs_table)")) { try { ttStateBars(); } catch (e3) {} break; } }
         if (ttMainT) return; ttMainT = setTimeout(function () { ttMainT = null; try { ttStateBars(); ttPaintRotate(); ttToolsEnhance(); } catch (e2) {} }, 120);
       });
       ttMainObs.observe(box, { childList: true, subtree: true });
@@ -2021,7 +2021,7 @@
         // wrapper cannot survive one tick, and an open panel would be destroyed mid-click on the
         // very control that assigns disks. Shares.css gives that native select the filled-pill
         // look instead, and its popup is drawn by the OS, so nothing can tear it away.
-        if (s.closest("table.unraid.disk_status")) continue;
+        if (s.closest("table.unraid.disk_status:not(.zfs_table)")) continue;
         var r = s.getBoundingClientRect(); if (!r.width || !r.height) continue;
         ttToolsWrapSelect(s);
       }

@@ -15,6 +15,8 @@
   function g(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
   function onDash() { try { return location.pathname.replace(/\/+$/, "") === "/Dashboard"; } catch (e) { return false; } }
   function isLive() { return g("tt.theming", "1") !== "0" && g("tt.enable.header", "0") !== "0" && onDash(); }
+  // FolderView Plus places its folder cards among the containers and VMs, so their tiles keep its order.
+  function fvPlus() { return !!document.querySelector('script[src*="/plugins/folderview.plus/"]'); }
 
   var LANG = (document.documentElement.lang || navigator.language || "en").slice(0, 2).toLowerCase();
   var TXT = {
@@ -51,7 +53,7 @@
     "icon-performance": "bolt", "icon-motherboard": "board", "icon-ram": "pie", "icon-vpn": "shieldLock",
     "icon-health": "shieldCheck", "icon-disks": "database", "icon-disk": "database", "icon-cpu": "gauge",
     "icon-ethernet": "world", "icon-hardware": "cards", "icon-virtualization": "desktop", "icon-docker": "docker",
-    "icon-folder": "folder", "icon-users": "user", "icon-ups": "battery", "icon-log": "log"
+    "icon-folder": "folder", "icon-users": "user", "icon-ups": "battery", "icon-log": "log", "fa-unlink": "database"
   };
   function glyphFor(icon) {
     var name = "tile";
@@ -571,6 +573,7 @@
   function apply() {
     var live = isLive();
     document.documentElement.classList.toggle("tt-dash-on", live);
+    document.documentElement.classList.toggle("tt-dash-fv", fvPlus());
     if (live) { decorate(); badgeControls(); paint(); keepCharts(); paintCharts(true); buildCores(); fixCards(); hideModel(); hideDupName(); tintCase(); fixRows(); hookFeed(); }
     else {
       if (wasLive) { strip(); unbadgeControls(); paintCharts(false); unbuildCores(); unswap(); showModel(); showDupName(); unfixRows(); unmarkIcons(); }

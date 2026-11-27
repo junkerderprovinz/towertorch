@@ -17,7 +17,7 @@ const css = fs.readFileSync(path.join(DIR, 'sheets/TowerTorch.Dashboard.css'), '
 const js = fs.readFileSync(path.join(DIR, 'scripts/dashboard.js'), 'utf8');
 const rules = [];
 for (const m of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) rules.push([m[1].replace(/^@media[^{]*\{/, '').trim(), m[2]]);
-const LIST = 'html.tt-dash-on table.dashboard :is(#docker_view, #vm_view)';
+const LIST = 'html.tt-dash-on:not(.tt-dash-fv) table.dashboard :is(#docker_view, #vm_view)';
 const rule = (tail) => rules.find(([s]) => s === LIST + ' ' + tail);
 const decl = (r, p) => r && ((new RegExp('(?:^|;)\\s*' + p + ':\\s*([^;]+)').exec(r[1]) || [])[1] || '').trim();
 

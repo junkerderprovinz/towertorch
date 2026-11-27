@@ -90,7 +90,7 @@ html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > 
 html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow .show-historical > div.title {
   position: relative; z-index: 1; height: auto; margin: calc(var(--tt-sec-h, 22px) / -2) 0 13px !important; padding: 0;   /* Shares.css sets the top margin with !important */
 }
-html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow div.title > span.left { flex-wrap: wrap; row-gap: 6px; }
+html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow div.title > :is(span.left, span.title-left) { flex-wrap: wrap; row-gap: 6px; }
 /* The controls' card (shares.js) holds one line per control, its name and (i) at the start and
    the control at the end, as on the settings page. Shares.css lines the controls up in a row for
    the card head of the list view, so their boxes are reset here. */
@@ -107,13 +107,13 @@ html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-ud-panel .tt-ud-lbl .t
   html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > .tt-ud-panel { flex: 1 1 100%; }
   html.tt-dk-on.tt-on-main.tt-sections-main #displaybox .tt-dk-box .tt-dk-udrow > .show-disks:not(:has(> .show-historical)) { max-width: none; }
 }
-html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.samba_mounts, table.usb_absent) { display: block; max-width: 100%; overflow-x: auto; }
-html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.usb_absent tbody td:nth-child(2) { white-space: normal; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.tt-udt-remotes, table.tt-udt-historical) { display: block; max-width: 100%; overflow-x: auto; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.tt-udt-historical tbody td:nth-child(2) { white-space: normal; }
 html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(.show-disks > .show-shares, .show-historical > br) { display: none !important; }
-html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.samba_mounts tr > td:is(:nth-child(6), :nth-child(8)):not([colspan]),
-html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.usb_absent tr > td:is(:nth-child(3), :nth-child(4), :nth-child(n+7)):not([colspan]) { display: none; }
-html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.samba_mounts, table.usb_absent) :is(thead, tbody) td { padding-left: 6px; padding-right: 6px; }
-html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.samba_mounts, table.usb_absent) .usage-disk:not(.sys):not(.mm) { min-width: 72px; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.tt-udt-remotes tr > td:is(:nth-child(6), :nth-child(8)):not([colspan]),
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow table.tt-udt-historical tr > td:is(:nth-child(3), :nth-child(4), :nth-child(n+7)):not([colspan]) { display: none; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.tt-udt-remotes, table.tt-udt-historical) :is(thead, tbody) td { padding-left: 6px; padding-right: 6px; }
+html.tt-dk-on #displaybox .tt-dk-box .tt-dk-udrow :is(table.tt-udt-remotes, table.tt-udt-historical) .usage-disk:not(.sys):not(.mm) { min-width: 72px; }
 /* Array-Vorgang as a card: the state badges, then the array, disk and system controls, each group a
    sub-card with its badge on the top edge. Inside a group every row is its button, its bubble and
    what rides with it, wrapping where the group is narrow; the status and description tracks of

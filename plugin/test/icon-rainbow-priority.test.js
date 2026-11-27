@@ -35,9 +35,9 @@ function iconbgFirst(body) { return /background:\s*var\(--tt-iconbg-color,\s*var
 
 console.log('\nDocker icon logo badge: a configured icon colour wins over the rainbow palette');
 {
-  const listSel = '.tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer > span.hand';
+  const listSel = '.tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer > span.hand';
   const gridSel = '.tt-grid-holder.tt-docker-iconbg.tt-rainbow .tt-card-icobox';
-  const listHoverSel = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element):hover td.ct-name .outer > span.hand';
+  const listHoverSel = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.ct-name .outer > span.hand';
   const gridHoverSel = 'html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder.tt-docker-iconbg.tt-rainbow .tt-card:hover .tt-card-icobox';
   [
     ['list-mode tile (non-reactive rainbow)', listSel],
@@ -107,7 +107,7 @@ console.log('\nDocker icon logo badge on hover with no icon colour configured: -
   // above. Falling from --tt-iconbg-color straight to the flat --tt-accent would
   // leave the badge with no colour source at all while the master adopt toggle is
   // on, since bgColor() answers "" then.
-  const listNoColorHoverSel = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg #docker_list tr:is(.sortable, .folder-element):hover td.ct-name .outer > span.hand';
+  const listNoColorHoverSel = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.ct-name .outer > span.hand';
   const gridNoColorHoverSel = 'html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder.tt-docker-iconbg .tt-card:hover .tt-card-icobox';
   [
     ['list-mode tile (reactive hover, no icon colour configured)', listNoColorHoverSel],

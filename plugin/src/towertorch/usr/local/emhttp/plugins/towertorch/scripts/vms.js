@@ -231,9 +231,11 @@
       rt.setProperty("--tt-rb-" + k, c); rt.setProperty("--tt-rb-" + k + "-t", ttIdeal(c));
     });
   }
+  // FolderView Plus groups the VMs into folders of its own and keeps their view, as on the Docker tab.
+  function ttFvPlus() { return !!document.querySelector('script[src*="/plugins/folderview.plus/"]'); }
   // The list is the default, as on the Docker tab. The tiles belong to the theming, so they never
-  // show with theming off.
-  function currentView() { return (ls(VMVIEW_KEY) === "grid" && ls("tt.theming") !== "0") ? "grid" : "list"; }
+  // show with theming off, nor beside FolderView Plus.
+  function currentView() { return (ls(VMVIEW_KEY) === "grid" && ls("tt.theming") !== "0" && !ttFvPlus()) ? "grid" : "list"; }
   function applyView() {
     var g = currentView() === "grid";
     document.documentElement.classList.toggle("tt-vmgrid", g);
@@ -304,7 +306,7 @@
       root.setProperty("--tt-density", { compact: "5px", normal: "9px", airy: "14px" }[ls("tt.density")] || "9px");
       // The VM state becomes a Docker state dot. The state comes from the sibling <i.fa> class
       // rather than the translated label, mapped to Docker's running/paused/exited.
-      Array.prototype.slice.call(document.querySelectorAll("#kvm_list tr.sortable td.vm-name span.state")).forEach(function (st) {
+      Array.prototype.slice.call(document.querySelectorAll("#kvm_list tr.sortable:not(.folder):not(.folder-element) td.vm-name span.state")).forEach(function (st) {
         var txt = (st.textContent || "").trim(); if (!txt) return;
         var icon = st.previousElementSibling, cls = (icon && icon.className) || "", low = txt.toLowerCase();
         var running = /\bstarted\b|green-text/.test(cls) || /run|l\u00e4uft|gestartet/.test(low);
@@ -320,7 +322,7 @@
   // without a reload. Unlike teardown it keeps the observer and timers for a re-enable.
   function stripVmTheming() {
     try {
-      Array.prototype.slice.call(document.querySelectorAll("#kvm_list tr.sortable td.vm-name span.state")).forEach(function (st) {
+      Array.prototype.slice.call(document.querySelectorAll("#kvm_list tr.sortable:not(.folder):not(.folder-element) td.vm-name span.state")).forEach(function (st) {
         st.className = "state"; st.style.cssText = ""; st.removeAttribute("data-tip");
       });
       document.documentElement.classList.remove("tt-vm-iconbg");
@@ -1107,7 +1109,7 @@
     }
     var grid = vmGridHolder.firstChild, have = {}, seen = {}, prev = null;
     Array.prototype.forEach.call(grid.children, function (k) { have[k.getAttribute("data-name")] = k; });
-    var rows = document.querySelectorAll("#kvm_list tr.sortable");
+    var rows = document.querySelectorAll("#kvm_list tr.sortable:not(.folder):not(.folder-element)");
     for (var i = 0; i < rows.length; i++) {
       var tr = rows[i], d = vmRowData(tr);
       if (!d.name) continue;
@@ -1128,7 +1130,7 @@
   }
   function enhanceCells() {
     try {
-      var rows = document.querySelectorAll("#kvm_list tr.sortable");
+      var rows = document.querySelectorAll("#kvm_list tr.sortable:not(.folder):not(.folder-element)");
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         // A rotating colour per row lets the logo tile join the rainbow, since the badges are
@@ -1378,7 +1380,8 @@
             if (location.pathname.replace(/\/+$/, "") !== "/VMs") return;
             var hand = e.target && e.target.closest ? e.target.closest("#kvm_list td.vm-name span.hand") : null;
             if (!hand) return;
-            var row2 = hand.closest("tr"), bar2 = row2 && row2.querySelector(".tt-actbar");
+            // FolderView Plus answers the clicks on its folder rows, whose stored members are no cells of theirs.
+            var row2 = hand.closest("tr"), bar2 = row2 && !row2.classList.contains("folder") && row2.querySelector(":scope > td .tt-actbar");
             if (!bar2) return;
             e.preventDefault(); e.stopPropagation();
             bar2.classList.add("tt-act-flash");

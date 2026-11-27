@@ -67,6 +67,12 @@
   // gears, the plan chip with its editor, the save and start-in-order actions and the heartbeat.
   // It is read at the presentational chokepoints only, never near boot(), the timers or the API.
   function themingOn() { return localStorage.getItem("tt.theming") !== "0"; }
+  // FolderView Plus groups the list into folders of its own, and its theme contract
+  // (docs/THEME_API_CONTRACT.md) leaves those rows, their order and the view to it. It is known by
+  // its asset directory, apart from the older folder.view plugins.
+  function ttFvPlus() { return !!document.querySelector('script[src*="/plugins/folderview.plus/"]'); }
+  // The grid and folder views belong to the theming, and FolderView Plus owns the page's view.
+  function ttViewsOn() { return themingOn() && !ttFvPlus(); }
   // Skip jQuery's switchButton() widget for the per-row autostart toggle. Unraid's loadlist()
   // replaces the whole #docker_list after every action and then calls
   // $('.autostart').switchButton(), a jQuery UI widget that builds four DOM nodes and an event
@@ -79,7 +85,8 @@
   // loadlist(), and is scoped to .autostart, so the Basic/Advanced view toggle keeps the real
   // widget.
   (function () {
-    if (!window.jQuery || !jQuery.fn.switchButton || jQuery.fn.switchButton.__ttPatched) return;
+    // FolderView Plus builds its folder rows' autostart switch through the same widget.
+    if (!window.jQuery || !jQuery.fn.switchButton || jQuery.fn.switchButton.__ttPatched || ttFvPlus()) return;
     var realSwitchButton = jQuery.fn.switchButton;
     jQuery.fn.switchButton = function (opts) {
       if (themingOn() && this.length && this.hasClass("autostart")) { this.addClass("tt-noswitch"); return this; }
@@ -145,7 +152,7 @@
   };
   function runLabel(s) { var m = RUN_LABELS[LANG] || RUN_LABELS.en; return m[s] || s || "?"; }
 
-  var mode = (localStorage.getItem(VIEW_KEY) === "grid" && themingOn()) ? "grid" : "list"; // the grid is part of the theming, so it never starts with theming off
+  var mode = (localStorage.getItem(VIEW_KEY) === "grid" && ttViewsOn()) ? "grid" : "list";
   var ttOrgView = null, ttOrgAvailable = false; // the cached docker.organizer GraphQL result; null while it is unloaded or unreachable
   var containers = [], containerNames = [], containersByName = {}, stats = {}, shiplog = {}, workingPlan = {}, lastRun = {}, iconCache = {};
   var netPrev = {}; // name to {rx,tx,t}, the previous cumulative counters, for the live rate
@@ -216,13 +223,20 @@
   function findRows() {
     var cands = ["#docker_list tr.sortable, #docker_list tr.folder-element", "#docker_list > tr", "table#docker_containers tbody tr", "table.tablesorter tbody tr", "div.tabs table tbody tr", "table tbody tr"];
     for (var i = 0; i < cands.length; i++) {
-      var rows = Array.prototype.slice.call(document.querySelectorAll(cands[i])).filter(function (tr) { return !isFolderHeader(tr) && !tr.classList.contains("advanced") && (tr.querySelector("td.ct-name, td.updatecolumn") || (tr.querySelector("img") && tr.textContent.trim().length > 1)); });
+      // FolderView Plus keeps a folder's members inside the folder row's .folder-storage, which is
+      // its own; the rows it shows are outside it.
+      var rows = Array.prototype.slice.call(document.querySelectorAll(cands[i])).filter(function (tr) { return !isFolderHeader(tr) && !tr.closest(".folder-storage") && !tr.classList.contains("advanced") && (tr.querySelector("td.ct-name, td.updatecolumn") || (tr.querySelector("img") && tr.textContent.trim().length > 1)); });
       if (rows.length) return rows;
     }
     return [];
   }
   function rowName(tr) { var a = tr.querySelector("td.ct-name .appname"); if (a && a.textContent.trim()) return a.textContent.trim(); var id = tr.id || ""; if (/^ct-/.test(id)) return id.slice(3); var img = tr.querySelector("img"); var cell = img ? (img.closest("td") || tr) : tr; var link = cell.querySelector("a"); return (link && link.textContent.trim() ? link.textContent.trim() : (cell.textContent || tr.textContent).trim().split("\n")[0].trim()); }
-  function hideNative(hide) { var tb = nativeTable(); if (tb) tb.style.display = hide ? "none" : ""; }
+  // Only a table hidden here is shown again, since FolderView Plus's Command view hides it too.
+  function hideNative(hide) {
+    var tb = nativeTable(); if (!tb) return;
+    if (hide) { tb.style.display = "none"; tb.setAttribute("data-tt-hidden", "1"); }
+    else if (tb.hasAttribute("data-tt-hidden")) { tb.style.display = ""; tb.removeAttribute("data-tt-hidden"); }
+  }
   // container state from the native glyph <i id='load-..' class='fa fa-play|pause|square ..'>
   function glyphState(g) { if (!g) return ""; var c = " " + (g.className || "") + " "; if (/\bfa-play\b/.test(c)) return "running"; if (/\bfa-pause\b/.test(c)) return "paused"; if (/\bfa-square\b/.test(c)) return "exited"; return ""; }
   // Unraid's Advanced/Basic view is a cookie plus a global .advanced/.basic toggle, with no body
@@ -1896,7 +1910,7 @@
   function ttBulkRowFor(e) {
     if (mode !== "list" || !(e.ctrlKey || e.metaKey || e.shiftKey) || e.button || !e.target || !e.target.closest) return null;
     var tr = e.target.closest("#docker_list tr");
-    if (!tr || !tr.querySelector(".tt-pick") || e.target.closest(BULK_SKIP)) return null;
+    if (!tr || tr.classList.contains("folder") || !tr.querySelector(":scope > td .tt-pick") || e.target.closest(BULK_SKIP)) return null;
     return tr;
   }
   // A plain click on a logo tile picks it while multi-select is on or something is picked already;
@@ -1904,7 +1918,15 @@
   function ttBulkTileFor(e) {
     if (mode !== "list" || e.button || !e.target || !e.target.closest || !(ttBulkModeOn || Object.keys(ttBulkSel).length)) return null;
     var tile = e.target.closest("#docker_list td.ct-name span.tt-pick");
-    return tile ? tile.closest("tr") : null;
+    return tile && !tile.closest(".folder-storage") ? tile.closest("tr") : null;
+  }
+  // The row's own action bar, for a click on its icon, name or status dots. FolderView Plus answers
+  // the clicks on its folder rows, and a member it stores inside one is no cell of that row.
+  function ttFlashBarFor(e) {
+    var hand = e.target && e.target.closest ? e.target.closest("td.ct-name span.hand, td.ct-name span.appname, td.ct-name .tt-ct-dotrow") : null;
+    var row = hand && hand.closest("tr");
+    if (!row || row.classList.contains("folder")) return null;
+    return row.querySelector(":scope > td .tt-actbar");
   }
   function ttBulkInRange(tr) { var rows = ttBulkRows(); return rows.indexOf(ttBulkAnchor) >= 0 && rows.indexOf(tr) >= 0; }
   function ttBulkSet(tr, on) {
@@ -2758,8 +2780,8 @@
     // Without the daemon the limits and bandwidth cannot work at all, so the menu says so in red.
     // A running daemon is the normal case and shows nothing (GlimStone rule 33).
     if (daemonUp === false) m.appendChild(el("div", "tt-menu-status tt-bad-text", t("daemonDown")));
-    // The list and grid choice belongs to the theming, so it is hidden with theming off.
-    if (themingOn()) {
+    // The list and grid choice is hidden with theming off and beside FolderView Plus.
+    if (ttViewsOn()) {
       m.appendChild(menuHead(t("view")));
       // The horizontal selector of the settings page, in its well, with the same glyphs as the
       // view selector there.
@@ -3038,7 +3060,7 @@
 
   // fromServer: the mode came from the organizer's own prefs, so there is nothing to save back.
   function setMode(m, fromServer) {
-    if (!themingOn() && m !== "list") m = "list"; // the grid and folder views belong to the theming
+    if (!ttViewsOn() && m !== "list") m = "list";
     if (m === "folder" && !ttOrgAvailable) m = "list"; // never enter the folder view without organizer data
     mode = m; localStorage.setItem(VIEW_KEY, m); refresh();
     if (!fromServer) ttOrgSavePrefs({ ttViewMode: m });
@@ -3085,7 +3107,7 @@
   function applyFilter() {
     if (mode === "grid") { if (gridHolder) Array.prototype.slice.call(gridHolder.querySelectorAll(".tt-card")).forEach(function (cd) { cd.style.display = (!filterText || norm(cd.dataset.name).indexOf(filterText) >= 0) ? "" : "none"; }); }
     else if (mode === "folder") { if (ttOrgView) renderFolderView(); }
-    else findRows().forEach(function (tr) { tr.style.display = (!filterText || norm(rowName(tr)).indexOf(filterText) >= 0) ? "" : "none"; });
+    else if (!ttFvPlus()) findRows().forEach(function (tr) { tr.style.display = (!filterText || norm(rowName(tr)).indexOf(filterText) >= 0) ? "" : "none"; });
   }
   // The header's page search filters the containers while it is open on this tab. Unraid removes
   // the box on blur, and the filter goes with it once the pointer is up, so the click that blurred
@@ -5259,7 +5281,7 @@
           // The master theming toggle flipped live: coerce grid to list when it is now off,
           // reset the old visual state, then let applyMode() re-render for the new state.
           if (e.key === "tt.theming") {
-            if (!themingOn() && mode === "grid") { mode = "list"; localStorage.setItem(VIEW_KEY, "list"); }
+            if (!ttViewsOn() && mode === "grid") { mode = "list"; localStorage.setItem(VIEW_KEY, "list"); }
             applySettings(); clearRowBadges(); removeEnhanceClasses(); applyMode();
             // applyMode's off branch re-injects orchestration but leaves the icon tint and the
             // per-row cosmetic inline styles from the previous theming-on state, so they are
@@ -5282,9 +5304,7 @@
           if (dead || mode !== "list") return;
           var picked = ttBulkRowFor(e) || ttBulkTileFor(e);
           if (picked) { e.preventDefault(); e.stopPropagation(); ttBulkClick(picked, e); return; }
-          var hand = e.target && e.target.closest ? e.target.closest("td.ct-name span.hand, td.ct-name span.appname, td.ct-name .tt-ct-dotrow") : null;
-          if (!hand) return;
-          var row2 = hand.closest("tr"); var bar2 = row2 && row2.querySelector(".tt-actbar");
+          var bar2 = ttFlashBarFor(e);
           if (!bar2) return;
           e.preventDefault(); e.stopPropagation();
           bar2.classList.add("tt-act-flash");

@@ -10,6 +10,9 @@
  * header.js stamps while master theming is on, so with theming off only TowerTorch's own controls
  * keep a look. :where() adds no specificity, so the gate changes nothing in the cascade.
  *
+ * A container row is tr.sortable or tr.folder-element. FolderView Plus draws its folders as
+ * tr.sortable.folder with cells of its own, so every row rule skips .folder, again inside :where().
+ *
  * The accent, the states and the badge size metrics live in TowerTorch.Tokens.css.
  */
 
@@ -38,19 +41,19 @@ html .tt-hgear-bar { margin-right: 10px; font-size: var(--tt-text-title); color:
 
 /* The name cell (column 1): a larger logo with the name centred beside it in a narrower column,
    and under the name the start/stop badge with the id and author below it. */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name { width: 199px !important; vertical-align: middle; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name { width: 199px !important; vertical-align: middle; }
 /* Unraid gives span.outer a 20px bottom margin, which would make every row 20px taller than its
    logo and hang the logo above the middle of the row. */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer { display: flex; align-items: center; gap: 12px; margin: 0; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer > span.hand { flex: none; display: flex; align-items: center; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer { display: flex; align-items: center; gap: 12px; margin: 0; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer > span.hand { flex: none; display: flex; align-items: center; }
 /* object-fit:contain keeps a non-square logo's aspect ratio instead of squashing it into the box;
    a glyph <i> is sized by font-size instead. docker.js applySettings stamps --tt-logo-img and
    --tt-logo-box from the global tt.sgsize key (s 48/62, m 62/78, l 76/94). */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer > span.hand img { width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; object-fit: contain !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer > span.hand i.img { width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; font-size: var(--tt-logo-img, 62px) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer > span.hand img { width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; object-fit: contain !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer > span.hand i.img { width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; font-size: var(--tt-logo-img, 62px) !important; }
 /* With tt.iconbg on, the container icon sits on an accent badge and docker.js recolours the logo
    monochrome through the mono filter or the contrast glyph colour. */
-.tt-enh.tt-docker-iconbg #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer > span.hand {
+.tt-enh.tt-docker-iconbg #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer > span.hand {
   background: var(--tt-iconbg-color, var(--tt-accent, #FCC419)) !important;
   border-radius: var(--tt-radius-control) !important;
   /* an explicit square box, as on the VM and Plugins tabs, so all three tiles match rather than shrink-wrap */
@@ -62,7 +65,7 @@ html .tt-hgear-bar { margin-right: 10px; font-size: var(--tt-text-title); color:
 /* In rainbow and flag mode a configured --tt-iconbg-color still wins, with the row's --tt-rb-c only
    as the fallback for rows that have no icon colour of their own: the icon's badge stands for the
    app's identity, not for a rotating value. Gated on .tt-rainbow, so accent mode is untouched. */
-.tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element) td.ct-name .outer > span.hand { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
+.tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .outer > span.hand { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
 /* The logo box of a card or tile splits the same way as the row's above: an unconditional base that
    applies the configured colour, and a .tt-rainbow refinement that adds the --tt-rb-c step, since
    that variable is only stamped per card while rainbow is on. Without the base, a configured colour
@@ -72,18 +75,18 @@ html .tt-hgear-bar { margin-right: 10px; font-size: var(--tt-text-title); color:
 .tt-grid-holder.tt-docker-iconbg.tt-rainbow .tt-card-icobox { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
 /* In the reactive mode the tile rests grey and takes the row's palette colour on hover, unless an
    icon colour is configured, which wins as above. */
-html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element):hover td.ct-name .outer > span.hand { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg.tt-rainbow #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.ct-name .outer > span.hand { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder.tt-docker-iconbg.tt-rainbow .tt-card:hover .tt-card-icobox { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .inner { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; line-height: 1.2; min-width: 0; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .inner br { display: none; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .inner > i[id^='load-'],
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .inner > span.state { display: none !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .appname { font-size: var(--tt-text-title) !important; font-weight: 600 !important; letter-spacing: .1px; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .inner { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; line-height: 1.2; min-width: 0; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .inner br { display: none; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .inner > i[id^='load-'],
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .inner > span.state { display: none !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .appname { font-size: var(--tt-text-title) !important; font-weight: 600 !important; letter-spacing: .1px; }
 /* A container's name takes the row's text colour, as a plugin's and a VM's do, rather than
    Unraid's link blue, which reads at about 3:1 on the black theme. */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .appname a,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.ct-name .appname a:hover { color: inherit !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) > td { padding-top: var(--tt-density) !important; padding-bottom: var(--tt-density) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .appname a,
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.ct-name .appname a:hover { color: inherit !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td { padding-top: var(--tt-density) !important; padding-bottom: var(--tt-density) !important; }
 /* The row height is mostly badge content, so the --tt-density padding on the cells is barely
    visible on its own; compact and airy also tighten or loosen the badge groups and the name meta. */
 .tt-enh.tt-dens-compact .tt-rowbadges { gap: 3px; margin-block: 1px; }
@@ -96,22 +99,22 @@ html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder.tt-docker-iconbg.tt-rainbo
 /* Each native network cell (IP 5, Port 6, LAN 7) is hidden only while its own TowerTorch badge column is
    on: net, ip, lan and port are independent columns, so a native cell has to survive when its badge
    is off for the current view, or the datum disappears. */
-.tt-enh.tt-c-ip thead tr:last-child th:nth-child(5), .tt-enh.tt-c-ip #docker_list tr:is(.sortable, .folder-element) > td:nth-child(5),
+.tt-enh.tt-c-ip thead tr:last-child th:nth-child(5), .tt-enh.tt-c-ip #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(5),
 /* The native container-port column is always hidden: with the TowerTorch port badge column off it grows to
    several hundred pixels and squeezes every other column. The port badge in the gear column menu
    carries the same information. */
-.tt-enh thead tr:last-child th:nth-child(6), .tt-enh #docker_list tr:is(.sortable, .folder-element) > td:nth-child(6),
-.tt-enh.tt-c-lan thead tr:last-child th:nth-child(7), .tt-enh.tt-c-lan #docker_list tr:is(.sortable, .folder-element) > td:nth-child(7) { display: none !important; }
+.tt-enh thead tr:last-child th:nth-child(6), .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(6),
+.tt-enh.tt-c-lan thead tr:last-child th:nth-child(7), .tt-enh.tt-c-lan #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(7) { display: none !important; }
 /* narrower version and network columns leave more room for the volumes */
 .tt-enh thead tr:last-child th:nth-child(3) { width: 165px; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) > td:nth-child(3) { max-width: 165px; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(3) { max-width: 165px; }
 .tt-enh thead tr:last-child th:nth-child(4) { width: 185px; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) > td:nth-child(4) { max-width: 185px; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(4) { max-width: 185px; }
 
 /* The volumes column is narrow: a long path ends in an ellipsis at rest and scrolls as a marquee
    on hover, where docker.js marks the line tt-vrun. */
 .tt-enh thead tr:last-child th:nth-child(8) { width: 260px; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) > td:nth-child(8) { max-width: 260px; overflow: hidden; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(8) { max-width: 260px; overflow: hidden; }
 .tt-volmarq { display: block; max-width: 260px; }
 .tt-vline { display: block; overflow: hidden; white-space: nowrap !important; word-break: normal !important; max-width: 260px; padding: 1px 0; }
 .tt-vtext { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap !important; }
@@ -152,7 +155,7 @@ html.tt-docker-on .tt-actbar.tt-act-flash { opacity: 1; }
 @media (hover: none) { html.tt-docker-on :is(.tt-actbar, .tt-mrow-act) { opacity: 1; } }
 /* the actions column needs room for its widest row: four icon badges and the gaps between them */
 .tt-enh thead tr:last-child th:nth-child(2) { width: calc(4 * var(--tt-icon-badge, 26px) + 3 * var(--tt-badge-gap, 5px)); }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) > td:nth-child(2) { max-width: calc(4 * var(--tt-icon-badge, 26px) + 3 * var(--tt-badge-gap, 5px)); }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(2) { max-width: calc(4 * var(--tt-icon-badge, 26px) + 3 * var(--tt-badge-gap, 5px)); }
 .tt-hgear-home { border: none !important; box-shadow: none !important; cursor: pointer; line-height: 1; align-self: center; }
 nav.tabs .tabs-container .tt-hgear-home { background: #2a2a2a !important; color: #b5b5b5 !important; padding: 4px 12px !important; margin-left: 6px; font-size: var(--tt-text-body); }
 nav.tabs .tabs-container .tt-hgear-home:hover { background: var(--tt-hover-dark) !important; color: #fff !important; }
@@ -173,17 +176,17 @@ nav.tabs .tabs-container .tt-hgear-home:hover { background: var(--tt-hover-dark)
 
 /* the uptime column shows in the advanced view only */
 .tt-enh:not(.tt-adv) thead tr:last-child th:nth-child(11),
-.tt-enh:not(.tt-adv) #docker_list tr:is(.sortable, .folder-element) > td:nth-child(11) { display: none !important; }
+.tt-enh:not(.tt-adv) #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(11) { display: none !important; }
 
 /* the badge geometry (padding, radius, font) every pill shares, native and TowerTorch's alike */
 .tt-b,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn > span.green-text,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn span.orange-text,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn > div.advanced:last-of-type,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip,
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='cpu-'],
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='mem-'],
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn > span.green-text,
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn span.orange-text,
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec,
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn > div.advanced:last-of-type,
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip,
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='cpu-'],
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='mem-'],
 .tt-badge, .tt-pill {
   display: inline-flex; align-items: center; gap: 5px; border: none !important;
   border-radius: var(--tt-radius-pill); padding: var(--tt-sm-pad, 3px 11px); margin: 2px 4px 2px 0; font-size: var(--tt-sm-fs);
@@ -217,8 +220,8 @@ html.tt-docker-on .tt-grid-holder .tt-tile-dot.tt-badge-running:not(.tt-badge-al
    way. */
 /* info badges (network, IP, LAN, port, CPU, RAM, id, author, image tag): solid accent, light text */
 .tt-b,
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='cpu-'],
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='mem-'] {
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='cpu-'],
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='mem-'] {
   background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616);
 }
 .tt-b-k { opacity: .72; font-weight: 500; }
@@ -377,51 +380,51 @@ html.tt-tools-on .tt-b-del.tt-b-delicon:focus-visible { box-shadow: 0 0 0 var(--
 .tt-cfg { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 6px; vertical-align: middle; box-sizing: border-box; }
 .tt-cfg-on { background: var(--tt-ok, #6fdc8c); box-shadow: 0 0 0 1px rgba(0, 0, 0, .28); }
 .tt-cfg-off { background: transparent; border: 1px solid currentColor; opacity: .5; }
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='cpu-']::before { content: "CPU"; opacity: .72; font-weight: 500; margin-right: 4px; }
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='mem-']::before { content: "RAM"; opacity: .72; font-weight: 500; margin-right: 4px; }
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced { white-space: normal; }
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced .usage-disk { display: none; }
-.tt-enh.tt-c-ip #docker_list tr:is(.sortable, .folder-element) > td:nth-child(5) span.docker_readmore span.advanced { display: none !important; }
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='cpu-']::before { content: "CPU"; opacity: .72; font-weight: 500; margin-right: 4px; }
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='mem-']::before { content: "RAM"; opacity: .72; font-weight: 500; margin-right: 4px; }
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced { white-space: normal; }
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced .usage-disk { display: none; }
+.tt-enh.tt-c-ip #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(5) span.docker_readmore span.advanced { display: none !important; }
 
 /* the update status keeps its meaning: green up to date, orange update ready, accent for force */
-.tt-enh.tt-c-update #docker_list tr:is(.sortable, .folder-element) td.updatecolumn > span.green-text { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616) !important; }
-.tt-enh.tt-c-update #docker_list tr:is(.sortable, .folder-element) td.updatecolumn span.orange-text { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616) !important; }
-.tt-enh.tt-c-force  #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616) !important; }
-.tt-enh.tt-c-force  #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec:hover { background: var(--tt-accent-hover); }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn i { color: inherit !important; }
+.tt-enh.tt-c-update #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn > span.green-text { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616) !important; }
+.tt-enh.tt-c-update #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn span.orange-text { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616) !important; }
+.tt-enh.tt-c-force  #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec { background: var(--tt-accent, #FCC419); color: var(--tt-accent-text, #161616) !important; }
+.tt-enh.tt-c-force  #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec:hover { background: var(--tt-accent-hover); }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn i { color: inherit !important; }
 
 /* A column toggle hides the datum rather than only dropping its colour, so a restyled native column
    that is off for the current view goes altogether. That also keeps the advanced-only pills out of
    the simple view, where their class is absent, without relying on how Unraid hides .advanced. */
-.tt-enh:not(.tt-c-update)  #docker_list tr:is(.sortable, .folder-element) td.updatecolumn > span.green-text,
-.tt-enh:not(.tt-c-update)  #docker_list tr:is(.sortable, .folder-element) td.updatecolumn span.orange-text,
-.tt-enh:not(.tt-c-force)   #docker_list tr:is(.sortable, .folder-element) td.updatecolumn div.advanced a.exec,
-.tt-enh:not(.tt-c-res)     #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='cpu-'],
-.tt-enh:not(.tt-c-res)     #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='mem-'] { display: none !important; }
+.tt-enh:not(.tt-c-update)  #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn > span.green-text,
+.tt-enh:not(.tt-c-update)  #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn span.orange-text,
+.tt-enh:not(.tt-c-force)   #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn div.advanced a.exec,
+.tt-enh:not(.tt-c-res)     #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='cpu-'],
+.tt-enh:not(.tt-c-res)     #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='mem-'] { display: none !important; }
 /* With theming off, a table carries no .tt-enh, but the injected resgroup still shows CPU and RAM
    with the limit and bandwidth gears, so the native cpu and mem text in the same cell is hidden.
    With theming on, the rules above restyle those spans into badges instead. */
-table:not(.tt-enh) #docker_list tr:is(.sortable, .folder-element) td.advanced:has(> .tt-resgroup) span[class^='cpu-'],
-table:not(.tt-enh) #docker_list tr:is(.sortable, .folder-element) td.advanced:has(> .tt-resgroup) span[class^='mem-'] { display: none !important; }
+table:not(.tt-enh) #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced:has(> .tt-resgroup) span[class^='cpu-'],
+table:not(.tt-enh) #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced:has(> .tt-resgroup) span[class^='mem-'] { display: none !important; }
 /* The apply-update action, an a.exec wrapping span.orange-text, stays visible with the
    update-status column off: an actionable button may not vanish. The force-update toggle above
    reaches only the advanced block's force link. */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec:has(span.orange-text) { display: inline-flex !important; background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616) !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec:has(span.orange-text):hover { background: var(--tt-warn-hover); }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec > span.orange-text { display: inline !important; background: transparent !important; color: inherit !important; padding: 0; margin: 0; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec:has(span.orange-text) { display: inline-flex !important; background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec:has(span.orange-text):hover { background: var(--tt-warn-hover); }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec > span.orange-text { display: inline !important; background: transparent !important; color: inherit !important; padding: 0; margin: 0; }
 
 /* ShipLog's changelog chip becomes a solid badge coloured by its risk dot, each state fill with its
    own ink over the white of the grey chip */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip { color: #fff !important; background: #4a4a4a; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip:has(.sl-low)  { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616) !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip:has(.sl-mid)  { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616) !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip:has(.sl-high) { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616) !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip:has(.sl-crit) { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip { color: #fff !important; background: #4a4a4a; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip:has(.sl-low)  { background: var(--tt-ok, #6fdc8c); color: var(--tt-ok-fg, #161616) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip:has(.sl-mid)  { background: var(--tt-warn, #ff832b); color: var(--tt-warn-fg, #161616) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip:has(.sl-high) { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip:has(.sl-crit) { background: var(--tt-err, #ff8389); color: var(--tt-err-fg, #161616) !important; }
 /* sl-info is a tag pinned while a newer version exists. With the dot hidden, the colour is all
    that sets it apart from the grey up-to-date chip. */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip:has(.sl-info) { background: var(--tt-info, #3b82d0); color: var(--tt-info-fg, #161616) !important; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip .sl-amp { display: none; }
-.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip .sl-ico { opacity: .85; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip:has(.sl-info) { background: var(--tt-info, #3b82d0); color: var(--tt-info-fg, #161616) !important; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip .sl-amp { display: none; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip .sl-ico { opacity: .85; }
 
 /* injected per-row holders */
 .tt-namemeta { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
@@ -440,8 +443,8 @@ table:not(.tt-enh) #docker_list tr:is(.sortable, .folder-element) td.advanced:ha
    group sitting inline would hang on the text baseline and add the line's descent below it, and
    the <br> Unraid leaves between its hidden CPU and RAM spans would open an empty line above the
    badges and push them below the middle of the row. */
-.tt-enh #docker_list tr:is(.sortable, .folder-element) > td > .tt-rowbadges { display: flex; width: fit-content; }
-#docker_list tr:is(.sortable, .folder-element) > td:has(> .tt-resgroup) > br { display: none; }
+.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td > .tt-rowbadges { display: flex; width: fit-content; }
+#docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:has(> .tt-resgroup) > br { display: none; }
 #docker_list td.updatecolumn .tt-rowbadges { margin-block: 2px; }
 .tt-planholder { margin-top: 5px; } /* the same gap as between the CPU and RAM badges */
 /* The restart-policy warning badge (restart=no, so no auto-start after a host reboot) always takes
@@ -828,8 +831,8 @@ html.tt-scrolllock body { padding-right: var(--tt-sbw, 0px); }   /* the width th
 .tt-enh.tt-rainbow .tt-b-version, .tt-grid-holder.tt-rainbow .tt-b-version { background: var(--tt-rb-version, var(--tt-accent, #FCC419)); color: var(--tt-rb-version-t, var(--tt-accent-text, #161616)); }
 .tt-enh.tt-rainbow .tt-b-vol, .tt-grid-holder.tt-rainbow .tt-b-vol { background: var(--tt-rb-vol, var(--tt-accent, #FCC419)); color: var(--tt-rb-vol-t, var(--tt-accent-text, #161616)); }
 .tt-enh.tt-rainbow .tt-plan, .tt-grid-holder.tt-rainbow .tt-plan { background: var(--tt-rb-plan, var(--tt-accent, #FCC419)); color: var(--tt-rb-plan-t, var(--tt-accent-text, #161616)); }
-.tt-enh.tt-rainbow.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='cpu-'] { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)); }
-.tt-enh.tt-rainbow.tt-c-res #docker_list tr:is(.sortable, .folder-element) td.advanced span[class^='mem-'] { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)); }
+.tt-enh.tt-rainbow.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='cpu-'] { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)); }
+.tt-enh.tt-rainbow.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.advanced span[class^='mem-'] { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)); }
 /* the same slot in green, for the values verified after a successful save */
 .tt-pop-err.tt-pop-ok { background: rgba(31,157,85,.14); color: #4bd58a; }
 /* The plan editor's "Hängt ab von" multi-select stays open and toggles a container per click. Only
@@ -1085,13 +1088,13 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
 /* The resource cell stays visible in the simple view as well, where Unraid marks it .advanced and
    hides it, because the injected CPU and RAM badge lives there. */
 .tt-enh.tt-c-res thead tr:last-child th:nth-child(9),
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) > td:nth-child(9) { display: table-cell !important; }
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td:nth-child(9) { display: table-cell !important; }
 /* the CPU and RAM values come from the engine badge in .tt-resgroup, so Unraid's native spans in
    the same cell would be a duplicate */
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td span[class^='cpu-'],
-.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element) td span[class^='mem-'] { display: none !important; }
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td span[class^='cpu-'],
+.tt-enh.tt-c-res #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td span[class^='mem-'] { display: none !important; }
 /* the force-update link shows in the simple view too once its column is on */
-.tt-enh.tt-c-force #docker_list tr:is(.sortable, .folder-element) td.updatecolumn a.exec { display: inline-flex !important; }
+.tt-enh.tt-c-force #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn a.exec { display: inline-flex !important; }
 
 /* Unraid's switchButtons, the per-row autostart toggle and the Basic/Advanced view toggle, made to
    look like TowerTorch's own .tt-set-toggle: a 44x24 pill with an 18px knob. Unraid's JS drives the knob
@@ -1300,9 +1303,9 @@ html.tt-on-plugins #displaybox #plugin_table, html.tt-on-plugins #displaybox #pl
 @media (max-width: 600px) {
   html.tt-docker-on table.tt-enh:has(#docker_list), html.tt-docker-on table.tt-enh #docker_list { display: block; width: 100% !important; min-width: 0 !important; }
   html.tt-docker-on table.tt-enh:has(#docker_list) > thead { display: none; }
-  html.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 14px; padding: 10px 8px; height: auto !important; }
-  html.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) > td { display: block; width: auto !important; height: auto !important; max-width: 100% !important; min-width: 0 !important; padding: 0 !important; }
-  html.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) > td.ct-name { flex: 1 0 100%; }
+  html.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 14px; padding: 10px 8px; height: auto !important; }
+  html.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td { display: block; width: auto !important; height: auto !important; max-width: 100% !important; min-width: 0 !important; padding: 0 !important; }
+  html.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) > td.ct-name { flex: 1 0 100%; }
 }
 html.tt-on-plugins.tt-sections-plugins #displaybox section[role="tabpanel"]:last-child { margin-bottom: 0; }
 html.tt-on-plugins.tt-sections-plugins #displaybox nav.tabs button[role="tab"] { display: none !important; }
@@ -2487,7 +2490,7 @@ html.tt-shares-rbneutral.tt-docker-on #docker_list .tt-b:not(.tt-plan-on),
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-b:not(.tt-plan-on) { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
 /* the row hover's fallback for a badge with no kind of its own: the stamped --tt-rb-c, else the
    accent. The per-kind rules further down override it. */
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b:not(.tt-plan-on),
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b:not(.tt-plan-on),
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b:not(.tt-plan-on) { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 /* The docked .js-actions buttons rest grey and take the palette colour on hover, the Mehrfachauswahl
    badge with them except while it is on: a pressed toggle keeps its fill, which is what the :not()
@@ -2505,7 +2508,7 @@ html.tt-shares-rbneutral.tt-docker-on nav.tabs .tabs-container > button[role=tab
 /* an idle limit gear rests grey, since gearFill skips its inline paint here, and joins the row's
    hover; a gear with a limit set keeps its own paint */
 html.tt-shares-rbneutral.tt-docker-on .tt-limbtn { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-limbtn,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-limbtn,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-limbtn { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 /* In the popups docker.js paints, the .tt-pop editors and the .tt-menu gear menu, every button
    rests grey, the accent-filled .tt-btn-primary included; a selected day chip, a checked toggle
@@ -2518,26 +2521,26 @@ html.tt-shares-rbneutral.tt-docker-on .tt-pop .tt-day:not(.tt-day-on):hover { ba
    rests on the surface grey rather than the translucent chip grey and takes the stamped colour
    on the row's hover; a disabled .tt-actoff is never matched and keeps its inline grey. */
 html.tt-shares-rbneutral.tt-docker-on .tt-actbtn:not(.tt-actoff) { background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text, #e6e6e6) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-actbtn:not(.tt-actoff),
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-actbtn:not(.tt-actoff),
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-actbtn:not(.tt-actoff) { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 /* A value badge carries its kind's own colour, stamped on the container as --tt-rb-net and the
    rest, so the row hover restores that rather than the generic accent fallback. .tt-b.tt-b-* ties
    the generic row-hover rule's :not() on specificity, and the source order here settles it. */
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-net,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-net,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-net { background: var(--tt-rb-net, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-net-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-ip,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-ip,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-ip { background: var(--tt-rb-ip, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ip-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-lan,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-lan,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-lan { background: var(--tt-rb-lan, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-lan-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-port,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-port,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-port { background: var(--tt-rb-port, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-port-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-vol,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-vol,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-vol { background: var(--tt-rb-vol, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-vol-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-cpu,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-cpu,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-cpu { background: var(--tt-rb-cpu, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-cpu-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-ram,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-ram,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-ram { background: var(--tt-rb-ram, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ram-t, var(--tt-accent-text, #161616)) !important; }
-html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b.tt-b-bw,
+html.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b.tt-b-bw,
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-bw { background: var(--tt-rb-bw, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-bw-t, var(--tt-accent-text, #161616)) !important; }
 /* The logo tile joins the row: it rests grey like the badges and returns to its configured colour
    on the row's hover, with the --tt-rb-c tier in between, since while the adopt toggle is on that
@@ -2545,47 +2548,47 @@ html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder .tt-card:hover .tt-b.tt-b-
    applyEnhanceClasses puts on the native table and renderGrid on the grid holder. The mono ink
    the JS applies to the logo itself is untouched. */
 html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg #docker_list td.ct-name .outer > span.hand { background: rgba(128, 128, 128, .18) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg #docker_list tr:is(.sortable, .folder-element):hover td.ct-name .outer > span.hand { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh.tt-docker-iconbg #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.ct-name .outer > span.hand { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder.tt-docker-iconbg .tt-card-icobox { background: rgba(128, 128, 128, .18) !important; }
 html.tt-shares-rbneutral.tt-docker-on .tt-grid-holder.tt-docker-iconbg .tt-card:hover .tt-card-icobox { background: var(--tt-iconbg-color, var(--tt-rb-c, var(--tt-accent, #FCC419))) !important; }
 /* The update column's badges join the row too: the green "up to date" and orange "update" chips and
    the ShipLog changelog chip rest grey in neutral and take their state colour on the row's hover.
    Placed after the .tt-c-update colour rules so equal-importance ties resolve by order. */
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn > span.green-text,
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn span.orange-text,
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip {
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn > span.green-text,
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn span.orange-text,
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip {
   background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important;
 }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn > span.green-text { background: var(--tt-ok, #6fdc8c) !important; color: var(--tt-ok-fg, #161616) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn span.orange-text { background: var(--tt-warn, #ff832b) !important; color: var(--tt-warn-fg, #161616) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip { background: #4a4a4a !important; color: #fff !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip:has(.sl-low) { background: var(--tt-ok, #6fdc8c) !important; color: var(--tt-ok-fg, #161616) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip:has(.sl-mid) { background: var(--tt-warn, #ff832b) !important; color: var(--tt-warn-fg, #161616) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip:has(.sl-high) { background: var(--tt-err, #ff8389) !important; color: var(--tt-err-fg, #161616) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip:has(.sl-crit) { background: var(--tt-err, #ff8389) !important; color: var(--tt-err-fg, #161616) !important; }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip:has(.sl-info) { background: var(--tt-info, #3b82d0) !important; color: var(--tt-info-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn > span.green-text { background: var(--tt-ok, #6fdc8c) !important; color: var(--tt-ok-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn span.orange-text { background: var(--tt-warn, #ff832b) !important; color: var(--tt-warn-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip { background: #4a4a4a !important; color: #fff !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip:has(.sl-low) { background: var(--tt-ok, #6fdc8c) !important; color: var(--tt-ok-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip:has(.sl-mid) { background: var(--tt-warn, #ff832b) !important; color: var(--tt-warn-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip:has(.sl-high) { background: var(--tt-err, #ff8389) !important; color: var(--tt-err-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip:has(.sl-crit) { background: var(--tt-err, #ff8389) !important; color: var(--tt-err-fg, #161616) !important; }
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip:has(.sl-info) { background: var(--tt-info, #3b82d0) !important; color: var(--tt-info-fg, #161616) !important; }
 /* ShipLog's Not-maintained and CA-deprecated chips carry no .sl-amp risk dot, so none of the :has()
    rules above match them and they would rest grey like a routine update chip. They mark a lasting
    problem and read red or orange at rest and on hover. The extra class makes these rules heavier
    than the plain .sl-chip ones, so they win whatever the source order. */
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip.sl-unmaint,
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip.sl-unmaint {
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip.sl-unmaint,
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip.sl-unmaint {
   background: var(--tt-err, #ff8389) !important; color: var(--tt-err-fg, #161616) !important;
 }
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip.sl-dep,
-html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip.sl-dep {
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip.sl-dep,
+html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip.sl-dep {
   background: var(--tt-warn, #ff832b) !important; color: var(--tt-warn-fg, #161616) !important;
 }
 /* The fixed bottom action bar does not hit-test across its right region (even at z-index 3000 the
    row stays topmost there), so a pointer crossing that zone hovers the row underneath and it lights
    up in the reactive colours. docker.js stamps html.tt-actbar-hot while the pointer is in the bar's
    band, and the row's hover colouring stays grey meanwhile. */
-html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover td.ct-name .outer > span.hand { background: rgba(128, 128, 128, .18) !important; }
-html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-b:not(.tt-plan-on),
-html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn > span.green-text,
-html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn span.orange-text,
-html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip,
-html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):hover .tt-actbtn:not(.tt-actoff) { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
+html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.ct-name .outer > span.hand { background: rgba(128, 128, 128, .18) !important; }
+html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-b:not(.tt-plan-on),
+html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn > span.green-text,
+html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn span.orange-text,
+html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip,
+html.tt-actbar-hot.tt-shares-rbneutral.tt-docker-on #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover .tt-actbtn:not(.tt-actoff) { background: rgba(128, 128, 128, .18) !important; color: var(--tt-text-chip, #cfcfcf) !important; }
 /* The Plugins tab's logo tiles, whose background rule sits above, follow the same contract: grey
    at rest, the configured tile colour on the row's hover. tt-plugins-iconbg is stamped on
    /Plugins alone, so nothing leaks. */

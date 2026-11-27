@@ -61,6 +61,8 @@ html.tt-tools-on #displaybox table:not(.tt-enh) td {
   border: none !important;
   padding: 7px 10px !important; color: #d6d6d6;
 }
+html.Theme--white.tt-tools-on #displaybox table:not(.tt-enh) :is(th, td),
+html.Theme--azure.tt-tools-on #displaybox table:not(.tt-enh) :is(th, td) { color: #303030; }
 html.tt-tools-on #displaybox table:not(.tt-enh) thead th { color: #9a9a9a; text-transform: uppercase; font-size: var(--tt-text-meta); letter-spacing: .6px; }
 html.tt-tools-on #displaybox table:not(.tt-enh) tr:hover td { background: rgba(255, 255, 255, .03) !important; }
 /* The File Integrity disk table gives every disk column a fixed narrow width, so the tracked

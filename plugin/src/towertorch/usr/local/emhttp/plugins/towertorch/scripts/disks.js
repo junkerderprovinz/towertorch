@@ -66,6 +66,7 @@
       if (c.nodeType === 3) out += c.nodeValue;
       else if (c.nodeType === 1) {
         if (tag(c) === "BR") out += "\n";
+        else if (/^preclear_/.test(attr(c, "id"))) continue;   // Preclear's running status, in the room UD leaves for it beside the serial
         else if (keepInfo || !hasCls(c, "info")) out += text(c, keepInfo);
       }
     }
@@ -761,7 +762,7 @@
   // row, so they stand side by side where the section has room. UD finds them by class, wherever
   // they sit.
   function udRow(S) {
-    var parts = kids(S.sec).filter(function (c) { return hasCls(c, "show-disks") || hasCls(c, "show-shares"); });
+    var parts = kids(S.sec).filter(function (c) { return hasCls(c, "show-disks") || hasCls(c, "show-shares") || hasCls(c, "show-historical"); });
     if (!parts.length) return;
     var row = S.sec.querySelector(":scope > .tt-dk-udrow") || S.sec.insertBefore(el("div", "tt-dk-udrow"), parts[0]);
     parts.forEach(function (c) { row.appendChild(c); });
@@ -887,6 +888,7 @@
     if (!live()) { teardown(); return; }
     var root = document.documentElement, tiles = view() === "tiles", all = sections();
     root.classList.add("tt-dk-on");
+    if (window.TTTheme && window.TTTheme.stampUdTables) window.TTTheme.stampUdTables();
     defs();
     all.forEach(function (S) { try { S.data = readSection(S); } catch (e) { S.data = { offline: true }; } });
     // A stopped array shows the assignment dropdowns, which only the list can hold.

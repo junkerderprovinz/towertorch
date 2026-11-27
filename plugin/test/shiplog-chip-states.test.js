@@ -19,8 +19,8 @@ function ruleBody(sheet, selector) {
   return m ? m[2] : null;
 }
 
-const ROW = '.tt-enh #docker_list tr:is(.sortable, .folder-element) td.updatecolumn .sl-chip';
-const HOVER = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):hover td.updatecolumn .sl-chip';
+const ROW = '.tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)) td.updatecolumn .sl-chip';
+const HOVER = 'html.tt-shares-rbneutral.tt-docker-on .tt-enh #docker_list tr:is(.sortable, .folder-element):where(:not(.folder)):hover td.updatecolumn .sl-chip';
 const STATES = { low: '--tt-ok', mid: '--tt-warn', high: '--tt-err', crit: '--tt-err', info: '--tt-info' };
 
 console.log('\nEvery coloured ShipLog chip state has a colour at rest and on the reactive row hover');
