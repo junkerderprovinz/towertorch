@@ -5,6 +5,8 @@
 //     that would stand where the pointer no longer is
 //   · it fades in over 110ms at the default level and closes at once
 //   · its text sits on the type scale in the host's font, with no font stack of its own
+//   · a press anywhere closes it, except a press on an (i), which opens that one's bubble: the
+//     glyph has nothing to do but explain, and a pointer that never hovers has no other way in
 const fs = require('fs');
 const path = require('path');
 const DIR = path.join(__dirname, '..', 'src', 'towertorch', 'usr', 'local', 'emhttp', 'plugins', 'towertorch');
@@ -21,11 +23,15 @@ function grabFn(src, name) {
 }
 
 class El {
-  constructor(attrs) { this.attrs = Object.assign({}, attrs); this.style = { display: 'none', setProperty() {}, }; this.id = ''; this.textContent = ''; this.classList = { toggle() {}, contains: () => false }; }
+  constructor(attrs, cls) { this.cls = cls || []; this.attrs = Object.assign({}, attrs); this.style = { display: 'none', setProperty() {}, }; this.id = ''; this.textContent = ''; this.classList = { toggle() {}, contains: () => false }; }
   getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; }
   setAttribute(k, v) { this.attrs[k] = v; }
   removeAttribute(k) { delete this.attrs[k]; }
-  closest() { return this.attrs['data-tip'] || this.attrs.title ? this : null; }
+  closest(sel) {
+    const want = sel.match(/\.[\w-]+/g);
+    if (want) return want.some((c) => this.cls.includes(c.slice(1))) ? this : null;
+    return this.attrs['data-tt-tip'] || this.attrs['data-tip'] || this.attrs.title ? this : null;
+  }
   contains(o) { return o === this; }
   getBoundingClientRect() { return this.rect || { left: 100, top: 100, bottom: 120, width: 20, height: 20 }; }
   get isConnected() { return !this.gone; }
@@ -77,6 +83,30 @@ console.log('\nHover always opens, focus only after the keyboard');
 
   fire('keydown', { key: 'Escape' });
   ok('Escape still closes it and counts as keyboard use', !open());
+}
+
+console.log('\nA press on an (i) opens its bubble');
+{
+  const info = new El({ 'data-tip': 'What the setting does' }, ['tt-info']);
+  fire('pointerdown', { target: info });
+  ok('a press on the glyph opens its bubble', open() && bubble.textContent === 'What the setting does');
+  fire('focusin', { target: info });
+  ok('the focus the press brings leaves it open', open());
+  fire('pointerdown', { target: info });
+  ok('a second press keeps it open', open());
+  fire('pointerdown', { target: new El({}) });
+  ok('a press elsewhere closes it', !open());
+
+  const tools = new El({ 'data-tt-tip': 'Native help moved onto the label' }, ['tt-toolsinfo']);
+  fire('mouseover', { target: tools });
+  fire('pointerdown', { target: tools });
+  ok('the (i) on a Settings label stays open when hovered and then clicked', open() && bubble.textContent === 'Native help moved onto the label');
+  fire('pointerdown', { target: new El({}) });
+
+  const button = new El({ 'data-tip': 'Undo' });
+  fire('mouseover', { target: button });
+  fire('pointerdown', { target: button });
+  ok('a press on a button with a tooltip still closes it', !open());
 }
 
 console.log('\nThe bubble stays with its anchor');

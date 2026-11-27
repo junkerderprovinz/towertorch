@@ -2324,7 +2324,7 @@
   // viewport edge, so one body-mounted div serves every [data-tt-tip] anchor in the document
   // through delegation, which survives any rebuild. It is fixed, centred under the anchor and
   // clamped into the viewport with the arrow staying over the anchor, and flips above the anchor
-  // when the bottom edge would clip it. Hidden on scroll and on pointerdown.
+  // when the bottom edge would clip it. Hidden on scroll and on a press anywhere but an (i).
   var ttTipBound = false, ttTipCur = null, ttTipKeys = false;
   var ttTipFrame = 0, ttTipAt = "";
   function ttTipEl() {
@@ -2400,7 +2400,18 @@
       document.addEventListener("mouseout", out);
       document.addEventListener("focusin", over);
       document.addEventListener("focusout", out);
-      document.addEventListener("pointerdown", function () { ttTipKeys = false; ttTipHide(); }, true);   // a press means action rather than reading
+      // A press means action rather than reading, except on an (i): the glyph does nothing but
+      // explain, and a click or a tap is the only way in for someone who does not hover first.
+      document.addEventListener("pointerdown", function (e) {
+        ttTipKeys = false;
+        var info = e.target && e.target.closest ? e.target.closest(".tt-info, .tt-toolsinfo") : null;
+        if (info && document.documentElement.classList.contains("tt-popups-on") && (info.getAttribute("data-tt-tip") || info.getAttribute("data-tip"))) {
+          if (info !== ttTipCur) { ttTipCur = info; ttTipShow(info); }
+          if (!ttTipFrame) ttTipFrame = window.requestAnimationFrame(ttTipFollow);
+          return;
+        }
+        ttTipHide();
+      }, true);
       document.addEventListener("keydown", function () { ttTipKeys = true; }, true);   // the last input, page-wide, since a press on one control can focus another
       window.addEventListener("scroll", ttTipHide, true);          // any scroll de-anchors the fixed bubble, and capture catches inner containers too
       // Escape dismisses the bubble, which is a keyboard user's only way out after tabbing onto an
