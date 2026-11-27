@@ -2077,6 +2077,22 @@
       fetch("/update.php", { method: "POST", body: fd, credentials: "same-origin" }).then(function () { location.reload(); }).catch(function () {});
     } catch (e) {}
   }
+  // The coloured status word in a page title becomes a state dot, with the word as its tooltip,
+  // like the disk state dots. Unraid names the colour in a class (span.status > span.green); the
+  // Next plugins write .status-text > .status-value and colour it inline.
+  var TT_STCOLOR = { green: "var(--tt-ok, #6fdc8c)", orange: "var(--tt-warn, #ff832b)", darkorange: "var(--tt-warn, #ff832b)", red: "var(--tt-err, #ff8389)", grey: "#8d8d8d", gray: "#8d8d8d", blue: "#1D99F3" };
+  function ttStatusDots() {
+    var words = document.querySelectorAll("#displaybox div.title .status span[class]:not([data-tt-dot]), #displaybox div.title .status-text > .status-value:not([data-tt-dot])");
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i];
+      var col = TT_STCOLOR[(w.className || "").trim().toLowerCase()] || TT_STCOLOR[(w.style.color || "").trim().toLowerCase()];
+      if (!col) continue;
+      w.setAttribute("data-tt-dot", "1"); w.setAttribute("data-tt-tip", (w.textContent || "").trim());
+      // The dot follows the colour modes unless state-native is on, and its shape the badge
+      // setting. The raw state colour goes into a var, and the sheet decides which one wins.
+      w.textContent = ""; w.classList.add("tt-status-dot"); w.style.setProperty("--tt-dotstate", col);
+    }
+  }
   // Tidies the native /Tools and /Settings sub-pages: the setting labels lose their trailing colon,
   // the status word becomes a state dot, and each inline help block moves onto an info bubble.
   function ttToolsEnhance() {
@@ -2088,18 +2104,7 @@
         var tn = ttLabelText(dts[i]);
         if (tn && /:\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(/\s*:\s*$/, "");
       }
-      // The coloured status word in the page-title span becomes a state dot, with the word as its
-      // tooltip, like the disk state dots.
-      var stcolor = { green: "var(--tt-ok, #6fdc8c)", orange: "var(--tt-warn, #ff832b)", red: "var(--tt-err, #ff8389)", grey: "#8d8d8d", gray: "#8d8d8d", blue: "#1D99F3" };
-      var stwords = document.querySelectorAll("#displaybox div.title .status span[class]:not([data-tt-dot]), #displaybox div.title span.status span[class]:not([data-tt-dot])");
-      for (var sw = 0; sw < stwords.length; sw++) {
-        var w = stwords[sw]; var cl = (w.className || "").trim().toLowerCase(); var col = stcolor[cl];
-        if (!col) continue;
-        w.setAttribute("data-tt-dot", "1"); w.setAttribute("data-tt-tip", (w.textContent || "").trim());
-        // The dot follows the colour modes unless state-native is on, and its shape the badge
-        // setting. The raw state colour goes into a var, and the sheet decides which one wins.
-        w.textContent = ""; w.classList.add("tt-status-dot"); w.style.setProperty("--tt-dotstate", col);
-      }
+      ttStatusDots();
       // Unraid's per-setting help is a blockquote, whose text moves onto a small icon on the label
       // and rides the TowerTorch bubble; the native block is hidden.
       // A block already moved is looked at again, because some pages rewrite the label it went

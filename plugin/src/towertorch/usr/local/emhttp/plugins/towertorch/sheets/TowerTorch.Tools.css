@@ -296,17 +296,28 @@ html.tt-tools-on #displaybox div.title > span.left > :is(i.title, i.fa, i[class*
 /* Most pages leave the right half empty, and the badge's gap would still pad its end. */
 html.tt-tools-on #displaybox div.title > span.right:empty { display: none !important; }
 /* When the heading carries a status (the Docker settings page) the title row goes transparent, the
-   badge wraps only the name (.left), and the state dot sits to its right with the "Status:" label
-   hidden, like a disk chip. Pages without a status keep the whole-title badge. */
+   badge wraps only the name, and the state dot sits to its right with the "Status:" label hidden,
+   like a disk chip. Unraid names it span.left; the Next plugins use a plain span, a
+   span.title-left or a div.page-title, always first in the row. Pages without a status keep the
+   whole-title badge. */
 html.tt-tools-on #displaybox div.title:has(.tt-status-dot) {
   background: transparent !important; padding: 0 !important; gap: 10px;
 }
-html.tt-tools-on #displaybox div.title:has(.tt-status-dot) > .left {
-  display: inline-flex; align-items: center; gap: 8px;
+/* A title that also holds the page's own controls, as the log filters of Recycle Bin Next and File
+   Activity Next do, is a toolbar: the row keeps the plugin's layout and the case of its labels. */
+html.tt-tools-on #displaybox div.title:has(input:not([type="hidden"]), select, textarea) {
+  display: flex !important; width: auto !important; background: transparent !important; padding: 0 !important;
+  color: var(--tt-text, #e6e6e6) !important; text-transform: none; letter-spacing: normal;
+  font-size: inherit !important; font-weight: inherit !important;
+}
+html.tt-tools-on #displaybox div.title:has(.tt-status-dot) > :is(span, div):is(.left, :first-child):not(.status, .status-text),
+html.tt-tools-on #displaybox div.title:has(input:not([type="hidden"]), select, textarea) > :is(span, div):first-child {
+  display: inline-flex; flex: 0 0 auto; align-items: center; gap: 8px;
   background: var(--tt-rbaccent, var(--tt-accent, #FCC419)); color: var(--tt-rbaccent-text, var(--tt-accent-text, #161616));
   border-radius: var(--tt-radius-pill); padding: var(--tt-sec-pad, 0 12px); min-height: var(--tt-sec-h, 22px); box-sizing: border-box;
+  font-size: var(--tt-sec-fs); font-weight: var(--tt-sec-fw, 500); text-transform: uppercase; letter-spacing: var(--tt-sec-ls, 1.2px);
 }
-html.tt-tools-on #displaybox div.title:has(.tt-status-dot) .status { font-size: 0 !important; }   /* hide the "Status:" label; the dot child keeps its own 12px box */
+html.tt-tools-on #displaybox div.title:has(.tt-status-dot) :is(.status, .status-text) { font-size: 0 !important; }   /* hide the "Status:" label; the dot child keeps its own 12px box */
 /* the TowerTorch (i) icon carrying the native help text, shown through the page-wide TowerTorch tip bubble */
 html.tt-tools-on #displaybox .tt-toolsinfo {
   display: inline-flex; align-items: center; justify-content: center; margin-left: 7px;
