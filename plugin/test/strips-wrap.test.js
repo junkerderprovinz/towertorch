@@ -40,7 +40,7 @@ console.log('\nThe menu bar');
 
 console.log('\nThe Docker action bar');
 {
-  const bar = { tag: 'div', classes: ['js-actions'], attrs: {}, states: {}, html: ['tt-docker-on'] };
+  const bar = { tag: 'div', classes: ['js-actions'], attrs: {}, states: {}, html: ['tt-popups-on', 'tt-docker-on'] };
   ok('it wraps its buttons onto a second row', val(win('docker', bar, 'flex-wrap')) === 'wrap');
   ok('and never scrolls', val(win('docker', bar, 'overflow')) === 'visible' && win('docker', bar, 'overflow-x') === null, val(win('docker', bar, 'overflow-x')));
   const adv = { tag: 'span', classes: ['tt-bar-adv'], attrs: {}, states: {}, html: ['tt-docker-on'], inside: ['.js-actions'] };

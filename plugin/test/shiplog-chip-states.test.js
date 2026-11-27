@@ -85,7 +85,7 @@ console.log('\nIn the reactive mode every button of the changelog window colours
 // falls through to the accent the repository button rests on.
 console.log('\nThe close button hovers in the accent like the repository button rests');
 {
-  const body = ruleBody(css, '.sl-bubble .sl-x:hover');
+  const body = ruleBody(css, ':where(html.tt-popups-on) .sl-bubble .sl-x:hover');
   ok('a hover rule for the close button exists', body != null);
   ok('it reads the stamp, then the accent', /background:\s*var\(--tt-rb-c,\s*var\(--tt-accent,/.test(body || ''), body);
   ok('with the accent text', /color:\s*var\(--tt-rb-ct,\s*var\(--tt-accent-text,/.test(body || ''), body);
@@ -104,7 +104,7 @@ console.log('\nThe ShipLog window follows the shape engine');
     'html.tt-header-on .sl-bubble .sl-unmaint-note h4{border-radius:var(--tt-b-radius,999px)}' +
     '.sl-bubble .sl-ai{border-radius:4px}' };
   const page = PAGES.docker.concat([shiplog]);
-  const radius = (tag, classes, inside) => { const c = candidates(page, { tag, classes, attrs: { class: classes.join(' ') }, states: {}, html: ['tt-header-on', 'tt-docker-on'], inside }, 'border-radius'); return c.length ? c[c.length - 1].value : null; };
+  const radius = (tag, classes, inside) => { const c = candidates(page, { tag, classes, attrs: { class: classes.join(' ') }, states: {}, html: ['tt-popups-on', 'tt-header-on', 'tt-docker-on'], inside }, 'border-radius'); return c.length ? c[c.length - 1].value : null; };
   ok('the window is a card', radius('div', ['sl-bubble'], []) === 'var(--tt-radius-card)');
   ok('its cards are controls', radius('div', ['sl-sec'], ['.sl-bubble']) === 'var(--tt-radius-control)' && radius('div', ['sl-aubar'], ['.sl-bubble']) === 'var(--tt-radius-control)' && radius('div', ['sl-unmaint-note'], ['.sl-bubble']) === 'var(--tt-radius-control)');
   ok('the section badges, "Neueste Releases" and the AI summary among them, are pills', radius('h4', [], ['.sl-bubble', '.sl-sec']) === 'var(--tt-radius-pill)' && radius('h4', [], ['.sl-bubble', '.sl-unmaint-note']) === 'var(--tt-radius-pill)', radius('h4', [], ['.sl-bubble', '.sl-sec']));

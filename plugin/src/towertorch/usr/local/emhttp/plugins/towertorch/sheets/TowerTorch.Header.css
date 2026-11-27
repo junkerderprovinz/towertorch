@@ -1408,7 +1408,8 @@ html .tt-toast.tt-toast-ok { color: var(--tt-ok-ink, #6fdc8c); }
    class, but much of what TowerTorch animates is native markup restyled in place (a.back_to_top,
    .caButton, buttons, switches, the pager, i.fa-trash), so the containers TowerTorch touches are covered
    instead: #displaybox, #header and #menu, the two footer arrows that sit directly in <body>, and
-   the popups with their contents. */
+   the popups with their contents. Those wait for theming, since with it off Unraid's own motion
+   is Unraid's. */
 @media (prefers-reduced-motion: reduce) {
   html.tt-popups-on .sweet-alert,
   html.tt-popups-on .sweet-alert *:not(.tt-shake),
@@ -1417,27 +1418,27 @@ html .tt-toast.tt-toast-ok { color: var(--tt-ok-ink, #6fdc8c); }
   html.tt-popups-on .ui-dialog,
   html.tt-popups-on .ui-dialog *:not(.tt-shake) { animation: none !important; }
   html [class*="tt-"]:not(.tt-toast, .tt-shake),
-  html #displaybox *:not(.tt-toast, .tt-shake),
-  html #header *:not(.tt-toast, .tt-shake),
-  html #menu *:not(.tt-toast, .tt-shake),
-  html #footer *,
-  html a.back_to_top,
-  html a.move_to_end { transition: none !important; animation: none !important; }
+  html:where(.tt-popups-on) #displaybox *:not(.tt-toast, .tt-shake),
+  html:where(.tt-popups-on) #header *:not(.tt-toast, .tt-shake),
+  html:where(.tt-popups-on) #menu *:not(.tt-toast, .tt-shake),
+  html:where(.tt-popups-on) #footer *,
+  html:where(.tt-popups-on) a.back_to_top,
+  html:where(.tt-popups-on) a.move_to_end { transition: none !important; animation: none !important; }
 }
 /* "off" stills the same set by hand, whatever the OS setting */
 html[data-tt-motion="off"] [class*="tt-"]:not(.tt-toast, .tt-shake),
-html[data-tt-motion="off"] #displaybox *:not(.tt-toast, .tt-shake),
-html[data-tt-motion="off"] #header *:not(.tt-toast, .tt-shake),
-html[data-tt-motion="off"] #menu *:not(.tt-toast, .tt-shake),
-html[data-tt-motion="off"] #footer *,
-html[data-tt-motion="off"] a.back_to_top,
-html[data-tt-motion="off"] a.move_to_end,
-html[data-tt-motion="off"] .sweet-alert,
-html[data-tt-motion="off"] .sweet-alert *:not(.tt-shake),
-html[data-tt-motion="off"] .swal-modal,
-html[data-tt-motion="off"] .swal-modal *:not(.tt-shake),
-html[data-tt-motion="off"] .ui-dialog,
-html[data-tt-motion="off"] .ui-dialog *:not(.tt-shake) { transition: none !important; animation: none !important; }
+html:where(.tt-popups-on)[data-tt-motion="off"] #displaybox *:not(.tt-toast, .tt-shake),
+html:where(.tt-popups-on)[data-tt-motion="off"] #header *:not(.tt-toast, .tt-shake),
+html:where(.tt-popups-on)[data-tt-motion="off"] #menu *:not(.tt-toast, .tt-shake),
+html:where(.tt-popups-on)[data-tt-motion="off"] #footer *,
+html:where(.tt-popups-on)[data-tt-motion="off"] a.back_to_top,
+html:where(.tt-popups-on)[data-tt-motion="off"] a.move_to_end,
+html:where(.tt-popups-on)[data-tt-motion="off"] .sweet-alert,
+html:where(.tt-popups-on)[data-tt-motion="off"] .sweet-alert *:not(.tt-shake),
+html:where(.tt-popups-on)[data-tt-motion="off"] .swal-modal,
+html:where(.tt-popups-on)[data-tt-motion="off"] .swal-modal *:not(.tt-shake),
+html:where(.tt-popups-on)[data-tt-motion="off"] .ui-dialog,
+html:where(.tt-popups-on)[data-tt-motion="off"] .ui-dialog *:not(.tt-shake) { transition: none !important; animation: none !important; }
 /* subtle and wild: a soft entrance for the island and brand, and a gentle hover lift on the
    Docker, Plugin and VM cards */
 @keyframes tt-fade-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -1793,36 +1794,37 @@ html.tt-header-on .tt-isl-fill { transition: width .5s ease, background-color .4
 
 /* The wild motion level: strong motion on top of the subtle transitions. The selectors name the
    quiet levels rather than wild, so they also cover the attribute before header.js stamps it. Like
-   every level it sits inside the gate, so reduced motion stills it. */
+   every level it sits inside the gate, so reduced motion stills it, and the rules on Unraid's menu
+   wait for theming like every other rule on its markup. */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes tt-wild-bounce { 0%{transform:translateY(0)} 28%{transform:translateY(-7px)} 52%{transform:translateY(3px)} 72%{transform:translateY(-3px)} 88%{transform:translateY(1px)} 100%{transform:translateY(0)} }
   /* the main-menu tabs hop when the pointer enters them */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile:not(.right) > .nav-item:hover { animation: tt-wild-bounce .6s cubic-bezier(.28,.84,.42,1); }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile:not(.right) > .nav-item:hover { animation: tt-wild-bounce .6s cubic-bezier(.28,.84,.42,1); }
   /* The right group bounces too: util icons, the usage meter and the bell and burger proxies. The
      rule sits on the .nav-item only, whose transform carries its children; a second bounce on the
      inner <a> would stack and double the amplitude. */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile.right > .nav-item:hover { animation: tt-wild-bounce .6s cubic-bezier(.28,.84,.42,1); }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile.right > .nav-item:hover { animation: tt-wild-bounce .6s cubic-bezier(.28,.84,.42,1); }
   /* The -7px hop peaks above the header band, so the nav chain overflows visibly in wild mode. #menu
      clips the horizontal axis, or tiles wider than the viewport would stretch the page and add a
      horizontal scrollbar; clip, unlike hidden, leaves overflow-y truly visible. */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu { overflow-x: clip !important; overflow-y: visible !important; }
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile,
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile:not(.right) > .nav-item { overflow: visible !important; }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu { overflow-x: clip !important; overflow-y: visible !important; }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile,
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile:not(.right) > .nav-item { overflow: visible !important; }
   /* The tab strip's overflow-x:auto (1,4,2) keeps it scrollable, and with one axis not visible the
      other resolves to auto as well, which would clip the bounce. The clip is lifted only while an
      item bounces, and the two :not() give (1,5,1). */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile:has(> .nav-item:hover) {
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile:has(> .nav-item:hover) {
     overflow: visible !important;
   }
   /* The sticky #header (z-index 102, solid background) sits above #menu (101) and paints over the
      area an item hops into. While any item in either group bounces, #menu is lifted above #header;
      :has limits the lift to that moment. */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu:has(.nav-tile > .nav-item:hover),
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu:has(.nav-tile.right > .nav-item.util:hover),
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu:has(.nav-tile:not(.right) > .nav-item:hover) { z-index: 103 !important; }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu:has(.nav-tile > .nav-item:hover),
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu:has(.nav-tile.right > .nav-item.util:hover),
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu:has(.nav-tile:not(.right) > .nav-item:hover) { z-index: 103 !important; }
   /* the bounce needs room above the bar: the icon box is 36px in a 40px row, so a lift of a few px lands on
      the header strip. position:relative + a raised z-index keeps the moving item over its neighbours. */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile > .nav-item:hover { position: relative !important; z-index: 4 !important; }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #menu .nav-tile > .nav-item:hover { position: relative !important; z-index: 4 !important; }
   /* springy lift on any TowerTorch pill / action icon; the limit gear also spins a quarter-turn */
   html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .tt-b:hover,
   html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .tt-actbtn:hover { transform: translateY(-2px) scale(1.06); transition: transform .18s cubic-bezier(.34,1.56,.64,1) !important; }
@@ -1832,7 +1834,7 @@ html.tt-header-on .tt-isl-fill { transition: width .5s ease, background-color .4
   html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .tt-pop, html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .tt-menu, html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .tt-drop { animation: tt-wild-pop .32s cubic-bezier(.34,1.56,.64,1) !important; }
   /* the notification centre gets the same pop-in (the App-Info drawer slides in, see Tokens.css
      tt-wild-slidein); the Tailwind hook fails soft if Connect renames it */
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .unapi div.fixed.z-50.bg-background:not(.top-1\/2) { animation: tt-wild-pop .32s cubic-bezier(.34,1.56,.64,1) !important; }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .unapi div.fixed.z-50.bg-background:not(.top-1\/2) { animation: tt-wild-pop .32s cubic-bezier(.34,1.56,.64,1) !important; }
   /* the brand wordmark gives a little wobble on hover */
   @keyframes tt-wild-wobble { 0%{transform:rotate(0)} 25%{transform:rotate(-2.5deg)} 50%{transform:rotate(2deg)} 75%{transform:rotate(-1deg)} 100%{transform:rotate(0)} }
   html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) #tt-brand:hover .tt-brand-name { display:inline-block; animation: tt-wild-wobble .5s ease; }

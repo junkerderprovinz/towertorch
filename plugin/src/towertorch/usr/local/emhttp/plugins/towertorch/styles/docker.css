@@ -6,13 +6,17 @@
  * stay live (the nchan CPU and RAM figures), clickable and sortable, and uninstalling removes the
  * stylesheet, which brings everything back.
  *
+ * Every rule on Unraid's own markup or ShipLog's waits for :where(html.tt-popups-on), the class
+ * header.js stamps while master theming is on, so with theming off only TowerTorch's own controls
+ * keep a look. :where() adds no specificity, so the gate changes nothing in the cascade.
+ *
  * The accent, the states and the badge size metrics live in TowerTorch.Tokens.css.
  */
 
 /* Hide Unraid's Docker Containers title bar, a div.title from the tabless page layout. The
    :has(#docker_containers) scope keeps it to the Docker page, since this sheet also loads on the
    settings page, whose own bar stays. */
-#displaybox > .content:has(#docker_containers) > div.title { display: none !important; }
+:where(html.tt-popups-on) #displaybox > .content:has(#docker_containers) > div.title { display: none !important; }
 .tt-root, .tt-grid-holder {
   --tt-bg: var(--tt-surface-base, #161616); --tt-bg2: var(--tt-surface-1, #1e1e1e); --tt-bg3: var(--tt-surface-4, #262626); --tt-line: var(--tt-line-solid, #2a2a2a);
   --tt-txt: var(--tt-text, #e6e6e6); --tt-dim: var(--tt-text-dim, #8a8a8a);
@@ -156,7 +160,7 @@ nav.tabs .tabs-container .tt-hgear-home:hover { background: var(--tt-hover-dark)
 .tt-card-actbar .tt-actbar { flex-direction: row; flex-wrap: wrap; }
 .tt-card-actbar .tt-actrow { display: contents; }
 /* ShipLog's update-all pill says what Unraid's own Update-All button below the table says */
-a.sl-updall { display: none !important; }
+:where(html.tt-popups-on) a.sl-updall { display: none !important; }
 .tt-actrow { display: flex; gap: var(--tt-badge-gap, 5px); }
 .tt-actoff { opacity: .35; cursor: default; }
 .tt-actoff:hover { background: #2e2e2e; color: #c9c9c9; }
@@ -472,9 +476,9 @@ html:not(.tt-state-native).tt-docker-on .tt-limbtn-set { background: var(--tt-rb
    badge classes, so a real link such as a container name keeps its underline. */
 .tt-b a, .tt-b a:hover, .tt-b a:focus,
 .tt-rowbadges a, .tt-rowbadges a:hover,
-.sl-chip, .sl-chip:hover, .sl-chip:focus,
+:where(html.tt-popups-on) .sl-chip, :where(html.tt-popups-on) .sl-chip:hover, :where(html.tt-popups-on) .sl-chip:focus,
 .tt-menu-link a, .tt-menu-link a:hover { text-decoration: none !important; }
-a.tt-b[href]:hover, .tt-b a[href]:hover, .tt-rowbadges a[href]:hover, .sl-chip:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+a.tt-b[href]:hover, .tt-b a[href]:hover, .tt-rowbadges a[href]:hover, :where(html.tt-popups-on) .sl-chip:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
 .tt-plan-on { box-shadow: none; } /* no inset ring; the chip's text already says it is active */
 /* A plan badge whose dependencies decide a state wears it in the state colour and its ink, in every
    colour mode, as the run-state badges do: ready green, waiting orange, failed red. */
@@ -1094,7 +1098,7 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
    through an inline `left`, which the .checked rules below override with !important, so the widget
    keeps working and only the look changes. */
 .tt-enh #docker_list .switch-button-background,
-.ToggleViewMode .switch-button-background {
+:where(html.tt-popups-on) .ToggleViewMode .switch-button-background {
   width: 44px !important; height: 24px !important; border-radius: var(--tt-radius-pill) !important;
   border: none !important; outline: none !important; box-shadow: none !important;
   background: var(--tt-toggle-track-off, #3a3a3a) !important; transform: none !important; position: relative !important;
@@ -1102,15 +1106,15 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
   transition: background .15s; box-sizing: border-box;
 }
 .tt-enh #docker_list .switch-button-background.checked,
-.ToggleViewMode .switch-button-background.checked { background: var(--tt-accent, #FCC419) !important; }
+:where(html.tt-popups-on) .ToggleViewMode .switch-button-background.checked { background: var(--tt-accent, #FCC419) !important; }
 .tt-enh #docker_list .switch-button-background .switch-button-button,
-.ToggleViewMode .switch-button-background .switch-button-button {
+:where(html.tt-popups-on) .ToggleViewMode .switch-button-background .switch-button-button {
   width: 18px !important; height: 18px !important; top: 3px !important; left: 3px !important;
   border-radius: var(--tt-radius-pill) !important; background: #fff !important; box-shadow: none !important;   /* capped at half the knob */
   border: none !important; transition: left .15s;
 }
 .tt-enh #docker_list .switch-button-background.checked .switch-button-button,
-.ToggleViewMode .switch-button-background.checked .switch-button-button { left: 21px !important; background: var(--tt-accent-text, #161616) !important; }
+:where(html.tt-popups-on) .ToggleViewMode .switch-button-background.checked .switch-button-button { left: 21px !important; background: var(--tt-accent-text, #161616) !important; }
 /* the on/off text goes next to the per-row autostart switch only; the view toggle outside the
    table keeps its label */
 .tt-enh #docker_list .switch-button-label { display: none !important; }
@@ -1132,17 +1136,17 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
 .tt-enh #docker_list input.autostart.tt-noswitch:checked::before { left: 21px; background: var(--tt-accent-text, #161616); }
 /* The native toggle row is hidden from the first paint; collapsing it in JS lets an
    Unraid-styled gear flash in the corner first. */
-.ToggleViewMode { display: none !important; }
+:where(html.tt-popups-on) .ToggleViewMode { display: none !important; }
 /* The toggle's label is centred against the 24px pill by making `.ToggleViewMode > span` the flex
    line, since Unraid floats the label and the switch inside it and a flex box ignores floats.
    .switch-button-container covers builds that wrap the switch differently. */
-.ToggleViewMode > span,
-.ToggleViewMode .switch-button-container { display: inline-flex !important; align-items: center !important; }
+:where(html.tt-popups-on) .ToggleViewMode > span,
+:where(html.tt-popups-on) .ToggleViewMode .switch-button-container { display: inline-flex !important; align-items: center !important; }
 /* ShipLog's "update all" button (a.sl-updall), restyled to match our badges: an accent
    pill (green in rainbow mode) with auto-contrast text, sitting left of the view toggle.
    Colours come from --tt-updall-bg/-text (set on :root by docker.js, so they reach this
-   element outside our table). Only applies while TowerTorch is installed. */
-.sl-updall { align-items: center !important; line-height: 1.2 !important;
+   element outside our table). Only applies while theming is on. */
+:where(html.tt-popups-on) .sl-updall { align-items: center !important; line-height: 1.2 !important;
   display: inline-flex; align-items: center; height: 24px; padding: 0 13px;
   border-radius: var(--tt-radius-pill) !important; background: var(--tt-updall-bg, #FCC419) !important;
   color: var(--tt-updall-text, #fff) !important; font-weight: 600; font-size: var(--tt-text-meta);
@@ -1150,15 +1154,15 @@ html .tt-btn-sm { margin: 4px 10px 6px; padding: 3px 10px; font-size: var(--tt-t
   border: none !important; box-shadow: none !important; cursor: pointer; margin: 0 10px 0 0;
   transition: filter .12s;
 }
-.sl-updall:hover { background: color-mix(in srgb, var(--tt-updall-bg, #FCC419) 85%, var(--tt-text, #e6e6e6)) !important; text-decoration: none !important; }
+:where(html.tt-popups-on) .sl-updall:hover { background: color-mix(in srgb, var(--tt-updall-bg, #FCC419) 85%, var(--tt-text, #e6e6e6)) !important; text-decoration: none !important; }
 /* the native per-container autostart wait belongs in the start plan, so its span, which holds both
    the label and the input, is hidden here */
 .tt-enh #docker_list span[id$="-wait"] { display: none !important; }
 
 /* The page tabs, wherever this sheet loads: a grey pill, accent-filled when active, driven by the
    :checked state alone. Unraid 7 renders them as <button role=tab aria-selected> in nav.tabs. */
-nav.tabs { background: transparent !important; border: none !important; box-shadow: none !important; }
-nav.tabs .tabs-container > button[role=tab] {
+:where(html.tt-popups-on) nav.tabs { background: transparent !important; border: none !important; box-shadow: none !important; }
+:where(html.tt-popups-on) nav.tabs .tabs-container > button[role=tab] {
   background: #2a2a2a !important; color: #b5b5b5 !important; border: none !important;
   box-shadow: none !important; border-radius: var(--tt-radius-pill) !important; padding: var(--tt-md-pad, 0 20px) !important;
   text-transform: uppercase !important; letter-spacing: 1.5px !important; font-size: var(--tt-md-fs) !important;
@@ -1166,33 +1170,33 @@ nav.tabs .tabs-container > button[role=tab] {
   height: var(--tt-md-h, 30px) !important; box-sizing: border-box !important; line-height: 1 !important;
   display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 6px;
 }
-nav.tabs .tabs-container > button[role=tab][aria-selected="true"] {
+:where(html.tt-popups-on) nav.tabs .tabs-container > button[role=tab][aria-selected="true"] {
   background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important;
 }
-div.tab { background: transparent !important; border: none !important; }
-div.tab input[type=radio] + label,
-.tabbed input[type=radio] + label {
+:where(html.tt-popups-on) div.tab { background: transparent !important; border: none !important; }
+:where(html.tt-popups-on) div.tab input[type=radio] + label,
+:where(html.tt-popups-on) .tabbed input[type=radio] + label {
   background: #2a2a2a !important; color: #b5b5b5 !important; border: none !important;
   box-shadow: none !important; border-radius: var(--tt-radius-pill) !important; padding: var(--tt-md-pad, 0 20px) !important;
   text-transform: uppercase; letter-spacing: 1.5px; font-size: var(--tt-md-fs); cursor: pointer;
   height: var(--tt-md-h, 30px); box-sizing: border-box; line-height: 1;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
-div.tab input[type=radio]:checked + label,
-.tabbed input[type=radio]:checked + label {
+:where(html.tt-popups-on) div.tab input[type=radio]:checked + label,
+:where(html.tt-popups-on) .tabbed input[type=radio]:checked + label {
   background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important;
 }
 /* The main menu bar is the lgb tier and md is the step below it, so the sub-nav pills are a size
    smaller while staying on the ladder; the tighter letter-spacing separates the two levels without
    shrinking the box out of the size system. */
-nav.tabs .tabs-container > button[role=tab],
-div.tab input[type=radio] + label,
-.tabbed input[type=radio] + label { height: var(--tt-md-h, 30px) !important; letter-spacing: 1px !important; }
+:where(html.tt-popups-on) nav.tabs .tabs-container > button[role=tab],
+:where(html.tt-popups-on) div.tab input[type=radio] + label,
+:where(html.tt-popups-on) .tabbed input[type=radio] + label { height: var(--tt-md-h, 30px) !important; letter-spacing: 1px !important; }
 
 /* Page chrome on the pages this sheet loads on: Unraid's title bars and tab strips go flat, with
    no background block, a thin base line and spaced uppercase labels. */
-div.title { background: transparent !important; border-bottom: 1px solid #2f2f2f !important; box-shadow: none !important; padding-left: 0 !important; }
-div.title span.left, div.title span.right { text-transform: uppercase; letter-spacing: 2px; font-size: var(--tt-text-meta); }
+:where(html.tt-popups-on) div.title { background: transparent !important; border-bottom: 1px solid #2f2f2f !important; box-shadow: none !important; padding-left: 0 !important; }
+:where(html.tt-popups-on) div.title span.left, :where(html.tt-popups-on) div.title span.right { text-transform: uppercase; letter-spacing: 2px; font-size: var(--tt-text-meta); }
 
 /* Align the Docker and Plugins content with the styled main menu bar. Header.css turns the first
    menu item into a pill whose left edge is 15px in, from the nav tile's padding plus the link's
@@ -1202,14 +1206,14 @@ div.title span.left, div.title span.right { text-transform: uppercase; letter-sp
    larger padding-left. */
 html { --tt-align-left: 10px; }
 html.tt-header-on { --tt-align-left: 15px; }
-html:not(.Theme--sidebar) #displaybox:has(#plugin_list),
-html:not(.Theme--sidebar) #displaybox:has(#docker_list) { padding-left: var(--tt-align-left, 10px); }
+html:where(.tt-popups-on):not(.Theme--sidebar) #displaybox:has(#plugin_list),
+html:where(.tt-popups-on):not(.Theme--sidebar) #displaybox:has(#docker_list) { padding-left: var(--tt-align-left, 10px); }
 /* the same right edge for both lists and the autostart view, from the shared gutter token;
    :has(#docker_list) matches with the list hidden too */
-html:not(.Theme--sidebar) #displaybox:has(#plugin_list),
-html:not(.Theme--sidebar) #displaybox:has(#docker_list) { padding-right: var(--tt-edge-gutter, 8px); }
-.tabs, #tabs { background: transparent !important; border: 0 !important; }
-.tabs .tab, #tabs .tab { background: transparent !important; border: 0 !important; text-transform: uppercase; letter-spacing: 1.5px; }
+html:where(.tt-popups-on):not(.Theme--sidebar) #displaybox:has(#plugin_list),
+html:where(.tt-popups-on):not(.Theme--sidebar) #displaybox:has(#docker_list) { padding-right: var(--tt-edge-gutter, 8px); }
+:where(html.tt-popups-on) .tabs, :where(html.tt-popups-on) #tabs { background: transparent !important; border: 0 !important; }
+:where(html.tt-popups-on) .tabs .tab, :where(html.tt-popups-on) #tabs .tab { background: transparent !important; border: 0 !important; text-transform: uppercase; letter-spacing: 1.5px; }
 
 /* The Plugins tab, in the Docker tab's style. */
 /* Unraid appends the check, update and remove buttons as <span class="status vhshift"> into the
@@ -1217,7 +1221,7 @@ html:not(.Theme--sidebar) #displaybox:has(#docker_list) { padding-right: var(--t
    #plugin_table is full width, so on the top-nav themes the button and the uninstall column share
    a right edge. The sidebar theme insets the button, which is zeroed here. These ids exist only on
    the Plugins page, so the rule is page-scoped by itself. */
-#checkall.status, #updateall.status, #removeall.status { margin-right: 0 !important; }
+:where(html.tt-popups-on) #checkall.status, :where(html.tt-popups-on) #updateall.status, :where(html.tt-popups-on) #removeall.status { margin-right: 0 !important; }
 /* The plugin manager's Update.css carries `span.vhshift { margin-top: 13px !important }`, a shift
    tuned to the tall native tabs, which against TowerTorch's 30px pills pushes the button below the row and
    overflows the strip. plugins.js moves the three spans into #tt-plugbtns, a flex sibling of
@@ -1229,13 +1233,13 @@ html:not(.Theme--sidebar) #displaybox:has(#docker_list) { padding-right: var(--t
    strut baseline at H/2 and vertical-align:middle centres the inline-block on it, so a button
    shorter than its wrapper sits half the difference too low. The font-size:0 has to stay while
    vertical-align:middle does; a real font size pulls the button up instead. */
-nav.tabs .tabs-container > span.status.vhshift,
+:where(html.tt-popups-on) nav.tabs .tabs-container > span.status.vhshift,
 #tt-plugbtns > span.status.vhshift { margin-top: 0 !important; margin-bottom: 0 !important; height: var(--tt-md-h, 30px) !important; line-height: var(--tt-md-h, 30px) !important; font-size: 0 !important; }
 /* This sheet owns the height; plugins.js only re-stamps it inline for the controls Unraid
    re-creates. */
-nav.tabs .tabs-container > span.status.vhshift > input[type="button"],
-nav.tabs .tabs-container > span.status.vhshift > input[type="submit"],
-nav.tabs .tabs-container > span.status.vhshift > button,
+:where(html.tt-popups-on) nav.tabs .tabs-container > span.status.vhshift > input[type="button"],
+:where(html.tt-popups-on) nav.tabs .tabs-container > span.status.vhshift > input[type="submit"],
+:where(html.tt-popups-on) nav.tabs .tabs-container > span.status.vhshift > button,
 #tt-plugbtns > span.status.vhshift > input[type="button"],
 #tt-plugbtns > span.status.vhshift > input[type="submit"],
 #tt-plugbtns > span.status.vhshift > button { height: var(--tt-md-h, 30px) !important; box-sizing: border-box !important; vertical-align: middle !important; }
@@ -1251,7 +1255,7 @@ nav.tabs.tt-has-plugbtns > .tabs-container { flex: 1 1 auto !important; min-widt
 #tt-plugbtns { position: static !important; flex: 0 0 auto !important; margin: 0 0 0 auto !important; align-self: center !important; height: var(--tt-md-h, 30px); display: inline-flex; align-items: center; gap: 12px; }
 #tt-plugbtns > span.status.vhshift { margin: 0 !important; }
 /* the strip stays one nowrap line; the buttons sit outside it in #tt-plugbtns and cannot wrap */
-nav.tabs .tabs-container { flex-wrap: nowrap !important; }
+:where(html.tt-popups-on) nav.tabs .tabs-container { flex-wrap: nowrap !important; }
 /* At phone width a strip wraps rather than scrolling, the buttons stand under it (plugins.js
    plugPinTick), and each plugin row becomes a block: the plugin and its description on lines of
    their own, author, version, status and delete wrapping under them, so no column is cut off. */
@@ -1343,7 +1347,7 @@ html.tt-plugins-iconbg.tt-plugins-rainbow .tt-plugico { background: var(--tt-ico
    an inline size, so they render at wildly different sizes. Sizing all three here, before and
    after plugins.js moves them into .tt-plugico, holds through a re-render the JS pass misses; the
    JS also content-crops the raster logos, so a padded one still fills the box. */
-#plugin_list td:first-child img.list, #plugin_list td:first-child i.list,
+:where(html.tt-popups-on) #plugin_list td:first-child img.list, :where(html.tt-popups-on) #plugin_list td:first-child i.list,
 .tt-plugico img, .tt-plugico i {
   width: var(--tt-logo-img, 62px) !important; height: var(--tt-logo-img, 62px) !important; min-width: var(--tt-logo-img, 62px) !important; min-height: var(--tt-logo-img, 62px) !important;
   max-width: var(--tt-logo-img, 62px) !important; max-height: var(--tt-logo-img, 62px) !important;
@@ -1680,21 +1684,21 @@ button.tt-hgear[data-tip], .tt-b[data-tip], .tt-badge[data-tip], .tt-pill[data-t
    own controls take pointer events back. A window too narrow for one row wraps the buttons onto a
    second (GlimStone: a strip wraps, it never scrolls); syncFooterDock() measures the bar's height
    into --tt-actbar-h, so the list keeps clear of either. */
-div.js-actions { display: flex !important; flex-wrap: wrap; gap: 0 5px; align-items: center; margin: 0; overflow: visible; pointer-events: none; }
-div.js-actions > * { pointer-events: auto; }
+:where(html.tt-popups-on) div.js-actions { display: flex !important; flex-wrap: wrap; gap: 0 5px; align-items: center; margin: 0; overflow: visible; pointer-events: none; }
+:where(html.tt-popups-on) div.js-actions > * { pointer-events: auto; }
 @media (min-width: 768px) {
   /* a thin strip in Unraid's own footer colour, flush on top of it */
-  div.js-actions { position: fixed !important; left: 0; right: 0; bottom: var(--tt-footer-h, 0px); z-index: 998; padding: 3px 88px 3px 16px; background: var(--footer-background-color, var(--mild-background-color, #1c1c1c)); border: none !important; box-shadow: none; }
+  :where(html.tt-popups-on) div.js-actions { position: fixed !important; left: 0; right: 0; bottom: var(--tt-footer-h, 0px); z-index: 998; padding: 3px 88px 3px 16px; background: var(--footer-background-color, var(--mild-background-color, #1c1c1c)); border: none !important; box-shadow: none; }
   /* room for the docked bar, whose measured height is --tt-actbar-h, so it never covers the last row */
-  #displaybox { padding-bottom: calc(var(--tt-footer-h, 0px) + var(--tt-actbar-h, 40px) + 12px) !important; }
-  #docker_list.js-fill-available-height { padding-bottom: var(--tt-actbar-h, 40px) !important; box-sizing: border-box; }
+  :where(html.tt-popups-on) #displaybox { padding-bottom: calc(var(--tt-footer-h, 0px) + var(--tt-actbar-h, 40px) + 12px) !important; }
+  :where(html.tt-popups-on) #docker_list.js-fill-available-height { padding-bottom: var(--tt-actbar-h, 40px) !important; box-sizing: border-box; }
 }
 /* One look for every button in the bar, the Mehrfachauswahl badge and the "Alle Container" menu
    button included, so none of them drifts from a copy. Labels stay in sentence case. Only
    "Container hinzufügen" is filled (GlimStone rule 3, one filled button per view); the others
    rest grey and take their mode colour under the pointer, the slot docker.js colorBarButtons()
    stamps in the rainbow. The four run-everything buttons wait hidden behind the menu. */
-div.js-actions input[type=button],
+:where(html.tt-popups-on) div.js-actions input[type=button],
 div.js-actions :is(.tt-bulkmode-badge, .tt-allct, .tt-maintbtn) { flex: none !important; background: var(--tt-surface-3, #2e2e2e) !important; color: var(--tt-text-chip, #cfcfcf) !important; border: none !important; box-shadow: none !important; padding: var(--tt-md-btnpad, 0 14px) !important; font-size: var(--tt-md-fs) !important; height: var(--tt-md-h, 30px) !important; box-sizing: border-box !important; font-weight: 600 !important; text-transform: none !important; letter-spacing: normal !important; font-family: inherit !important; cursor: pointer; transition: background-color .12s, color .12s; }
 div.js-actions input[type=button].tt-bar-primary {
   order: 2; margin-inline-start: 12px !important;
@@ -1736,7 +1740,7 @@ div.js-actions .tt-bar-adv { order: 1; display: inline-flex; align-items: center
 div.js-actions .tt-bar-adv .tt-hgear-home { font-size: var(--tt-text-title); color: var(--tt-text-chip, #cfcfcf); padding: 0 4px; }
 div.js-actions .tt-bar-adv .tt-hgear-home:hover { color: var(--tt-accent-ink, #FCC419); }
 div.js-actions .tt-bar-adv-lbl { color: var(--tt-text-chip, #cfcfcf); font-size: var(--tt-md-fs); font-weight: 600; }
-div.js-actions input[type=button]:hover:not(:disabled),
+:where(html.tt-popups-on) div.js-actions input[type=button]:hover:not(:disabled),
 div.js-actions .tt-bulkmode-badge:hover,
 div.js-actions .tt-allct:hover:not([aria-disabled="true"]),
 div.js-actions .tt-maintbtn:hover {
@@ -1753,43 +1757,43 @@ div.js-actions :is(input[type=button], .tt-bulkmode-badge, .tt-allct, .tt-maintb
    TowerTorch look. The .sl-bubble selector matches only once ShipLog has rendered one, so with the plugin
    absent nothing here applies. The accent and shape come from the --tt-* vars on documentElement,
    and docker.js adds the rainbow rotation. */
-.sl-bubble .sl-upd, .sl-bubble .sl-gh {
+:where(html.tt-popups-on) .sl-bubble .sl-upd, :where(html.tt-popups-on) .sl-bubble .sl-gh {
   background: var(--tt-accent, #FCC419) !important; color: var(--tt-accent-text, #161616) !important;
   border: none !important; border-radius: var(--tt-radius-pill) !important;
   padding: 5px 12px !important; font-weight: 600 !important; text-decoration: none !important;
   transition: filter .12s !important;
 }
-.sl-bubble .sl-upd:hover, .sl-bubble .sl-gh:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
-.sl-bubble .sl-upd.sl-upd-off { background: transparent !important; color: var(--sl-dim) !important; border: 1px solid var(--sl-line2) !important; filter: none !important; }
-.sl-bubble .sl-pill { border-radius: var(--tt-radius-pill) !important; }
+:where(html.tt-popups-on) .sl-bubble .sl-upd:hover, :where(html.tt-popups-on) .sl-bubble .sl-gh:hover { box-shadow: inset 0 0 0 100vmax var(--tt-hover-wash) !important; }
+:where(html.tt-popups-on) .sl-bubble .sl-upd.sl-upd-off { background: transparent !important; color: var(--sl-dim) !important; border: 1px solid var(--sl-line2) !important; filter: none !important; }
+:where(html.tt-popups-on) .sl-bubble .sl-pill { border-radius: var(--tt-radius-pill) !important; }
 /* ShipLog sizes its window, cards and section badges by a radius variable TowerTorch does not set, which
    leaves them round in every shape; the shape engine's tokens take over: the window a card, its cards
    a control, every section badge and the AI model tag a pill. */
-html .sl-bubble { border-radius: var(--tt-radius-card) !important; }
-html .sl-bubble :is(.sl-sec, .sl-aubar, .sl-unmaint-note) { border-radius: var(--tt-radius-control) !important; }
-html .sl-bubble :is(h4, .sl-ai) { border-radius: var(--tt-radius-pill) !important; }
-.sl-bubble .sl-x { border-radius: var(--tt-radius-pill) !important; }
+html:where(.tt-popups-on) .sl-bubble { border-radius: var(--tt-radius-card) !important; }
+html:where(.tt-popups-on) .sl-bubble :is(.sl-sec, .sl-aubar, .sl-unmaint-note) { border-radius: var(--tt-radius-control) !important; }
+html:where(.tt-popups-on) .sl-bubble :is(h4, .sl-ai) { border-radius: var(--tt-radius-pill) !important; }
+:where(html.tt-popups-on) .sl-bubble .sl-x { border-radius: var(--tt-radius-pill) !important; }
 /* The close button rests on ShipLog's neutral chip and on hover takes the colour the repository
    button rests on: the accent, or its stamped --tt-rb-c. */
-.sl-bubble .sl-x:hover { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
+:where(html.tt-popups-on) .sl-bubble .sl-x:hover { background: var(--tt-rb-c, var(--tt-accent, #FCC419)) !important; color: var(--tt-rb-ct, var(--tt-accent-text, #161616)) !important; }
 /* ShipLog's auto-update switch reads like every switch row in a TowerTorch window: the words and the (i)
    at the left, GlimStone's switch at the far right. The label becomes display:contents so its parts
    can be ordered inside the bar, and a press on the words or the track still reaches the checkbox
    through the label. */
-html .sl-bubble .sl-au-row { display: contents; }
-html .sl-bubble .sl-au-row > span:not(.sl-au-track, .sl-au-info) { order: 1; cursor: pointer; }
-html .sl-bubble .sl-au-info { order: 2; }
-html .sl-bubble .sl-au-track {
+html:where(.tt-popups-on) .sl-bubble .sl-au-row { display: contents; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-row > span:not(.sl-au-track, .sl-au-info) { order: 1; cursor: pointer; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-info { order: 2; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-track {
   order: 3; margin-inline-start: auto; cursor: pointer;
   width: 44px; height: 24px; border-radius: var(--tt-radius-pill); background: var(--tt-toggle-track-off, #3a3a3a);
 }
-html .sl-bubble .sl-au-track::after { top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--tt-radius-pill); background: #fff; }
-html .sl-bubble .sl-au-cb:checked + .sl-au-track { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
-html .sl-bubble .sl-au-cb:checked + .sl-au-track::after { transform: translateX(20px); background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
-html .sl-bubble .sl-au-cb:focus-visible + .sl-au-track { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
-html .sl-bubble .sl-au-row.sl-au-dis > * { opacity: .65; cursor: default; }
-html .sl-bubble .sl-au-state { order: 4; flex-basis: 100%; }
-html .sl-bubble .sl-au-state:empty { display: none; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-track::after { top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--tt-radius-pill); background: #fff; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-cb:checked + .sl-au-track { background: var(--tt-rb-c, var(--tt-rbaccent, var(--tt-accent, #FCC419))); }
+html:where(.tt-popups-on) .sl-bubble .sl-au-cb:checked + .sl-au-track::after { transform: translateX(20px); background: var(--tt-rb-ct, var(--tt-rbaccent-text, var(--tt-accent-text, #161616))); }
+html:where(.tt-popups-on) .sl-bubble .sl-au-cb:focus-visible + .sl-au-track { box-shadow: 0 0 0 var(--tt-focus-ring-width, 2px) var(--tt-accent-ink, #FCC419); }
+html:where(.tt-popups-on) .sl-bubble .sl-au-row.sl-au-dis > * { opacity: .65; cursor: default; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-state { order: 4; flex-basis: 100%; }
+html:where(.tt-popups-on) .sl-bubble .sl-au-state:empty { display: none; }
 /* ShipLog's buttons take the same rest and hover split as every other Docker-tab control in the
    reactive mode: docker.js enhanceShipLogBubble() skips its own paint here and only stamps
    --tt-rb-c and --tt-rb-ct for the hover rule to read. The close button rests on ShipLog's own
@@ -2465,7 +2469,7 @@ html.tt-docker-on.tt-on-addct .ui-dialog select:focus-visible { outline: none !i
    sheet loads only on TowerTorch-governed pages, so the page-level selector is safe, and the field rules
    above already give focus a fill. The (i) and TowerTorch's own buttons, badges and fields keep their halo
    from Tokens.css, which this rule would outweigh by coming later. */
-:is(a, button, input, select, [tabindex]):where(:not(.tt-info, .tt-b, .tt-badge, .tt-btn, .tt-abtn, .tt-actbtn, .tt-limbtn, .tt-bulkbtn, .tt-bulkmode-badge, .tt-b-copy, .tt-b-del, .tt-badge-toggle, .tt-plan, .tt-card-movebtn, .tt-folder-act, .tt-hgear, .tt-win-btn, .tt-win-x, .tt-seg-btn, .tt-set-tab, .tt-day, .tt-sched-x, .tt-plugsup, .tt-plugicm, .tt-in, .tt-set-toggle, .tt-set-sw, .tt-colpick, .tt-core, .tt-toast)):focus-visible { outline: none !important; box-shadow: none !important; filter: brightness(1.18); }
+:where(html.tt-popups-on) :is(a, button, input, select, [tabindex]):where(:not(.tt-info, .tt-b, .tt-badge, .tt-btn, .tt-abtn, .tt-actbtn, .tt-limbtn, .tt-bulkbtn, .tt-bulkmode-badge, .tt-b-copy, .tt-b-del, .tt-badge-toggle, .tt-plan, .tt-card-movebtn, .tt-folder-act, .tt-hgear, .tt-win-btn, .tt-win-x, .tt-seg-btn, .tt-set-tab, .tt-day, .tt-sched-x, .tt-plugsup, .tt-plugicm, .tt-in, .tt-set-toggle, .tt-set-sw, .tt-colpick, .tt-core, .tt-toast)):focus-visible { outline: none !important; box-shadow: none !important; filter: brightness(1.18); }
 
 /* The reactive rainbow on /Docker, gated on the html.tt-shares-rbneutral shares.js stamps on
    every page, the same contract as /Main. Every TowerTorch-painted control rests grey and takes its
@@ -2613,17 +2617,17 @@ html.tt-shares-rbneutral.tt-on-plugins #plugin_list tr:hover .tt-plugico { backg
    limit gears, the day chips, the popup buttons and the bottom action bar. A new toggle path
    belongs in this list, or it stops following the shape setting. */
 html .tt-b, html .tt-badge, html .tt-pill,
-html .tt-actbtn, html .tt-seg-btn, html .tt-set-tab, html nav.tabs .tabs-container > button[role=tab],
+html .tt-actbtn, html .tt-seg-btn, html .tt-set-tab, html:where(.tt-popups-on) nav.tabs .tabs-container > button[role=tab],
 html .tt-set-toggle, html .tt-set-knob,
-html .tt-limbtn, html .tt-day, html .tt-sched-x, html .tt-btn, html .tt-hgear-home, html .sl-chip,
+html .tt-limbtn, html .tt-day, html .tt-sched-x, html .tt-btn, html .tt-hgear-home, html:where(.tt-popups-on) .sl-chip,
 html .tt-enh td.updatecolumn span.green-text, html .tt-enh td.updatecolumn span.orange-text,
 html .tt-enh td.updatecolumn a, html .tt-enh td.updatecolumn div.advanced span,
-html .tt-enh #docker_list .switch-button-background, html .ToggleViewMode .switch-button-background,
+html .tt-enh #docker_list .switch-button-background, html:where(.tt-popups-on) .ToggleViewMode .switch-button-background,
 html .tt-enh #docker_list .switch-button-background .switch-button-button,
-html .ToggleViewMode .switch-button-background .switch-button-button,
+html:where(.tt-popups-on) .ToggleViewMode .switch-button-background .switch-button-button,
 html .tt-enh #docker_list input.autostart.tt-noswitch,
 html .tt-enh #docker_list input.autostart.tt-noswitch::before,
-html div.js-actions input[type=button],
+html:where(.tt-popups-on) div.js-actions input[type=button],
 html div.js-actions .tt-bulkmode-badge, html div.js-actions .tt-allct, html div.js-actions .tt-maintbtn,
 html .tt-cb, html .tt-pop input[type="checkbox"],
 html .tt-set-toggle.tt-set-toggle, html .tt-set-knob.tt-set-knob { border-radius: var(--tt-radius-pill) !important; }

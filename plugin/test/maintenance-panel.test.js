@@ -94,7 +94,7 @@ console.log('\nThe report reads plainly');
 console.log('\nThe Docker tab and the settings page mount the panel');
 {
   const docker = read('scripts/docker.js'), settings = read('scripts/settings.js');
-  ok('the bar gets its button whenever docker.js arranges it', /ensureBarToggle\(jsa\);\n\s+if \(window\.TTMaint\) window\.TTMaint\.bar\(jsa\);/.test(docker));
+  ok('the bar gets its button whenever docker.js arranges it', /ensureBarToggle\(jsa\); \} else unfoldBar\(jsa\);[^]{0,400}\n\s+if \(window\.TTMaint\) window\.TTMaint\.bar\(jsa\);/.test(docker));
   ok('the button stands beside "Check for updates"', /onclick\^="checkAll\("/.test(grab('bar')));
   ok('the settings card follows the notifications', /wrap\.appendChild\(c5\);\n\s+if \(window\.TTMaint\) wrap\.appendChild\(window\.TTMaint\.card\(card\(/.test(settings));
   for (const page of ['TowerTorch.Docker.page', 'TowerTorch.page']) {

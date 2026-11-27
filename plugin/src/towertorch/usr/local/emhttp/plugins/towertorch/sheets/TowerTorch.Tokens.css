@@ -2124,7 +2124,7 @@ html.tt-popups-on:has(body.body_sidebarScroll) { overflow: hidden !important; }
    bounce instead of popping out of a point. */
 @keyframes tt-wild-slidein { 0% { transform: translateX(28px); opacity: 0; } 55% { transform: translateX(-6px); opacity: 1; } 100% { transform: translateX(0); } }
 @media (prefers-reduced-motion: no-preference) {
-  html:not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .sidenav.sidenavShow { animation: tt-wild-slidein .34s cubic-bezier(.34, 1.56, .64, 1); }
+  html:where(.tt-popups-on):not([data-tt-motion="subtle"]):not([data-tt-motion="off"]) .sidenav.sidenavShow { animation: tt-wild-slidein .34s cubic-bezier(.34, 1.56, .64, 1); }
 }
 
 /* The card's corner marks as ordinary badges in a row. CA draws Official, Limited Time, Installed

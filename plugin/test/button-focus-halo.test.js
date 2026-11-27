@@ -27,7 +27,7 @@ for (const c of ['tt-btn', 'tt-b', 'tt-badge', 'tt-actbtn', 'tt-limbtn', 'tt-bul
 ok('it carries !important, as the blanket rules it competes with do', !!haloRule && haloRule.decls.some((d) => d.prop === 'box-shadow' && d.important && HALO.test(d.value)));
 
 console.log('\nThe blanket no-ring rules leave the same list out');
-const BLANKETS = [['styles/docker.css', /^:is\(a, button, input, select, \[tabindex\]\):where\(:not\(/], ['sheets/TowerTorch.Shares.css', /^html\.tt-shares-on :is\(a, button/], ['sheets/TowerTorch.VmTab.css', /^html\.tt-vms-on #displaybox :is\(a, button/]];
+const BLANKETS = [['styles/docker.css', /^:where\(html\.tt-popups-on\) :is\(a, button, input, select, \[tabindex\]\):where\(:not\(/], ['sheets/TowerTorch.Shares.css', /^html\.tt-shares-on :is\(a, button/], ['sheets/TowerTorch.VmTab.css', /^html\.tt-vms-on #displaybox :is\(a, button/]];
 for (const [sheet, re] of BLANKETS) {
   const r = parseRules(read(sheet)).find((x) => re.test(x.selector.replace(/\s+/g, ' ').trim()));
   const sel = r ? r.selector.replace(/\s+/g, ' ') : '';

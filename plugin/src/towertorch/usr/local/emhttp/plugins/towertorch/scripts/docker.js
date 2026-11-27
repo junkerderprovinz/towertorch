@@ -1057,7 +1057,7 @@
     Object.keys(BAR_LABELS).forEach(function (fn) {
       var b = barNative(bar, fn); if (!b) return;
       if (fn === "addContainer") b.classList.add("tt-bar-primary");
-      if (own && b.value !== t(BAR_LABELS[fn])) b.value = t(BAR_LABELS[fn]);
+      if (own && b.value !== t(BAR_LABELS[fn])) { if (!b.hasAttribute("data-tt-label")) b.setAttribute("data-tt-label", b.value); b.value = t(BAR_LABELS[fn]); }
     });
     var folded = BAR_FOLD.map(function (f2) { var b = barNative(bar, f2[0]); if (b) b.classList.add("tt-folded"); return b; });
     if (!folded.some(Boolean)) return;
@@ -1083,6 +1083,13 @@
     if (btn.getAttribute("aria-disabled") !== String(dead)) btn.setAttribute("aria-disabled", String(dead));
     var add = barNative(bar, "addContainer");
     if (add ? btn.previousElementSibling !== add : btn.parentElement !== bar) bar.insertBefore(btn, add ? add.nextSibling : bar.firstChild);
+  }
+  // With theming off Unraid's bar stays as Unraid draws it: every button shown under its own
+  // label and the view toggle in its own row. TowerTorch's own buttons still join it.
+  function unfoldBar(bar) {
+    Array.prototype.forEach.call(bar.querySelectorAll(".tt-folded, .tt-bar-primary"), function (b) { b.classList.remove("tt-folded", "tt-bar-primary"); });
+    Array.prototype.forEach.call(bar.querySelectorAll("[data-tt-label]"), function (b) { b.value = b.getAttribute("data-tt-label"); b.removeAttribute("data-tt-label"); });
+    Array.prototype.forEach.call(bar.querySelectorAll(".tt-allct, .tt-bar-adv"), function (x) { x.remove(); });
   }
   // The per-line hover marquee for the volumes column. The native cell is one
   // span.docker_readmore whose lines are separated by <br>, so each line is wrapped and moved
@@ -1534,6 +1541,12 @@
       // every badge pass. One read phase and one write phase cost a single layout.
       var f = document.getElementById("footer");
       var bar = document.querySelector("div.js-actions");
+      // With theming off the bar stays in Unraid's flow, so the inline edges from a docked pass go.
+      if (!themingOn()) {
+        if (bar) ["left", "right", "width", "padding-right"].forEach(function (p) { bar.style.removeProperty(p); });
+        colorBarButtons();
+        return;
+      }
       var lst = document.querySelector("#docker_list") || document.querySelector("table.tt-enh");
       // read phase
       var fixed = f && getComputedStyle(f).position === "fixed";
@@ -1650,10 +1663,11 @@
   function relocateTopBar() {
     try {
       syncFooterDock();
-      // The native toggle row stays collapsed in both views: its switch lives in the action bar
-      // and the native Update-All button below the table covers ShipLog's pill.
+      // With theming on the native toggle row stays collapsed in both views: its switch lives in
+      // the action bar and the native Update-All button below the table covers ShipLog's pill.
+      var themed = themingOn();
       var tv = document.querySelector("div.ToggleViewMode");
-      if (tv) tv.style.setProperty("display", "none", "important");
+      if (tv) { if (themed) tv.style.setProperty("display", "none", "important"); else tv.style.removeProperty("display"); }
       // The card and folder views keep the bar and its gear where the list has them, so the way
       // back to the list is always in one place. Their logos do not pick, so multi-select has
       // nothing to pick there and leaves with the list.
@@ -1669,14 +1683,14 @@
         // a gear as much as the card and folder views do. It sits beside the view switch in the
         // docked bar: a column header scrolls out of reach with a wide table and has no room
         // beside its label, while the bar wraps and stays on screen.
-        Array.prototype.slice.call(document.querySelectorAll(".tt-hgear")).forEach(function (x9) { if (!x9.closest(".tt-bar-adv")) x9.remove(); });
+        // With theming off the gear sits in the bar itself, beside Unraid's own buttons.
+        if (themed) { foldBar(jsa); ensureBarToggle(jsa); } else unfoldBar(jsa);
+        var gearHome = themed ? jsa.querySelector(".tt-bar-adv") : jsa;
+        Array.prototype.slice.call(document.querySelectorAll(".tt-hgear")).forEach(function (x9) { if (x9.parentElement !== gearHome) x9.remove(); });
         var hc = document.querySelector(".tt-headctl"); if (hc) hc.remove();
-        foldBar(jsa);
-        ensureBarToggle(jsa);
         if (window.TTMaint) window.TTMaint.bar(jsa);
         if (listView) ensureBulkModeBadge(jsa);
-        var advGrp = jsa.querySelector(".tt-bar-adv");
-        if (advGrp && !advGrp.querySelector(".tt-hgear")) advGrp.appendChild(makeGear("tt-hgear-home"));
+        if (gearHome && !gearHome.querySelector(".tt-hgear")) gearHome.appendChild(makeGear("tt-hgear-home"));
       } else {
         // the Plugins and VM pages have a tab strip rather than a js-actions bar
         var tc9 = document.querySelector("nav.tabs .tabs-container");
