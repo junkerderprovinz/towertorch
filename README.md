@@ -152,7 +152,9 @@ Every picture uses a different accent colour. The server and its apps, shares an
 - Dependencies on containers **outside** the plan just work: the engine resolves
   them implicitly, nothing is written into your plan.
 - Watchdog (auto-restart on crash or unhealthy, rate-capped per hour) and time
-  schedules (start/stop/restart at fixed times, per weekday).
+  schedules (start/stop/restart at fixed times, per weekday). When a container
+  the watchdog gave up on runs again, an alert says so, also on a channel that
+  only takes problems.
 - Per-container restart policy (no, unless-stopped, always, on-failure) set from
   the plan editor, applied live with a Docker update and mirrored into the
   template so it survives Apply.
@@ -174,6 +176,11 @@ Every picture uses a different accent colour. The server and its apps, shares an
   not come up and why, and the watchdog's restarts. At home they reach
   TowerTorch directly, relay or not, on a port that lets in fortress members
   and nobody else.
+- When a TollRoll in your fortress takes over the notifications of your apps,
+  TowerTorch hands its alerts and the plan's summary to it, so TollRoll's quiet
+  hours, daily summary and limits hold for them as well. The Notifications card
+  says so while it does. Without TollRoll, or with that switch off there,
+  TowerTorch sends to its own channels.
 
 **Resource limits**
 - Live CPU limit, CPU pinning (topology-aware, with P/E-core detection on Intel

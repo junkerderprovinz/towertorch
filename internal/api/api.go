@@ -110,8 +110,14 @@ type Fortress interface {
 	RunFinished(model.RunResult)
 }
 
+// NotifyHub tells whether a TollRoll of the fortress sends TowerTorch's
+// alerts now.
+type NotifyHub interface {
+	Active(ctx context.Context) bool
+}
+
 // Server holds the handlers' dependencies. VMs, BwLast, Kicker, Notifier, Icons,
-// TemplateIcons, Fortress, Maintenance and Door may be nil; an empty
+// TemplateIcons, Fortress, Maintenance, Door and NotifyHub may be nil; an empty
 // TemplatesDir skips writing limits into the Unraid templates.
 type Server struct {
 	Docker        Docker
@@ -127,6 +133,7 @@ type Server struct {
 	Fortress      Fortress
 	Maintenance   Maintenance
 	Door          Door
+	NotifyHub     NotifyHub
 	TemplatesDir  string
 	// FolderRoot is where the folder import looks for another plugin's
 	// folders; empty is the flash drive's plugin config.
@@ -175,6 +182,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/iconsvg", s.handleIconSVG)
 	mux.HandleFunc("GET /api/bugreport", s.handleBugReport)
 	mux.HandleFunc("GET /api/folderimport", s.handleFolderImport)
+	mux.HandleFunc("GET /api/notifyhub", s.handleNotifyHub)
 	if s.Fortress != nil {
 		h := status.Handler(s.Fortress, fromSocket)
 		mux.Handle(status.StatusPath, h)

@@ -113,6 +113,10 @@
       "#tt-settings .tt-set-numwrap{display:inline-flex;align-items:center;gap:6px;color:var(--tt-text-dim,#8a8a8a);font-size:var(--tt-text-subline)}" +
       "#tt-settings .tt-set-numwrap .tt-set-num{flex:none;width:56px;min-width:0;margin:0;text-align:center}" +
       "#tt-settings .tt-set-row.tt-set-ownrow{flex-wrap:wrap;row-gap:8px}" +
+      // The note on the Notifications card while TollRoll sends the alerts, quiet beside the rows.
+      "#tt-settings .tt-set-hubnote{display:flex;align-items:flex-start;gap:8px;margin:4px 0 10px;padding:9px 12px;border-radius:var(--tt-radius-control);background:color-mix(in srgb,var(--tt-text-dim) 14%,transparent);color:var(--tt-text-hint);font-size:var(--tt-text-subline);line-height:1.45;text-align:start}" +
+      "#tt-settings .tt-set-hubnote[hidden]{display:none}" +
+      "#tt-settings .tt-set-hubnote-g{flex:none;display:flex;padding-top:2px}" +
       "#tt-settings .tt-set-ownline{flex:0 0 100%;justify-content:flex-end}" +
       // a view sketch right under the selector it belongs to, in a well of its own
       "#tt-settings .tt-set-viewprev{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin-top:12px}" +
@@ -386,6 +390,23 @@
   var shapeIface = "";       // the interface the egress shaping runs on; blank means eth0
   var notifyDirty = false;
   var shapeDirty = false;
+  // While a TollRoll of the fortress sends the alerts, the Notifications card says so above the
+  // switches it stands in for. A render keeps what the engine last said.
+  var notifyHub = false;
+  function hubNote() {
+    var p = el("p", "tt-set-hubnote"); p.id = "tt-set-hubnote"; p.setAttribute("role", "note"); p.hidden = !notifyHub;
+    p.appendChild(el("span", "tt-set-hubnote-g")).innerHTML = glyph("Info");
+    p.appendChild(el("span", null, T("TollRoll verschickt die Warnungen von TowerTorch, solange es der Hub der Festung ist. Hört es damit auf, übernehmen wieder Unraid und der Webhook unten.",
+      "TollRoll sends TowerTorch's alerts while it is the fortress's hub. Unraid and the webhook below take over again as soon as it stops.")));
+    return p;
+  }
+  function loadNotifyHub() {
+    return api("GET", "notifyhub").then(function (d) {
+      notifyHub = !!(d && d.hub === true);
+      var n = document.getElementById("tt-set-hubnote");
+      if (n) n.hidden = !notifyHub;
+    }).catch(function () {});
+  }
   // Every tt.* write is mirrored into the engine config: localStorage is per origin, so without
   // this the toggles apply only to the origin they were set on.
   var uiSyncT = null, uiPending = {};
@@ -1951,6 +1972,7 @@
 
     // Notifications are engine-side and saved to the flash.
     var c5 = card(T("Benachrichtigungen", "Notifications"), T("Warnungen bei Watchdog-Neustarts, fehlgeschlagenen Starts und Zeitplan-Fehlern.", "Alerts on watchdog restarts, failed starts and schedule errors."));
+    c5.appendChild(hubNote());
     var ntg = toggle(notify.unraid, function (v) {
       notify.unraid = v; notifyDirty = true;
       saveNotify(ntg, function () { notify.unraid = !v; ntg._setOn(!v); });
@@ -3250,6 +3272,7 @@
   }
 
   render();
+  loadNotifyHub();
   // Pulls the engine config so the Notifications card shows what is saved, then re-renders. With
   // the engine down the defaults stay. An edit made during the round trip is kept rather than
   // overwritten.

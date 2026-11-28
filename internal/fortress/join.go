@@ -92,7 +92,7 @@ func config(dir string, app status.App, host string, src status.Source) (kitfort
 	cfg.App = kitfortress.App{ID: app.ID, Name: app.Name, Version: app.Version, Icon: app.Icon}
 	cfg.Host = host
 	cfg.Status = src
-	for _, a := range []string{maint.BackupAction, maint.UpdateAction} {
+	for _, a := range []string{maint.BackupAction, maint.UpdateAction, DeliverAction} {
 		if !slices.Contains(cfg.Uses, a) {
 			cfg.Uses = append(cfg.Uses, a)
 		}
