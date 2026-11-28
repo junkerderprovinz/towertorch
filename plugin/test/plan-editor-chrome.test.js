@@ -418,7 +418,7 @@ ok(/tt-pop-lbl/.test(css) && /TT_GEAR_SVG/.test(src) && /"tt\.rainbow"/.test(src
 // triggers under "Auto-Start" and the idle-stop numbers under its switch.
 console.log('\nPart 14: what hangs off an off switch is gone, not greyed');
 for (const sel of ['.tt-pop-body.tt-dis', '.tt-pop-sub.tt-dis']) {
-  const m = new RegExp(sel.replace(/\./g, '\\.') + '\\s*\\{([^}]*)\\}').exec(cssLive);
+  const m = new RegExp(sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*\\{([^}]*)\\}').exec(cssLive);
   ok(!!m && /display:\s*none/.test(m[1]) && !/opacity/.test(m[1]), sel + ' hides its rows' + (m ? '  (' + m[1].trim() + ')' : ''));
 }
 

@@ -26,7 +26,7 @@ function selfRefs(css) {
   const re = /(--[\w-]+)\s*:\s*([^;{}]*)/g;
   let m;
   while ((m = re.exec(clean))) {
-    const name = m[1].replace(/[-]/g, '\\-');
+    const name = m[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     if (new RegExp('var\\(\\s*' + name + '\\s*[,)]').test(m[2])) found.push(m[1] + ': ' + m[2].trim());
   }
   return found;
