@@ -4404,7 +4404,7 @@
 
 /* Holding the right mouse button and spinning the wheel scrolls any horizontally overflowing
    container sideways, such as the Apps rows. The context menu is swallowed only once that gesture
-   has actually moved a row, so a plain right-click still opens it. Linux and macOS open the menu on
+   has moved a row, so a plain right-click still opens it. Linux and macOS open the menu on
    the press, before any wheel turn, so there the menu wins and Shift with the wheel does the same. */
 (function () {
   "use strict";
