@@ -338,3 +338,25 @@ func TestThePlanHearsThatThePhraseChanged(t *testing.T) {
 		t.Errorf("ready = %+v, want the phrase changed", o.Ready)
 	}
 }
+
+type fakeHub bool
+
+func (h fakeHub) Active(context.Context) bool { return bool(h) }
+
+func TestTheNotificationsCardHearsWhetherTollRollSendsThem(t *testing.T) {
+	for _, c := range []struct {
+		name string
+		hub  NotifyHub
+		want string
+	}{
+		{"tollroll takes them", fakeHub(true), `{"hub":true}`},
+		{"tollroll does not", fakeHub(false), `{"hub":false}`},
+		{"no fortress", nil, `{"hub":false}`},
+	} {
+		s := &Server{Store: &memStore{}, NotifyHub: c.hub}
+		rec := call(s, http.MethodGet, "/api/notifyhub", "")
+		if rec.Code != http.StatusOK || strings.TrimSpace(rec.Body.String()) != c.want {
+			t.Errorf("%s: %d %s, want %s", c.name, rec.Code, rec.Body, c.want)
+		}
+	}
+}

@@ -20,10 +20,11 @@ $sock  = getenv('TT_SOCK') ?: '/var/run/towertorch.sock';
 // fortressleave takes TowerTorch out again. fortressremove takes another member out by its id.
 // fortress is the state the settings card draws, and fortressmember another member's status and log.
 // folderimport: the folders another folder plugin keeps, read only, for the folder view to take over.
+// notifyhub: whether a TollRoll of the fortress sends the alerts, for the note on the Notifications card.
 $allow = ['state' => ['GET'], 'stats' => ['GET'], 'action' => ['POST'], 'limits' => ['GET', 'POST'], 'restartpolicy' => ['POST'], 'plan' => ['GET', 'PUT'], 'apply' => ['POST'], 'config' => ['GET', 'PUT'], 'vms' => ['GET'], 'vmlimits' => ['POST'],
           'fortressstatus' => ['GET'], 'fortresslog' => ['GET'],
           'maintenance' => ['GET', 'PUT'], 'maintenancerun' => ['POST'], 'maintenancestop' => ['POST'], 'fortressjoin' => ['POST'], 'fortressleave' => ['POST'], 'fortressremove' => ['POST'],
-          'fortress' => ['GET'], 'fortressmember' => ['GET'], 'folderimport' => ['GET']];
+          'fortress' => ['GET'], 'fortressmember' => ['GET'], 'folderimport' => ['GET'], 'notifyhub' => ['GET']];
 $route = ['fortressstatus' => 'fortress/v1/status', 'fortresslog' => 'fortress/v1/log',
           'maintenancerun' => 'maintenance/run', 'maintenancestop' => 'maintenance/stop', 'fortressjoin' => 'fortress/join', 'fortressleave' => 'fortress/leave', 'fortressremove' => 'fortress/remove', 'fortressmember' => 'fortress/member'];
 

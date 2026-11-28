@@ -186,3 +186,15 @@ func (s *Server) handleMember(w http.ResponseWriter, r *http.Request) {
 func language(r *http.Request) string {
 	return cmp.Or(r.URL.Query().Get("lang"), r.Header.Get("Accept-Language"))
 }
+
+// handleNotifyHub tells the notifications card whether TollRoll sends the
+// alerts, so it can say so above the channels it stands in for.
+func (s *Server) handleNotifyHub(w http.ResponseWriter, r *http.Request) {
+	out := struct {
+		Hub bool `json:"hub"`
+	}{}
+	if s.NotifyHub != nil {
+		out.Hub = s.NotifyHub.Active(r.Context())
+	}
+	writeJSON(w, http.StatusOK, out)
+}
