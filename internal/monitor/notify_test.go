@@ -128,12 +128,12 @@ func TestSendWithoutChannelsReachesNobody(t *testing.T) {
 }
 
 type hand struct {
-	took  bool
-	calls []string
+	took   bool
+	events []notify.Event
 }
 
-func (h *hand) Hand(_ context.Context, subject, _, importance string) bool {
-	h.calls = append(h.calls, subject+" "+importance)
+func (h *hand) Hand(_ context.Context, e notify.Event) bool {
+	h.events = append(h.events, e)
 	return h.took
 }
 
@@ -147,8 +147,9 @@ func TestAnAlertTollRollTakesReachesNoChannelOfTowerTorch(t *testing.T) {
 	if sent, failed := a.Send(context.Background(), "Start failed", "plex", "alert"); sent != 1 || len(failed) != 0 || read != 0 {
 		t.Errorf("sent %d, failed %v, channels read %d", sent, failed, read)
 	}
-	if !slices.Equal(h.calls, []string{"Start failed alert"}) {
-		t.Errorf("%q", h.calls)
+	want := notify.Event{Kind: "towertorch.alert", Severity: notify.SeverityCritical, Title: "Start failed", Body: "plex"}
+	if len(h.events) != 1 || h.events[0].Kind != want.Kind || h.events[0].Severity != want.Severity || h.events[0].Title != want.Title || h.events[0].Body != want.Body {
+		t.Errorf("handed %+v, want %+v", h.events, want)
 	}
 }
 
@@ -162,5 +163,20 @@ func TestAnAlertTollRollDoesNotTakeGoesOutAsBefore(t *testing.T) {
 	}
 	if c := receive(t, runner); !slices.Contains(c.args, "Start failed") {
 		t.Errorf("%+v", c)
+	}
+}
+
+func TestTheEndOfAProblemReachesAChannelForProblemsOnly(t *testing.T) {
+	runner := make(recordingRunner, 4)
+	h := &hand{}
+	a := Alerts{Hub: h, Unraid: runner, Channels: func() ([]notify.Channel, error) {
+		return []notify.Channel{{ID: "unraid", Kind: notify.KindUnraid, Enabled: true, On: notify.OnFailure}}, nil
+	}}
+	a.Tell(context.Background(), Alert{Subject: "Watchdog: plex is running again", Desc: "plex", Key: "watchdog/plex", Recovery: true})
+	if c := receive(t, runner); !slices.Contains(c.args, "Watchdog: plex is running again") {
+		t.Errorf("%+v", c)
+	}
+	if len(h.events) != 1 || !h.events[0].Recovery || h.events[0].Severity != notify.SeveritySuccess || h.events[0].Key != "watchdog/plex" {
+		t.Errorf("handed %+v", h.events)
 	}
 }

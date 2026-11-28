@@ -40,10 +40,9 @@ type Shaper interface {
 	DetectIface(pid int) string
 }
 
-// Notifier delivers an alert to the notification channels. importance is
-// Unraid's level: normal, warning or alert.
+// Notifier delivers an alert to the notification channels.
 type Notifier interface {
-	Notify(ctx context.Context, subject, desc, importance string)
+	Tell(ctx context.Context, a Alert)
 }
 
 // Recorder keeps what the watchdog did for the fortress status. exitCode is
@@ -92,6 +91,7 @@ type Monitor struct {
 	vmShaped   map[string]bool
 	bwLast     map[string]string // last shaping attempt per container, for /api/bwstatus
 	idle       map[string]*idleTrack
+	down       map[string]bool // containers the watchdog gave up on or could not restart
 	kickCh     chan struct{}
 }
 
@@ -434,8 +434,8 @@ func (m *Monitor) tickBandwidths(ctx context.Context, cfg model.Config) {
 			continue
 		}
 		if sharedNetns(c) {
-			if m.throttle(name+"|bwshared", now) && m.Notifier != nil {
-				m.Notifier.Notify(ctx, "Bandwidth not applied: "+name,
+			if m.throttle(name+"|bwshared", now) {
+				m.notify(ctx, "Bandwidth not applied: "+name,
 					"Shaping is skipped for a host/container-network container (it would shape the host or another container).", "warning")
 			}
 			continue
@@ -467,8 +467,8 @@ func (m *Monitor) tickBandwidths(ctx context.Context, cfg model.Config) {
 		}
 		m.mu.Unlock()
 		if err != nil {
-			if m.throttle(name+"|bwfail", now) && m.Notifier != nil {
-				m.Notifier.Notify(ctx, "Bandwidth shaping failed: "+name, err.Error(), "warning")
+			if m.throttle(name+"|bwfail", now) {
+				m.notify(ctx, "Bandwidth shaping failed: "+name, err.Error(), "warning")
 			}
 			continue
 		}
@@ -559,14 +559,20 @@ func (m *Monitor) tickWatchdogs(ctx context.Context, cfg model.Config) {
 			if m.Recorder != nil {
 				m.Recorder.WatchdogRecovered(w.Name)
 			}
+			if c.State == "running" && m.setDown(w.Name, false) {
+				m.tell(ctx, Alert{Subject: "Watchdog: " + w.Name + " is running again", Desc: w.Name + " is running again after the watchdog's last alert",
+					Key: watchdogKey(w.Name), Recovery: true})
+			}
 			continue
 		}
 		if !m.allowRestart(w, now) {
 			if m.Recorder != nil {
 				m.Recorder.WatchdogGaveUp(w.Name, w.MaxRestarts)
 			}
+			m.setDown(w.Name, true)
 			if m.throttle(w.Name+"|gaveup", now) {
-				m.notify(ctx, "Watchdog gave up", w.Name+": too many restarts (>"+strconv.Itoa(w.MaxRestarts)+"/h)", "alert")
+				m.tell(ctx, Alert{Subject: "Watchdog gave up", Desc: w.Name + ": too many restarts (>" + strconv.Itoa(w.MaxRestarts) + "/h)",
+					Importance: "alert", Key: watchdogKey(w.Name)})
 			}
 			continue
 		}
@@ -579,8 +585,9 @@ func (m *Monitor) tickWatchdogs(ctx context.Context, cfg model.Config) {
 			if m.Recorder != nil {
 				m.Recorder.WatchdogRestartFailed(w.Name, err)
 			}
+			m.setDown(w.Name, true)
 			if m.throttle(w.Name+"|failed", now) {
-				m.notify(ctx, "Watchdog restart failed", w.Name+": "+err.Error(), "alert")
+				m.tell(ctx, Alert{Subject: "Watchdog restart failed", Desc: w.Name + ": " + err.Error(), Importance: "alert", Key: watchdogKey(w.Name)})
 			}
 			continue
 		}
@@ -664,11 +671,37 @@ func (m *Monitor) throttle(key string, now time.Time) bool {
 	return true
 }
 
+// setDown marks name as down or not and reports whether that changed.
+func (m *Monitor) setDown(name string, down bool) bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.down[name] == down {
+		return false
+	}
+	if m.down == nil {
+		m.down = map[string]bool{}
+	}
+	if down {
+		m.down[name] = true
+	} else {
+		delete(m.down, name)
+	}
+	return true
+}
+
+// watchdogKey names the watchdog's trouble with one container, so the news
+// that it is running again closes it.
+func watchdogKey(name string) string { return "watchdog/" + name }
+
 func (m *Monitor) notify(ctx context.Context, subject, desc, importance string) {
+	m.tell(ctx, Alert{Subject: subject, Desc: desc, Importance: importance})
+}
+
+func (m *Monitor) tell(ctx context.Context, a Alert) {
 	if m.Notifier == nil {
 		return
 	}
-	m.Notifier.Notify(ctx, subject, desc, importance)
+	m.Notifier.Tell(ctx, a)
 }
 
 func containsInt(xs []int, x int) bool {

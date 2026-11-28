@@ -9,11 +9,15 @@ import (
 
 	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
 	"github.com/junkerderprovinz/parleyport/kit/member"
+	"github.com/junkerderprovinz/parleyport/kit/notify"
+	"github.com/junkerderprovinz/parleyport/kit/status"
 )
 
 type hubFortress struct {
 	members []kitfortress.Member
 	answer  map[string]error
+	reply   map[string]string
+	reports map[string]status.Report
 	calls   []string
 	body    []byte
 }
@@ -26,7 +30,18 @@ func (f *hubFortress) Act(_ context.Context, id, action string, body []byte) ([]
 	if err := f.answer[id]; err != nil {
 		return nil, err
 	}
+	if r, ok := f.reply[id]; ok {
+		return []byte(r), nil
+	}
 	return []byte(`{"taken":true}`), nil
+}
+
+func (f *hubFortress) Status(_ context.Context, id, _ string) (status.Report, error) {
+	r, ok := f.reports[id]
+	if !ok {
+		return status.Report{}, errors.New("unreachable")
+	}
+	return r, nil
 }
 
 func tollroll(id string, online bool) kitfortress.Member {
@@ -44,7 +59,8 @@ func TestAnAlertGoesToTheFirstTollRollThatTakesIt(t *testing.T) {
 		},
 		answer: map[string]error{"a1": &kitfortress.Refusal{Status: 409, Code: "hub_off"}},
 	}
-	if !(Hub{Fortress: f}).Hand(context.Background(), "Start failed", "plex: exited", "alert") {
+	e := notify.Event{Kind: "towertorch.alert", Severity: notify.SeverityCritical, Title: "Start failed", Body: "plex: exited"}
+	if !(Hub{Fortress: f}).Hand(context.Background(), e) {
 		t.Fatal("not taken")
 	}
 	if want := []string{"a1 " + DeliverAction, "b2 " + DeliverAction}; !slices.Equal(f.calls, want) {
@@ -57,6 +73,24 @@ func TestAnAlertGoesToTheFirstTollRollThatTakesIt(t *testing.T) {
 	if d["kind"] != "towertorch.alert" || d["severity"] != "critical" || d["title"] != "Start failed" || d["body"] != "plex: exited" {
 		t.Errorf("%v", d)
 	}
+	if _, ok := d["recovery"]; ok {
+		t.Errorf("a problem was sent as its end: %v", d)
+	}
+}
+
+func TestTheEndOfAProblemReachesTollRollAsARecoveryUnderItsKey(t *testing.T) {
+	f := &hubFortress{members: []kitfortress.Member{tollroll("a1", true)}}
+	e := notify.Event{Kind: "towertorch.alert", Severity: notify.SeveritySuccess, Recovery: true, Key: "watchdog/plex", Title: "Watchdog: plex is running again"}
+	if !(Hub{Fortress: f}).Hand(context.Background(), e) {
+		t.Fatal("not taken")
+	}
+	var d map[string]any
+	if err := json.Unmarshal(f.body, &d); err != nil {
+		t.Fatal(err)
+	}
+	if d["recovery"] != true || d["key"] != "watchdog/plex" || d["severity"] != "success" {
+		t.Errorf("%v", d)
+	}
 }
 
 func TestWithoutATollRollThatTakesItTheAlertStaysWithTowerTorch(t *testing.T) {
@@ -66,13 +100,34 @@ func TestWithoutATollRollThatTakesItTheAlertStaysWithTowerTorch(t *testing.T) {
 		"permission off": {members: []kitfortress.Member{tollroll("a1", true)}, answer: map[string]error{"a1": kitfortress.ErrPermissionOff}},
 		"away mid call":  {members: []kitfortress.Member{tollroll("a1", true)}, answer: map[string]error{"a1": errors.New("unreachable")}},
 		"only one away":  {members: []kitfortress.Member{tollroll("a1", false)}},
+		"no word taken":  {members: []kitfortress.Member{tollroll("a1", true)}, reply: map[string]string{"a1": `{}`}},
+		"not an answer":  {members: []kitfortress.Member{tollroll("a1", true)}, reply: map[string]string{"a1": `taken`}},
 	} {
-		if (Hub{Fortress: f}).Hand(context.Background(), "x", "y", "normal") {
+		if (Hub{Fortress: f}).Hand(context.Background(), notify.Event{Kind: "towertorch.alert", Title: "x"}) {
 			t.Errorf("%s: taken", name)
 		}
 	}
-	if (Hub{}).Hand(context.Background(), "x", "y", "normal") {
-		t.Error("taken without a fortress")
+}
+
+func TestTheHubCountsAsActiveWhileATollRollReportsIt(t *testing.T) {
+	hub := status.Report{Capabilities: []string{HubCapability}}
+	for name, c := range map[string]struct {
+		f    *hubFortress
+		want bool
+	}{
+		"takes over":       {&hubFortress{members: []kitfortress.Member{tollroll("a1", true)}, reports: map[string]status.Report{"a1": hub}}, true},
+		"second one does":  {&hubFortress{members: []kitfortress.Member{tollroll("a1", true), tollroll("b2", true)}, reports: map[string]status.Report{"b2": hub}}, true},
+		"switch off there": {&hubFortress{members: []kitfortress.Member{tollroll("a1", true)}, reports: map[string]status.Report{"a1": {}}}, false},
+		"away":             {&hubFortress{members: []kitfortress.Member{tollroll("a1", false)}, reports: map[string]status.Report{"a1": hub}}, false},
+		"not tollroll": {&hubFortress{
+			members: []kitfortress.Member{{ID: "d4", Kind: member.KindInstance, App: kitfortress.App{ID: "shiplog"}, Direct: true, Actions: []string{DeliverAction}}},
+			reports: map[string]status.Report{"d4": hub},
+		}, false},
+		"no tollroll": {&hubFortress{}, false},
+	} {
+		if got := (Hub{Fortress: c.f}).Active(context.Background()); got != c.want {
+			t.Errorf("%s: active %v, want %v", name, got, c.want)
+		}
 	}
 }
 

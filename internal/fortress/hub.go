@@ -9,11 +9,16 @@ import (
 
 	kitfortress "github.com/junkerderprovinz/parleyport/kit/fortress"
 	"github.com/junkerderprovinz/parleyport/kit/member"
+	"github.com/junkerderprovinz/parleyport/kit/notify"
+	"github.com/junkerderprovinz/parleyport/kit/status"
 )
 
 // DeliverAction is how TollRoll takes the notifications of the apps of a
-// fortress, while its hub is switched on.
-const DeliverAction = "notify.deliver"
+// fortress, and HubCapability what its status report lists while it does.
+const (
+	DeliverAction = "notify.deliver"
+	HubCapability = "notify.hub"
+)
 
 // handFor bounds one try at one TollRoll, so an alert is not held up long
 // before TowerTorch sends it itself.
@@ -24,42 +29,66 @@ type Hub struct {
 	Fortress interface {
 		Members() []kitfortress.Member
 		Act(ctx context.Context, id, action string, body []byte) ([]byte, error)
+		Status(ctx context.Context, id, lang string) (status.Report, error)
 	}
 }
 
-// Hand offers the alert to each TollRoll in reach that takes notifications,
-// in a fixed order, and reports whether one took it. Any other answer leaves
-// the alert to TowerTorch's own channels.
-func (h Hub) Hand(ctx context.Context, subject, desc, importance string) bool {
-	if h.Fortress == nil {
+type delivery struct {
+	Kind     string          `json:"kind"`
+	Severity notify.Severity `json:"severity"`
+	Title    string          `json:"title"`
+	Body     string          `json:"body"`
+	Key      string          `json:"key,omitempty"`
+	Recovery bool            `json:"recovery,omitempty"`
+}
+
+// Hand offers e to each TollRoll in reach, in a fixed order, and reports
+// whether one took it. Any other answer leaves e to TowerTorch's own
+// channels.
+func (h Hub) Hand(ctx context.Context, e notify.Event) bool {
+	body, err := json.Marshal(delivery{Kind: e.Kind, Severity: e.Severity, Title: e.Title, Body: e.Body, Key: e.Key, Recovery: e.Recovery})
+	if err != nil {
 		return false
 	}
-	var hubs []kitfortress.Member
-	for _, m := range h.Fortress.Members() {
-		if m.Kind == member.KindInstance && m.App.ID == "tollroll" && m.Online() && slices.Contains(m.Actions, DeliverAction) {
-			hubs = append(hubs, m)
-		}
-	}
-	slices.SortFunc(hubs, func(a, b kitfortress.Member) int { return cmp.Compare(a.ID, b.ID) })
-	body, _ := json.Marshal(map[string]string{"kind": "towertorch.alert", "severity": severity(importance), "title": subject, "body": desc})
-	for _, m := range hubs {
-		cctx, cancel := context.WithTimeout(ctx, handFor)
-		_, err := h.Fortress.Act(cctx, m.ID, DeliverAction, body)
-		cancel()
-		if err == nil {
+	for _, id := range h.tollrolls() {
+		if h.offer(ctx, id, body) {
 			return true
 		}
 	}
 	return false
 }
 
-// severity is kit/notify's word for Unraid's importance.
-func severity(importance string) string {
-	switch importance {
-	case "alert":
-		return "critical"
-	case "warning":
-		return "warning"
+// Active reports whether a TollRoll in reach takes the notifications now.
+func (h Hub) Active(ctx context.Context) bool {
+	for _, id := range h.tollrolls() {
+		r, err := h.Fortress.Status(ctx, id, "")
+		if err == nil && slices.Contains(r.Capabilities, HubCapability) {
+			return true
+		}
 	}
-	return "info"
+	return false
+}
+
+func (h Hub) tollrolls() []string {
+	var ids []string
+	for _, m := range h.Fortress.Members() {
+		if m.Kind == member.KindInstance && m.App.ID == "tollroll" && m.Online() && slices.Contains(m.Actions, DeliverAction) {
+			ids = append(ids, m.ID)
+		}
+	}
+	slices.SortFunc(ids, cmp.Compare)
+	return ids
+}
+
+func (h Hub) offer(ctx context.Context, id string, body []byte) bool {
+	ctx, cancel := context.WithTimeout(ctx, handFor)
+	defer cancel()
+	out, err := h.Fortress.Act(ctx, id, DeliverAction, body)
+	if err != nil {
+		return false
+	}
+	var answer struct {
+		Taken bool `json:"taken"`
+	}
+	return json.Unmarshal(out, &answer) == nil && answer.Taken
 }

@@ -56,10 +56,14 @@ type fakeCfg struct{ c model.Config }
 
 func (f fakeCfg) LoadConfig() (model.Config, error) { return f.c, nil }
 
-type fakeNotifier struct{ n []string }
+type fakeNotifier struct {
+	n      []string
+	alerts []Alert
+}
 
-func (f *fakeNotifier) Notify(_ context.Context, subject, _, _ string) {
-	f.n = append(f.n, subject)
+func (f *fakeNotifier) Tell(_ context.Context, a Alert) {
+	f.n = append(f.n, a.Subject)
+	f.alerts = append(f.alerts, a)
 }
 
 type fakePidder struct{ pids map[string]int }
@@ -346,6 +350,95 @@ func TestWatchdogFailedRestartIsCappedAndThrottled(t *testing.T) {
 	}
 	if failed != 1 || gaveUp != 1 {
 		t.Fatalf("expected exactly one 'restart failed' and one 'gave up' (throttled), got failed=%d gaveUp=%d (%v)", failed, gaveUp, fn.n)
+	}
+}
+
+func TestWatchdogSaysWhenAContainerItGaveUpOnRunsAgain(t *testing.T) {
+	fd := &fakeDocker{list: []model.Container{{Name: "plex", State: "exited", ExitCode: 1}}}
+	fn := &fakeNotifier{}
+	clock := time.Date(2026, 7, 3, 3, 0, 0, 0, time.Local)
+	m := &Monitor{
+		Docker:   fd,
+		Notifier: fn,
+		Config: fakeCfg{c: model.Config{
+			Watchdogs: []model.Watchdog{{Name: "plex", Enabled: true, OnExit: true, MaxRestarts: 1}},
+		}},
+		Now: func() time.Time { return clock },
+	}
+	for i := 0; i < 3; i++ {
+		m.Tick(context.Background())
+		clock = clock.Add(30 * time.Second)
+	}
+	fd.list = []model.Container{{Name: "plex", State: "running"}}
+	for i := 0; i < 3; i++ {
+		m.Tick(context.Background())
+		clock = clock.Add(30 * time.Second)
+	}
+	var gaveUp, back []Alert
+	for _, a := range fn.alerts {
+		switch {
+		case a.Subject == "Watchdog gave up":
+			gaveUp = append(gaveUp, a)
+		case a.Recovery:
+			back = append(back, a)
+		}
+	}
+	if len(gaveUp) != 1 || gaveUp[0].Key != "watchdog/plex" {
+		t.Fatalf("gave up %+v", gaveUp)
+	}
+	if len(back) != 1 || back[0].Key != "watchdog/plex" || back[0].Subject != "Watchdog: plex is running again" {
+		t.Fatalf("running again %+v, all %v", back, fn.n)
+	}
+}
+
+func TestWatchdogStaysQuietAboutARestartThatWorked(t *testing.T) {
+	fd := &fakeDocker{list: []model.Container{{Name: "plex", State: "running", Health: "unhealthy"}}}
+	fn := &fakeNotifier{}
+	clock := time.Date(2026, 7, 3, 3, 0, 0, 0, time.Local)
+	m := &Monitor{
+		Docker:   fd,
+		Notifier: fn,
+		Config: fakeCfg{c: model.Config{
+			Watchdogs: []model.Watchdog{{Name: "plex", Enabled: true, OnUnhealthy: true, MaxRestarts: 3}},
+		}},
+		Now: func() time.Time { return clock },
+	}
+	m.Tick(context.Background())
+	fd.list = []model.Container{{Name: "plex", State: "running", Health: "healthy"}}
+	m.Tick(context.Background())
+	for _, a := range fn.alerts {
+		if a.Recovery {
+			t.Errorf("a restart that worked was told as the end of a problem: %v", fn.n)
+		}
+	}
+}
+
+func TestWatchdogWaitsForARunningContainerBeforeItSaysSo(t *testing.T) {
+	fd := &fakeDocker{
+		list:       []model.Container{{Name: "web", State: "running", Health: "unhealthy"}},
+		restartErr: errors.New("no such container"),
+	}
+	fn := &fakeNotifier{}
+	m := &Monitor{
+		Docker:   fd,
+		Notifier: fn,
+		Config: fakeCfg{c: model.Config{
+			Watchdogs: []model.Watchdog{{Name: "web", Enabled: true, OnUnhealthy: true}},
+		}},
+		Now: time.Now,
+	}
+	m.Tick(context.Background())
+	fd.list = []model.Container{{Name: "web", State: "exited", ExitCode: 0}}
+	m.Tick(context.Background())
+	for _, a := range fn.alerts {
+		if a.Recovery {
+			t.Fatalf("a stopped container was told as running again: %v", fn.n)
+		}
+	}
+	fd.list = []model.Container{{Name: "web", State: "running", Health: "healthy"}}
+	m.Tick(context.Background())
+	if last := fn.alerts[len(fn.alerts)-1]; !last.Recovery || last.Key != "watchdog/web" {
+		t.Errorf("last %+v", last)
 	}
 }
 
