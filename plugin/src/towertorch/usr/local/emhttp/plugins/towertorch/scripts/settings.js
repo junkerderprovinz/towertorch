@@ -114,7 +114,7 @@
       "#tt-settings .tt-set-numwrap .tt-set-num{flex:none;width:56px;min-width:0;margin:0;text-align:center}" +
       "#tt-settings .tt-set-row.tt-set-ownrow{flex-wrap:wrap;row-gap:8px}" +
       // The note on the Notifications card while TollRoll sends the alerts, quiet beside the rows.
-      "#tt-settings .tt-set-hubnote{display:flex;align-items:flex-start;gap:8px;margin:4px 0 10px;padding:9px 12px;border-radius:var(--tt-radius-control);background:color-mix(in srgb,var(--tt-text-dim) 14%,transparent);color:var(--tt-text-dim);font-size:var(--tt-text-subline);line-height:1.45;text-align:start}" +
+      "#tt-settings .tt-set-hubnote{display:flex;align-items:flex-start;gap:8px;margin:4px 0 10px;padding:9px 12px;border-radius:var(--tt-radius-control);background:color-mix(in srgb,var(--tt-text-dim) 14%,transparent);color:var(--tt-text-hint);font-size:var(--tt-text-subline);line-height:1.45;text-align:start}" +
       "#tt-settings .tt-set-hubnote[hidden]{display:none}" +
       "#tt-settings .tt-set-hubnote-g{flex:none;display:flex;padding-top:2px}" +
       "#tt-settings .tt-set-ownline{flex:0 0 100%;justify-content:flex-end}" +

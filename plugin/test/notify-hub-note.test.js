@@ -73,7 +73,7 @@ const settle = () => new Promise((r) => setTimeout(r, 0));
   const win = (prop, attrs) => candidates('settings', { tag: 'p', classes: ['tt-set-hubnote'], attrs: attrs || {}, states: {}, inside: ['#tt-settings'] }, prop).pop();
   ok('a hidden note takes no room', /^none$/.test((win('display', { hidden: '' }) || {}).value), JSON.stringify(win('display', { hidden: '' })));
   ok('a shown one lays its mark beside the words', /^flex$/.test((win('display') || {}).value), JSON.stringify(win('display')));
-  ok('its words are the dim ones of the card', /--tt-text-dim/.test((win('color') || {}).value), JSON.stringify(win('color')));
+  ok('its words take the hint ink, readable on the tint', /--tt-text-hint/.test((win('color') || {}).value), JSON.stringify(win('color')));
 
   console.log(fail ? '\nFAIL  ' + fail + ' failed, ' + pass + ' passed' : '\nOK  ' + pass + ' passed');
   process.exit(fail ? 1 : 0);
